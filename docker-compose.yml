@@ -14,7 +14,7 @@ services:
     image: stellars/anaconda-jupyterlab
     build:
        context: build
-       dockerfile: anaconda-jupyterlab.Dockerfile
+       dockerfile: Dockerfile
     command: /start-jupyterlab.sh
     working_dir: /opt/workspace
     ports:

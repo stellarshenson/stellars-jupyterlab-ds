@@ -116,10 +116,4 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# enable anaconda configuration
-if [ -f ~/.anacondarc ]; then
-    . ~/.anacondarc
-fi
-
-
 # EOF
