@@ -1,0 +1,29 @@
+# ----------------------------------------------------------------------------------------
+#
+#   Jupyter Lab - http://localhost:8888
+#
+# ----------------------------------------------------------------------------------------
+version: "3"
+
+services:
+  # run jupyterlab on a local port 8888
+  # without any authentication
+  jupyterlab:
+    container_name: anaconda-jupyterlab
+    hostname: anaconda-jupyterlab
+    image: stellars/anaconda-jupyterlab
+    build:
+       context: build
+       dockerfile: anaconda-jupyterlab.Dockerfile
+    command: /start-jupyterlab.sh
+    working_dir: /opt/workspace
+    ports:
+       - 8888:8888
+    volumes:
+      - ../../projects:/opt/workspace
+      - ./etc/.jupyter:/root/.jupyter
+      - ./etc/.aws:/root/.aws
+      - ./etc/.git:/root/.git
+      - ./etc/.git-credentials:/root/.git-credentials
+      - ./etc/.gitconfig:/root/.gitconfig
+

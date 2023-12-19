@@ -1,0 +1,20 @@
+{
+    // Theme
+    // @jupyterlab/apputils-extension:themes
+    // Theme manager settings.
+    // *************************************
+
+    // Theme CSS Overrides
+    // Override theme CSS variables by setting key-value pairs here
+    "overrides": {
+        "code-font-size": "13px"
+    },
+
+    // Selected Theme
+    // Application-level visual styling theme
+    "theme": "Darcula",
+
+    // Scrollbar Theming
+    // Enable/disable styling of the application scrollbars
+    "theme-scrollbars": true
+}
