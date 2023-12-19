@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =3
+let g:netrw_dirhist_3='/home/konrad/@Lin-Workspace/pmr-prototypes/technology/README.md'
+let g:netrw_dirhist_2='/mnt/c/Users/konrad/OneDrive/Workspace/BigData/stellars-livy-server'
+let g:netrw_dirhist_1='/mnt/c/Users/konrad/OneDrive/Workspace/BigData/tutorials/docker-hadoop'
