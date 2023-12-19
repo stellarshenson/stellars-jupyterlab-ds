@@ -2,13 +2,15 @@ name: base
 channels:
   - conda-forge
   - rapidsai
+  - nvidia
   - defaults
 dependencies:
   - python=3.10
   - colorama
   - cudf
+  - cudatoolkit
   - git
-  - jedi-langage-server
+  - jedi-language-server
   - jupyterlab
   - jupyterlab-git
   - jupyterlab-lsp

@@ -4,7 +4,7 @@ c = get_config()  #noqa
 c.ServerApp.browser = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"
 c.ServerApp.root_dir = "/opt/workspace"
 c.FileContentsManager.always_delete_dir = True
-c.NotebookApp.terminado_settings = { "shell_command": ["/bin/bash"] }
+c.NotebookApp.terminado_settings = { "shell_command": ["/conda_entry.sh", "/bin/bash"] }
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
