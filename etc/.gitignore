@@ -1,0 +1,12 @@
+# Created by https://www.toptal.com/developers/gitignore/api/linux
+# Edit at https://www.toptal.com/developers/gitignore?templates=linux
+
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.git-credentials
+
+# jupyter session config
+aws/
+git/
+
+# EOF
