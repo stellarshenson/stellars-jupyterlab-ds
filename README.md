@@ -1,4 +1,4 @@
-# stellars-jupyterlab-ds
+# stellars-jupyterlab
 Anaconda Jupyterlab for Data Science
 
 ### installation
