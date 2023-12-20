@@ -2,11 +2,19 @@
 ## https://gist.github.com/xkortex/5ae49d7e6e969405bd2c3152a949c1f1
 FROM continuumio/miniconda3 
 
+# update sources list
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
+COPY ./conf/sources.list /etc/apt/sources.list
+
+## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
+RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && \
+wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
+dpkg -i cuda-keyring_1.0-1_all.deb
+
 # install dependencies
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -y awscli git vim bash-completion mc 
-# RUN apt-get install -y nvidia-driver-535 nvidia-dkms-535
+RUN apt-get install -y awscli git vim bash-completion mc curl
 
 # copy all config files and scripts
 COPY ./conf/environment.yml /tmp/environment.yml
@@ -22,7 +30,6 @@ RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 RUN vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 
-
 ## Create jupyterlab env and ignore pip warnings
 ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
@@ -30,15 +37,16 @@ ENV CONDA_DEFAULT_ENV jupyterlab
 # install required packages. no need to create env, update will take care of it
 # RUN conda create --solver=libmamba -n ${CONDA_DEFAULT_ENV:-base} python=3.10 
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml
-RUN conda info
 
 ## Tell the docker build process to use this for RUN.
 SHELL ["/conda_run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
+RUN echo '# saving the conda environment, as conda init is going to reset this to "base"' >> ~/.bashrc
 RUN echo '_CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
 RUN conda init 
+RUN echo '# restoring saved conda default env, as it was resetted to "base" by conda init' >> ~/.bashrc
 RUN echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
 RUN echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 

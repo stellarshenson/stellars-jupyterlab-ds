@@ -1,0 +1,47 @@
+# ----------------------------------------------------------------------------------------
+#
+#   Jupyter Lab - http://localhost:8888
+#
+# ----------------------------------------------------------------------------------------
+version: "3"
+
+services:
+  # run jupyterlab on a local port 8888
+  # without any authentication
+  jupyterlab:
+    container_name: anaconda-jupyterlab
+    hostname: anaconda-jupyterlab
+    image: stellars/anaconda-jupyterlab
+    build:
+       context: build
+       dockerfile: Dockerfile
+    command: /start-jupyterlab.sh
+    working_dir: /opt/workspace
+    ports:
+       - 8888:8888
+    volumes:
+      - ../../projects:/opt/workspace
+      - ./etc/.jupyter:/root/.jupyter
+      - ./etc/.aws:/root/.aws
+      - ./etc/.git:/root/.git
+      - ./etc/.git-credentials:/root/.git-credentials
+      - ./etc/.gitconfig:/root/.gitconfig
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  nvidia-test:
+    image: nvidia/cuda:11.0.3-base-ubuntu20.04
+    container_name: nvidia-test
+    command: nvidia-smi
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
