@@ -35,8 +35,9 @@ ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
 
 # install required packages. no need to create env, update will take care of it
-# RUN conda create --solver=libmamba -n ${CONDA_DEFAULT_ENV:-base} python=3.10 
+# also update the packages
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml
+RUN conda update -y -n ${CONDA_DEFAULT_ENV:-base} --all
 
 ## Tell the docker build process to use this for RUN.
 SHELL ["/conda_run.sh"]

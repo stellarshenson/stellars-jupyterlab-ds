@@ -24,6 +24,7 @@ dependencies:
   - pip:
       - botocore
       - click
+      - cookiecutter
       - dask
       - matplotlib
       - memory-profiler
