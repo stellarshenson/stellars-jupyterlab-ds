@@ -9,9 +9,9 @@ services:
   # run jupyterlab on a local port 8888
   # without any authentication
   jupyterlab:
-    container_name: anaconda-jupyterlab
-    hostname: anaconda-jupyterlab
-    image: stellars/anaconda-jupyterlab
+    container_name: stellars-jupyterlab-ds
+    hostname: stellars-jupyterlab-ds
+    image: stellars/stellars-jupyterlab-ds:latest
     build:
        context: build
        dockerfile: Dockerfile
@@ -20,6 +20,7 @@ services:
     ports:
        - 8888:8888
     volumes:
+      # - ../../projects:/opt/workspace
       - ./workspace:/opt/workspace # this maps your projects folder
       - ./etc/.jupyter:/root/.jupyter
       - ./etc/.aws:/root/.aws
