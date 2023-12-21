@@ -20,7 +20,7 @@ services:
     ports:
        - 8888:8888
     volumes:
-      # - ../../projects:/opt/workspace
+      # - ../../projects:/opt/workspace # my local mapping (stellars)
       - ./workspace:/opt/workspace # this maps your projects folder
       - ./etc/.jupyter:/root/.jupyter
       - ./etc/.aws:/root/.aws
@@ -46,3 +46,5 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
+# EOF
