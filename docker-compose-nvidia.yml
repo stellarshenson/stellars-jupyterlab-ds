@@ -21,6 +21,7 @@ services:
        - 8888:8888
     volumes:
       - ../../projects:/opt/workspace
+      # - ./workspace:/opt/workspace
       - ./etc/.jupyter:/root/.jupyter
       - ./etc/.aws:/root/.aws
       - ./etc/.git:/root/.git
