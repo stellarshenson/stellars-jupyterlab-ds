@@ -6,7 +6,7 @@
 .git-credentials
 
 # jupyter session config
-aws/
-git/
+.aws/
+.git/
 
 # EOF
