@@ -6,15 +6,20 @@ FROM continuumio/miniconda3
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
 COPY ./conf/sources.list /etc/apt/sources.list
 
-## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
-RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && \
-wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
-dpkg -i cuda-keyring_1.0-1_all.deb
-
 # install dependencies
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y awscli git vim bash-completion mc curl
+
+## install nvidia CUDA and cuda suite
+## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
+## https://developer.nvidia.com/cuda-12-0-1-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Debian&target_version=11&target_type=deb_network
+RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && \
+wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
+sudo add-apt-repository contrib && \
+dpkg -i cuda-keyring_1.0-1_all.deb && \
+sudo apt-get update && \
+sudo apt-get -y install cuda
 
 # copy all config files and scripts
 COPY ./conf/environment.yml /tmp/environment.yml
