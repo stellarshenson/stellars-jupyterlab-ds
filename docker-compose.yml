@@ -22,7 +22,7 @@ services:
     volumes:
       - ./home:/mnt/home                # copying files from 'home' directory to target home directory (/root)
       - ./home/.jupyter:/root/.jupyter  # jupyter settings, we want to keep them between container resets
-      - ../../projects:/opt/workspace   # my local mapping (stellars)
-      # - ./workspace:/opt/workspace    # this maps your projects folder
+      - ./workspace:/opt/workspace    # this maps your projects folder
+      # - ../../projects:/opt/workspace   # my local mapping (stellars)
 
 # EOF
