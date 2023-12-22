@@ -1,7 +1,7 @@
 # stellars-jupyterlab-ds
 Miniconda + Jupyterlab for Data Science
 
-##### About me
+### About me
 Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>  
 Linked-in: https://www.linkedin.com/in/konradjelen/
 
