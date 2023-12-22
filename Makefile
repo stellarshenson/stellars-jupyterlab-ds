@@ -25,6 +25,10 @@ start:
 start_nvidia:
 	@cd ./bin && ./start_nvidia.sh
 
+## clean orphaned containers
+clean:
+	docker-compose down --remove-orphans
+
 .PHONY: help
 help:
 	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
