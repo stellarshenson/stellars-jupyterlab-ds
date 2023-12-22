@@ -2,8 +2,8 @@
 Miniconda + Jupyterlab for Data Science
 
 ##### About me
-    Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>
-    Linked-in: https://www.linkedin.com/in/konradjelen/
+Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>  
+Linked-in: https://www.linkedin.com/in/konradjelen/
 
 ### Installation
 
