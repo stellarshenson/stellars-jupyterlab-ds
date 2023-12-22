@@ -3,6 +3,7 @@ Miniconda + Jupyterlab for Data Science
 
 ##### About me
 Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>
+
 Linked-in: https://www.linkedin.com/in/konradjelen/
 
 ### Installation
@@ -23,9 +24,14 @@ There will be software required to be installed in order to run this:
 1. run `docker-compose build` followed by `docker-compose up` to run the container
 2. access http://localhost:8888 to run jupyterlab
 
-<div class="alert alert-block alert-info">
-<b>Tip:</b> modify the `/opt/workspace` entry in the `volumes:` section of the
-docker-compose files to map to a different projects location in your filesystem </div>
+**Tip:** modify the `/opt/workspace` entry in the `volumes:` section of the
+docker-compose files to map to a different projects location in your filesystem
+
+### Configuration
+
+- **./home** folder has the files and other folders that you wish to have in the home directory in the container. This would be your `.aws` folder with the account config and credentials, it would be your `.gitconfig` file and also `.jupyter` folder with the jupyterlab settings
+- **./workspace** this is the default folder where jupyterlab will look for projects and save its notebooks. You can change this folder to another via mapping in the `docker-compose.yml` files 
+- **./build** contains container build artefacts, you wouldn't need to look there
 
 
 ### Features
@@ -38,4 +44,5 @@ docker-compose files to map to a different projects location in your filesystem 
 * miniconda with nice jupyterlab terminal support
 * html and pdf (webpdf) generation support
 * memory profiler
-* mapping to your filesystem folder that holds your projects
+* configurable mapping to your filesystem folder that holds your projects
+* configurable settings files and folders used in __jupyterlab__, such as AWS credentials, GIT settings and jupyterlab settings, so that when you decide to shred the container and run it anew again, you can be sure your settings were saved
