@@ -8,15 +8,17 @@ dependencies:
   - python=3.10
   - colorama
   - cudf
+  - cudatoolkit
   - pandas
   - numba
   - numpy
-  - cudatoolkit
   - git
   - jedi-language-server
   - jupyterlab
   - jupyterlab-git
   - jupyterlab-lsp
+  - jupyter_contrib_nbextensions
+  - jupyter_nbextensions_configurator
   - make
   - matplotlib-inline
   - theme-darcula
@@ -28,6 +30,7 @@ dependencies:
       - dask
       - matplotlib
       - memory-profiler
+      - nbconvert[webpdf]
       - plotly
       - polars
       - py-cpuinfo

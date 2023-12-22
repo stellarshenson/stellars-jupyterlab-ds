@@ -11,6 +11,9 @@ RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common less
 
+# chromium is required for nbconvert to webpdf -> turning notebooks to nice pdfs
+RUN apt-get install -y chromium
+
 ## install nvidia CUDA and cuda suite
 ## ***************************************************
 ## 2023-12-22 note - cuda installation is not required to use cuda accelerated algorithms 
