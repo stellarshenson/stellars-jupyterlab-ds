@@ -30,6 +30,7 @@ start_nvidia:
 clean:
 	docker-compose -f  docker-compose-nvidia.yml -f  docker-compose.yml down --remove-orphans
 
+## prints the list of available commands
 help:
 	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
 	@sed -n -e "/^## / { \
