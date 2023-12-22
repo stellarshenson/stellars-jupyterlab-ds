@@ -14,14 +14,12 @@ dependencies:
   - numpy
   - git
   - jedi-language-server
-  - jupyterlab
+  - jupyterlab>=4.0.0
   - jupyterlab-git
   - jupyterlab-lsp
-  - jupyter_contrib_nbextensions
-  - jupyter_nbextensions_configurator
   - make
   - matplotlib-inline
-  - theme-darcula
+  - nodejs
   - pip
   - pip:
       - botocore
@@ -44,3 +42,4 @@ dependencies:
       - tensorflow
       - termcolor
       - tsfresh
+      - theme-darcula

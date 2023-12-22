@@ -1,7 +1,0 @@
-[user]
-	email = konrad.jelen@gmail.com
-	name = stellarshenson
-[core]
-	editor = vim
-[credential]
-	helper = store
