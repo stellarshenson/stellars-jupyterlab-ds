@@ -70,9 +70,6 @@ RUN cp /tmp/.bashrc ~/bashrc-to-merge
 RUN cat ~/.bashrc >> ~/bashrc-to-merge
 RUN mv ~/bashrc-to-merge ~/.bashrc
 
-# allow container's git work with imported folders
-RUN git config --global --add safe.directory '*'
-
 
 ENV TERM xterm-256color
 ENTRYPOINT ["/conda_entry.sh"]

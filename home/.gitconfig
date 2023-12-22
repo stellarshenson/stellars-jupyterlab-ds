@@ -5,4 +5,6 @@
 	editor = vim
 [credential]
 	helper = store
+[safe]
+	directory = *
 
