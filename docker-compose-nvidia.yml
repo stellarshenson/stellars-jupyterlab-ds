@@ -20,13 +20,10 @@ services:
     ports:
        - 8888:8888
     volumes:
-      # - ../../projects:/opt/workspace # my local mapping (stellars)
-      - ./workspace:/opt/workspace # this maps your projects folder
-      - ./etc/.jupyter:/root/.jupyter
-      - ./etc/.aws:/root/.aws
-      - ./etc/.git:/root/.git
-      - ./etc/.git-credentials:/root/.git-credentials
-      - ./etc/.gitconfig:/root/.gitconfig
+      - ./home:/mnt/home                # copying files from 'home' directory to target home directory (/root)
+      - ./home/.jupyter:/root/.jupyter  # jupyter settings, we want to keep them between container resets
+      - ../../projects:/opt/workspace   # my local mapping (stellars)
+      # - ./workspace:/opt/workspace    # this maps your projects folder
     deploy:
       resources:
         reservations:

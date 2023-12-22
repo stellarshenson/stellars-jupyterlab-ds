@@ -23,7 +23,7 @@ RUN apt-get install -y chromium
 ## ***************************************************
 ## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
 ## https://developer.nvidia.com/cuda-12-0-1-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Debian&target_version=11&target_type=deb_network
-RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && \
+RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && cd /tmp && \
 wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
 sudo add-apt-repository contrib && \
 dpkg -i cuda-keyring_1.0-1_all.deb 
@@ -69,6 +69,10 @@ RUN echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 RUN cp /tmp/.bashrc ~/bashrc-to-merge
 RUN cat ~/.bashrc >> ~/bashrc-to-merge
 RUN mv ~/bashrc-to-merge ~/.bashrc
+
+# allow container's git work with imported folders
+RUN git config --global --add safe.directory *
+
 
 ENV TERM xterm-256color
 ENTRYPOINT ["/conda_entry.sh"]
