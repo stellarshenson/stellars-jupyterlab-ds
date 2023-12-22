@@ -2,15 +2,16 @@
 Miniconda + Jupyterlab for Data Science
 
 ##### About me
-Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>
-
-Linked-in: https://www.linkedin.com/in/konradjelen/
+    Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>
+    Linked-in: https://www.linkedin.com/in/konradjelen/
 
 ### Installation
 
 Installation is dependent on the docker software installed.
 Jupyterlab 4 is going to be availabe via container and will
 be completely isolated from the rest of the computer's software
+
+Docker hub repository: https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general
 
 There will be software required to be installed in order to run this:
 
