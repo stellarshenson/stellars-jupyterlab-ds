@@ -4,6 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
+.PHONY: help build push start start_nvidia clean
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -27,9 +28,8 @@ start_nvidia:
 
 ## clean orphaned containers
 clean:
-	docker-compose down --remove-orphans
+	docker-compose -f  docker-compose-nvidia.yml -f  docker-compose.yml down --remove-orphans
 
-.PHONY: help
 help:
 	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
 	@echo
