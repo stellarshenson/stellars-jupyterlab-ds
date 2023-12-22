@@ -11,7 +11,7 @@
 
 ## build docker containers
 build:
-	./bin/build.sh
+	@cd ./bin && ./build.sh
 
 ## push docker containers to repo
 push:
@@ -19,11 +19,11 @@ push:
 
 ## start jupyterlab (fg)
 start:
-	./bin/start.sh
+	@cd ./bin && ./start.sh
 
 ## start jupyterlab with nvidia support (fg)
 start_nvidia:
-	./bin/start_nvidia.sh
+	@cd ./bin && ./start_nvidia.sh
 
 .PHONY: help
 help:
