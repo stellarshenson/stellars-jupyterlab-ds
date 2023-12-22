@@ -32,7 +32,6 @@ clean:
 
 help:
 	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
-	@echo
 	@sed -n -e "/^## / { \
 		h; \
 		s/.*//; \
