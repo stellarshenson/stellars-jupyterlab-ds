@@ -70,6 +70,8 @@ RUN cp /tmp/.bashrc ~/bashrc-to-merge
 RUN cat ~/.bashrc >> ~/bashrc-to-merge
 RUN mv ~/bashrc-to-merge ~/.bashrc
 
+## save build date for reference
+RUN date >/build-date.txt
 
 ENV TERM xterm-256color
 ENTRYPOINT ["/conda_entry.sh"]
