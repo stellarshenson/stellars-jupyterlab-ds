@@ -12,5 +12,9 @@ find $HOME -type f | xargs chmod 600
 # allow container's git work with imported folders
 # git config --global --add safe.directory '*'
 
+# output build info
+CONTAINER_BUILD=`cat /build-date.txt`
+echo "*** Container Build $CONTAINER_BUILD ***" 
+
 # run jupyterlab
 jupyter-lab --ip='*' --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
