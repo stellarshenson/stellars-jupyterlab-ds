@@ -14,6 +14,10 @@
 build:
 	@cd ./bin && ./build.sh
 
+## build docker containers and output logs
+build_verbose:
+	@cd ./bin && ./build_verbose.sh
+
 ## push docker containers to repo
 push:
 	docker push stellars/stellars-jupyterlab-ds:latest
