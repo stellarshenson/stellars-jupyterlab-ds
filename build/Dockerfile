@@ -9,7 +9,7 @@ COPY ./conf/sources.list /etc/apt/sources.list
 # install dependencies
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common less
+RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common less gpw
 
 # chromium is required for nbconvert to webpdf -> turning notebooks to nice pdfs
 RUN apt-get install -y chromium
@@ -72,6 +72,7 @@ RUN mv ~/bashrc-to-merge ~/.bashrc
 
 ## save build date for reference
 RUN date >/build-date.txt
+RUN gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
 
 ENV TERM xterm-256color
 ENTRYPOINT ["/conda_entry.sh"]
