@@ -11,9 +11,6 @@ RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common less gpw
 
-# chromium is required for nbconvert to webpdf -> turning notebooks to nice pdfs
-RUN apt-get install -y chromium
-
 ## install nvidia CUDA and cuda suite
 ## ***************************************************
 ## 2023-12-22 note - cuda installation is not required to use cuda accelerated algorithms 
@@ -69,6 +66,10 @@ RUN echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 RUN cp /tmp/.bashrc ~/bashrc-to-merge
 RUN cat ~/.bashrc >> ~/bashrc-to-merge
 RUN mv ~/bashrc-to-merge ~/.bashrc
+
+## install playwright browsers and dependencies to enable 
+## jupyter notebook export to webpdf with nbconvert
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install && playwright install-deps
 
 ## save build date for reference
 RUN date >/build-date.txt
