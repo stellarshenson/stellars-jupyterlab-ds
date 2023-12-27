@@ -13,8 +13,9 @@ find $HOME -type f | xargs chmod 600
 # git config --global --add safe.directory '*'
 
 # output build info
-CONTAINER_BUILD=`cat /build-date.txt`
-echo "*** Container Build $CONTAINER_BUILD ***" 
+BUILD_DATE=`cat /build-date.txt`
+BUILD_NAME=`cat /build-name.txt`
+echo "*** Build '$BUILD_NAME' created on $BUILD_DATE ***" 
 
 # run jupyterlab
 jupyter-lab --ip='*' --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
