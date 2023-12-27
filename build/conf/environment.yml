@@ -27,7 +27,6 @@ dependencies:
       - cookiecutter
       - dask
       - jupyterlab_favorites
-      - jupyterlab-unfold
       - matplotlib
       - memory-profiler
       - nbconvert[webpdf]
