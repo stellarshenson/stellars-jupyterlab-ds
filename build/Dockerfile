@@ -69,7 +69,7 @@ RUN mv ~/bashrc-to-merge ~/.bashrc
 
 ## install playwright browsers and dependencies to enable 
 ## jupyter notebook export to webpdf with nbconvert
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install && playwright install-deps
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install-deps && playwright install
 
 ## save build date for reference
 RUN date >/build-date.txt
