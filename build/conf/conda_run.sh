@@ -9,20 +9,23 @@
 ## or 
 ## command arg1 arg2
 
+## The SHELL ["/run.sh"] command passes everything in the RUN stanza as a single string
+## There may be a better way to unpack it. We must unpack before conda setup
+IFS=' ' read -ra ARGS <<< "${1}"
+FIRST=`eval echo ${ARGS[@]::1}`
+#before was: FIRST=${ARGS[@]::1}
+
+## setup conda - it will overwrite all conda variables
 __conda_setup="$('/opt/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 eval "$__conda_setup"
 unset __conda_setup
-
-## The SHELL ["/run.sh"] command passes everything in the RUN stanza as a single string
-## There may be a better way to unpack it
-IFS=' ' read -ra ARGS <<< "${1}"
-FIRST=${ARGS[@]::1}
 
 ## debugging, uncomment to see the args passed into this script
 #echo ...
 #echo "${1}"
 #echo "${ARGS[@]}"
 #echo "${@}"
+#echo "First: ${FIRST}"
 #echo ...
 
 ## parse the possible first argument for setting conda env
@@ -36,7 +39,7 @@ else
 fi
 
 ##logging, this is just for debugging, you can enable this to sanity check or see what is happening
-#>&2 echo "ACTIVATING: ${_CONDA_DEFAULT_ENV}"
-#>&2 echo "RUNNING: ${EXEC_ARGS}"
+>&2 echo "ACTIVATING: ${_CONDA_DEFAULT_ENV}"
+>&2 echo "RUNNING: ${EXEC_ARGS}"
 conda activate "${_CONDA_DEFAULT_ENV}"
 /bin/bash -c "${EXEC_ARGS}"
