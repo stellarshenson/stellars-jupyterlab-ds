@@ -3,14 +3,11 @@
 # copy template home directory to /root
 # dump warnings to /dev/null
 HOME_TEMPLATE=/mnt/home
-cp -rf $HOME_TEMPLATE/. /root 2>/dev/null
+cp -rf --no-preserve=mode,ownership $HOME_TEMPLATE/. /root 2>/dev/null
 
 # and make sure /root permissions are as they should
-find $HOME -type d | xargs chmod 700
-find $HOME -type f | xargs chmod 600
-
-# allow container's git work with imported folders
-# git config --global --add safe.directory '*'
+find $HOME -type d | xargs chmod og-rwx
+find $HOME -type f | xargs chmod og-rwx
 
 # output build info
 BUILD_DATE=`cat /build-date.txt`
