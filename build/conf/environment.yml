@@ -14,9 +14,9 @@ dependencies:
   - numpy
   - git
   - jedi-language-server
-  - jupyterlab>=4.0.0
   - jupyterlab-git
   - jupyterlab-lsp
+  - jupyterlab>=4.0.0
   - make
   - matplotlib-inline
   - nodejs
