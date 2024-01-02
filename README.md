@@ -21,6 +21,10 @@ There will be software required to be installed in order to run this:
 2. docker-compose - comes with the docker-desktop software
 3. install [docker desktop software](https://www.docker.com/products/docker-desktop/)
 
+<div class="alert alert-block alert-info">
+<b>Tip:</b> you don't need to run `docker-compose build` if you pull the docker image from the docker hub. 
+  When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package
+</div>
 
 ### Usage
 
