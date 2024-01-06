@@ -23,7 +23,7 @@ services:
       - ./home:/mnt/home:ro                # copying files from 'home' directory to target home directory (/root)
       - ./home/.jupyter:/root/.jupyter:rw  # jupyter settings, we want to keep them between container resets
       - ./workspace:/opt/workspace:rw    # this maps your projects folder
-        # - ../../projects:/opt/workspace:rw   # my local mapping (stellars)
+      #- ../../projects:/opt/workspace:rw   # my local mapping (stellars)
     deploy:
       resources:
         reservations:
