@@ -4,23 +4,34 @@ channels:
   - rapidsai
   - nvidia
   - defaults
+
 dependencies:
   - python=3.10
-  - colorama
-  - cudf
+
+  # nvidia packages
   - cudatoolkit
+  - rapids
+  - cudf
+  - cuml
+  - cugraph
+
+  # other useful libs
+  - colorama
   - pandas
   - numba
   - numpy
   - git
-  - jedi-language-server
-  - jupyterlab-git
-  - jupyterlab-lsp
-  - jupyterlab>=4.0.0
   - make
   - matplotlib-inline
   - nodejs
   - pip
+
+  # jupyterlab and language server
+  - jedi-language-server
+  - jupyterlab-git
+  - jupyterlab-lsp
+  - jupyterlab>=4.0.0
+
   - pip:
       - botocore
       - click
@@ -42,6 +53,7 @@ dependencies:
       - scipy
       - seaborn
       - tensorflow
+      - tensorflow[and-cuda]
       - termcolor
       - tsfresh
       - theme-darcula

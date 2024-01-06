@@ -1,0 +1,3 @@
+Acquire::http::timeout "300";
+Acquire::https::timeout "300";
+
