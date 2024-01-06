@@ -2,9 +2,10 @@
 ## https://gist.github.com/xkortex/5ae49d7e6e969405bd2c3152a949c1f1
 FROM continuumio/miniconda3 
 
-# update sources list
+# update sources list and increase timeouts
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
 COPY ./conf/sources.list /etc/apt/sources.list
+COPY ./conf/apt /etc/apt
 
 # install dependencies
 RUN apt-get update
@@ -12,20 +13,16 @@ RUN apt-get upgrade -y
 RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common less gpw
 
 ## install nvidia CUDA and cuda suite
-## ***************************************************
-## 2023-12-22 note - cuda installation is not required to use cuda accelerated algorithms 
-## like cudf or tensorflow. If anything changes - the container will have access to the 
-## lates nvidia packages enabled with the nvidia repository. When you enable
-## the docker to use gpu, tools like 'nvidia-smi' will be enabled anyway
-## ***************************************************
 ## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
-## https://developer.nvidia.com/cuda-12-0-1-download-archive?target_os=Linux&target_arch=x86_64&Distribution=Debian&target_version=11&target_type=deb_network
+## https://developer.nvidia.com/cuda-12-0-1-download-archive
+## no need to install cuda libs, we have conda packages pull what is required
 RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && cd /tmp && \
 wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
 sudo add-apt-repository contrib && \
 dpkg -i cuda-keyring_1.0-1_all.deb 
-# RUN sudo apt-get update && \
-# sudo apt-get -y install cuda
+RUN sudo apt-get update 
+#RUN sudo apt-get install -y cuda
+#RUN sudo apt-get install -y nvidia-cuda-toolkit
 
 # copy all config files and scripts
 COPY ./conf/environment.yml /tmp/environment.yml

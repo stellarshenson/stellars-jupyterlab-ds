@@ -9,7 +9,7 @@ services:
   # run jupyterlab on a local port 8888
   # without any authentication
   jupyterlab:
-    container_name: stellars-jupyterlab-ds-nvidia
+    container_name: jupyterlab
     hostname: stellars-jupyterlab-ds-nvidia
     image: stellars/stellars-jupyterlab-ds:latest
     build:
