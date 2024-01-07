@@ -6,6 +6,7 @@ channels:
   - defaults
 
 dependencies:
+  # for now only python 3.10 supports cuda/cudf
   - python=3.10
 
   # nvidia packages
