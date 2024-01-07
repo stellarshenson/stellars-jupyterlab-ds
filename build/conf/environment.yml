@@ -9,14 +9,11 @@ dependencies:
   # for now only python 3.10 supports cuda/cudf
   - python=3.10
 
-  # nvidia packages
-  - cudatoolkit
-  - cudf
-  - cuml
-  - cugraph
-
-  # uncomment only if you need full rapids
-  # - rapids
+  # nvidia RAPIDS library packages 23.12.00
+  # recommended by https://anaconda.org/rapidsai/rapids
+  # metapackage for cudf, cugraph, cuml and others
+  # - cudatoolkit
+  - rapidsai::rapids
 
   # other useful libs
   - colorama
