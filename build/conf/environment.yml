@@ -10,10 +10,12 @@ dependencies:
 
   # nvidia packages
   - cudatoolkit
-  - rapids
   - cudf
   - cuml
   - cugraph
+
+  # uncomment only if you need full rapids
+  # - rapids
 
   # other useful libs
   - colorama
@@ -36,8 +38,10 @@ dependencies:
       - botocore
       - click
       - cookiecutter
+      - darts
       - dask
       - jupyterlab_favorites
+      - gputil
       - matplotlib
       - memory-profiler
       - nbconvert[webpdf]
@@ -52,8 +56,14 @@ dependencies:
       - scikit-learn-intelex
       - scipy
       - seaborn
+
+      # tensorflow for CPU users
       - tensorflow
+
+      # tensorflow for GPU users
       - tensorflow[and-cuda]
+
       - termcolor
-      - tsfresh
       - theme-darcula
+      - tsfresh
+      - xgboost
