@@ -23,7 +23,7 @@ services:
       - ./home:/mnt/home:ro                # copying files from 'home' directory to target home directory (/root)
       - ./home/.jupyter:/root/.jupyter:rw  # jupyter settings, we want to keep them between container resets
       - ./workspace:/opt/workspace:rw    # this maps your projects folder
-        # - ../../projects:/opt/workspace:rw   # my local mapping (stellars)
+      # - ../../projects:/opt/workspace:rw   # my local mapping (stellars)
     deploy:
       resources:
         reservations:
@@ -32,6 +32,17 @@ services:
               count: 1
               capabilities: [gpu]
 
+  # tensorboard helps with tensorflow monitoring
+  # exposed by default on port 6006
+  tensorboard:
+    container_name: tensorboard
+    hostname: tensorboard
+    image: schafo/tensorboard
+    ports:
+        - 6006:6006
+    working_dir: /app/
+
+  # verifies if GPU is available and enabled
   nvidia-test:
     image: nvidia/cuda:11.0.3-base-ubuntu20.04
     container_name: nvidia-test
