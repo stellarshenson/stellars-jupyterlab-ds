@@ -30,7 +30,7 @@ dependencies:
   - jedi-language-server
   - jupyterlab-git
   - jupyterlab-lsp
-  - jupyterlab>=4.0.0
+  - conda-forge::jupyterlab>=4.0.0
 
   - pip:
       - botocore
