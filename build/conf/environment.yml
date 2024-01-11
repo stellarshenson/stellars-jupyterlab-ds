@@ -27,35 +27,17 @@ dependencies:
   - pip
 
   # jupyterlab and language server
-  - jedi-language-server
+  - conda-forge::jupyterlab>=4.0.0
   - jupyterlab-git
   - jupyterlab-lsp
-  - conda-forge::jupyterlab>=4.0.0
+  - jedi-language-server
 
   - pip:
-      - botocore
-      - click
-      - cookiecutter
-      - darts
-      - dask
+      # jupyterlab extensions
+      - jupyterlab-tensorboard-pro
       - jupyterlab_favorites
-      - gputil
-      - graphviz
-      - matplotlib
-      - memory-profiler
+      - theme-darcula
       - nbconvert[webpdf]
-      - plotly
-      - playwright
-      - polars
-      - py-cpuinfo
-      - py-dotenv
-      - pyarrow
-      - pydot
-      - s3fs
-      - scikit-learn
-      - scikit-learn-intelex
-      - scipy
-      - seaborn
 
       # tensorflow for CPU users
       - tensorflow
@@ -68,7 +50,29 @@ dependencies:
       - Pillow<=9.5.0 
       - visualkeras
 
+      # other libraries
+      - botocore
+      - click
+      - cookiecutter
+      - darts
+      - dask
+      - gputil
+      - graphviz
+      - matplotlib
+      - memory-profiler
+      - plotly
+      - playwright
+      - polars
+      - py-dotenv
+      - pyarrow
+      - pydot
+      - s3fs
+      - scikit-learn
+      - scikit-learn-intelex
+      - scipy
+      - seaborn
       - termcolor
-      - theme-darcula
       - tsfresh
       - xgboost
+
+# EOF
