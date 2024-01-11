@@ -17,11 +17,11 @@ echo "█ Build '$BUILD_NAME' created on $BUILD_DATE    █"
 echo "█ ------------------------------------------------------  █" 
 echo "█ Running JupyterLab server on  http://localhost:8888     █"
 echo "█ Running Tensorboard server on http://localhost:6006     █"
-echo "█ Tensorboard monitoring logs located in /tmp/tensorboard █"
+echo "█ Tensorboard monitoring logs located in /tmp/tf_logs     █"
 echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
 
 # run tensorboard in the background
 mkdir /tmp/tensorboard 2>/dev/null
-tensorboard --bind_all --logdir /tmp/tensorboard --port 6006 &
+tensorboard --bind_all --logdir /tmp/tf_logs --port 6006 &
 # run jupyterlab
 jupyter-lab --ip='*' --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
