@@ -27,11 +27,15 @@ There will be software required to be installed in order to run this:
 3. access http://localhost:8888 to run JupyterLab
 4. access http://localhost:6006 to run Tensorboard
 
+<span style="color:lightblue">
 **Tip:** you don't need to run `docker-compose build` if you pull the docker image from the docker hub. 
 When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package
+</span>.
 
+<span style="color:lightblue">
 **Tip:** modify the `/opt/workspace` entry in the `volumes:` section of the
 docker-compose files to map to a different projects location in your filesystem
+</span>.
 
 ### Configuration
 
