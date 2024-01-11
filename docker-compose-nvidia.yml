@@ -1,5 +1,7 @@
 # ----------------------------------------------------------------------------------------
 #
+#   Jupyterlab setup with NVIDIA GPU support
+#
 #   Jupyter Lab - http://localhost:8888
 #   Tensorboard - http://localhost:6006
 #
@@ -11,7 +13,7 @@ services:
   # without any authentication
   jupyterlab:
     container_name: jupyterlab
-    hostname: stellars-jupyterlab-ds-nvidia
+    hostname: jupyterlab-nvidia
     image: stellars/stellars-jupyterlab-ds:latest
     build:
        context: build
