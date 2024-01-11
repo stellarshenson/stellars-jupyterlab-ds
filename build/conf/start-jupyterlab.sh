@@ -12,9 +12,13 @@ find $HOME -type f | xargs chmod og-rwx
 # output build info and banners
 BUILD_DATE=`cat /build-date.txt`
 BUILD_NAME=`cat /build-name.txt`
-echo "*** Build '$BUILD_NAME' created on $BUILD_DATE ***" 
-echo "=== Running Tensorboard on http://localhost:6006 ==="
-echo "=== Running JupyterLab on  http://localhost:8888 ==="
+echo "█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█" 
+echo "█ Build '$BUILD_NAME' created on $BUILD_DATE    █" 
+echo "█ --------------------------------------------  █" 
+echo "█ Running JupyterLab on  http://localhost:8888  █"
+echo "█ Running Tensorboard on http://localhost:6006  █"
+echo "█ Tensorboard watching logs   /tmp/tensorboard  █"
+echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
 
 # run tensorboard in the background
 mkdir /tmp/tensorboard 2>/dev/null
