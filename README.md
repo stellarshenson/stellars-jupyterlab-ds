@@ -27,8 +27,7 @@ There will be software required to be installed in order to run this:
 3. access http://localhost:8888 to run JupyterLab
 4. access http://localhost:6006 to run Tensorboard
 
-##### Tip
-you don't need to run `docker-compose build` if you pull the docker image from the docker hub. When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package 
+**Tip:** you don't need to run `docker-compose build` if you pull the docker image from the docker hub. When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package 
 
 ### Configuration
 
@@ -36,8 +35,7 @@ you don't need to run `docker-compose build` if you pull the docker image from t
 - **./workspace** this is the default folder where jupyterlab will look for projects and save its notebooks. You can change this folder to another via mapping in the `docker-compose.yml` files 
 - **./build** contains container build artefacts, you wouldn't need to look there
 
-##### Tip
-modify the `/opt/workspace` entry in the `volumes:` section of the<br>docker-compose files to map to a different projects location in your filesystem 
+**Tip:** modify the `/opt/workspace` entry in the `volumes:` section of the<br>docker-compose files to map to a different projects location in your filesystem 
 
 ### Features
 * jupyterlab 4+ (see [jupyterlab homepage](https://jupyterlab.readthedocs.io/en/latest) for reference)
