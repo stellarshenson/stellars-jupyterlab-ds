@@ -52,6 +52,7 @@ There will be software required to be installed in order to run this:
 * configurable settings files and folders used in __jupyterlab__, such as AWS credentials, GIT settings and jupyterlab settings, so that when you decide to shred the container and run it anew again, you can be sure your settings were saved
 * nice intellij dark theme (medium contrast)
 * favourites (useful when you have many projects)
+* nice colourful termina + mc and other useful tools
 * __tensorboard__ (already configured and running on port 6006)
 
 <!-- EOF -->
