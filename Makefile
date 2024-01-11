@@ -32,7 +32,9 @@ start_nvidia:
 
 ## clean orphaned containers
 clean:
-	docker-compose -f  docker-compose-nvidia.yml -f  docker-compose.yml down --remove-orphans
+	@echo 'removing dangling and unused images, containers, nets and volumes'
+	@docker-compose -f  docker-compose-nvidia.yml -f  docker-compose.yml down --remove-orphans
+	@yes | docker image prune
 
 ## prints the list of available commands
 help:
