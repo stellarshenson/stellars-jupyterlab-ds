@@ -29,7 +29,8 @@ There will be software required to be installed in order to run this:
 ### Usage
 
 1. run `docker-compose build` followed by `docker-compose up` to run the container
-2. access http://localhost:8888 to run jupyterlab
+2. access `http://localhost:8888` to run JupyterLab
+3. access `http://localhost:6006` to run Tensorboard
 
 **Tip:** modify the `/opt/workspace` entry in the `volumes:` section of the
 docker-compose files to map to a different projects location in your filesystem
@@ -42,7 +43,8 @@ docker-compose files to map to a different projects location in your filesystem
 
 
 ### Features
-* jupyterlab 4.0.9
+* jupyterlab 4+
+* git, autocomplete and other extensions to jupyterlab
 * lsp extensions for python autocompletion
 * full set of ML libraries: keras, tensorflow, scikit-learn, scipy, numpy
 * full set of DM libraries pandas, polars
@@ -53,3 +55,6 @@ docker-compose files to map to a different projects location in your filesystem
 * memory profiler
 * configurable mapping to your filesystem folder that holds your projects
 * configurable settings files and folders used in __jupyterlab__, such as AWS credentials, GIT settings and jupyterlab settings, so that when you decide to shred the container and run it anew again, you can be sure your settings were saved
+* __tensorboard__ (already configured and running on port 6006)
+
+<!-- EOF -->
