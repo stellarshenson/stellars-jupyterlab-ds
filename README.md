@@ -17,9 +17,8 @@ Docker hub repository: https://hub.docker.com/repository/docker/stellars/stellar
 
 There will be software required to be installed in order to run this:
 
-1. docker desktop - this software comes with the docker-compose required to run the container
-2. docker-compose - comes with the docker-desktop software
-3. install [docker desktop software](https://www.docker.com/products/docker-desktop/)
+1. [docker desktop](https://www.docker.com/products/docker-desktop/) - this software comes with the docker-compose required to run the container
+2. `docker-compose` command - comes with the docker-desktop software
 
 <div class="alert alert-block alert-info">
 <b>Tip:</b> you don't need to run `docker-compose build` if you pull the docker image from the docker hub. 
@@ -28,9 +27,10 @@ There will be software required to be installed in order to run this:
 
 ### Usage
 
-1. run `docker-compose build` followed by `docker-compose up` to run the container
-2. access `http://localhost:8888` to run JupyterLab
-3. access `http://localhost:6006` to run Tensorboard
+1. run `docker-compose pull` to download the latest container image 
+2. run `docker-compose up` in the main folder to run the container
+3. access `http://localhost:8888` to run JupyterLab
+4. access `http://localhost:6006` to run Tensorboard
 
 **Tip:** modify the `/opt/workspace` entry in the `volumes:` section of the
 docker-compose files to map to a different projects location in your filesystem
@@ -43,7 +43,7 @@ docker-compose files to map to a different projects location in your filesystem
 
 
 ### Features
-* jupyterlab 4+
+* jupyterlab 4+ (see [jupyterlab homepage](https://jupyterlab.readthedocs.io/en/latest) for reference)
 * git, autocomplete and other extensions to jupyterlab
 * lsp extensions for python autocompletion
 * full set of ML libraries: keras, tensorflow, scikit-learn, scipy, numpy
