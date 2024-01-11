@@ -34,7 +34,7 @@ dependencies:
 
   - pip:
       # jupyterlab extensions
-      - jupyterlab-tensorboard-pro
+      # - jupyterlab-tensorboard-pro # had to disable beacuse of interference with tornado editor
       - jupyterlab_favorites
       - theme-darcula
       - nbconvert[webpdf]

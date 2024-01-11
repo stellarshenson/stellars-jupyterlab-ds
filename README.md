@@ -5,14 +5,15 @@ a list of pre-installed data science packages that would let you run your data s
 
 ![](./doc/jupyterlab.png)
 
-![](./doc/jupyterlab-launcher.png)
+<!-- ![](./doc/jupyterlab-launcher.png) -->
 
 ![](./doc/docker-desktop.png)
 
 There were many jupyterlab features installed, among them:
 - jupyterlab-git extension
 - jupyterlab-lsp language servers (python) extension
-- tensorboard 
+
+There also is a Tensorboard server running to help you with your ML/AI development
 
 
 ### About me
