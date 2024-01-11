@@ -12,16 +12,16 @@ find $HOME -type f | xargs chmod og-rwx
 # output build info and banners
 BUILD_DATE=`cat /build-date.txt`
 BUILD_NAME=`cat /build-name.txt`
-echo "█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█" 
+echo "█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█" 
 echo "█ Build '$BUILD_NAME' created on $BUILD_DATE    █" 
-echo "█ --------------------------------------------  █" 
-echo "█ Running JupyterLab on  http://localhost:8888  █"
-echo "█ Running Tensorboard on http://localhost:6006  █"
-echo "█ Tensorboard watching logs   /tmp/tensorboard  █"
-echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
+echo "█ ------------------------------------------------------  █" 
+echo "█ Running JupyterLab server on  http://localhost:8888     █"
+echo "█ Running Tensorboard server on http://localhost:6006     █"
+echo "█ Tensorboard monitoring logs located in /tmp/tensorboard █"
+echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
 
 # run tensorboard in the background
 mkdir /tmp/tensorboard 2>/dev/null
-tensorboard --logdir /tmp/tensorboard --port 6006 &
+tensorboard --bind_all --logdir /tmp/tensorboard --port 6006 &
 # run jupyterlab
 jupyter-lab --ip='*' --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''
