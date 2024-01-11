@@ -10,7 +10,8 @@ COPY ./conf/apt /etc/apt
 # install dependencies
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common less gpw iputils-ping
+RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common \ 
+less gpw iputils-ping graphviz
 
 ## install nvidia CUDA and cuda suite
 ## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
@@ -59,8 +60,8 @@ RUN echo '# restoring saved conda default env, as it was resetted to "base" by c
 RUN echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
 RUN echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 
-## merge bashrc files
-RUN cp /tmp/.bashrc ~/bashrc-to-merge
+## merge bashrc files - conda generated and copied
+RUN cat /tmp/.bashrc > ~/bashrc-to-merge
 RUN cat ~/.bashrc >> ~/bashrc-to-merge
 RUN mv ~/bashrc-to-merge ~/.bashrc
 
