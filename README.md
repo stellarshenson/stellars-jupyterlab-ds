@@ -5,7 +5,14 @@ a list of pre-installed data science packages that would let you run your data s
 
 ![](./doc/jupyterlab.png)
 
+![](./doc/jupyterlab-launcher.png)
+
 ![](./doc/docker-desktop.png)
+
+There were many jupyterlab features installed, among them:
+- jupyterlab-git extension
+- jupyterlab-lsp language servers (python) extension
+- tensorboard 
 
 
 ### About me
@@ -59,5 +66,6 @@ There will be software required to be installed in order to run this:
 * favourites (useful when you have many projects)
 * nice colourful termina + mc and other useful tools
 * __tensorboard__ (already configured and running on port 6006)
+* tensorflow visualisation extensions
 
 <!-- EOF -->
