@@ -20,17 +20,15 @@ There will be software required to be installed in order to run this:
 1. [docker desktop](https://www.docker.com/products/docker-desktop/) - this software comes with the docker-compose required to run the container
 2. `docker-compose` command - comes with the docker-desktop software
 
-<div class="alert alert-block alert-info">
-<b>Tip:</b> you don't need to run `docker-compose build` if you pull the docker image from the docker hub. 
-  When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package
-</div>
-
 ### Usage
 
-1. run `docker-compose pull` to download the latest container image 
+1. run `docker-compose pull` in the main folder to download the latest container image 
 2. run `docker-compose up` in the main folder to run the container
-3. access `http://localhost:8888` to run JupyterLab
-4. access `http://localhost:6006` to run Tensorboard
+3. access http://localhost:8888 to run JupyterLab
+4. access http://localhost:6006 to run Tensorboard
+
+**Tip:** you don't need to run `docker-compose build` if you pull the docker image from the docker hub. 
+When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package
 
 **Tip:** modify the `/opt/workspace` entry in the `volumes:` section of the
 docker-compose files to map to a different projects location in your filesystem
