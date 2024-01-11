@@ -40,6 +40,7 @@ dependencies:
       - dask
       - jupyterlab_favorites
       - gputil
+      - graphviz
       - matplotlib
       - memory-profiler
       - nbconvert[webpdf]
@@ -49,6 +50,7 @@ dependencies:
       - py-cpuinfo
       - py-dotenv
       - pyarrow
+      - pydot
       - s3fs
       - scikit-learn
       - scikit-learn-intelex
@@ -60,6 +62,11 @@ dependencies:
 
       # tensorflow for GPU users
       - tensorflow[and-cuda]
+
+      # tensorflow visualisation
+      # pillow fonts provider required with lower version for visualkeras
+      - Pillow<=9.5.0 
+      - visualkeras
 
       - termcolor
       - theme-darcula

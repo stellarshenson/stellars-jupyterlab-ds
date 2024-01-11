@@ -9,10 +9,15 @@ cp -rf --no-preserve=mode,ownership $HOME_TEMPLATE/. /root 2>/dev/null
 find $HOME -type d | xargs chmod og-rwx
 find $HOME -type f | xargs chmod og-rwx
 
-# output build info
+# output build info and banners
 BUILD_DATE=`cat /build-date.txt`
 BUILD_NAME=`cat /build-name.txt`
 echo "*** Build '$BUILD_NAME' created on $BUILD_DATE ***" 
+echo "=== Running Tensorboard on http://localhost:6006 ==="
+echo "=== Running JupyterLab on  http://localhost:8888 ==="
 
+# run tensorboard in the background
+mkdir /tmp/tensorboard 2>/dev/null
+tensorboard --logdir /tmp/tensorboard --port 6006 &
 # run jupyterlab
 jupyter-lab --ip='*' --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''

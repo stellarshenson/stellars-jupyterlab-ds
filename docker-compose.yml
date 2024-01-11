@@ -1,6 +1,7 @@
 # ----------------------------------------------------------------------------------------
 #
 #   Jupyter Lab - http://localhost:8888
+#   Tensorboard - http://localhost:6006
 #
 # ----------------------------------------------------------------------------------------
 version: "3"
@@ -18,21 +19,12 @@ services:
     command: /start-jupyterlab.sh
     working_dir: /opt/workspace
     ports:
-       - 8888:8888
+       - 8888:8888 # jupyterlab
+       - 6006:6006 # tensorboard
     volumes:
       - ./home:/mnt/home:ro                # copying files from 'home' directory to target home directory (/root)
       - ./home/.jupyter:/root/.jupyter:rw  # jupyter settings, we want to keep them between container resets
-      - ./workspace:/opt/workspace:rw    # this maps your projects folder
-      # - ../../projects:/opt/workspace:rw   # my local mapping (stellars)
-
-  # tensorboard helps with tensorflow monitoring
-  # exposed by default on port 6006
-  tensorboard:
-    container_name: tensorboard
-    hostname: tensorboard
-    image: schafo/tensorboard
-    ports:
-        - 6006:6006
-    working_dir: /app/
+      - ./workspace:/opt/workspace:rw      # this maps your projects folder
+      # - ../../projects:/opt/workspace:rw # example: local mapping (stellars)
 
 # EOF
