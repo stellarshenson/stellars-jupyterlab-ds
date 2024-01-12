@@ -64,7 +64,7 @@ dependencies:
       - graphviz
       - matplotlib
       - memory-profiler # enables mem magic %memit for jupyterlab cells
-      - notebook==6.4.12 # need to use this version for some extensions to work
+      - notebook==6.5.6 # need to use this version for some extensions to work
       - pipreqs # lists explicitly used requirements from source code
       - plotly
       - playwright

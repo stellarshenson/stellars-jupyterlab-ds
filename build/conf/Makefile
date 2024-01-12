@@ -106,9 +106,9 @@ save_environment:
 
 ## upgrades environment
 upgrade_environment:
-	@touch requirements.blacklist
-	@echo 'pruning packages list using blacklist'
-	@grep -viG -f requirements.blacklist requirements.txt > requirements.pruned
+	@touch requirements.keep
+	@echo 'pruning packages list using requirements.keep list'
+	@grep -viG -f requirements.keep requirements.txt > requirements.pruned
 	@cat requirements.pruned | sed 's/==/>=/g' > requirements.upgrade
 	@echo 'upgrading packages'
 	@pip install -r requirements.upgrade --upgrade 
