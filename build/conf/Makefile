@@ -111,7 +111,7 @@ upgrade_environment:
 	@grep -viG -f requirements.keep requirements.txt > requirements.pruned
 	@cat requirements.pruned | sed 's/==/>=/g' > requirements.upgrade
 	@echo 'upgrading packages'
-	@pip install -r requirements.upgrade --upgrade 
+	@pip install -r requirements.upgrade --upgrade | tee requirements.upgrade.log
 	@rm requirements.upgrade requirements.pruned
 	@echo 'done'
 
