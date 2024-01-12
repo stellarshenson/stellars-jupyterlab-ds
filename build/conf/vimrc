@@ -1,3 +1,4 @@
+set wrap linebreak            " set linebreaks to wrap only on spaces
 set nocompatible              " be iMproved, required
 " set mouse=a                   " enable mouse selections, scrolling etc..
 filetype off                  " required
