@@ -38,6 +38,7 @@ clean:
 
 ## prints the list of available commands
 help:
+	@echo ""
 	@echo "$$(tput bold)Available rules:$$(tput sgr0)"
 	@sed -n -e "/^## / { \
 		h; \
