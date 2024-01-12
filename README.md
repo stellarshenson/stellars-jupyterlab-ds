@@ -44,10 +44,10 @@ There will be software required to be installed in order to run this:
 ### Usage
 
 1. run `docker-compose pull` in the main folder to download the latest container image 
-1b. (optional) run `docker-compose build` to build the image. Be aware that __building takes approx 1.5h__
-2. run `docker-compose up` in the main folder to run the container
-3. access http://localhost:8888 to run JupyterLab
-4. access http://localhost:6006 to run Tensorboard
+2. (optional) run `docker-compose build` to build the image. Be aware that __building takes approx 1.5h__
+3. run `docker-compose up` in the main folder to run the container
+4. access http://localhost:8888 to run JupyterLab
+5. access http://localhost:6006 to run Tensorboard
 
 **Tip:** you don't need to run `docker-compose build` if you pull the docker image from the docker hub. When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package 
 
