@@ -34,7 +34,7 @@ COPY ./conf/config /root/.config
 COPY ./conf/vimrc /root/.vimrc
 COPY ./conf/bashrc /tmp/.bashrc
 COPY ./conf/Makefile /tmp/env_upgrade
-COPY ./conf/requirements.blacklist /tmp/env_upgrade
+COPY ./conf/requirements.keep /tmp/env_upgrade
 RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
 
 ## set up vim with all its plugins
