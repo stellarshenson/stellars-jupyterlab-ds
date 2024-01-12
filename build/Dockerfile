@@ -49,7 +49,7 @@ ENV CONDA_DEFAULT_ENV jupyterlab
 # also update the packages and clean unused space
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml && \
 conda update -y -n ${CONDA_DEFAULT_ENV:-base} --all && \
-conda clean -ltp
+conda clean -ltpy
 
 ## Tell the docker build process to use this for RUN.
 SHELL ["/conda_run.sh"]
