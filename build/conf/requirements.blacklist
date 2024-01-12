@@ -3,4 +3,6 @@ python-graphviz*
 dask*
 torch*
 darts*
+triton*
 notebook*
+Pillow*
