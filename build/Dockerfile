@@ -11,7 +11,7 @@ COPY ./conf/apt /etc/apt
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common \ 
-less gpw iputils-ping graphviz
+less gpw iputils-ping graphviz man
 
 ## install nvidia CUDA and cuda suite
 ## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
@@ -33,9 +33,12 @@ COPY ./conf/conda_run.sh /conda_run.sh
 COPY ./conf/config /root/.config
 COPY ./conf/vimrc /root/.vimrc
 COPY ./conf/bashrc /tmp/.bashrc
+RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
+
+# prep for upgrades
+RUN  mkdir -p /tmp/env_upgrade
 COPY ./conf/Makefile /tmp/env_upgrade
 COPY ./conf/requirements.keep /tmp/env_upgrade
-RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
 
 ## set up vim with all its plugins
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim && \
