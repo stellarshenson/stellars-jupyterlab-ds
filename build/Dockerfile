@@ -38,17 +38,18 @@ COPY ./conf/requirements.keep /tmp/env_upgrade
 RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
 
 ## set up vim with all its plugins
-RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-RUN vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
+RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim && \
+vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 
 ## Create jupyterlab env and ignore pip warnings
 ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
 
 # install required packages. no need to create env, update will take care of it
-# also update the packages
+# also update the packages and clean unused space
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml && \
-conda update -y -n ${CONDA_DEFAULT_ENV:-base} --all
+conda update -y -n ${CONDA_DEFAULT_ENV:-base} --all && \
+conda clean -ltp
 
 ## Tell the docker build process to use this for RUN.
 SHELL ["/conda_run.sh"]
