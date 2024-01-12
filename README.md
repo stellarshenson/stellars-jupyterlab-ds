@@ -12,9 +12,13 @@ a list of pre-installed data science packages that would let you run your data s
 There were many jupyterlab features installed, among them:
 - jupyterlab-git extension
 - jupyterlab-lsp language servers (python) extension
+- autocompletion and code suggests with documentation
+- variable inspector
+- resource usage monitor
 
-There also is a Tensorboard server running to help you with your ML/AI development
+for the complete list of packages, please see [packages manifest](https://github.com/stellarshenson/stellars-jupyterlab-ds/blob/main/build/conf/environment.yml). It is frequently updated to promote best tools that can help you with the development
 
+There also is a Tensorboard server running on `6006` port and `/tmp/tf_logs` logs directory to help you with your ML/AI development and tensorflow neural nets training monitoring
 
 ### About me
 Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>  
