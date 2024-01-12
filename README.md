@@ -24,7 +24,7 @@ There also is a Tensorboard server running on `6006` port and `/tmp/tf_logs` log
 Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>  
 Linked-in: https://www.linkedin.com/in/konradjelen/
 
-I am an entreprenour, enterprise architect and data science / machine learning practitioner with and software development background. I am also ex experimental physicist with solid physics, electronics, manufacturing and science background. 
+I am an entreprenour, enterprise architect and data science / machine learning practitioner with vast software development and product management experience. I am also ex experimental physicist with solid physics, electronics, manufacturing and science background. 
 
 ### Installation
 
