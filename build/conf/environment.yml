@@ -1,8 +1,8 @@
 name: base
 channels:
   - conda-forge
-  - rapidsai
-  - nvidia
+  - rapidsai # nvidia packages, rapids library with cudf, cuml, cugraph
+  - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
   - defaults
 
 dependencies:
@@ -27,17 +27,21 @@ dependencies:
   - pip
 
   # jupyterlab and language server
-  - conda-forge::jupyterlab>=4.0.0
-  - jupyterlab-git
-  - jupyterlab-lsp
-  - jedi-language-server
+  - conda-forge::jupyterlab>=4.0.0  # makes sure latest jupyterlab is installed
+  - jupyterlab-git # enables git extension for jupyterlab
+  - jupyterlab-lsp # code completion and documentation
+  - jedi-language-server # backend for the python code completion
+  - jupyter-resource-usage # enables cpu and mem monitoring
 
   - pip:
       # jupyterlab extensions
       # - jupyterlab-tensorboard-pro # had to disable beacuse of interference with tornado editor
-      - jupyterlab_favorites
-      - theme-darcula
-      - nbconvert[webpdf]
+      - jupyterlab_favorites # allows to define favourite locations
+      - jupyterlab-execute-time # shows last execution time
+      - jupyterlab_tabnine # code completion on steroids, ai powered
+      - theme-darcula # dark theme with good contrast, from IntelliJ 
+      - nbconvert[webpdf] # enables export to pdf
+      - lckr_jupyterlab_variableinspector # enables good variable inspector
 
       # tensorflow for CPU users
       - tensorflow
@@ -48,31 +52,31 @@ dependencies:
       # tensorflow visualisation
       # pillow fonts provider required with lower version for visualkeras
       - Pillow<=9.5.0 
-      - visualkeras
+      - visualkeras # generates nn graphs
 
       # other libraries
-      - botocore
-      - click
-      - cookiecutter
-      - darts
-      - dask
+      - botocore # aws client library
+      - click # input parameters processing for python scripts
+      - cookiecutter # projects directory + resources template (ds projects)
+      - darts # time series forecasting library
+      - dask  # GPU powered data processing library
       - gputil
       - graphviz
       - matplotlib
-      - memory-profiler
+      - memory-profiler # enables mem magic %memit for jupyterlab cells
       - plotly
       - playwright
-      - polars
+      - polars  # superfast alternative to pandas
       - py-dotenv
       - pyarrow
       - pydot
-      - s3fs
+      - s3fs  # s3 filesystem access
       - scikit-learn
-      - scikit-learn-intelex
+      - scikit-learn-intelex # intel optimisations for scipy
       - scipy
       - seaborn
       - termcolor
-      - tsfresh
+      - tsfresh # feature engineering for time series datasets
       - xgboost
 
 # EOF
