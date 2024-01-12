@@ -64,6 +64,8 @@ dependencies:
       - graphviz
       - matplotlib
       - memory-profiler # enables mem magic %memit for jupyterlab cells
+      - notebook==6.4.12 # need to use this version for some extensions to work
+      - pipreqs # lists explicitly used requirements from source code
       - plotly
       - playwright
       - polars  # superfast alternative to pandas
@@ -71,6 +73,7 @@ dependencies:
       - pyarrow
       - pydot
       - s3fs  # s3 filesystem access
+      - setuptools 
       - scikit-learn
       - scikit-learn-intelex # intel optimisations for scipy
       - scipy

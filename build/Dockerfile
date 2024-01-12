@@ -33,6 +33,8 @@ COPY ./conf/conda_run.sh /conda_run.sh
 COPY ./conf/config /root/.config
 COPY ./conf/vimrc /root/.vimrc
 COPY ./conf/bashrc /tmp/.bashrc
+COPY ./conf/Makefile /tmp/env_upgrade
+COPY ./conf/requirements.blacklist /tmp/env_upgrade
 RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
 
 ## set up vim with all its plugins
@@ -68,6 +70,11 @@ RUN mv ~/bashrc-to-merge ~/.bashrc
 ## install playwright browsers and dependencies to enable 
 ## jupyter notebook export to webpdf with nbconvert
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install-deps && playwright install
+
+## upgrade environment
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} cd /tmp/env_upgrade && \
+make save_environment && \
+make upgrade_environment
 
 ## save build date for reference
 RUN date >/build-date.txt
