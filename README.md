@@ -53,10 +53,14 @@ There will be software required to be installed in order to run this:
 **Default settings**
 - work dir is `/opt/workspace`
 - homedir with settings `/root`
+- jupyterlab settings are saved to `/root/.jupyter`
+- if you use `docker-compose`, ./home and ./workspace are mapped to local `/root` and `/opt/workspace`
+    - otherwise system uses base settings from jupyterlab distribution
 - you hava access to the local root account
 - tensorboard reads logs from `/tmp/tf_logs`
 - tensorboard is running on port 6006
 - jupyterlabl is running on port 8888
+- jupyterlab conda env name is `jupyterlab`
 
 
 **Tip:** you don't need to run `docker-compose build` if you pull the docker image from the docker hub. When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package 
