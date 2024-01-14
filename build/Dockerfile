@@ -86,6 +86,13 @@ RUN gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
 
 ENV TERM xterm-256color
 ENTRYPOINT ["/conda_entry.sh"]
-CMD ["tail", "-f", "/dev/null"]
+
+## expose jupyterlab and tensorboard by default
+EXPOSE 8888
+EXPOSE 6066
+
+## start jupyterlab. otherwise
+## you should put tail -f /dev/null
+CMD ["/start-jupyterlab.sh"]
 
 # EOF

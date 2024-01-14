@@ -18,6 +18,8 @@ echo "█ ------------------------------------------------------  █"
 echo "█ Running JupyterLab server on  http://localhost:8888     █"
 echo "█ Running Tensorboard server on http://localhost:6006     █"
 echo "█ Tensorboard monitoring logs located in /tmp/tf_logs     █"
+echo "█ Using work dir (projects) /opy/workspace                █"
+echo "█ Jupyterlab settings saved to /root/.jupyter             █"
 echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
 
 # run tensorboard in the background

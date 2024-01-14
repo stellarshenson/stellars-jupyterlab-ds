@@ -27,7 +27,7 @@ dependencies:
   - pip
 
   # jupyterlab and language server
-  - conda-forge::jupyterlab>=4.0.0  # makes sure latest jupyterlab is installed
+  - conda-forge::jupyterlab=4.0.9  # makes sure latest jupyterlab is installed
   - jupyterlab-git # enables git extension for jupyterlab
   - jupyterlab-lsp # code completion and documentation
   - jedi-language-server # backend for the python code completion
@@ -38,7 +38,7 @@ dependencies:
       # - jupyterlab-tensorboard-pro # had to disable beacuse of interference with tornado editor
       - jupyterlab_favorites # allows to define favourite locations
       - jupyterlab-execute-time # shows last execution time
-      - jupyterlab_tabnine # code completion on steroids, ai powered
+      - jupyterlab_tabnine # code completion on steroids, ai powered. Not including for now because of bugs
       - theme-darcula # dark theme with good contrast, from IntelliJ 
       - nbconvert[webpdf] # enables export to pdf
       - lckr_jupyterlab_variableinspector # enables good variable inspector
@@ -64,7 +64,7 @@ dependencies:
       - graphviz
       - matplotlib
       - memory-profiler # enables mem magic %memit for jupyterlab cells
-      - notebook==6.5.6 # need to use this version for some extensions to work
+      - notebook==6.5.6 # jupyterlab_tabnine requires this. No need to include if tabnine disabled
       - pipreqs # lists explicitly used requirements from source code
       - plotly
       - playwright
