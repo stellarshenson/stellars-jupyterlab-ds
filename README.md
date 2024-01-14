@@ -49,6 +49,16 @@ There will be software required to be installed in order to run this:
 4. access http://localhost:8888 to run JupyterLab
 5. access http://localhost:6006 to run Tensorboard
 
+
+**Default settings**
+- work dir is `/opt/workspace`
+- homedir with settings `/root`
+- you hava access to the local root account
+- tensorboard reads logs from `/tmp/tf_logs`
+- tensorboard is running on port 6006
+- jupyterlabl is running on port 8888
+
+
 **Tip:** you don't need to run `docker-compose build` if you pull the docker image from the docker hub. When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package 
 
 ### Configuration
