@@ -27,7 +27,7 @@ dependencies:
   - pip
 
   # jupyterlab and language server
-  - conda-forge::jupyterlab=4.0.9  # makes sure latest jupyterlab is installed
+  - conda-forge::jupyterlab>=4.0.0  # makes sure latest jupyterlab is installed
   - jupyterlab-git # enables git extension for jupyterlab
   - jupyterlab-lsp # code completion and documentation
   - jedi-language-server # backend for the python code completion
