@@ -30,9 +30,9 @@ COPY ./conf/environment.yml /tmp/environment.yml
 COPY ./conf/conda_entry.sh /conda_entry.sh
 COPY ./conf/start-jupyterlab.sh /start-jupyterlab.sh
 COPY ./conf/conda_run.sh /conda_run.sh
-COPY ./conf/config /root/.config
-COPY ./conf/vimrc /root/.vimrc
-COPY ./conf/bashrc /tmp/.bashrc
+COPY ./conf/dot.config /root/.config
+COPY ./conf/dot.vimrc /root/.vimrc
+COPY ./conf/dot.bashrc /tmp/.bashrc
 RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
 
 # prep for upgrades
@@ -84,15 +84,19 @@ make upgrade_environment
 RUN date >/build-date.txt
 RUN gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
 
+## use predefined jupyter server config
+COPY ./conf/dot.jupyter /root/.jupyter
+
+## update terminal and shell settings
 ENV TERM xterm-256color
 ENTRYPOINT ["/conda_entry.sh"]
-
-## expose jupyterlab and tensorboard by default
-EXPOSE 8888
-EXPOSE 6066
 
 ## start jupyterlab. otherwise
 ## you should put tail -f /dev/null
 CMD ["/start-jupyterlab.sh"]
+
+## expose jupyterlab and tensorboard by default
+EXPOSE 8888/tcp
+EXPOSE 6066/tcp
 
 # EOF
