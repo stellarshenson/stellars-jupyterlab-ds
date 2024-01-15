@@ -11,12 +11,17 @@ dependencies:
 
   # nvidia RAPIDS library packages 23.12.00
   # recommended by https://anaconda.org/rapidsai/rapids
+  # see https://docs.rapids.ai/install
   # metapackage for cudf, cugraph, cuml and others
-  # - cudatoolkit
-  - rapidsai::rapids
+  - rapids=23.12
+  - cuda-version=11.8
+
+  # install precompiled tensorflow with cuda 11.8
+  - tensorflow
 
   # other useful libs
   - colorama
+  - dash
   - pandas
   - numba
   - numpy
@@ -42,12 +47,6 @@ dependencies:
       - theme-darcula # dark theme with good contrast, from IntelliJ 
       - nbconvert[webpdf] # enables export to pdf
       - lckr_jupyterlab_variableinspector # enables good variable inspector
-
-      # tensorflow for CPU users
-      - tensorflow
-
-      # tensorflow for GPU users
-      - tensorflow[and-cuda]
 
       # tensorflow visualisation
       # pillow fonts provider required with lower version for visualkeras
