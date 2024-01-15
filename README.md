@@ -15,6 +15,7 @@ There were many jupyterlab features installed, among them:
 - autocompletion and code suggests with documentation
 - variable inspector
 - resource usage monitor
+- dash (dashboard app framework)
 
 There also is a Tensorboard server running on `6006` port and `/tmp/tf_logs` logs directory to help you with your ML/AI development and tensorflow neural nets training monitoring
 
