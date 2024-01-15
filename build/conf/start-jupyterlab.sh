@@ -12,6 +12,8 @@ find $HOME -type f | xargs chmod og-rwx
 # output build info and banners
 BUILD_DATE=`cat /build-date.txt`
 BUILD_NAME=`cat /build-name.txt`
+
+echo ""
 echo "█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█" 
 echo "█ Build '$BUILD_NAME' created on $BUILD_DATE    █" 
 echo "█ ------------------------------------------------------  █" 
@@ -21,6 +23,7 @@ echo "█ Tensorboard monitoring logs located in /tmp/tf_logs     █"
 echo "█ Using work dir (projects) /opt/workspace                █"
 echo "█ Jupyterlab settings saved to /root/.jupyter             █"
 echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
+echo ""
 
 # run tensorboard in the background
 mkdir /tmp/tensorboard 2>/dev/null
