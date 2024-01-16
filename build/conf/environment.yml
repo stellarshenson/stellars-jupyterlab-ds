@@ -34,6 +34,7 @@ dependencies:
   - jupyterlab-git # enables git extension for jupyterlab
   - jupyterlab-lsp # code completion and documentation
   - jedi-language-server # backend for the python code completion
+  - jupyterlab-recents # File/Recent menu with recent files
   - jupyter-resource-usage # enables cpu and mem monitoring
 
   - pip:
