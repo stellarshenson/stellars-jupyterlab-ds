@@ -15,15 +15,11 @@ less gpw iputils-ping graphviz man
 
 ## install nvidia CUDA and cuda suite
 ## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
-## https://developer.nvidia.com/cuda-12-0-1-download-archive
 ## no need to install cuda libs, we have conda packages pull what is required
 RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && cd /tmp && \
 wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
-sudo add-apt-repository contrib && \
-dpkg -i cuda-keyring_1.0-1_all.deb 
+sudo add-apt-repository contrib && dpkg -i cuda-keyring_1.0-1_all.deb 
 RUN sudo apt-get update 
-#RUN sudo apt-get install -y cuda
-#RUN sudo apt-get install -y nvidia-cuda-toolkit
 
 # copy all config files and scripts
 COPY ./conf/environment.yml /tmp/environment.yml
@@ -44,6 +40,10 @@ COPY ./conf/requirements.keep /tmp/env_upgrade
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim && \
 vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 
+########################################################
+#  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
+########################################################
+
 ## Create jupyterlab env and ignore pip warnings
 ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
@@ -51,10 +51,19 @@ ENV CONDA_DEFAULT_ENV jupyterlab
 # install required packages. no need to create env, update will take care of it
 # also update the packages and clean unused space
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml && \
-conda update -y -n ${CONDA_DEFAULT_ENV:-base} --all && \
-conda clean -ltpy && pip cache purge
+conda update -y -n ${CONDA_DEFAULT_ENV:-base} --all && \ 
+conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install.log && \
+conda clean -ltpy && \ 
+pip cache purge 
+
+
+########################################################
+#  ENABLING CONDA JUPYTERLAB ENVIRONMENT               #
+########################################################
 
 ## Tell the docker build process to use this for RUN.
+## this script enables environment when used 
+## with environment variable CONDA_DEFAULT_ENV=<environment_name>
 SHELL ["/conda_run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
@@ -77,8 +86,21 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install-deps && play
 
 ## upgrade environment
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} cd /tmp/env_upgrade && \
-make save_environment && \
-make upgrade_environment
+make save_environment && make upgrade_environment 
+
+########################################################
+#  NVIDIA CUDA & TENSORFLOW INSTALLATION               #
+########################################################
+
+## install cuda & tensorflow, using instructions https://docs.rapids.ai/install
+## those packages need to be installed together as per rapids installation guide
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libmamba -c conda-forge \ 
+-c rapidsai -c conda-forge -c nvidia python=3.10 rapids=23.12 cuda-version=11.8 && \
+conda clean -ltpy && conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install_nvidia.log
+
+## install tensorflow using pip, conda tensorflow installation doesn't support cuda
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow[and-cuda] && \
+pip cache purge 
 
 ## save build date for reference
 RUN date >/build-date.txt
