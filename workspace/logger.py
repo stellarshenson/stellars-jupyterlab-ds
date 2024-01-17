@@ -37,7 +37,6 @@ class ColoredFormatter(logging.Formatter):
         record.color = self.colors.get(record.levelname, '')
         record.reset = Style.RESET_ALL
         record.funcColor = Fore.BLUE
-
         return super().format(record)
 
 
