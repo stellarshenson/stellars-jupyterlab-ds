@@ -99,7 +99,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libma
 conda clean -ltpy && conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install_nvidia.log
 
 ## install tensorflow using pip, conda tensorflow installation doesn't support cuda
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow[and-cuda] && \
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow[and-cuda] tensorboard && \
 pip cache purge 
 
 ## save build date for reference
