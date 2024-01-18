@@ -1,5 +1,5 @@
 # Jupyterlab for Data Science Platform
-Miniconda + Jupyterlab for Data Science
+Miniconda + Jupyterlab for Data Science + Tensorflow (GPU) + RAPIDS (CUDF,CUML,CUGRAPH +)
 This project defines a pre-packaged, pre-configured jupyterlab running over miniconda with nvidia support and 
 a list of pre-installed data science packages that would let you run your data science projects in a snap
 
