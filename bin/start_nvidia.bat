@@ -1,1 +1,1 @@
-docker-compose -f ..\docker-compose-nvidia.yml up
+docker-compose -f ..\docker-compose-nvidia.yml up --no-recreate
