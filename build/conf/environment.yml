@@ -80,8 +80,10 @@ dependencies:
       - scikit-learn-intelex # intel optimisations for scipy
       - scipy
       - seaborn
-      - termcolor
+      - surprise # recommendation systems algorithms 
+      - tabulate # print tables nicely
+      - termcolor # print colors to terminal, i.e. coloured logs
       - tsfresh # feature engineering for time series datasets
-      - xgboost
+      - xgboost # sequential ensemble of decision trees
 
 # EOF
