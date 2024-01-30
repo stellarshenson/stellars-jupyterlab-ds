@@ -73,6 +73,7 @@ dependencies:
       - plotly
       - playwright # required by nbconvert[webpdf]
       - polars  # superfast alternative to pandas
+      - prophet # library for time series forecasting
       - py-dotenv
       - pyarrow
       - pydot
