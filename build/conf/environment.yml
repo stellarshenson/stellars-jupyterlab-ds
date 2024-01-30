@@ -82,7 +82,7 @@ dependencies:
       - scikit-learn-intelex # intel optimisations for scipy
       - scipy
       - seaborn
-      - surprise # recommendation systems algorithms 
+      - surprise # recommendation systems algorithms
       - tabulate # print tables nicely
       - termcolor # print colors to terminal, i.e. coloured logs
       - tsfresh # feature engineering for time series datasets
