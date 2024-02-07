@@ -33,8 +33,8 @@ dependencies:
   - conda-forge::jupyterlab>=4.0.0  # makes sure latest jupyterlab is installed
   - jupyterlab-git # enables git extension for jupyterlab
   - jupyterlab-lsp # code completion and documentation
-  - jedi-language-server # backend for the python code completion
-  # - python-lsp-server # alternative code completion to jedi
+  - conda-forge::jedi-language-server # backend for the python code completion
+  # - conda-forge::python-lsp-server # alternative code completion to jedi
   - jupyterlab-recents # File/Recent menu with recent files
   - jupyter-resource-usage # enables cpu and mem monitoring
 
