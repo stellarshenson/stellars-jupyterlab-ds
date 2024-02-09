@@ -1,11 +1,11 @@
 # Configuration file for lab.
 
 c = get_config()  #noqa
-c.ServerApp.browser = "C:/Program Files/Google/Chrome/Application/chrome.exe %s"
 c.ServerApp.root_dir = "/opt/workspace"
 c.ServerApp.terminado_settings = { "shell_command": ["/conda_entry.sh", "/bin/bash"] }
 c.ServerApp.allow_root = True
 c.FileContentsManager.always_delete_dir = True
+
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
@@ -479,6 +479,11 @@ c.FileContentsManager.always_delete_dir = True
 #  Default: False
 # c.LabApp.core_mode = False
 
+## Whether custom CSS is loaded on the page.
+#      Defaults to False.
+#  Default: False
+# c.LabApp.custom_css = False
+
 ## The default URL to redirect to from `/`
 #  Default: '/lab'
 # c.LabApp.default_url = '/lab'
@@ -544,6 +549,10 @@ c.FileContentsManager.always_delete_dir = True
 ## The listings url.
 #  Default: ''
 # c.LabApp.listings_url = ''
+
+## Whether all plugins are locked (cannot be enabled/disabled from the UI)
+#  Default: False
+# c.LabApp.lock_all_plugins = False
 
 ## The date format used by logging formatters for %(asctime)s
 #  See also: Application.log_datefmt
@@ -650,8 +659,8 @@ c.FileContentsManager.always_delete_dir = True
 # c.LabApp.tree_url = ''
 
 ## The directory for user settings.
-#  Default: 'C:\\Users\\konrad\\.jupyter\\lab\\user-settings'
-# c.LabApp.user_settings_dir = 'C:\\Users\\konrad\\.jupyter\\lab\\user-settings'
+#  Default: '/root/.jupyter/lab/user-settings'
+# c.LabApp.user_settings_dir = '/root/.jupyter/lab/user-settings'
 
 ## Whether to serve the app in watch mode
 #  Default: False
@@ -666,8 +675,8 @@ c.FileContentsManager.always_delete_dir = True
 # c.LabApp.workspaces_api_url = ''
 
 ## The directory for workspaces
-#  Default: 'C:\\Users\\konrad\\.jupyter\\lab\\workspaces'
-# c.LabApp.workspaces_dir = 'C:\\Users\\konrad\\.jupyter\\lab\\workspaces'
+#  Default: '/root/.jupyter/lab/workspaces'
+# c.LabApp.workspaces_dir = '/root/.jupyter/lab/workspaces'
 
 #------------------------------------------------------------------------------
 # ServerApp(JupyterApp) configuration

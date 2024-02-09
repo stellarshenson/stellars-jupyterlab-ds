@@ -49,9 +49,9 @@ ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
 
 # install required packages. no need to create env, update will take care of it
-# also update the packages and clean unused space
+# also update the packages and clean unused space (give conda-forge the priority)
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml && \
-conda update -y -n ${CONDA_DEFAULT_ENV:-base} --all && \ 
+conda update -y -n ${CONDA_DEFAULT_ENV:-base} -c conda-forge --all && \ 
 conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install.log && \
 conda clean -ltpy && \ 
 pip cache purge 
