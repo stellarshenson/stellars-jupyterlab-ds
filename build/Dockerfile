@@ -49,9 +49,8 @@ ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
 
 # install required packages. no need to create env, update will take care of it
-# also update the packages and clean unused space (give conda-forge the priority)
+# also clean unused space (give conda-forge the priority)
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml && \
-conda update -y -n ${CONDA_DEFAULT_ENV:-base} -c conda-forge --all && \ 
 conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install.log && \
 conda clean -ltpy && \ 
 pip cache purge 
@@ -99,8 +98,11 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libma
 conda clean -ltpy && conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install_nvidia.log
 
 ## install tensorflow using pip, conda tensorflow installation doesn't support cuda
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow[and-cuda] tensorboard && \
-pip cache purge 
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow[and-cuda] tensorboard 
+
+## final update of the entire conda using conda-forge as preferred channel
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all && \
+conda clean -ltpy && pip cache purge 
 
 ## save build date for reference
 RUN date >/build-date.txt
