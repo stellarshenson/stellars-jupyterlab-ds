@@ -48,10 +48,6 @@ dependencies:
       - nbconvert[webpdf] # enables export to pdf
       - lckr_jupyterlab_variableinspector # enables good variable inspector
 
-      # 2024-01-15 Disabled tensorflow installation, moved to Dockerfile
-      # install tensorflow for cuda for cpu & gpu with cuda v12.0
-      # - tensorflow    # CPU and GPU version
-
       # tensorflow visualisation
       # pillow fonts provider required with lower version for visualkeras
       - Pillow<=9.5.0 
