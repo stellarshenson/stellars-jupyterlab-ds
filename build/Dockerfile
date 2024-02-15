@@ -11,7 +11,7 @@ COPY ./conf/apt /etc/apt
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common \ 
-less gpw iputils-ping graphviz man gcc
+less gpw iputils-ping graphviz man gcc tree locate
 
 ## install nvidia CUDA and cuda suite
 ## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
