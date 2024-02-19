@@ -11,7 +11,7 @@ COPY ./conf/apt /etc/apt
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common \ 
-less gpw iputils-ping graphviz man gcc tree locate
+less gpw gpg iputils-ping graphviz man gcc tree locate
 
 ## install nvidia CUDA and cuda suite
 ## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
@@ -19,7 +19,17 @@ less gpw iputils-ping graphviz man gcc tree locate
 RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && cd /tmp && \
 wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
 sudo add-apt-repository contrib && dpkg -i cuda-keyring_1.0-1_all.deb 
-RUN sudo apt-get update 
+RUN sudo apt update 
+
+## install nvidia-container-toolkit package to expose nvidia api to the container
+## from: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+## no need to install nvidia-container-toolkit for now
+RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+# RUN sudo apt update && apt install -y nvidia-container-toolkit
+
 
 # copy all config files and scripts
 COPY ./conf/environment.yml /tmp/environment.yml
