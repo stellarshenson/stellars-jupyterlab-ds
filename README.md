@@ -17,6 +17,7 @@ There were many jupyterlab features installed, among them:
 - variable inspector
 - resource usage monitor
 - dash (dashboard app framework)
+- jupyterlab optuna extension (machine learning hyperparameter tuning)
 
 There also is a Tensorboard server running on `6006` port and `/tmp/tf_logs` logs directory to help you with your ML/AI development and tensorflow neural nets training monitoring
 
