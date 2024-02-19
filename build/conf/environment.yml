@@ -78,6 +78,7 @@ dependencies:
       - prophet # library for time series forecasting
       - py-dotenv
       - pyarrow
+      - pycaret # autoML library for Machine Learning
       - pydot
       - s3fs  # s3 filesystem access
       - setuptools 
