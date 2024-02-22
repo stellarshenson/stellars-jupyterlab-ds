@@ -60,7 +60,6 @@ dependencies:
       - click # input parameters processing for python scripts
       - cookiecutter # projects directory + resources template (ds projects)
       - darts # time series forecasting library
-      - dask  # GPU powered data processing library
       - gputil
       - graphviz
       - memory-profiler # enables mem magic %memit for jupyterlab cells
@@ -72,7 +71,6 @@ dependencies:
       - optuna-dashboard # hyperparameter tuning dashboard
       - jupyterlab-optuna # jupyterlab extension for optuna hyperparameter tuner
       - pipreqs # lists explicitly used requirements from source code
-      - plotly
       - playwright # required by nbconvert[webpdf]
       - polars  # superfast alternative to pandas
       - prophet # library for time series forecasting
