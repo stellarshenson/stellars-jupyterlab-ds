@@ -58,8 +58,10 @@ vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
 
+# update conda system
 # install required packages. no need to create env, update will take care of it
 # also clean unused space (give conda-forge the priority)
+RUN conda update -n base -c defaults conda -y
 RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml && \
 conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install.log && \
 conda clean -ltpy && \ 
@@ -108,6 +110,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libma
 conda clean -ltpy && conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install_nvidia.log
 
 ## install tensorflow using pip, conda tensorflow installation doesn't support cuda
+## you can also install the nightly build: tf-nightly[and-cuda]
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow[and-cuda] tensorboard 
 
 ## final update of the entire conda using conda-forge as preferred channel
