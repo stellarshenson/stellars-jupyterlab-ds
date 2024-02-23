@@ -88,4 +88,8 @@ dependencies:
       - tsfresh # feature engineering for time series datasets
       - xgboost # sequential ensemble of decision trees
 
+variables:
+      LD_LIBRARY_PATH: /opt/conda/envs/jupyterlab/lib # use libstdc++.so.6 from conda (higher version)
+      TF_CPP_MIN_LOG_LEVEL: 3  # reduce tensorflow logs output
+
 # EOF
