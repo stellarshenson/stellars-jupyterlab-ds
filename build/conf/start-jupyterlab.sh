@@ -25,9 +25,6 @@ echo "█ Jupyterlab settings saved to /root/.jupyter             █"
 echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
 echo ""
 
-# make sure we use right version of libstdc++.so.6
-export LD_LIBRARY_PATH=/opt/conda/envs/jupyterlab/lib
-
 # run tensorboard in the background
 mkdir /tmp/tensorboard 2>/dev/null
 tensorboard --bind_all --logdir /tmp/tf_logs --port 6006 &
