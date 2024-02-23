@@ -73,7 +73,6 @@ dependencies:
       - pipreqs # lists explicitly used requirements from source code
       - playwright # required by nbconvert[webpdf]
       - polars  # superfast alternative to pandas
-      - prophet # library for time series forecasting
       - py-dotenv
       - pyarrow
       - pydot
@@ -81,8 +80,8 @@ dependencies:
       - setuptools 
       - scikit-learn
       - scikit-learn-intelex # intel optimisations for scipy
-      - scipy
-      - seaborn
+      - scipy # python scientific library
+      - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
       - surprise # recommendation systems algorithms
       - tabulate # print tables nicely
       - termcolor # print colors to terminal, i.e. coloured logs
