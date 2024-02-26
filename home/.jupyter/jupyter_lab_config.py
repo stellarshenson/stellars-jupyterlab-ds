@@ -2,7 +2,7 @@
 
 c = get_config()  #noqa
 c.ServerApp.root_dir = "/opt/workspace"
-c.ServerApp.terminado_settings = { "shell_command": ["/conda_entry.sh", "/bin/bash"] }
+c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash"] }
 c.ServerApp.allow_root = True
 c.FileContentsManager.always_delete_dir = True
 
