@@ -5,6 +5,7 @@
 # temporary files which can be created if a process still has a handle open of a deleted file
 .git-credentials
 .gitconfig
+.passwd-s3fs
 
 # jupyter session config
 .aws/
