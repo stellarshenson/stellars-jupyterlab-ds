@@ -7,89 +7,62 @@ channels:
 
 dependencies:
   ## for now only python 3.10 supports cuda/cudf
-  - python=3.10
-
-  ## 2024-01-15 disabled installation of nvidia cuda, moved to Dockerfile  
-  ## nvidia RAPIDS library packages 23.12.00
-  ## see https://docs.rapids.ai/install
-  ##metapackage for cudf, cugraph, cuml and others
-  # - defaults::cudatoolkit<12.0 # required by pre v12 cuda
-  #- rapidsai::rapids>=23.12
-  #- conda-forge::cuda-version>=12.0
-
-  ## other useful libs
-  - colorama
-  - dash
-  - pandas
-  - matplotlib
-  - numba
-  - numpy
-  - git
-  - make
-  - nodejs
+  - python=3.11
   - pip
-  - pycaret # automl library
-
-  ## jupyterlab and language server
-  - conda-forge::jupyterlab>=4.0.0  # makes sure latest jupyterlab is installed
-  - conda-forge::jupyterlab-git # enables git extension for jupyterlab
-  - conda-forge::jupyterlab-lsp # code completion and documentation
-  - conda-forge::jedi-language-server # backend for the python code completion
-  # - conda-forge::python-lsp-server # alternative code completion to jedi
-  - conda-forge::jupyterlab-recents # File/Recent menu with recent files
-  - conda-forge::jupyter-resource-usage # enables cpu and mem monitoring
 
   - pip:
-      ## jupyterlab extensions
-      # - jupyterlab-tensorboard-pro # had to disable beacuse of interference with tornado editor
-      - jupyterlab_favorites # allows to define favourite locations
-      - jupyterlab-execute-time # shows last execution time
-      - jupyterlab_tabnine # code completion on steroids, ai powered. Not including for now because of bugs
-      - theme-darcula # dark theme with good contrast, from IntelliJ 
-      - nbconvert[webpdf] # enables export to pdf
-      - lckr_jupyterlab_variableinspector # enables good variable inspector
 
-      ## tensorflow visualisation
-      ## pillow fonts provider required with lower version for visualkeras
-      - Pillow<=9.5.0 
-      - visualkeras # generates nn graphs
-
-      ## other libraries
-      - botocore # aws client library
-      - build # to allow building packages in python
-      - click # input parameters processing for python scripts
-      - cookiecutter # projects directory + resources template (ds projects)
-      - darts # time series forecasting library
-      - gputil
-      - graphviz
-      - memory-profiler # enables mem magic %memit for jupyterlab cells
-      - mlflow # powerful mlops suite and experiment runner (library)
-      - notebook==6.5.6 # jupyterlab_tabnine requires this. No need to include if tabnine disabled
-      - nltk # natural language processing library (used for embeddings and analysis)
-      - opencv-python # library for opensource computer vision
-      - optuna # hyperparameter tuning, see https://optuna.org/
-      - optuna-dashboard # hyperparameter tuning dashboard
-      - jupyterlab-optuna # jupyterlab extension for optuna hyperparameter tuner
-      - pipreqs # lists explicitly used requirements from source code
-      - playwright # required by nbconvert[webpdf]
-      - polars  # superfast alternative to pandas
-      - py-dotenv
-      - pyarrow
-      - pydot
-      - s3fs  # s3 filesystem access
-      - setuptools 
-      - scikit-learn
-      - scikit-learn-intelex # intel optimisations for scipy
-      - scipy # python scientific library
-      - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
-      - surprise # recommendation systems algorithms
-      - tabulate # print tables nicely
-      - termcolor # print colors to terminal, i.e. coloured logs
-      - tsfresh # feature engineering for time series datasets
-      - xgboost # sequential ensemble of decision trees
-
-variables:
-      LD_LIBRARY_PATH: /opt/conda/envs/jupyterlab/lib # use libstdc++.so.6 from conda (higher version)
-      TF_CPP_MIN_LOG_LEVEL: 3  # reduce tensorflow logs output
+    ## jupyterlab and language server
+    - jupyterlab>=4.0.0  # makes sure latest jupyterlab is installed
+    - jupyterlab-git # enables git extension for jupyterlab
+    - jupyterlab-recents # File/Recent menu with recent files
+    - jupyter-resource-usage # enables cpu and mem monitoring
+     
+    ## jupyterlab extensions
+    - jupyterlab_favorites # allows to define favourite locations
+    - jupyterlab-execute-time # shows last execution time
+    - theme-darcula # dark theme with good contrast, from IntelliJ 
+    - lckr_jupyterlab_variableinspector # enables good variable inspector
+     
+    ## other useful libs
+    - matplotlib
+    - numpy
+    - make
+    - pip
+    - Pillow # image manipulation library
+     
+    ## other libraries
+    - colorama
+    - botocore # aws client library
+    - build # to allow building packages in python
+    - click # input parameters processing for python scripts
+    - cookiecutter # projects directory + resources template (ds projects)
+    - darts # time series forecasting library
+    - graphviz # used for generating graphs, ie. layers of a model
+    - mlflow # powerful mlops suite and experiment runner (library)
+    - nltk # natural language processing library (used for embeddings and analysis)
+    - opencv-python # library for opensource computer vision
+    - optuna # hyperparameter tuning, see https://optuna.org/
+    - optuna-dashboard # hyperparameter tuning dashboard
+    - imbalanced-learn # handling of imbalanced datasets
+    - jupyterlab-optuna # jupyterlab extension for optuna hyperparameter tuner
+    - pandas # data manipulation library
+    - pipreqs # lists explicitly used requirements from source code for requirements.txt
+    - pip-check-reqs # lists missing requirements in requirements.txt
+    - polars  # superfast alternative to pandas
+    - py-dotenv
+    - pyarrow # backend for polars
+    - pydot
+    - s3fs  # s3 filesystem access
+    - setuptools  # for packaging python libraries
+    - scikit-learn
+    - scikit-learn-intelex # intel optimisations for scipy
+    - scipy # python scientific library
+    - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
+    - surprise # recommendation systems algorithms
+    - tabulate # print tables nicely
+    - termcolor # print colors to terminal, i.e. coloured logs
+    - tsfresh # time series feature extration library
+    - xgboost # gradient boosted decision trees
 
 # EOF

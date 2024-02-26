@@ -1,76 +1,56 @@
 ## this dockergfile is loosely based on the github project
-## https://gist.github.com/xkortex/5ae49d7e6e969405bd2c3152a949c1f1
-FROM continuumio/miniconda3 
+FROM tensorflow/tensorflow:latest-gpu
 
 # update sources list and increase timeouts
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
-COPY ./conf/sources.list /etc/apt/sources.list
 COPY ./conf/apt /etc/apt
 
 # install dependencies
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y awscli git vim bash-completion mc curl sudo software-properties-common \ 
-less gpw gpg iputils-ping graphviz man gcc tree locate
-
-## install nvidia CUDA and cuda suite
-## set up nvidia repo https://docs.nvidia.com/datacenter/tesla/tesla-installation-notes/index.html
-## no need to install cuda libs, we have conda packages pull what is required
-RUN distribution=$(. /etc/os-release;echo $ID$VERSION_ID | sed -e 's/\.//g') && cd /tmp && \
-wget https://developer.download.nvidia.com/compute/cuda/repos/$distribution/x86_64/cuda-keyring_1.0-1_all.deb && \
-sudo add-apt-repository contrib && dpkg -i cuda-keyring_1.0-1_all.deb 
-RUN sudo apt update 
-
-## install nvidia-container-toolkit package to expose nvidia api to the container
-## from: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
-## no need to install nvidia-container-toolkit for now
-RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
-# RUN sudo apt update && apt install -y nvidia-container-toolkit
-
+RUN apt update
+RUN apt upgrade -y
+RUN apt install -y awscli git vim bash-completion mc curl sudo software-properties-common \ 
+ less gpw gpg iputils-ping graphviz man gcc tree locate git
 
 # copy all config files and scripts
-COPY ./conf/environment.yml /tmp/environment.yml
-COPY ./conf/conda_entry.sh /conda_entry.sh
-COPY ./conf/start-jupyterlab.sh /start-jupyterlab.sh
-COPY ./conf/conda_run.sh /conda_run.sh
 COPY ./conf/dot.config /root/.config
 COPY ./conf/dot.vimrc /root/.vimrc
-COPY ./conf/dot.bashrc /tmp/.bashrc
-RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyterlab.sh
+COPY ./conf/dot.bashrc /tmp/dot.bashrc
+COPY ./conf/bash.bashrc /etc/bash.bashrc
+COPY ./conf/environment.yml /environment.yml
+COPY ./conf/bin/conda_entry.sh /conda_entry.sh
+COPY ./conf/bin/conda_run.sh /conda_run.sh
+COPY ./conf/bin/start-jupyter.sh /start-jupyter.sh
 
-# prep for upgrades
-RUN  mkdir -p /tmp/env_upgrade
-COPY ./conf/Makefile /tmp/env_upgrade
-COPY ./conf/requirements.keep /tmp/env_upgrade
+## use predefined jupyter server config
+COPY ./conf/dot.jupyter /root/.jupyter
+
+# make run scripts executable
+RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyter.sh
 
 ## set up vim with all its plugins
-RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim && \
-vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
+RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
+ && vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
 ########################################################
 
 ## Create jupyterlab env and ignore pip warnings
-ENV PIP_ROOT_USER_ACTION ignore
 ENV CONDA_DEFAULT_ENV jupyterlab
+
+## install conda
+RUN curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg \
+ && install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg \
+ && gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806 \
+ && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" > /etc/apt/sources.list.d/conda.list
+RUN apt update && apt install conda -y 
+ENV PATH $PATH:/opt/conda/bin
 
 # update conda system
 # install required packages. no need to create env, update will take care of it
 # also clean unused space (give conda-forge the priority)
 RUN conda update -n base -c defaults conda -y
-RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} --solver=libmamba -f /tmp/environment.yml && \
-conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install.log && \
-conda clean -ltpy && \ 
-pip cache purge 
-
-
-########################################################
-#  ENABLING CONDA JUPYTERLAB ENVIRONMENT               #
-########################################################
+RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} -f /environment.yml \
+ && conda clean -ltpy && pip cache purge 
 
 ## Tell the docker build process to use this for RUN.
 ## this script enables environment when used 
@@ -79,6 +59,7 @@ SHELL ["/conda_run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
+RUN rm ~/.bashrc
 RUN echo '# saving the conda environment, as conda init is going to reset this to "base"' >> ~/.bashrc
 RUN echo '_CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
 RUN conda init 
@@ -87,53 +68,74 @@ RUN echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
 RUN echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 
 ## merge bashrc files - conda generated and copied
-RUN cat /tmp/.bashrc > ~/bashrc-to-merge
+RUN cat /tmp/dot.bashrc > ~/bashrc-to-merge
 RUN cat ~/.bashrc >> ~/bashrc-to-merge
 RUN mv ~/bashrc-to-merge ~/.bashrc
 
 ## install playwright browsers and dependencies to enable 
 ## jupyter notebook export to webpdf with nbconvert
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install-deps && playwright install
+# RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install-deps && playwright install
 
-## upgrade environment
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} cd /tmp/env_upgrade && \
-make save_environment && make upgrade_environment 
+## final update of the entire conda using conda-forge as preferred channel
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all \
+ && conda clean -ltpy && pip cache purge 
+
+########################################################
+#  INSTRALLING PIP PACKAGES FROM REQUIREMENTS          #
+########################################################
+
+# upgrade pip and install all reqs
+#RUN pip install --upgrade pip
+#RUN pip install --upgrade -r /requirements.txt -c /constraints.txt && pip cache purge
 
 ########################################################
 #  NVIDIA CUDA & TENSORFLOW INSTALLATION               #
 ########################################################
 
+## install nvidia-container-toolkit package to expose nvidia api to the container
+## from: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+RUN sudo apt update && apt install -y nvidia-container-toolkit
+
 ## install cuda & tensorflow, using instructions https://docs.rapids.ai/install
 ## those packages need to be installed together as per rapids installation guide
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libmamba -c conda-forge \ 
--c rapidsai -c conda-forge -c nvidia python=3.10 rapids=23.12 cuda-version=11.8 && \
-conda clean -ltpy && conda list -n ${CONDA_DEFAULT_ENV:-base} > /tmp/environment.install_nvidia.log
+#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libmamba \ 
+# -c rapidsai -c conda-forge -c nvidia  rapids=24.02 python=3.10 cuda-version=12.0 && \
+# conda clean -ltpy
 
 ## install tensorflow using pip, conda tensorflow installation doesn't support cuda
 ## you can also install the nightly build: tf-nightly[and-cuda]
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow[and-cuda] tensorboard 
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow tensorboard \
+ && pip cache purge
 
-## final update of the entire conda using conda-forge as preferred channel
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all && \
-conda clean -ltpy && pip cache purge 
+########################################################
+#  PREPARE DOCKER CONTAINER ENTRY POINT                #
+########################################################
+
+## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
+ENV TF_CPP_MIN_LOG_LEVEL 3
+ENV PIP_ROOT_USER_ACTION ignore
+
+## working directory for jupyterlab
+ENV WORKSPACE_DIR /opt/workspace
 
 ## save build date for reference
 RUN date >/build-date.txt
 RUN gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
 
-## use predefined jupyter server config
-COPY ./conf/dot.jupyter /root/.jupyter
-
 ## update terminal and shell settings
 ENV TERM xterm-256color
-ENTRYPOINT ["/conda_entry.sh"]
 
-## start jupyterlab. otherwise
-## you should put tail -f /dev/null
-CMD ["/start-jupyterlab.sh"]
+## setup entry point and
+## command to run container with
+ENTRYPOINT ["/conda_entry.sh"]
+CMD ["/start-jupyter.sh"]
 
 ## expose jupyterlab and tensorboard by default
 EXPOSE 8888/tcp
-EXPOSE 6066/tcp
+EXPOSE 6006/tcp
 
 # EOF
