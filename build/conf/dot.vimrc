@@ -1,8 +1,6 @@
-set wrap linebreak            " set linebreaks to wrap only on spaces
 set nocompatible              " be iMproved, required
-" set mouse=a                   " enable mouse selections, scrolling etc..
+" set mouse=a                 " enable mouse selections, scrolling etc..
 filetype off                  " required
-syntax on		      " turn on syntax highlighting
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -30,7 +28,6 @@ Plugin 'git://git.wincent.com/command-t.git'
 " different version somewhere else.
 " Plugin 'ascenator/L9', {'name': 'newL9'}
 Plugin 'lokaltog/vim-distinguished'
-Plugin 'sainnhe/vim-color-desert-night'
 Plugin 'pangloss/vim-javascript'
 Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'sainnhe/archived-colors'

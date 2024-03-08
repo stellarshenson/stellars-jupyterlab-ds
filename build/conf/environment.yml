@@ -10,20 +10,23 @@ dependencies:
   - python=3.11
   - pip
 
-  - pip:
+  ## jupyterlab and language server
+  - jupyterlab  # makes sure latest jupyterlab is installed
+  - jupyterlab-lsp # language serever extension
+  - python-lsp-server # python labnguage server
+   
+  ## jupyterlab extensions
+  - jupyterlab-recents # File/Recent menu with recent files
+  - jupyterlab-git # enables git extension for jupyterlab
 
-    ## jupyterlab and language server
-    - jupyterlab>=4.0.0  # makes sure latest jupyterlab is installed
-    - jupyterlab-git # enables git extension for jupyterlab
-    - jupyterlab-recents # File/Recent menu with recent files
-    - jupyter-resource-usage # enables cpu and mem monitoring
-     
-    ## jupyterlab extensions
-    - jupyterlab_favorites # allows to define favourite locations
-    - jupyterlab-execute-time # shows last execution time
+  - pip:
+    ## jupyterlab packages
     - theme-darcula # dark theme with good contrast, from IntelliJ 
     - lckr_jupyterlab_variableinspector # enables good variable inspector
-     
+    - jupyter-resource-usage # enables cpu and mem monitoring
+    - jupyterlab_favorites # allows to define favourite locations / not available via conda
+    - jupyterlab-execute-time # shows last execution time / not available via conda
+
     ## other useful libs
     - matplotlib
     - numpy
@@ -41,7 +44,7 @@ dependencies:
     - graphviz # used for generating graphs, ie. layers of a model
     - mlflow # powerful mlops suite and experiment runner (library)
     - nltk # natural language processing library (used for embeddings and analysis)
-    - opencv-python # library for opensource computer vision
+    - opencv-python-headless # library for opensource computer vision
     - optuna # hyperparameter tuning, see https://optuna.org/
     - optuna-dashboard # hyperparameter tuning dashboard
     - imbalanced-learn # handling of imbalanced datasets
