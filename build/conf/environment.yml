@@ -9,6 +9,7 @@ dependencies:
   ## for now only python 3.10 supports cuda/cudf
   - python=3.11
   - pip
+  - pip-tools
 
   ## jupyterlab and language server
   - jupyterlab  # makes sure latest jupyterlab is installed
