@@ -7,7 +7,7 @@ COPY ./conf/apt /etc/apt
 # install dependencies
 RUN apt update
 RUN apt upgrade -y
-RUN apt install -y awscli git vim bash-completion mc curl sudo software-properties-common \ 
+RUN apt install -y git vim bash-completion mc curl sudo software-properties-common \ 
  less gpw gpg iputils-ping graphviz man gcc tree locate git
 
 # copy all config files and scripts
@@ -29,6 +29,16 @@ RUN chmod +x /conda_run.sh /conda_entry.sh /start-jupyter.sh
 ## set up vim with all its plugins
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
  && vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
+
+
+########################################################
+#  AWS TOOLS INSTALLATION                              #
+########################################################
+
+# aws cli boto3 doesn't work with
+# the urllib3 v2+, need to downgrade
+RUN apt install -y awscli
+RUN pip install 'urllib3<2'
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
