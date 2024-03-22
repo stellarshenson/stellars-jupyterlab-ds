@@ -10,6 +10,7 @@ dependencies:
   - python=3.11
   - pip
   - pip-tools
+  - poetry # env manager and builder for python projects
 
   ## jupyterlab and language server
   - jupyterlab  # makes sure latest jupyterlab is installed
@@ -46,6 +47,7 @@ dependencies:
     - mlflow # powerful mlops suite and experiment runner (library)
     - nltk # natural language processing library (used for embeddings and analysis)
     - opencv-python-headless # library for opensource computer vision
+    - openpyxl # MS excel support library, i.e. for exporting xlsx files
     - optuna # hyperparameter tuning, see https://optuna.org/
     - optuna-dashboard # hyperparameter tuning dashboard
     - imbalanced-learn # handling of imbalanced datasets
@@ -69,5 +71,6 @@ dependencies:
     - termcolor # print colors to terminal, i.e. coloured logs
     - tsfresh # time series feature extration library
     - xgboost # gradient boosted decision trees
+    - xlsxwriter # library to generate excel files (used by i.e.polars)
 
 # EOF
