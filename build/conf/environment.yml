@@ -60,7 +60,8 @@ dependencies:
     - polars  # superfast alternative to pandas
     - py-dotenv
     - pyarrow # backend for polars
-    - pydot
+    - pydot # python interface to graphviz
+    - pymc # python probabilistic programming library using bayesian statistics
     - s3fs  # s3 filesystem access
     - setuptools  # for packaging python libraries
     - scikit-learn
