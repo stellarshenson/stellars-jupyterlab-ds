@@ -118,7 +118,8 @@ RUN sudo apt update && apt install -y nvidia-container-toolkit
 
 ## install tensorflow using pip, conda tensorflow installation doesn't support cuda
 ## you can also install the nightly build: tf-nightly[and-cuda]
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow tensorboard \
+## installing tf-keras allows to use KERAS v2
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install --upgrade tensorflow tf-keras tensorboard \
  && pip cache purge
 
 ########################################################
