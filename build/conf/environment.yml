@@ -45,6 +45,7 @@ dependencies:
     - darts # time series forecasting library
     - graphviz # used for generating graphs, ie. layers of a model
     - mlflow # powerful mlops suite and experiment runner (library)
+    - memory_profiler # jupyterlab magic for mem profiling
     - nltk # natural language processing library (used for embeddings and analysis)
     - opencv-python-headless # library for opensource computer vision
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
