@@ -43,6 +43,7 @@ dependencies:
     - click # input parameters processing for python scripts
     - cookiecutter # projects directory + resources template (ds projects)
     - darts # time series forecasting library
+    - deprecation # decorators for function deprecation
     - graphviz # used for generating graphs, ie. layers of a model
     - mlflow # powerful mlops suite and experiment runner (library)
     - memory_profiler # jupyterlab magic for mem profiling
