@@ -56,7 +56,6 @@ dependencies:
     - jupyterlab-optuna # jupyterlab extension for optuna hyperparameter tuner
     - livelossplot # simple library to help with the live plotting of loss during nn training
     - pandas # data manipulation library
-    - pandas_datareader # datareader library for pandas for getting datasets
     - pipreqs # lists explicitly used requirements from source code for requirements.txt
     - pip-check-reqs # lists missing requirements in requirements.txt
     - polars  # superfast alternative to pandas

@@ -120,7 +120,7 @@ RUN sudo apt update && apt install -y nvidia-container-toolkit
 ## you can also install the nightly build: tf-nightly[and-cuda]
 ## installing tf-keras allows to use KERAS v2
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras-datasets \
+ pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras_nlp keras-datasets \
  && pip cache purge
 
 ########################################################
