@@ -55,6 +55,7 @@ dependencies:
     - imbalanced-learn # handling of imbalanced datasets
     - jupyterlab-optuna # jupyterlab extension for optuna hyperparameter tuner
     - livelossplot # simple library to help with the live plotting of loss during nn training
+    - logging_tree # tree of loggers
     - pandas # data manipulation library
     - pipreqs # lists explicitly used requirements from source code for requirements.txt
     - pip-check-reqs # lists missing requirements in requirements.txt
