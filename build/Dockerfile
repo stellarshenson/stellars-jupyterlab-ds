@@ -125,7 +125,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 
 ## install cuda accelerated numpy = cupy and conda-version
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- conda install -c conda-forge -y cupy
+ conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
 
 ########################################################
