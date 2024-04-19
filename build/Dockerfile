@@ -123,6 +123,11 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
  pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras_nlp keras-datasets \
  && pip cache purge
 
+## install cuda accelerated numpy = cupy and conda-version
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
+ conda install -c conda-forge -y cupy
+
+
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
 ########################################################
