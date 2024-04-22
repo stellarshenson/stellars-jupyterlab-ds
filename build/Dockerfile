@@ -121,6 +121,7 @@ RUN sudo apt update && apt install -y nvidia-container-toolkit
 ## installing tf-keras allows to use KERAS v2
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
  pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras_nlp keras-datasets \
+ keras-tcn keras-self-attention keras-mdn-layer \
  && pip cache purge
 
 ## install cuda accelerated numpy = cupy and conda-version
