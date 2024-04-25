@@ -8,7 +8,7 @@ COPY ./conf/apt /etc/apt
 RUN apt update
 RUN apt upgrade -y
 RUN apt install -y git vim bash-completion mc curl sudo software-properties-common \ 
- less gpw gpg iputils-ping graphviz man gcc tree locate git
+ less gpw gpg iputils-ping graphviz man gcc tree locate git zip
 
 # copy all config files and scripts
 COPY ./conf/dot.config /root/.config
