@@ -125,13 +125,13 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
  && pip cache purge
 
 ## install cuda accelerated numpy = cupy and conda-version
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
+# RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
+#  conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
 
 ## install torchvision and pytorch
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- conda install -y -c pytorch -c conda-forge pytorch-cuda torchvision ultralytics
+ conda install -y -c conda-forge pytorch-cuda torchvision ultralytics
 
 
 
