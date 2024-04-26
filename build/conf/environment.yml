@@ -37,6 +37,7 @@ dependencies:
     - Pillow # image manipulation library
      
     ## other libraries
+    - albumentations # image agumentation library
     - colorama # text colouring
     - botocore # aws client library
     - build # to allow building packages in python
