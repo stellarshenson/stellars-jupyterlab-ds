@@ -129,10 +129,10 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 
 
 ## install torchvision and pytorch
+## also install libgl1 to avoid issues with libGL missing
+RUN apt install -y libgl1-mesa-glx
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- conda install -y -c conda-forge pytorch-cuda torchvision ultralytics
-
-
+ conda install -y -c conda-forge -c nvidia pytorch torchvision ultralytics
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
