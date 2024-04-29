@@ -5,8 +5,7 @@ FROM tensorflow/tensorflow:latest-gpu
 COPY ./conf/apt /etc/apt
 
 # install dependencies
-RUN apt update
-RUN apt upgrade -y
+RUN apt update && apt upgrade -y
 RUN apt install -y git vim bash-completion mc curl sudo software-properties-common \ 
  less gpw gpg iputils-ping graphviz man gcc tree locate git zip
 
@@ -37,7 +36,7 @@ RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.v
 
 # aws cli boto3 doesn't work with
 # the urllib3 v2+, need to downgrade
-RUN apt install -y awscli
+RUN apt install -y awscli 
 RUN pip install 'urllib3<2'
 
 ########################################################

@@ -35,6 +35,7 @@ dependencies:
     - make
     - pip
     - Pillow # image manipulation library
+    - python-dotenv # managing .env file
      
     ## other libraries
     - albumentations # image agumentation library
