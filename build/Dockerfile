@@ -103,11 +103,12 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 
 ## install nvidia-container-toolkit package to expose nvidia api to the container
 ## from: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
-RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
-RUN sudo apt update && apt install -y nvidia-container-toolkit
+# RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | \
+#  sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+#  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+#    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+#    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+# RUN sudo apt update && apt install -y nvidia-container-toolkit
 
 ## install cuda & tensorflow, using instructions https://docs.rapids.ai/install
 ## those packages need to be installed together as per rapids installation guide
@@ -130,9 +131,11 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 
 ## install torchvision and pytorch
 ## also install libgl1 to avoid issues with libGL missing
+## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 RUN apt install -y libgl1-mesa-glx
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- conda install -y -c conda-forge -c nvidia pytorch torchvision ultralytics
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} CONDA_OVERRIDE_CUDA="12.3" \ 
+ conda install -y -c conda-forge 'pytorch>2=*cuda*' torchvision ultralytics
+
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
@@ -162,3 +165,4 @@ EXPOSE 8888/tcp
 EXPOSE 6006/tcp
 
 # EOF
+
