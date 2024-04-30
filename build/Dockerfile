@@ -86,8 +86,7 @@ RUN mv ~/bashrc-to-merge ~/.bashrc
 # RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} playwright install-deps && playwright install
 
 ## final update of the entire conda using conda-forge as preferred channel
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all \
- && conda clean -ltpy && pip cache purge 
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
 
 ########################################################
 #  INSTRALLING PIP PACKAGES FROM REQUIREMENTS          #
@@ -113,8 +112,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 ## install cuda & tensorflow, using instructions https://docs.rapids.ai/install
 ## those packages need to be installed together as per rapids installation guide
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libmamba \ 
-# -c rapidsai -c conda-forge -c nvidia  rapids=24.02 python=3.10 cuda-version=12.0 && \
-# conda clean -ltpy
+# -c rapidsai -c conda-forge -c nvidia  rapids=24.02 python=3.10 cuda-version=12.0 
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 ENV CONDA_OVERRIDE_CUDA=12.4
@@ -124,8 +122,7 @@ ENV CONDA_OVERRIDE_CUDA=12.4
 ## installing tf-keras allows to use KERAS v2
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
  pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras_nlp keras-datasets \
- keras-tcn keras-self-attention keras-multi-head keras-mdn-layer \
- && pip cache purge
+ keras-tcn keras-self-attention keras-multi-head keras-mdn-layer 
 
 ## install cuda accelerated numpy = cupy and conda-version
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
@@ -138,6 +135,8 @@ RUN apt install -y libgl1-mesa-glx
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
  conda install -y -c conda-forge 'pytorch>2=*cuda*' torchvision ultralytics
 
+## cleanup
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
