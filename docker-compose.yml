@@ -19,16 +19,14 @@ services:
        context: build
        dockerfile: Dockerfile
     command: /start-jupyter.sh
-    working_dir: /home/jupyterlab
-    environment:
-      - JUPYTER_ALLOW_INSECURE_WRITES=true
+    working_dir: /mnt/workspace
     ports:
        - 8888:8888 # jupyterlab
        - 6006:6006 # tensorboard
     volumes:
       - ./home:/mnt/home:ro   # copying files from 'home' directory to target home directory
       - ./home/.jupyter:/home/jupyterlab/.jupyter:rw  # jupyter settings, making sure it is synced
-      # - ./workspace:/mnt/workspace:rw      # this maps your projects folder
-      - ../../projects:/mnt/workspace:rw # example: local mapping (stellars)
+      - ./workspace:/mnt/workspace:rw      # this maps your projects folder
+      # - ../../projects:/mnt/workspace:rw # example: local mapping (stellars)
 
 # EOF
