@@ -12,17 +12,7 @@ find $HOME -type f | xargs chmod og-rwx
 BUILD_DATE=`cat /build-date.txt`
 BUILD_NAME=`cat /build-name.txt`
 
-echo ""
-echo "█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█" 
-echo "█ Build '$BUILD_NAME' created on $BUILD_DATE    █" 
-echo "█ ------------------------------------------------------  █" 
-echo "█ Running JupyterLab server on  http://localhost:8888     █"
-echo "█ Running Tensorboard server on http://localhost:6006     █"
-echo "█ Tensorboard monitoring logs located in /tmp/tf_logs     █"
-echo "█ Using work dir (projects) /home/jupyterlab              █"
-echo "█ Jupyterlab settings saved to /home/jupyterlab/.jupyter  █"
-echo "█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█"
-echo ""
+cat /build-info.txt | sed "s/@BUILD_NAME@/$BUILD_NAME/g" | sed "s/@BUILD_DATE@/$BUILD_DATE/g" 
 
 # run tensorboard in the background
 mkdir /tmp/tensorboard 2>/dev/null
