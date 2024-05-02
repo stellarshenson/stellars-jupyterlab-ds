@@ -28,6 +28,7 @@ dependencies:
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab-execute-time # shows last execution time / not available via conda
+    - nb_conda_kernels # ability to add kernels
 
     ## other useful libs
     - matplotlib
