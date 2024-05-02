@@ -28,7 +28,7 @@ services:
     volumes:
       - ./home:/mnt/home:ro   # copying files from 'home' directory to target home directory
       - ./home/.jupyter:/home/jupyterlab/.jupyter:rw  # jupyter settings, making sure it is synced
-      - ./workspace:/mnt/workspace:rw      # this maps your projects folder
-      # - ../../projects:/mnt/workspace:rw # example: local mapping (stellars)
+      # - ./workspace:/mnt/workspace:rw      # this maps your projects folder
+      - ../../projects:/mnt/workspace:rw # example: local mapping (stellars)
 
 # EOF
