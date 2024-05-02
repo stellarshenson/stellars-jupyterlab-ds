@@ -199,9 +199,11 @@ RUN sudo apt autoremove -y && sudo apt purge
 ENV PIP_ROOT_USER_ACTION ignore
 
 ## save build date for reference
-COPY ./conf/build-info.txt /
+COPY ./conf/misc/build-info.txt /
+COPY ./conf/misc/motd-prototype.txt /
 RUN sudo bash -c "date >/build-date.txt"
 RUN sudo bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
+RUN sudo bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
 ## update terminal and shell settings
 ENV TERM xterm-256color
