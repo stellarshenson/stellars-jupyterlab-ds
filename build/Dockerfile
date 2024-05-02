@@ -185,7 +185,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 ########################################################
 
 ## final round of updates to keep all up to date
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -c conda-forge --all
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -c conda-forge --all -y
 
 ## conda and pip cleanup
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge

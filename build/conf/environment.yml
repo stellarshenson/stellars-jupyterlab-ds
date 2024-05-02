@@ -49,6 +49,7 @@ dependencies:
     - deprecation # decorators for function deprecation
     - graphviz # used for generating graphs, ie. layers of a model
     - mlflow # powerful mlops suite and experiment runner (library)
+    - memory_profiler # jupyterlab memory profiler
     - nltk # natural language processing library (used for embeddings and analysis)
     - opencv-python-headless # library for opensource computer vision
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
