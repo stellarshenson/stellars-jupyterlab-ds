@@ -1,0 +1,11 @@
+
+█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
+█ Build '@BUILD_NAME@' created on @BUILD_DATE@    █
+█ ------------------------------------------------------  █
+█ Running JupyterLab server on  http://localhost:8888     █
+█ Running Tensorboard server on http://localhost:6006     █
+█ Tensorboard monitoring logs located in /tmp/tf_logs     █
+█ Using work dir (projects) /home/jupyterlab              █
+█ Jupyterlab settings saved to /home/jupyterlab/.jupyter  █
+█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
+

@@ -198,10 +198,8 @@ RUN sudo apt autoremove -y && sudo apt purge
 ## ignore pip warnings re root access
 ENV PIP_ROOT_USER_ACTION ignore
 
-## working directory for jupyterlab referenced in scripts
-# ENV WORKSPACE_DIR ${CONDA_USER_HOME}
-
 ## save build date for reference
+COPY ./conf/build-info.txt /
 RUN sudo bash -c "date >/build-date.txt"
 RUN sudo bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
 
