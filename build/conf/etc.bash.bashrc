@@ -24,3 +24,10 @@ alias ls="ls --color=auto"
 
 # Fix CUDA loading for running nvidia-smi
 ldconfig 2>/dev/null
+
+# display message of the day
+if [ -f /etc/motd ]; then
+    cat /etc/motd
+fi
+
+# EOF

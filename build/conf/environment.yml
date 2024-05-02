@@ -6,11 +6,12 @@ channels:
   - defaults
 
 dependencies:
-  ## for now only python 3.10 supports cuda/cudf
-  - python=3.11
-  - pip
-  - pip-tools
+  - python=3.11 # latest python version for tensorflow to work
+  - pip # package manager
+  - pipx # package manager improved with isolated environments
+  - pip-tools # other packaging tools
   - poetry # env manager and builder for python projects
+  - awscli # aws client, binary install
 
   ## jupyterlab and language server
   - jupyterlab  # makes sure latest jupyterlab is installed
@@ -24,7 +25,6 @@ dependencies:
   - pip:
     ## jupyterlab packages
     - theme-darcula # dark theme with good contrast, from IntelliJ 
-    - lckr_jupyterlab_variableinspector # enables good variable inspector
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab-execute-time # shows last execution time / not available via conda
@@ -40,6 +40,7 @@ dependencies:
     ## other libraries
     - albumentations # image agumentation library
     - colorama # text colouring
+    - coverage # tests coverage library
     - botocore # aws client library
     - build # to allow building packages in python
     - click # input parameters processing for python scripts
@@ -48,29 +49,23 @@ dependencies:
     - deprecation # decorators for function deprecation
     - graphviz # used for generating graphs, ie. layers of a model
     - mlflow # powerful mlops suite and experiment runner (library)
-    - memory_profiler # jupyterlab magic for mem profiling
     - nltk # natural language processing library (used for embeddings and analysis)
     - opencv-python-headless # library for opensource computer vision
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
     - optuna # hyperparameter tuning, see https://optuna.org/
-    - optuna-dashboard # hyperparameter tuning dashboard
     - IProgress # jupyterlab widget to show progress, used by optuna
     - inference_sdk # universal inference client
     - imbalanced-learn # handling of imbalanced datasets
-    - jupyterlab-optuna # jupyterlab extension for optuna hyperparameter tuner
     - livelossplot # simple library to help with the live plotting of loss during nn training
-    - logging_tree # tree of loggers
     - pandas # data manipulation library
     - pipreqs # lists explicitly used requirements from source code for requirements.txt
     - pip-check-reqs # lists missing requirements in requirements.txt
     - polars  # superfast alternative to pandas
-    - py-dotenv
     - pyarrow # backend for polars
-    - pydot # python interface to graphviz
     - pymc # python probabilistic programming library using bayesian statistics
     - s3fs  # s3 filesystem access
     - setuptools  # for packaging python libraries
-    - scikit-learn
+    - scikit-learn # machine leanring library for python
     - scikit-learn-intelex # intel optimisations for scipy
     - scipy # python scientific library
     - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
