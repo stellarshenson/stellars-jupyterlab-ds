@@ -47,7 +47,7 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 ########################################################
 
 ## user to be used with conda
-ENV CONDA_USER jupyterlab
+ENV CONDA_USER lab
 ENV CONDA_USER_HOME /home/${CONDA_USER}
 
 ## create new user and add sudo rights
@@ -55,8 +55,8 @@ ENV CONDA_USER_HOME /home/${CONDA_USER}
 RUN useradd -ms /bin/bash ${CONDA_USER}
 RUN adduser -q ${CONDA_USER} sudo
 
-## update sudoers to allow jupyterlab sudo without password
-RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/jupyterlab
+## update sudoers to allow conda user sudo without password
+RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/conda
 
 ## switch user to update config file
 USER ${CONDA_USER}
@@ -65,7 +65,6 @@ USER ${CONDA_USER}
 COPY --chown=${CONDA_USER} ./conf/dot.jupyter ${CONDA_USER_HOME}/.jupyter
 COPY --chown=${CONDA_USER} ./conf/dot.config  ${CONDA_USER_HOME}/.config
 COPY --chown=${CONDA_USER} ./conf/dot.vimrc   ${CONDA_USER_HOME}/.vimrc
-
 
 ## set up vim with all its plugins
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
