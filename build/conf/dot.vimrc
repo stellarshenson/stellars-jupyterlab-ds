@@ -67,3 +67,7 @@ set nonumber
      \   exe "normal! g`\"" |
      \ endif
 
+" map Shift-Tab to autocomplete (former Ctrl-n)
+inoremap <S-Tab> <C-n>
+
+" EOF

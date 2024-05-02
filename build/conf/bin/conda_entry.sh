@@ -36,3 +36,5 @@ conda activate "${_CONDA_DEFAULT_ENV}"
 #>&2 echo "ENTRYPOINT: CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV}"
 
 exec "${@}"
+
+# EOF

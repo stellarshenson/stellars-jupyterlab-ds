@@ -43,3 +43,5 @@ fi
 >&2 echo "RUNNING: ${EXEC_ARGS}"
 conda activate "${_CONDA_DEFAULT_ENV}"
 /bin/bash -c "${EXEC_ARGS}"
+
+# EOF
