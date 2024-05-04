@@ -65,6 +65,10 @@ COPY --chown=${CONDA_USER} ./conf/dot.jupyter ${CONDA_USER_HOME}/.jupyter
 COPY --chown=${CONDA_USER} ./conf/dot.config  ${CONDA_USER_HOME}/.config
 COPY --chown=${CONDA_USER} --chmod=644 ./conf/dot.vimrc   ${CONDA_USER_HOME}/.vimrc
 
+## ensure good permissions
+RUN find ${CONDA_USER_HOME} -type d | xargs chmod og-rwx \
+ && find ${CONDA_USER_HOME} -type f | xargs chmod og-rw
+
 ## set up vim with all its plugins
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
  && vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
@@ -175,7 +179,7 @@ ENV TF_CPP_MIN_LOG_LEVEL 3
 ## also install libgl1 to avoid issues with libGL missing
 RUN sudo apt install -y libgl1-mesa-glx
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- conda install -y -c conda-forge 'pytorch>2=*cuda*' torchvision ultralytics
+ conda install -y -c conda-forge -c pytorch -c nvidia 'pytorch>2=cuda*' torchvision ultralytics
 
 
 ########################################################
@@ -183,7 +187,9 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 ########################################################
 
 ## final round of updates to keep all up to date
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -c conda-forge --all -y
+## disabled update - it is automatically downgrading pytorch
+#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
+# conda update -c conda-forge --all -y
 
 ## conda and pip cleanup
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
