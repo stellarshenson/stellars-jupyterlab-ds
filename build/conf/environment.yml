@@ -19,6 +19,7 @@ dependencies:
   ## jupyterlab extensions
   - jupyterlab-recents # File/Recent menu with recent files
   - jupyterlab-git # enables git extension for jupyterlab
+  - nb_conda # provides conda environment and package access extension from jupyter
   - nb_conda_kernels # ability to add kernels (available only via conda)
 
   - pip:
@@ -39,6 +40,10 @@ dependencies:
     - darts # time series forecasting library
     - deprecation # decorators for function deprecation
     - dtw # dynamic time warping library for finding similarities between time series
+    - IProgress # jupyterlab widget to show progress, used by optuna
+    - inference_sdk # universal inference client
+    - imbalanced-learn # handling of imbalanced datasets
+    - librosa # library for handling audio 
     - mlflow # powerful mlops suite and experiment runner (library)
     - make # build tools
     - matplotlib # plots library
@@ -48,9 +53,6 @@ dependencies:
     - opencv-python-headless # library for opensource computer vision
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
     - optuna # hyperparameter tuning, see https://optuna.org/
-    - IProgress # jupyterlab widget to show progress, used by optuna
-    - inference_sdk # universal inference client
-    - imbalanced-learn # handling of imbalanced datasets
     - pandas # data manipulation library
     - Pillow # image manipulation library
     - pipreqs # lists explicitly used requirements from source code for requirements.txt
