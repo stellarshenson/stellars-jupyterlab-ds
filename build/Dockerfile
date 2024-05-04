@@ -10,16 +10,15 @@ RUN apt install -y git vim bash-completion mc curl sudo software-properties-comm
  less gpw gpg iputils-ping graphviz man gcc tree locate git zip
 
 # copy all config files and scripts
-COPY ./conf/etc.bash.bashrc /etc/bash.bashrc
-COPY ./conf/etc.motd /etc/motd
-COPY ./conf/environment.yml /environment.yml
-COPY ./conf/bin/conda_entry.sh /conda_entry.sh
-COPY ./conf/bin/conda_run.sh /conda_run.sh
-COPY ./conf/bin/start-jupyter.sh /start-jupyter.sh
+COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
+COPY --chmod=644  ./conf/environment.yml /environment.yml
+COPY --chmod=755  ./conf/bin/conda_entry.sh /conda_entry.sh
+COPY --chmod=755  ./conf/bin/conda_run.sh /conda_run.sh
+COPY --chmod=755  ./conf/bin/start-jupyter.sh /start-jupyter.sh
 
 # fix permissions
-RUN chmod 755 /conda_run.sh /conda_entry.sh /start-jupyter.sh
-RUN chmod 644 /etc/bash.bashrc /etc/motd
+#RUN chmod 755 /conda_run.sh /conda_entry.sh /start-jupyter.sh
+#RUN chmod 644 /etc/bash.bashrc /etc/motd
 
 ########################################################
 #  REMOVE DEFAULT PACKAGES                             #
@@ -64,7 +63,7 @@ USER ${CONDA_USER}
 ## use predefined jupyter and other config files
 COPY --chown=${CONDA_USER} ./conf/dot.jupyter ${CONDA_USER_HOME}/.jupyter
 COPY --chown=${CONDA_USER} ./conf/dot.config  ${CONDA_USER_HOME}/.config
-COPY --chown=${CONDA_USER} ./conf/dot.vimrc   ${CONDA_USER_HOME}/.vimrc
+COPY --chown=${CONDA_USER} --chmod=644 ./conf/dot.vimrc   ${CONDA_USER_HOME}/.vimrc
 
 ## set up vim with all its plugins
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
@@ -127,7 +126,7 @@ RUN echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
 RUN echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 
 ## merge bashrc files - conda generated and copied
-COPY ./conf/dot.bashrc ${CONDA_USER_HOME}/dot.bashrc
+COPY --chmod=644 ./conf/dot.bashrc ${CONDA_USER_HOME}/dot.bashrc
 RUN cat ${CONDA_USER_HOME}/dot.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge
 RUN cat ${CONDA_USER_HOME}/.bashrc >> ${CONDA_USER_HOME}/bashrc-to-merge
 RUN mv  ${CONDA_USER_HOME}/bashrc-to-merge ${CONDA_USER_HOME}/.bashrc 
@@ -201,8 +200,8 @@ RUN sudo apt autoremove -y && sudo apt purge
 ENV PIP_ROOT_USER_ACTION ignore
 
 ## save build date for reference
-COPY ./conf/misc/build-info.txt /
-COPY ./conf/misc/motd-prototype.txt /
+COPY --chmod=644 ./conf/misc/build-info.txt /
+COPY --chmod=644 ./conf/misc/motd-prototype.txt /
 RUN sudo bash -c "date >/build-date.txt"
 RUN sudo bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
 RUN sudo bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"

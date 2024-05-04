@@ -8,9 +8,7 @@ channels:
 dependencies:
   - python=3.11 # latest python version for tensorflow to work
   - pip # package manager
-  - pipx # package manager improved with isolated environments
   - pip-tools # other packaging tools
-  - poetry # env manager and builder for python projects
   - awscli # aws client, binary install
 
   ## jupyterlab and language server
@@ -21,6 +19,7 @@ dependencies:
   ## jupyterlab extensions
   - jupyterlab-recents # File/Recent menu with recent files
   - jupyterlab-git # enables git extension for jupyterlab
+  - nb_conda_kernels # ability to add kernels (available only via conda)
 
   - pip:
     ## jupyterlab packages
@@ -28,18 +27,9 @@ dependencies:
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab-execute-time # shows last execution time / not available via conda
-    - nb_conda_kernels # ability to add kernels
 
-    ## other useful libs
-    - matplotlib
-    - numpy
-    - make
-    - pip
-    - Pillow # image manipulation library
-    - python-dotenv # managing .env file
-     
     ## other libraries
-    - albumentations # image agumentation library
+    - albumentations # image augmentation library
     - colorama # text colouring
     - coverage # tests coverage library
     - botocore # aws client library
@@ -48,22 +38,26 @@ dependencies:
     - cookiecutter # projects directory + resources template (ds projects)
     - darts # time series forecasting library
     - deprecation # decorators for function deprecation
-    - graphviz # used for generating graphs, ie. layers of a model
+    - dtw # dynamic time warping library for finding similarities between time series
     - mlflow # powerful mlops suite and experiment runner (library)
+    - make # build tools
+    - matplotlib # plots library
     - memory_profiler # jupyterlab memory profiler
     - nltk # natural language processing library (used for embeddings and analysis)
+    - numpy # advanced library for working with arrays
     - opencv-python-headless # library for opensource computer vision
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
     - optuna # hyperparameter tuning, see https://optuna.org/
     - IProgress # jupyterlab widget to show progress, used by optuna
     - inference_sdk # universal inference client
     - imbalanced-learn # handling of imbalanced datasets
-    - livelossplot # simple library to help with the live plotting of loss during nn training
     - pandas # data manipulation library
+    - Pillow # image manipulation library
     - pipreqs # lists explicitly used requirements from source code for requirements.txt
     - pip-check-reqs # lists missing requirements in requirements.txt
     - polars  # superfast alternative to pandas
     - pyarrow # backend for polars
+    - python-dotenv # managing .env file
     - pymc # python probabilistic programming library using bayesian statistics
     - s3fs  # s3 filesystem access
     - setuptools  # for packaging python libraries
