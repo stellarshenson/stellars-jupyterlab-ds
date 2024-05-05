@@ -1,13 +1,20 @@
 ## this dockergfile is loosely based on the github project
 FROM tensorflow/tensorflow:latest-gpu
+# FROM ubuntu:latest
+# FROM nvidia/cuda:12.4.1-base-ubuntu22.04
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
+COPY ./conf/apt-packages.yml /apt-packages.yml
 
-# install dependencies
+# install yaml parser repository and yq tool, in the parent system you need
+# add-apt-repository ppa:rmescandon/yq -y && apt update && apt install yq -y
+# and then copy /etc/apt/sources.list.d to docker image
+RUN apt update && apt install yq -y
+
+# install required packages, list will be taken from apt-packages.yml
+RUN apt install -y `yq eval '.packages[]' /apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
 RUN apt update && apt upgrade -y
-RUN apt install -y git vim bash-completion mc curl sudo software-properties-common \ 
- less gpw gpg iputils-ping graphviz man gcc tree locate git zip
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
@@ -16,9 +23,6 @@ COPY --chmod=755  ./conf/bin/conda_entry.sh /conda_entry.sh
 COPY --chmod=755  ./conf/bin/conda_run.sh /conda_run.sh
 COPY --chmod=755  ./conf/bin/start-jupyter.sh /start-jupyter.sh
 
-# fix permissions
-#RUN chmod 755 /conda_run.sh /conda_entry.sh /start-jupyter.sh
-#RUN chmod 644 /etc/bash.bashrc /etc/motd
 
 ########################################################
 #  REMOVE DEFAULT PACKAGES                             #
@@ -30,15 +34,6 @@ COPY --chmod=755  ./conf/bin/start-jupyter.sh /start-jupyter.sh
 RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
  && pip uninstall -r requirements-to-uninstall.txt -y \
  && pip cache purge
-
-########################################################
-#  AWS TOOLS INSTALLATION                              #
-########################################################
-
-## aws cli boto3 doesn't work with the urllib3 v2+
-## aws cli will be installed globally across envs
-## RUN apt install -y awscli
-## RUN pip install 'urllib3<2' six
 
 
 ########################################################
@@ -165,8 +160,11 @@ ENV CONDA_OVERRIDE_CUDA=12.3
 ## you can also install the nightly build: tf-nightly[and-cuda]
 ## installing tf-keras allows to use KERAS v2
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras_nlp keras-datasets \
- keras-tcn keras-self-attention keras-multi-head keras-mdn-layer 
+ pip install --upgrade tensorflow tf-keras tensorboard keras-cv 
+# pip install --upgrade tensorflow[and-cuda] tf-keras tensorboard keras-cv 
+#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
+# pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras_nlp keras-datasets \
+# keras-tcn keras-self-attention keras-multi-head keras-mdn-layer
 
 ## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
 ENV TF_CPP_MIN_LOG_LEVEL 3

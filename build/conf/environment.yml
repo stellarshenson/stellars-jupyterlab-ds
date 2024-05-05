@@ -29,6 +29,14 @@ dependencies:
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab-execute-time # shows last execution time / not available via conda
 
+    ## nn packages
+    #- keras_nlp
+    #- keras-tcn
+    #- keras-self-attention
+    #- keras-multi-head
+    #- keras-mdn-layer
+    #- keras-datasets
+
     ## other libraries
     - albumentations # image augmentation library
     - colorama # text colouring

@@ -1,0 +1,21 @@
+# base packages to be installed by apt
+# this file can be used by apt using the following command:
+# >>> apt install -y `yq '.packages[]' apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
+packages:
+    - bash-completion # completion for bash
+    - curl # for downloading files
+    - gcc # compiler, required
+    - git # git client
+    - gpg # for keys manipulation and adding repos to apt
+    - gpw # generates unique identifiers
+    - iputils-ping # simple ping utility
+    - less # interactive file reader
+    - locate # file locator via updatedb
+    - man # man pages
+    - mc # midnight commander
+    - pip # pip python package manager
+    - software-properties-common
+    - sudo # superuser command executor
+    - vim # text editor
+    - wget # file downloader
+    - zip # file zipper and unzipper
