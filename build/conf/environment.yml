@@ -30,55 +30,47 @@ dependencies:
     - jupyterlab-execute-time # shows last execution time / not available via conda
 
     ## nn packages
-    #- keras_nlp
-    #- keras-tcn
-    #- keras-self-attention
-    #- keras-multi-head
-    #- keras-mdn-layer
-    #- keras-datasets
+    - keras-mdn-layer
+    - keras-multi-head
+    - keras-self-attention
+    - keras-tcn
+    - keras_nlp
 
     ## other libraries
+    - IProgress # jupyterlab widget to show progress, used by optuna
+    - Pillow # image manipulation library
     - albumentations # image augmentation library
-    - colorama # text colouring
-    - coverage # tests coverage library
-    - botocore # aws client library
     - build # to allow building packages in python
     - click # input parameters processing for python scripts
+    - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
-    - darts # time series forecasting library
+    - coverage # tests coverage library
     - deprecation # decorators for function deprecation
-    - dtw # dynamic time warping library for finding similarities between time series
-    - IProgress # jupyterlab widget to show progress, used by optuna
     - inference_sdk # universal inference client
-    - imbalanced-learn # handling of imbalanced datasets
     - librosa # library for handling audio 
-    - mlflow # powerful mlops suite and experiment runner (library)
     - make # build tools
     - matplotlib # plots library
     - memory_profiler # jupyterlab memory profiler
+    - mlflow # powerful mlops suite and experiment runner (library)
     - nltk # natural language processing library (used for embeddings and analysis)
     - numpy # advanced library for working with arrays
-    - opencv-python-headless # library for opensource computer vision
+    - opencv-python # library for opensource computer vision
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
     - optuna # hyperparameter tuning, see https://optuna.org/
     - pandas # data manipulation library
-    - Pillow # image manipulation library
-    - pipreqs # lists explicitly used requirements from source code for requirements.txt
-    - pip-check-reqs # lists missing requirements in requirements.txt
     - polars  # superfast alternative to pandas
+    - progress # progress bar
     - pyarrow # backend for polars
-    - python-dotenv # managing .env file
     - pymc # python probabilistic programming library using bayesian statistics
+    - python-dotenv # managing .env file
     - s3fs  # s3 filesystem access
-    - setuptools  # for packaging python libraries
     - scikit-learn # machine leanring library for python
     - scikit-learn-intelex # intel optimisations for scipy
     - scipy # python scientific library
     - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
-    - surprise # recommendation systems algorithms
+    - setuptools  # for packaging python libraries
     - tabulate # print tables nicely
     - termcolor # print colors to terminal, i.e. coloured logs
-    - tsfresh # time series feature extration library
     - xgboost # gradient boosted decision trees
     - xlsxwriter # library to generate excel files (used by i.e.polars)
 
