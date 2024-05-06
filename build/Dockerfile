@@ -147,13 +147,13 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 # -c rapidsai -c conda-forge -c nvidia  rapids=24.02 python=3.10 cuda-version=12.0 
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
+## needed if tensorflow or torch are installed using conda, otherwise this is ignored
 ENV CONDA_OVERRIDE_CUDA=12.4
 
-## install cuda toolkit - required by tensorflow
+## install cuda toolkit - required by tensorflow and torch
 RUN sudo apt install cuda-toolkit -y
 
 ## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
-## you can also install the nightly build: tf-nightly[and-cuda]
 ## installing tf-keras allows to use KERAS v2 (legacy)
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
  pip install --upgrade tensorflow[and-cuda] tf-keras tensorboard keras-cv 
@@ -171,7 +171,7 @@ ENV TF_CPP_MIN_LOG_LEVEL 3
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
-## install torchvision and pytorch
+## install torchvision, torch and ultralytics (yolo)
 ## also install libgl1 to avoid issues with libGL missing
 RUN sudo apt install -y libgl1-mesa-glx
 RUN  CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
