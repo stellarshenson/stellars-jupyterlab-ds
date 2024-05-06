@@ -1,16 +1,16 @@
 ## this dockergfile is loosely based on the github project
-FROM tensorflow/tensorflow:latest-gpu
-# FROM ubuntu:latest
-# FROM nvidia/cuda:12.4.1-base-ubuntu22.04
+# FROM tensorflow/tensorflow:latest-gpu
+FROM nvidia/cuda:12.4.1-base-ubuntu22.04
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
 COPY ./conf/apt-packages.yml /apt-packages.yml
 
 # install yaml parser repository and yq tool, in the parent system you need
-# add-apt-repository ppa:rmescandon/yq -y && apt update && apt install yq -y
+# RUN apt update && apt install -y software-properties-common
+# RUN add-apt-repository ppa:rmescandon/yq -y && apt update && apt install yq -y
 # and then copy /etc/apt/sources.list.d to docker image
-RUN apt update && apt install yq -y
+RUN apt update && apt install yq -y 
 
 # install required packages, list will be taken from apt-packages.yml
 RUN apt install -y `yq eval '.packages[]' /apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
@@ -81,13 +81,6 @@ USER root
 ENV CONDA_DEFAULT_ENV base
 ENV CONDA_PYTHON_VERSION 3.11
 
-## install conda
-#RUN curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg \
-# && install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg \
-# && gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806 \
-# && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" > /etc/apt/sources.list.d/conda.list
-#RUN apt update && apt install conda -y 
-
 ## change ownership of conda folder to conda user
 RUN chown -R ${CONDA_USER} /opt
 
@@ -142,11 +135,11 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 ## install nvidia-container-toolkit package to expose nvidia api to the container
 ## from: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
 # RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | \
-#  sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+#  gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
 #  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-#    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-#    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
-# RUN sudo apt update && apt install -y nvidia-container-toolkit
+#  sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+#  tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+# RUN apt update && sudo apt install -y nvidia-container-toolkit
 
 ## install cuda & tensorflow, using instructions https://docs.rapids.ai/install
 ## those packages need to be installed together as per rapids installation guide
@@ -154,17 +147,22 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 # -c rapidsai -c conda-forge -c nvidia  rapids=24.02 python=3.10 cuda-version=12.0 
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
-ENV CONDA_OVERRIDE_CUDA=12.3
+ENV CONDA_OVERRIDE_CUDA=12.4
 
-## install tensorflow using pip, conda tensorflow installation doesn't support cuda
+## install cuda toolkit - required by tensorflow
+RUN sudo apt install cuda-toolkit -y
+
+## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
 ## you can also install the nightly build: tf-nightly[and-cuda]
-## installing tf-keras allows to use KERAS v2
+## installing tf-keras allows to use KERAS v2 (legacy)
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- pip install --upgrade tensorflow tf-keras tensorboard keras-cv 
-# pip install --upgrade tensorflow[and-cuda] tf-keras tensorboard keras-cv 
-#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
-# pip install --upgrade tensorflow tf-keras tensorboard keras-cv keras_nlp keras-datasets \
-# keras-tcn keras-self-attention keras-multi-head keras-mdn-layer
+ pip install --upgrade tensorflow[and-cuda] tf-keras tensorboard keras-cv 
+
+## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
+## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
+## path can be obtained by using >> python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
+ENV CUDNN_PATH /opt/conda/lib/python3.11/site-packages/nvidia/cudnn
+ENV LD_LIBRARY_PATH ${CUDNN_PATH}/lib
 
 ## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
 ENV TF_CPP_MIN_LOG_LEVEL 3
@@ -176,8 +174,8 @@ ENV TF_CPP_MIN_LOG_LEVEL 3
 ## install torchvision and pytorch
 ## also install libgl1 to avoid issues with libGL missing
 RUN sudo apt install -y libgl1-mesa-glx
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- conda install -y -c conda-forge -c pytorch -c nvidia 'pytorch>2=cuda*' torchvision ultralytics
+RUN  CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
+ pip install --upgrade torch torchvision ultralytics
 
 
 ########################################################
