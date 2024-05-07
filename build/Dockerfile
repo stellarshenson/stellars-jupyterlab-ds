@@ -1,6 +1,7 @@
 ## this dockergfile is loosely based on the github project
 # FROM tensorflow/tensorflow:latest-gpu
-FROM nvidia/cuda:12.4.1-base-ubuntu22.04
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+# FROM nvidia/cuda:12.4.1-base-ubuntu22.04
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
@@ -151,7 +152,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 ENV CONDA_OVERRIDE_CUDA=12.4
 
 ## install cuda toolkit - required by tensorflow and torch
-RUN sudo apt install cuda-toolkit -y
+# RUN sudo apt install cuda-toolkit -y
 
 ## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
 ## installing tf-keras allows to use KERAS v2 (legacy)
@@ -162,7 +163,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
 ## path can be obtained by using >> python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
 ENV CUDNN_PATH /opt/conda/lib/python3.11/site-packages/nvidia/cudnn
-ENV LD_LIBRARY_PATH ${CUDNN_PATH}/lib
+ENV LD_LIBRARY_PATH ${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 
 ## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
 ENV TF_CPP_MIN_LOG_LEVEL 3
