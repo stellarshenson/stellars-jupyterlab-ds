@@ -1,6 +1,6 @@
 # base packages to be installed by apt
-# this file can be used by apt using the following command:
-# >>> apt install -y `yq '.packages[]' apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
+# this file can be used by apt with the following command:
+# >>> apt install -y `yq eval '.packages[]' apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
 packages:
     - bash-completion # completion for bash
     - curl # for downloading files

@@ -12,12 +12,12 @@ dependencies:
   - awscli # aws client, binary install
 
   ## jupyterlab and language server
-  - jupyterlab  # makes sure latest jupyterlab is installed
+  - jupyterlab::conda-forge  # makes sure latest jupyterlab is installed
   - jupyterlab-lsp # language serever extension
   - python-lsp-server # python labnguage server
    
   ## jupyterlab extensions
-  - jupyterlab-recents # File/Recent menu with recent files
+  # - jupyterlab-recents # File/Recent menu with recent files, now merged with jl4.2
   - jupyterlab-git # enables git extension for jupyterlab
   - nb_conda # provides conda environment and package access extension from jupyter
   - nb_conda_kernels # ability to add kernels (available only via conda)
@@ -28,6 +28,7 @@ dependencies:
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab-execute-time # shows last execution time / not available via conda
+    - jupyter-collaboration # collaboration over a jupyterlab document
 
     ## nn packages
     - keras-mdn-layer
