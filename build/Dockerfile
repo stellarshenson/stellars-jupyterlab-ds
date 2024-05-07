@@ -1,7 +1,5 @@
 ## this dockergfile is loosely based on the github project
-# FROM tensorflow/tensorflow:latest-gpu
 FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
-# FROM nvidia/cuda:12.4.1-base-ubuntu22.04
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
@@ -92,12 +90,6 @@ WORKDIR ${CONDA_USER_HOME}
 ## set path to conda bin
 ENV PATH $PATH:/opt/conda/bin
 
-## install conda from miniconda archive from https://docs.anaconda.com/free/miniconda
-# RUN mkdir -p ~/miniconda3 \
-#  && wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh \
-#  && bash ~/miniconda3/miniconda.sh -b -u -p /opt/conda \
-#  && rm -rf ~/miniconda3
-
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
  -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p /opt/conda \
@@ -157,6 +149,8 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 ENV CONDA_OVERRIDE_CUDA=12.4
 
 ## install cuda toolkit - required by tensorflow and torch
+## disabled because required packages are already 
+## available in in nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 # RUN sudo apt install cuda-toolkit -y
 
 ## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
