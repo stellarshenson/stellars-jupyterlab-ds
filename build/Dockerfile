@@ -93,10 +93,15 @@ WORKDIR ${CONDA_USER_HOME}
 ENV PATH $PATH:/opt/conda/bin
 
 ## install conda from miniconda archive from https://docs.anaconda.com/free/miniconda
-RUN mkdir -p ~/miniconda3 \
- && wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh \
- && bash ~/miniconda3/miniconda.sh -b -u -p /opt/conda \
- && rm -rf ~/miniconda3
+# RUN mkdir -p ~/miniconda3 \
+#  && wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh \
+#  && bash ~/miniconda3/miniconda.sh -b -u -p /opt/conda \
+#  && rm -rf ~/miniconda3
+
+## install conda from miniforge archive https://github.com/conda-forge/miniforge
+RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+ -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p /opt/conda \
+ && rm -rf ~/miniforge3.sh
 
 ## update conda system & install required packages from environment.yml
 RUN conda install -n base -c conda-forge -y python=${CONDA_PYTHON_VERSION}

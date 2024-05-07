@@ -12,7 +12,7 @@ dependencies:
   - awscli # aws client, binary install
 
   ## jupyterlab and language server
-  - jupyterlab::conda-forge  # makes sure latest jupyterlab is installed
+  - conda-forge::jupyterlab # makes sure latest jupyterlab is installed
   - jupyterlab-lsp # language serever extension
   - python-lsp-server # python labnguage server
    
