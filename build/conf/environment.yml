@@ -22,7 +22,6 @@ dependencies:
 
   - pip:
     ## jupyterlab packages
-    - jupyter-collaboration # collaboration over a jupyterlab document
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
