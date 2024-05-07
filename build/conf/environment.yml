@@ -16,7 +16,6 @@ dependencies:
   - python-lsp-server # python labnguage server
    
   ## jupyterlab extensions
-  # - jupyterlab-recents # File/Recent menu with recent files, now merged with jl4.2
   - jupyterlab-git # enables git extension for jupyterlab
   - nb_conda # provides conda environment and package access extension from jupyter
   - nb_conda_kernels # ability to add kernels (available only via conda)
