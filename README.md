@@ -1,5 +1,5 @@
 # Jupyterlab for Data Science Platform
-Miniconda + Jupyterlab for Data Science + Tensorflow (GPU) + RAPIDS (CUDF,CUML,CUGRAPH +)
+Miniforge 3 + Jupyterlab 4 for Data Science + Tensorflow (GPU) + pyTorch(GPU)
 
 This project defines a pre-packaged, pre-configured jupyterlab running over miniconda with nvidia support and 
 a list of pre-installed data science packages that would let you run your data science projects in a snap
@@ -14,10 +14,7 @@ There were many jupyterlab features installed, among them:
 - jupyterlab-git extension
 - jupyterlab-lsp language servers (python) extension
 - autocompletion and code suggests with documentation
-- variable inspector
 - resource usage monitor
-- dash (dashboard app framework)
-- jupyterlab optuna extension (machine learning hyperparameter tuning)
 
 There also is a Tensorboard server running on `6006` port and `/tmp/tf_logs` logs directory to help you with your ML/AI development and tensorflow neural nets training monitoring
 
