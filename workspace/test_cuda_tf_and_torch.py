@@ -92,7 +92,8 @@ def check_pytorch():
     # check for torch devices
     coloured_print('\n', colour=colour)
     coloured_print('#### pyTorch ###########################################', colour='light'+colour)
-    
+
+    coloured_print(f'pyTorch version: {torch.__version__}', colour=colour)
     coloured_print(f'pyTorch built with CUDA support: {torch.cuda.is_available()}', colour=colour)
     if torch.cuda.is_available(): coloured_print(f"pyTorch CUDA version: {torch.version.cuda}", colour=colour)
     coloured_print(f'pyTorch found CUDA devices: {torch.cuda.device_count()}', colour=colour)
