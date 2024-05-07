@@ -22,11 +22,12 @@ dependencies:
 
   - pip:
     ## jupyterlab packages
-    - theme-darcula # dark theme with good contrast, from IntelliJ 
-    - jupyter-resource-usage # enables cpu and mem monitoring
-    - jupyterlab_favorites # allows to define favourite locations / not available via conda
-    - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyter-collaboration # collaboration over a jupyterlab document
+    - jupyter-resource-usage # enables cpu and mem monitoring
+    - jupyterlab-execute-time # shows last execution time / not available via conda
+    - jupyterlab_favorites # allows to define favourite locations / not available via conda
+    - jupyterlab_myst # extended markdown
+    - theme-darcula # dark theme with good contrast, from IntelliJ 
 
     ## nn packages
     - keras-mdn-layer
