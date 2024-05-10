@@ -41,12 +41,18 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 
 ## user to be used with conda
 ENV CONDA_USER lab
+ENV JUPYTER_GROUP jupyter
 ENV CONDA_USER_HOME /home/${CONDA_USER}
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
-RUN useradd -ms /bin/bash ${CONDA_USER}
-RUN adduser -q ${CONDA_USER} sudo
+RUN <<EOF
+useradd -ms /bin/bash ${CONDA_USER}
+addgroup ${JUPYTER_GROUP}
+adduser -q ${CONDA_USER} sudo 
+adduser -q ${CONDA_USER} ${JUPYTER_GROUP}
+usermod -g ${JUPYTER_GROUP} ${CONDA_USER}
+EOF
 
 ## update sudoers to allow conda user sudo without password
 RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/conda
