@@ -1,3 +1,5 @@
+#!/opt/conda/bin/python
+
 import tensorflow as tf
 import torch
 from colorama import Fore, Back, Style
