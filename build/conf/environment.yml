@@ -25,7 +25,6 @@ dependencies:
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
-    #- jupyterlab_myst # extended markdown, see: https://mystmd.org/
     - theme-darcula # dark theme with good contrast, from IntelliJ 
 
     ## nn packages
@@ -46,7 +45,6 @@ dependencies:
     - coverage # tests coverage library
     - deprecation # decorators for function deprecation
     - inference_sdk # universal inference client
-    - librosa # library for handling audio 
     - make # build tools
     - matplotlib # plots library
     - memory_profiler # jupyterlab memory profiler
@@ -74,3 +72,4 @@ dependencies:
     - xlsxwriter # library to generate excel files (used by i.e.polars)
 
 # EOF
+
