@@ -25,7 +25,7 @@ dependencies:
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
-    - jupyterlab_myst # extended markdown, see: https://mystmd.org/
+    #- jupyterlab_myst # extended markdown, see: https://mystmd.org/
     - theme-darcula # dark theme with good contrast, from IntelliJ 
 
     ## nn packages
