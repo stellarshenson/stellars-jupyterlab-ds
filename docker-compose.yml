@@ -22,7 +22,10 @@ services:
     working_dir: /mnt/workspace
     ports:
        - 8888:8888 # jupyterlab
+       - 8000:8000 # jupyterhub
+       - 8001:8001 # jupyterhub proxy
        - 6006:6006 # tensorboard
+       - 5000:5000 # mlflow
     volumes:
       - ./home:/mnt/home:ro   # copying files from 'home' directory to target home directory
       - ./home/.jupyter:/home/lab/.jupyter:rw  # jupyter settings, making sure it is synced

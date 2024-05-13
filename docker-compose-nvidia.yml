@@ -22,6 +22,8 @@ services:
     working_dir: /mnt/workspace
     ports:
        - 8888:8888 # jupyterlab
+       - 8000:8000 # jupyterhub
+       - 8001:8001 # jupyterhub proxy
        - 6006:6006 # tensorboard
        - 5000:5000 # mlflow
     volumes:
