@@ -13,7 +13,6 @@ dependencies:
   ## jupyterlab and language server
   - jupyterlab # makes sure latest jupyterlab is installed
   - jupyterlab-lsp # language serever extension
-  - python-lsp-server # python labnguage server
    
   ## jupyterlab extensions
   - jupyterlab-git # enables git extension for jupyterlab
@@ -21,7 +20,8 @@ dependencies:
   - nb_conda_kernels # ability to add kernels (available only via conda)
 
   - pip:
-    ## jupyterlab packages
+    ## jupyterlab extensions packages
+    - python-lsp-server[all] # install autocompleter extentions
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
