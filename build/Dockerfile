@@ -43,16 +43,15 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 ENV CONDA_USER lab
 ENV JUPYTER_GROUP jupyter
 ENV CONDA_USER_HOME /home/${CONDA_USER}
+ENV JUPYTER_WORKSPACE /mnt/workspace
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
-RUN <<EOF
-useradd -ms /bin/bash ${CONDA_USER}
-addgroup ${JUPYTER_GROUP}
-adduser -q ${CONDA_USER} sudo 
-adduser -q ${CONDA_USER} ${JUPYTER_GROUP}
-usermod -g ${JUPYTER_GROUP} ${CONDA_USER}
-EOF
+RUN useradd -ms /bin/bash ${CONDA_USER} \
+ && addgroup ${JUPYTER_GROUP} \
+ && adduser -q ${CONDA_USER} sudo  \
+ && adduser -q ${CONDA_USER} ${JUPYTER_GROUP} \
+ && usermod -g ${JUPYTER_GROUP} ${CONDA_USER} 
 
 ## update sudoers to allow conda user sudo without password
 RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/conda
@@ -113,20 +112,20 @@ SHELL ["/conda_run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
-RUN rm ~/.bashrc
-RUN echo '# saving the conda environment, as conda init is going to reset this to "base"' >> ~/.bashrc
-RUN echo '_CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
-RUN conda init 
-RUN echo '# restoring saved conda default env, as it was resetted to "base" by conda init' >> ~/.bashrc
-RUN echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
-RUN echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
+RUN rm ~/.bashrc \
+ && echo '# saving the conda environment, as conda init is going to reset this to "base"' >> ~/.bashrc \
+ && echo '_CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc \
+ && conda init \
+ && echo '# restoring saved conda default env, as it was resetted to "base" by conda init' >> ~/.bashrc \
+ && echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc \
+ && echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 
 ## merge bashrc files - conda generated and copied
 COPY --chmod=644 ./conf/dot.bashrc ${CONDA_USER_HOME}/dot.bashrc
-RUN cat ${CONDA_USER_HOME}/dot.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge
-RUN cat ${CONDA_USER_HOME}/.bashrc >> ${CONDA_USER_HOME}/bashrc-to-merge
-RUN mv  ${CONDA_USER_HOME}/bashrc-to-merge ${CONDA_USER_HOME}/.bashrc 
-RUN rm  ${CONDA_USER_HOME}/dot.bashrc
+RUN cat ${CONDA_USER_HOME}/dot.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge \
+ && cat ${CONDA_USER_HOME}/.bashrc >> ${CONDA_USER_HOME}/bashrc-to-merge \
+ && mv  ${CONDA_USER_HOME}/bashrc-to-merge ${CONDA_USER_HOME}/.bashrc  \
+ && rm  ${CONDA_USER_HOME}/dot.bashrc
 
 ## final update of the entire conda using conda-forge as preferred channel
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
@@ -162,7 +161,9 @@ ENV CONDA_OVERRIDE_CUDA=12.4
 ## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
 ## installing tf-keras allows to use KERAS v2 (legacy)
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- pip install --upgrade tensorflow[and-cuda] tf-keras tensorboard keras-cv 
+ pip install --upgrade tensorflow[and-cuda] tf-keras tensorboard keras-cv \
+ keras-mdn-layer keras-multi-head keras-self-attention keras-tcn keras_nlp
+
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
@@ -214,9 +215,8 @@ RUN sudo bash -c "date >/build-date.txt"
 RUN sudo bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
 RUN sudo bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
-
 ## create link to workspace
-RUN ln -s /mnt/workspace ${CONDA_USER_HOME}/workspace
+RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_HOME}/workspace
 
 ## update terminal and shell settings
 ENV TERM xterm-256color
@@ -225,9 +225,7 @@ ENV TERM xterm-256color
 ## command to run container with
 ENTRYPOINT ["/conda_entry.sh"]
 CMD ["/start-jupyter.sh"]
+WORKDIR ${JUPYTER_WORKSPACE}
 
-## expose jupyterlab and tensorboard by default
-EXPOSE 8888/tcp
-EXPOSE 6006/tcp
 
 # EOF
