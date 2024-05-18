@@ -19,7 +19,6 @@ services:
        context: build
        dockerfile: Dockerfile
     command: /start-jupyter.sh
-    working_dir: /mnt/workspace
     ports:
        - 8888:8888 # jupyterlab
        - 8000:8000 # jupyterhub

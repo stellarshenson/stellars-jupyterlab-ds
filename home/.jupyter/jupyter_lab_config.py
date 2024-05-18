@@ -1,10 +1,11 @@
 # Configuration file for lab.
 
 c = get_config()  #noqa
-c.ServerApp.root_dir = "/home/lab/workspace"
+c.ServerApp.root_dir = "/mnt/workspace"
 c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash"] }
 c.ServerApp.allow_root = True
 c.FileContentsManager.always_delete_dir = True
+c.Completer.use_jedi = False
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration

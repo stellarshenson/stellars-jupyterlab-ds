@@ -19,7 +19,6 @@ services:
        context: build
        dockerfile: Dockerfile
     command: /start-jupyter.sh
-    working_dir: /mnt/workspace
     environment:
        - GPU_SUPPORT_ENABLED=1
     ports:
