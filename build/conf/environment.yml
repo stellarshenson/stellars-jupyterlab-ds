@@ -44,6 +44,7 @@ dependencies:
     - cookiecutter # projects directory + resources template (ds projects)
     - coverage # tests coverage library
     - deprecation # decorators for function deprecation
+    - gpustat # gpu status reporting tool
     - inference_sdk # universal inference client
     - make # build tools
     - matplotlib # plots library

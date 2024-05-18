@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# find if running with nvidia GPU support
+if [[ $GPU_SUPPORT_ENABLED == 1 ]]; then
+    /usr/bin/nvidia-smi
+fi
+
 # copy template home directory to /root, dump warnings to /dev/null
 HOME_TEMPLATE=/mnt/home
 cp -rf --no-preserve=mode,ownership $HOME_TEMPLATE/. $HOME 2>/dev/null
@@ -19,6 +24,6 @@ mkdir /tmp/tensorboard 2>/dev/null
 tensorboard --bind_all --logdir /tmp/tf_logs --port 6006 &
 
 # run jupyterlab
-jupyter-lab --ip='*' --no-browser --allow-root --ServerApp.token='' --ServerApp.password=''
+jupyter-lab --ip='*' --no-browser --ServerApp.token='' --ServerApp.password=''
 
 # EOF
