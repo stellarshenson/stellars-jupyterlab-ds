@@ -27,13 +27,6 @@ dependencies:
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - theme-darcula # dark theme with good contrast, from IntelliJ 
 
-    ## nn packages
-    - keras-mdn-layer
-    - keras-multi-head
-    - keras-self-attention
-    - keras-tcn
-    - keras_nlp
-
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
     - Pillow # image manipulation library
