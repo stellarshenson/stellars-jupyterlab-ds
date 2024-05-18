@@ -214,6 +214,10 @@ RUN sudo bash -c "date >/build-date.txt"
 RUN sudo bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
 RUN sudo bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
+
+## create link to workspace
+RUN ln -s /mnt/workspace ${CONDA_USER_HOME}/workspace
+
 ## update terminal and shell settings
 ENV TERM xterm-256color
 

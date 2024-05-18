@@ -26,8 +26,13 @@ alias ls="ls --color=auto"
 ldconfig 2>/dev/null
 
 # display message of the day
-if [ -f /etc/motd ]; then
+if [[ -f /etc/motd ]]; then
     cat /etc/motd
+fi
+
+# display gpustat
+if [[ $GPU_SUPPORT_ENABLED == 1 ]]; then
+    /opt/conda/bin/gpustat --no-color
 fi
 
 # EOF

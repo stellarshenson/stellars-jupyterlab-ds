@@ -12,7 +12,7 @@ services:
   # run jupyterlab on a local port 8888
   # without any authentication
   jupyterlab:
-    container_name: jupyterlab
+    container_name: jupyterlab-nvidia
     hostname: jupyterlab-nvidia
     image: stellars/stellars-jupyterlab-ds:latest
     build:
@@ -20,6 +20,8 @@ services:
        dockerfile: Dockerfile
     command: /start-jupyter.sh
     working_dir: /mnt/workspace
+    environment:
+       - GPU_SUPPORT_ENABLED=1
     ports:
        - 8888:8888 # jupyterlab
        - 8000:8000 # jupyterhub
@@ -39,18 +41,6 @@ services:
               count: all
               capabilities: [gpu]
 
-  # verifies if GPU is available and enabled
-  nvidia-test:
-    image: nvidia/cuda:11.0.3-base-ubuntu20.04
-    container_name: nvidia-test
-    command: nvidia-smi
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
 
 # EOF
 
