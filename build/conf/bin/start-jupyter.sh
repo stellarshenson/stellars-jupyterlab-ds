@@ -24,6 +24,6 @@ mkdir /tmp/tensorboard 2>/dev/null
 tensorboard --bind_all --logdir /tmp/tf_logs --port 6006 &
 
 # run jupyterlab
-jupyter-lab --ip='*' --no-browser --ServerApp.token='' --ServerApp.password=''
+jupyter-lab --ip='*' --no-browser --IdentityProvider.token='' --IdentityProvider.password=''
 
 # EOF
