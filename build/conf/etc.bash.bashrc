@@ -33,7 +33,7 @@ fi
 # display gpustat
 if [[ $GPU_SUPPORT_ENABLED == 1 ]]; then
     # gpustats shows gpu stats during login, currently problematic
-    # /opt/conda/bin/gpustat --no-color --no-header --no-processes
+    /opt/conda/bin/gpustat --no-color --no-header --no-processes
 fi
 
 # EOF
