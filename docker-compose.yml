@@ -6,6 +6,8 @@
 #   Tensorboard - http://localhost:6006
 #
 # ----------------------------------------------------------------------------------------
+version: "3"
+
 services:
   # run jupyterlab on a local port 8888
   # without any authentication
@@ -26,6 +28,10 @@ services:
     volumes:
       - ./home:/mnt/home:ro   # copying files from 'home' directory to target home directory
       - ./home/.jupyter:/home/lab/.jupyter:rw  # jupyter settings, making sure it is synced
-      - ./workspace:/mnt/workspace:rw      # this maps your projects folder
+      - workspace:/mnt/workspace:rw # persistent workspace volume mount
+
+volumes:
+  workspace:
+
 
 # EOF
