@@ -1,6 +1,9 @@
 ## this dockergfile is loosely based on the github project
 FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 
+# File Author / Maintainer
+MAINTAINER Konrad Jelen <konrad.jelen@gmail.com>
+
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
 COPY ./conf/apt-packages.yml /apt-packages.yml
@@ -200,6 +203,13 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache 
 ## apt cleanup
 RUN sudo apt autoremove -y && sudo apt purge 
 
+########################################################
+#  PREPARE JUPYTERLAB WORKSPACE                        #
+########################################################
+
+# make sure initial workspace has template files
+COPY --chown=${CONDA_USER} ./templates/workspace ${JUPYTER_WORKSPACE}
+
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
@@ -223,9 +233,8 @@ ENV TERM xterm-256color
 
 ## setup entry point and
 ## command to run container with
+WORKDIR ${JUPYTER_WORKSPACE}
 ENTRYPOINT ["/conda_entry.sh"]
 CMD ["/start-jupyter.sh"]
-WORKDIR ${JUPYTER_WORKSPACE}
-
 
 # EOF
