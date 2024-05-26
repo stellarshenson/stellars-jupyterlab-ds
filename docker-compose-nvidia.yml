@@ -28,7 +28,7 @@ services:
     volumes:
       - ./home:/mnt/home:ro   # copying files from 'home' directory to target home directory
       - ./home/.jupyter:/home/lab/.jupyter:rw  # jupyter settings, making sure it is synced
-      - ./workspace:/mnt/workspace:rw      # this maps your projects folder
+      - workspace:/mnt/workspace:rw  # persisten workspace volume mapping mount
     ipc: host
     deploy:
       resources:
@@ -38,6 +38,8 @@ services:
               count: all
               capabilities: [gpu]
 
+volumes:
+  workspace:
 
 # EOF
 
