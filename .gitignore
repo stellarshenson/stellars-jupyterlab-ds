@@ -1,4 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux
+*_home.tgz # local home template to upload into home volume
+*_certs.tgz # local certificates to upload into certs volume
+*_workspace.tgz # local workspace to upload into workspace volume
+*_home.tar.gz # local home template to upload into home volume
+*_certs.tar.gz # local certificates to upload into certs volume
+*_workspace.tar.gz # local workspace to upload into workspace volume
+local # local files, not to be moved to repo
 
 # EOF

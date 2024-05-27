@@ -4,13 +4,13 @@ Miniforge 3 + Jupyterlab 4 for Data Science + Tensorflow (GPU) + pyTorch(GPU)
 This project defines a pre-packaged, pre-configured jupyterlab running over miniconda with nvidia support and 
 a list of pre-installed data science packages that would let you run your data science projects in a snap
 
-![](./doc/jupyterlab.png)
+![](./.resources/jupyterlab.png)
 
 
-![](./doc/docker-desktop.png)
+![](./.resources/docker-desktop.png)
 
 
-![](./doc/cuda-test.jpg) 
+![](./.resources/cuda-test.jpg) 
 
 
 There were many jupyterlab features installed, among them:
@@ -49,7 +49,7 @@ There will be software required to be installed in order to run this:
 1. run `docker-compose pull` in the main folder to download the latest container image 
 2. (optional) run `docker-compose build` to build the image. Be aware that __building takes approx 1.5h__
 3. run `docker-compose up` in the main folder to run the container
-4. access http://localhost:8888 to run JupyterLab
+4. access https://localhost:8888 to run JupyterLab
 5. access http://localhost:6006 to run Tensorboard
 
 

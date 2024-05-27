@@ -46,6 +46,7 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 ## user to be used with conda
 ENV CONDA_USER lab
 ENV JUPYTER_GROUP jupyter
+ENV CONDA_HOME /opt/conda
 ENV CONDA_USER_HOME /home/${CONDA_USER}
 ENV JUPYTER_WORKSPACE /mnt/workspace
 
@@ -63,14 +64,17 @@ RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/conda
 ## switch user to update config file
 USER ${CONDA_USER}
 
+## use predefined contents of a user home
+COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
+
 ## use predefined jupyter and other config files
-COPY --chown=${CONDA_USER} ./conf/dot.jupyter ${CONDA_USER_HOME}/.jupyter
-COPY --chown=${CONDA_USER} ./conf/dot.config  ${CONDA_USER_HOME}/.config
-COPY --chown=${CONDA_USER} --chmod=644 ./conf/dot.vimrc   ${CONDA_USER_HOME}/.vimrc
+#COPY --chown=${CONDA_USER} ./conf/dot.jupyter ${CONDA_USER_HOME}/.jupyter
+#COPY --chown=${CONDA_USER} ./conf/dot.config  ${CONDA_USER_HOME}/.config
+#COPY --chown=${CONDA_USER} --chmod=644 ./conf/dot.vimrc   ${CONDA_USER_HOME}/.vimrc
 
 ## ensure good permissions
-RUN find ${CONDA_USER_HOME} -type d | xargs chmod og-rwx \
- && find ${CONDA_USER_HOME} -type f | xargs chmod og-rw
+RUN find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700 \
+ && find ${CONDA_USER_HOME} -type f -printf '"%p"\n' | xargs chmod 600
 
 ## set up vim with all its plugins
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
@@ -90,7 +94,7 @@ ENV CONDA_DEFAULT_ENV base
 ENV CONDA_PYTHON_VERSION 3.11
 
 ## change ownership of conda folder to conda user
-RUN chown -R ${CONDA_USER} /opt
+RUN mkdir -p /opt/conda && chown -R :${JUPYTER_GROUP} ${CONDA_HOME} && chmod -R 770 ${CONDA_HOME}
 
 ## switch user to conda jupyterlab user
 USER ${CONDA_USER}
@@ -101,7 +105,7 @@ ENV PATH $PATH:/opt/conda/bin
 
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
- -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p /opt/conda \
+ -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
  && rm -rf ~/miniforge3.sh
 
 ## update conda system & install required packages from environment.yml
