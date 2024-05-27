@@ -16,7 +16,7 @@ services:
     build:
        context: build
        dockerfile: Dockerfile
-    command: /start-jupyter.sh
+    command: /start-jupyterlab.sh
     environment:
        - GPU_SUPPORT_ENABLED=1
     ports:
@@ -28,7 +28,8 @@ services:
     volumes:
       - ./home:/mnt/home:ro   # copying files from 'home' directory to target home directory
       - ./home/.jupyter:/home/lab/.jupyter:rw  # jupyter settings, making sure it is synced
-      - workspace:/mnt/workspace:rw  # persisten workspace volume mapping mount
+      - workspace:/mnt/workspace:rw  # persistent workspace volume mapping mount
+      - certs:/mnt/certs:rw  # persistent certificate store for ssl
     ipc: host
     deploy:
       resources:
@@ -40,6 +41,7 @@ services:
 
 volumes:
   workspace:
+  certs:
 
 # EOF
 
