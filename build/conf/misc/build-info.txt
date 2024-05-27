@@ -2,8 +2,8 @@
 █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
 █ Build '@BUILD_NAME@' created on @BUILD_DATE@                                    █
 █ --------------------------------------------------------------------------------------- █
-█ Running JupyterLab server on  http://localhost:8888                                     █
-█ Connect VSCode to Jupyter on  http://localhost:8888/lab/tree                            █
+█ Running JupyterLab server on  https://localhost:8888                                    █
+█ Connect VSCode to Jupyter on  https://localhost:8888/lab/tree                           █
 █ Running Tensorboard server on http://localhost:6006                                     █
 █ Tensorboard monitoring logs located in /tmp/tf_logs                                     █
 █ Using work dir (projects) /mnt/workspace (mount)                                        █

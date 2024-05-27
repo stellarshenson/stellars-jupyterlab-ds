@@ -18,7 +18,7 @@ services:
     build:
        context: build
        dockerfile: Dockerfile
-    command: /start-jupyter.sh
+    command: /start-jupyterlab.sh
     ports:
        - 8888:8888 # jupyterlab
        - 8000:8000 # jupyterhub
@@ -28,10 +28,11 @@ services:
     volumes:
       - ./home:/mnt/home:ro   # copying files from 'home' directory to target home directory
       - ./home/.jupyter:/home/lab/.jupyter:rw  # jupyter settings, making sure it is synced
-      - workspace:/mnt/workspace:rw # persistent workspace volume mount
+      - workspace:/mnt/workspace:rw  # persistent workspace volume mapping mount
+      - certs:/mnt/certs:rw  # persistent certificate store for ssl
 
 volumes:
   workspace:
-
+  certs:
 
 # EOF

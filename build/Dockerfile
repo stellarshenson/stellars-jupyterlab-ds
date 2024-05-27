@@ -23,7 +23,8 @@ COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
 COPY --chmod=644  ./conf/environment.yml /environment.yml
 COPY --chmod=755  ./conf/bin/conda_entry.sh /conda_entry.sh
 COPY --chmod=755  ./conf/bin/conda_run.sh /conda_run.sh
-COPY --chmod=755  ./conf/bin/start-jupyter.sh /start-jupyter.sh
+COPY --chmod=755  ./conf/bin/start-jupyterlab.sh /start-jupyterlab.sh
+COPY --chmod=755  ./conf/bin/generate_jupyterlab_ssl.sh /generate_jupyterlab_ssl.sh
 
 
 ########################################################
@@ -204,12 +205,12 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache 
 RUN sudo apt autoremove -y && sudo apt purge 
 
 ########################################################
-#  PREPARE JUPYTERLAB WORKSPACE                        #
+#  PREPARE JUPYTERLAB WORKSPACE AND CERTS              #
 ########################################################
 
 # make sure initial workspace has template files
 COPY --chown=${CONDA_USER} ./templates/workspace ${JUPYTER_WORKSPACE}
-
+COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
@@ -235,6 +236,6 @@ ENV TERM xterm-256color
 ## command to run container with
 WORKDIR ${JUPYTER_WORKSPACE}
 ENTRYPOINT ["/conda_entry.sh"]
-CMD ["/start-jupyter.sh"]
+CMD ["/start-jupyterlab.sh"]
 
 # EOF
