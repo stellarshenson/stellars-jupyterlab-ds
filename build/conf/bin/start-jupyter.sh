@@ -10,8 +10,8 @@ HOME_TEMPLATE=/mnt/home
 cp -rf --no-preserve=mode,ownership $HOME_TEMPLATE/. $HOME 2>/dev/null
 
 # and make sure home permissions are as they should
-find $HOME -type d | xargs chmod og-rwx
-find $HOME -type f | xargs chmod og-rwx
+find $HOME -type d -print "'%p'\n" | xargs chmod og-rwx
+find $HOME -type f -print "'%p'\n" | xargs chmod og-rwx
 
 # output build info and banners
 BUILD_DATE=`cat /build-date.txt`
