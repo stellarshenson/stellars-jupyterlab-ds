@@ -45,6 +45,7 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 
 ## user to be used with conda
 ENV CONDA_USER lab
+ARG CONDA_USER_PASSWD=password
 ENV JUPYTER_GROUP jupyter
 ENV CONDA_HOME /opt/conda
 ENV CONDA_USER_HOME /home/${CONDA_USER}
@@ -56,10 +57,11 @@ RUN useradd -ms /bin/bash ${CONDA_USER} \
  && addgroup ${JUPYTER_GROUP} \
  && adduser -q ${CONDA_USER} sudo  \
  && adduser -q ${CONDA_USER} ${JUPYTER_GROUP} \
- && usermod -g ${JUPYTER_GROUP} ${CONDA_USER} 
+ && usermod -g ${JUPYTER_GROUP} ${CONDA_USER} \
+ && echo "${CONDA_USER}:${CONDA_USER_PASSWD}" | chpasswd
 
 ## update sudoers to allow conda user sudo without password
-RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/conda
+# RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/conda
 
 ## switch user to update config file
 USER ${CONDA_USER}
@@ -164,7 +166,7 @@ ENV CONDA_OVERRIDE_CUDA=12.4
 ## install cuda toolkit - required by tensorflow and torch
 ## disabled because required packages are already 
 ## available in in nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
-# RUN sudo apt install cuda-toolkit -y
+# RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install cuda-toolkit -y
 
 ## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
 ## installing tf-keras allows to use KERAS v2 (legacy)
@@ -188,7 +190,7 @@ ENV TF_CPP_MIN_LOG_LEVEL 3
 
 ## install torchvision, torch and ultralytics (yolo)
 ## also install libgl1 to avoid issues with libGL missing
-RUN sudo apt install -y libgl1-mesa-glx
+RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1-mesa-glx
 RUN  CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
  pip install --upgrade torch torchvision ultralytics
 
@@ -206,7 +208,7 @@ RUN  CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
 
 ## apt cleanup
-RUN sudo apt autoremove -y && sudo apt purge 
+RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt autoremove -y && sudo apt purge 
 
 ########################################################
 #  PREPARE JUPYTERLAB WORKSPACE AND CERTS              #
@@ -226,9 +228,9 @@ ENV PIP_ROOT_USER_ACTION ignore
 ## save build date for reference
 COPY --chmod=644 ./conf/misc/build-info.txt /
 COPY --chmod=644 ./conf/misc/motd-prototype.txt /
-RUN sudo bash -c "date >/build-date.txt"
-RUN sudo bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
-RUN sudo bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
+RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "date >/build-date.txt"
+RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
+RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
 ## create link to workspace
 RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_HOME}/workspace
