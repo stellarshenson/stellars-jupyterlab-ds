@@ -36,3 +36,4 @@ echo "To configure JupyterLab with these certificates, add the following to your
 echo "c.ServerApp.certfile = u'$CERT_FILE'"
 echo "c.ServerApp.keyfile = u'$KEY_FILE'"
 
+#EOF
