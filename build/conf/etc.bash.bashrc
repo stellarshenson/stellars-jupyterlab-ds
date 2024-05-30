@@ -25,6 +25,11 @@ alias ls="ls --color=auto"
 # Fix CUDA loading for running nvidia-smi
 ldconfig 2>/dev/null
 
+# show motd only for SHLVL less or equal 2
+if [[ $SHLVL -gt 2 ]]; then
+    return
+fi
+
 # display message of the day
 if [[ -f /etc/motd ]]; then
     cat /etc/motd
