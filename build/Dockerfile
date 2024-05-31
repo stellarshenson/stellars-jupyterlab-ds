@@ -190,7 +190,6 @@ ENV TF_CPP_MIN_LOG_LEVEL 3
 
 ## install torchvision, torch and ultralytics (yolo)
 ## also install libgl1 to avoid issues with libGL missing
-## RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1-mesa-glx
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1
 RUN  CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
  pip install --upgrade torch torchvision ultralytics
