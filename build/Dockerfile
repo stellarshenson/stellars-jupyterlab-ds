@@ -44,12 +44,13 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 ########################################################
 
 ## user to be used with conda
-ENV CONDA_USER lab
-ARG CONDA_USER_PASSWD=password
-ENV JUPYTER_GROUP jupyter
 ENV CONDA_HOME /opt/conda
-ENV CONDA_USER_HOME /home/${CONDA_USER}
-ENV JUPYTER_WORKSPACE /mnt/workspace
+ARG CONDA_USER=lab
+ARG CONDA_USER_PASSWD=password
+ARG JUPYTER_GROUP=jupyter
+ARG CONDA_USER_HOME=/home/${CONDA_USER}
+ARG JUPYTER_WORKSPACE=/mnt/workspace
+ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
@@ -234,14 +235,13 @@ RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "gpw 1 4 | tr [:lower:] [:uppe
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
 ## create link to workspace
-RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_HOME}/workspace
+RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_WORKSPACE}
 
 ## update terminal and shell settings
 ENV TERM xterm-256color
 
-## setup entry point and
-## command to run container with
-WORKDIR ${JUPYTER_WORKSPACE}
+## setup entry point, workdir and startup command
+WORKDIR ${CONDA_USER_WORKSPACE}
 ENTRYPOINT ["/conda_entry.sh"]
 CMD ["/start-jupyterlab.sh"]
 
