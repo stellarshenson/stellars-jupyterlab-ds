@@ -26,9 +26,9 @@ services:
        - 6006:6006 # tensorboard
        - 5000:5000 # mlflow
     volumes:
-      - home:/home/lab:rw   # jupyterlab user directory persistence
-      - workspace:/mnt/workspace:rw  # user projects workspace volume persistence
-      - certs:/mnt/certs:rw  # persistent certificate store for ssl
+      - home:/home/lab           # jupyterlab user directory persistence
+      - workspace:/mnt/workspace # user projects workspace volume persistence
+      - certs:/mnt/certs         # persistent certificate store for ssl
 
 volumes:
   workspace:
