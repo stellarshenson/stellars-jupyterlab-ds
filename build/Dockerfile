@@ -99,6 +99,12 @@ ENV CONDA_PYTHON_VERSION 3.11
 ## change ownership of conda folder to conda user
 RUN mkdir -p /opt/conda && chown -R :${JUPYTER_GROUP} ${CONDA_HOME} && chmod -R 770 ${CONDA_HOME}
 
+## create empty logfile with permissions for jupyterlab to write
+ARG JUPYTER_LOG=/var/log/jupyterlab.log
+RUN touch ${JUPYTER_LOG} \
+ && chown :${JUPYTER_GROUP} ${JUPYTER_LOG} \
+ && chmod 664 ${JUPYTER_LOG}
+
 ## switch user to conda jupyterlab user
 USER ${CONDA_USER}
 WORKDIR ${CONDA_USER_HOME}
@@ -140,7 +146,6 @@ RUN cat ${CONDA_USER_HOME}/dot.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge \
 
 ## final update of the entire conda using conda-forge as preferred channel
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
-
 
 ########################################################
 #  NVIDIA CUDA & TENSORFLOW INSTALLATION               #
@@ -239,6 +244,11 @@ RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_WORKSPACE}
 
 ## update terminal and shell settings
 ENV TERM xterm-256color
+
+## startup ENV parameters for jupyterlab
+ENV JUPYTERLAB_SERVER_IP "*"
+ENV JUPYTERLAB_SERVER_TOKEN ""
+ENV JUPYTERLAB_SERVER_PASSWORD ""
 
 ## setup entry point, workdir and startup command
 WORKDIR ${CONDA_USER_WORKSPACE}
