@@ -33,6 +33,7 @@ services:
       - home:/home/lab           # jupyterlab user directory persistence
       - workspace:/mnt/workspace # user projects workspace volume persistence
       - certs:/mnt/certs         # persistent certificate store for ssl
+      - /mnt/c/Users/konrad/OneDrive:/mnt/onedrive
 
 volumes:
   workspace:
