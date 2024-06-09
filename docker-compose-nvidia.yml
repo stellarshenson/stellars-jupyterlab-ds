@@ -19,7 +19,7 @@ services:
     command: /start-jupyterlab.sh
     environment:
        - GPU_SUPPORT_ENABLED=1
-       - GPUSTAT_ENABLED=1
+       - GPUSTAT_ENABLED=0
        - JUPYTERLAB_SERVER_IP=*
        - JUPYTERLAB_SERVER_TOKEN=
        - JUPYTERLAB_SERVER_PASSWORD=
