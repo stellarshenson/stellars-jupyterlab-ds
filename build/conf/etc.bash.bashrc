@@ -26,7 +26,7 @@ alias ls="ls --color=auto"
 ldconfig 2>/dev/null
 
 # show motd only for SHLVL less or equal 2
-if [[ $SHLVL -gt 2 ]]; then
+if [[ "$SHLVL" -gt 2 ]]; then
     return
 fi
 
@@ -36,7 +36,7 @@ if [[ -f /etc/motd ]]; then
 fi
 
 # display gpustat
-if [[ $GPU_SUPPORT_ENABLED == 1 ]]; then
+if [[ "$GPU_SUPPORT_ENABLED" = 1 ]] && [[ "$GPUSTAT_ENABLED" = 1 ]]; then
     /opt/conda/bin/gpustat --no-color --no-header --no-processes
 fi
 
