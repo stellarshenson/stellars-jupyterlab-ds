@@ -40,7 +40,5 @@ if [[ "$GPU_SUPPORT_ENABLED" = 1 ]] && [[ "$GPUSTAT_ENABLED" = 1 ]]; then
     /opt/conda/bin/gpustat --no-color --no-header --no-processes
 fi
 
-# uptime
-echo "System is `uptime -p`"
 
 # EOF
