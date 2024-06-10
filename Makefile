@@ -30,6 +30,11 @@ start:
 start_nvidia:
 	@cd ./bin && ./start_nvidia.sh
 
+## start jupyterlab using local config yml
+start_local:
+	@cd ./bin && ./start_local.sh
+
+
 ## clean orphaned containers
 clean:
 	@echo 'removing dangling and unused images, containers, nets and volumes'
