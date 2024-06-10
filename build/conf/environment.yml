@@ -43,7 +43,6 @@ dependencies:
     - inference_sdk # universal inference client
     - make # build tools
     - matplotlib # plots library
-    - memory_profiler # jupyterlab memory profiler
     - mlflow # powerful mlops suite and experiment runner (library)
     - nltk # natural language processing library (used for embeddings and analysis)
     - numpy # advanced library for working with arrays
@@ -55,7 +54,7 @@ dependencies:
     - progress # progress bar
     - pyarrow # backend for polars
     - pymc # python probabilistic programming library using bayesian statistics
-    - python-dotenv # managing .env file
+    - python-dotenv # managing .env file loading in the runtime context
     - s3fs  # s3 filesystem access
     - scikit-learn # machine leanring library for python
     - scikit-learn-intelex # intel optimisations for scipy
