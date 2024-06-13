@@ -8,6 +8,7 @@ CURRENT_DIR=$(pwd)
 REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep -v '@archive')
 
 # execute git pull
+declare -i COUNTER=1
 for r in $REPOS;
 do
     cd $CURRENT_DIR
@@ -15,6 +16,7 @@ do
     cd $(realpath $r)
     cd ..
     git push
+    let COUNTER=$COUNTER+1
 done
 
 # go back

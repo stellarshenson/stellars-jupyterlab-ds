@@ -8,13 +8,15 @@ CURRENT_DIR=$(pwd)
 REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep -v '@archive')
 
 # execute git pull
+declare -i COUNTER=1
 for r in $REPOS;
 do
     cd $CURRENT_DIR
-    echo "executing pull for $r"
+    echo "[$COUNTER] executing pull for $r"
     cd $(realpath $r)
     cd ..
     git pull --rebase
+    let COUNTER=$COUNTER+1
 done
 
 # go back
