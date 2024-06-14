@@ -12,7 +12,7 @@ declare -i COUNTER=1
 for r in $REPOS;
 do
     cd $CURRENT_DIR
-    echo "executing push for $r"
+    echo "[$COUNTER] executing push for $r"
     cd $(realpath $r)
     cd ..
     git push
