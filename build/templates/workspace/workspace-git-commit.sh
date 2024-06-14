@@ -12,7 +12,7 @@ declare -i COUNTER=1
 for r in $REPOS;
 do
     cd $CURRENT_DIR
-    echo "executing commit for $r"
+    echo "[$COUNTER] executing commit for $r"
     cd $(realpath $r)
     cd ..
     git commit -a
