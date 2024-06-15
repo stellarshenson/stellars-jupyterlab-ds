@@ -49,7 +49,7 @@ ARG CONDA_USER=lab
 ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
-ARG JUPYTER_WORKSPACE=/mnt/workspace
+# ARG JUPYTER_WORKSPACE=/mnt/workspace
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 
 ## create new user and add sudo rights
@@ -213,7 +213,7 @@ RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt autoremove -y \
 ########################################################
 
 # make sure initial workspace has template files
-COPY --chown=${CONDA_USER} ./templates/workspace ${JUPYTER_WORKSPACE}
+COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 
 ########################################################
@@ -231,7 +231,7 @@ RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "gpw 1 4 | tr [:lower:] [:uppe
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
 ## create link to workspace
-RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_WORKSPACE}
+# RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_WORKSPACE}
 
 ## update terminal and shell settings
 ENV TERM xterm-256color
