@@ -101,7 +101,7 @@ def check_pytorch():
     coloured_print(f'pyTorch found CUDA devices: {torch.cuda.device_count()}', colour=colour)
     if torch.cuda.device_count() > 0:
         for i in range(0, torch.cuda.device_count()):
-            coloured_print(f'pyTorch CUDA device {i}: {torch.cuda.get_device_name(i)}', colour=colour)
+            coloured_print(f'GPU {i}: {torch.cuda.get_device_name(i)}', colour=colour)
     
     coloured_print('', colour=colour)
 
