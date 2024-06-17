@@ -151,11 +151,6 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 #  NVIDIA CUDA & TENSORFLOW INSTALLATION               #
 ########################################################
 
-## install cuda & tensorflow, using instructions https://docs.rapids.ai/install
-## those packages need to be installed together as per rapids installation guide
-#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda install -y --solver=libmamba \ 
-# -c rapidsai -c conda-forge -c nvidia  rapids=24.02 python=3.10 cuda-version=12.0 
-
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 ## needed if tensorflow or torch are installed using conda, otherwise this is ignored
 ENV CONDA_OVERRIDE_CUDA=12.4
@@ -229,9 +224,6 @@ COPY --chmod=644 ./conf/misc/motd-prototype.txt /
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "date >/build-date.txt"
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
-
-## create link to workspace
-# RUN ln -s ${JUPYTER_WORKSPACE} ${CONDA_USER_WORKSPACE}
 
 ## update terminal and shell settings
 ENV TERM xterm-256color
