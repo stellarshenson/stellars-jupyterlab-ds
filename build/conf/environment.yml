@@ -53,6 +53,7 @@ dependencies:
     - polars  # superfast alternative to pandas
     - progress # progress bar
     - pyarrow # backend for polars
+    - pytest # python test framework
     - pymc # python probabilistic programming library using bayesian statistics
     - python-dotenv # managing .env file loading in the runtime context
     - s3fs  # s3 filesystem access
