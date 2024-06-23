@@ -32,12 +32,10 @@ dependencies:
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
     - Pillow # image manipulation library
-    - albumentations # image augmentation library
     - build # to allow building packages in python
     - click # input parameters processing for python scripts
     - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
-    - coverage # tests coverage library
     - deprecation # decorators for function deprecation
     - gpustat # gpu status reporting tool
     - ipywidgets # jupyter widgets from IPython
@@ -55,7 +53,6 @@ dependencies:
     - progress # progress bar
     - pyarrow # backend for polars
     - pytest # python test framework
-    - pymc # python probabilistic programming library using bayesian statistics
     - python-dotenv # managing .env file loading in the runtime context
     - s3fs  # s3 filesystem access
     - scikit-learn # machine leanring library for python
@@ -65,7 +62,6 @@ dependencies:
     - setuptools  # for packaging python libraries
     - tabulate # print tables nicely
     - termcolor # print colors to terminal, i.e. coloured logs
-    - xgboost # gradient boosted decision trees
     - xlsxwriter # library to generate excel files (used by i.e.polars)
 
 # EOF
