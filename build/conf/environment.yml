@@ -50,7 +50,6 @@ dependencies:
     - optuna # hyperparameter tuning, see https://optuna.org/
     - pandas # data manipulation library
     - polars  # superfast alternative to pandas
-    - progress # progress bar
     - pyarrow # backend for polars
     - pytest # python test framework
     - python-dotenv # managing .env file loading in the runtime context
