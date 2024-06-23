@@ -18,6 +18,10 @@ build:
 build_verbose:
 	@cd ./bin && ./build_verbose.sh
 
+## pull docker image from dockerhub
+pull:
+	docker pull stellars/stellars-jupyterlab-ds:latest
+
 ## push docker containers to repo
 push:
 	docker push stellars/stellars-jupyterlab-ds:latest
