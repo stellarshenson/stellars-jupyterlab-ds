@@ -1,0 +1,22 @@
+Welcome to stellars-jupyterlab-ds platform. This is your environment intended
+for data science and machine learning / ai projects. You will find a lot of
+packagages installed and configured for you in such way that it just works.
+
+In the workspace you will find the following helpful tools:
+- workspace-git-*.sh: help you keep workspace git projects up to date
+- test_cuda_tf_and_torch.py: test if tensorflow and pytorch can use your GPU
+- cookiecutter-new-project.sh: create new data-science project using cookiecutter
+- logger.py: helpful library enable your data-science projects with cool logging
+
+You can always verify which packages are available in the platform by calling:
+$ conda list
+
+You can also find out about installed packages by inspecting:
+- /environment.yml
+
+Miniforge3 environment (conda) was installed under /opt/conda. It was installed
+with nb_conda_kernels extension. This way whenever you create a new environment
+it will become automatically available to you as a kernel.
+
+This message is displayed once every day.
+

@@ -17,7 +17,7 @@ tensorboard --bind_all --logdir /tmp/tf_logs --port 6006 &
 # generate ssl keys if don't exist yet (happens first time the script is run)
 CERTS_DIR="/mnt/certs"
 if [ ! -e "$CERTS_DIR/jupyterlab.crt" ]; then
-	/generate_jupyterlab_ssl.sh "$CERTS_DIR"
+	/generate-jupyterlab-ssl.sh "$CERTS_DIR"
 fi
 
 # run jupyterlab, env params are configured in Dockerfile and docker-compose yml 
