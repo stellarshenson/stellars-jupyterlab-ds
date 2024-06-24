@@ -26,7 +26,7 @@ COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 COPY --chmod=755  ./conf/bin/start-jupyterlab.sh /start-jupyterlab.sh
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /daily-message.sh
-COPY --chmod=655  ./conf/bin/generate-jupyterlab-ssl.sh /daily-message.txt
+COPY --chmod=655  ./conf/bin/daily-message.sh /daily-message.txt
 
 
 ########################################################
@@ -225,6 +225,7 @@ COPY --chmod=644 ./conf/misc/build-info.txt /
 COPY --chmod=644 ./conf/misc/motd-prototype.txt /
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "date >/build-date.txt"
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
+# RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c " rig | head -n 1 | awk '{print $2}'>/build-name.txt"
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
 ## update terminal and shell settings
