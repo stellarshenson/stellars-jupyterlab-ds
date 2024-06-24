@@ -30,9 +30,11 @@ if [[ "$SHLVL" -gt 2 ]]; then
     return
 fi
 
-# display daily message
-if [[ -f /daily-message.sh ]]; then
-    /daily-message.sh
+# display welcome message
+# it is displayed once a day and shows content of
+# /welcome-message.txt
+if [[ -f /welcome-message.sh ]]; then
+    /welcome-message.sh
 fi
 
 # display message of the day

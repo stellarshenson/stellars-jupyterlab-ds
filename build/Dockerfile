@@ -25,8 +25,8 @@ COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 COPY --chmod=755  ./conf/bin/start-jupyterlab.sh /start-jupyterlab.sh
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
-COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /daily-message.sh
-COPY --chmod=655  ./conf/bin/daily-message.sh /daily-message.txt
+COPY --chmod=755  ./conf/bin/welcome-message.sh /welcome-message.sh
+COPY --chmod=655  ./conf/misc/welcome-message.sh /welcome-message.txt
 
 
 ########################################################
