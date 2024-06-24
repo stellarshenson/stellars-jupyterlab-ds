@@ -21,10 +21,12 @@ RUN apt update && apt upgrade -y
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
 COPY --chmod=644  ./conf/environment.yml /environment.yml
-COPY --chmod=755  ./conf/bin/conda_entry.sh /conda_entry.sh
-COPY --chmod=755  ./conf/bin/conda_run.sh /conda_run.sh
+COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
+COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 COPY --chmod=755  ./conf/bin/start-jupyterlab.sh /start-jupyterlab.sh
-COPY --chmod=755  ./conf/bin/generate_jupyterlab_ssl.sh /generate_jupyterlab_ssl.sh
+COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
+COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /daily-message.sh
+COPY --chmod=655  ./conf/bin/generate-jupyterlab-ssl.sh /daily-message.txt
 
 
 ########################################################
@@ -125,7 +127,7 @@ RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} -f /environment.yml
 ## Tell the docker build process to use this for RUN.
 ## this script enables environment when used 
 ## with environment variable CONDA_DEFAULT_ENV=<environment_name>
-SHELL ["/conda_run.sh"]
+SHELL ["/conda-run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
@@ -235,7 +237,7 @@ ENV JUPYTERLAB_SERVER_PASSWORD ""
 
 ## setup entry point, workdir and startup command
 WORKDIR ${CONDA_USER_WORKSPACE}
-ENTRYPOINT ["/conda_entry.sh"]
+ENTRYPOINT ["/conda-entry.sh"]
 CMD ["/start-jupyterlab.sh"]
 
 # EOF
