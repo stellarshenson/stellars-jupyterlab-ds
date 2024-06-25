@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MESSAGE=$(cat /welcome_message.txt)
+MESSAGE=$(cat /welcome-message.txt)
 TIMESTAMP_FILE="$HOME/.last_message_timestamp"
 
 # Get the current date
