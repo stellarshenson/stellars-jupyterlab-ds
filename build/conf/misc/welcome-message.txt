@@ -18,5 +18,7 @@ Miniforge3 environment (conda) was installed under /opt/conda. It was installed
 with nb_conda_kernels extension. This way whenever you create a new environment
 it will become automatically available to you as a kernel.
 
+To execute commands as root use sudo, password is 'password' unless changed
+
 This message is displayed once every day.
 

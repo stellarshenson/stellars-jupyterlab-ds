@@ -1,2 +1,1 @@
 Jupyterlab platform build @BUILD_NAME@ created on @BUILD_DATE@
-To execute commands as root use sudo, password is 'password' unless changed
