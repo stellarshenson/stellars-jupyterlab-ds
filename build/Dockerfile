@@ -28,6 +28,7 @@ COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl
 COPY --chmod=755  ./conf/bin/welcome-message.sh /welcome-message.sh
 COPY --chmod=655  ./conf/misc/welcome-message.txt /welcome-message.txt
 
+
 ########################################################
 #  REMOVE DEFAULT PACKAGES                             #
 ########################################################

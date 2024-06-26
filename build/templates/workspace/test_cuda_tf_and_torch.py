@@ -76,14 +76,12 @@ def check_tensorflow():
         coloured_print(f'Tensorflow CUDA version: {tf.sysconfig.get_build_info()["cuda_version"]}', colour=colour)
         coloured_print(f'Tensorflow CUDNN version: {tf.sysconfig.get_build_info()["cudnn_version"]}', colour=colour)
     
-    coloured_print(f'Is GPU available: {len(tf.config.list_physical_devices("GPU")) > 0}', colour=colour)
-    
     # if gpu available, print its name
-    gpu_devices_list = tf.config.list_physical_devices('GPU')
-    coloured_print(f'Tensorflow found CUDA devices: {len(gpu_devices_list)}', colour=colour)
-    if len(gpu_devices_list) > 0:
-        for i in range(0, len(gpu_devices_list)):
-            gpu_details = tf.config.experimental.get_device_details(gpu_devices_list[i])
+    gpu_devices = tf.config.list_physical_devices('GPU')
+    coloured_print(f'Tensorflow found CUDA devices: {len(gpu_devices)}', colour=colour)
+    if len(gpu_devices) > 0:
+        for i in range(0, len(gpu_devices)):
+            gpu_details = tf.config.experimental.get_device_details(gpu_devices[i])
             coloured_print(f'GPU {i}: {gpu_details["device_name"]}', colour=colour)
 
 
@@ -101,7 +99,7 @@ def check_pytorch():
     coloured_print(f'pyTorch found CUDA devices: {torch.cuda.device_count()}', colour=colour)
     if torch.cuda.device_count() > 0:
         for i in range(0, torch.cuda.device_count()):
-            coloured_print(f'GPU {i}: {torch.cuda.get_device_name(i)}', colour=colour)
+            coloured_print(f'pyTorch CUDA device {i}: {torch.cuda.get_device_name(i)}', colour=colour)
     
     coloured_print('', colour=colour)
 
