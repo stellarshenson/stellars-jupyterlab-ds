@@ -20,4 +20,3 @@ it will become automatically available to you as a kernel.
 
 This message is displayed once every day.
 
-
