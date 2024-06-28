@@ -2,6 +2,16 @@ Welcome to stellars-jupyterlab-ds platform. This is your environment intended
 for data science and machine learning / ai projects. You will find a lot of
 packagages installed and configured for you in such way that it just works.
 
+Running JupyterLab server on  https://localhost:8888
+Connect VSCode to Jupyter on  https://localhost:8888/lab/tree
+Running Tensorboard server on http://localhost:6006
+Tensorboard monitoring logs located in /tmp/tf_logs
+Using work dir (projects) /home/lab/workspace (mount)
+Jupyterlab settings saved to /home/lab/.jupyter
+
+Visit: https://github.com/stellarshenson/stellars-jupyterlab-ds                         
+
+
 In the workspace you will find the following helpful tools:
 - workspace-git-*.sh: help you keep workspace git projects up to date
 - test_cuda_tf_and_torch.py: test if tensorflow and pytorch can use your GPU
