@@ -9,6 +9,7 @@ dependencies:
   - pip # package manager
   - pip-tools # other packaging tools
   - awscli # aws client, binary install
+  - urllib3<2 # specific version because of awscli issues
 
   ## jupyterlab and language server
   - jupyterlab # makes sure latest jupyterlab is installed
