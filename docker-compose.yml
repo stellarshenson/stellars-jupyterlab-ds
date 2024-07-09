@@ -6,7 +6,6 @@
 #   Tensorboard - http://localhost:6006
 #
 # ----------------------------------------------------------------------------------------
-version: "3"
 
 services:
   # run jupyterlab on a local port 8888
