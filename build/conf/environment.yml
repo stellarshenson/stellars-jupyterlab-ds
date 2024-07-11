@@ -8,7 +8,7 @@ dependencies:
   - python=3.11 # latest python version for tensorflow to work
   - pip # package manager
   - pip-tools # other packaging tools
-  - awscli # aws client, binary install
+  - awscli>1 # aws client, binary install
   - urllib3<2 # specific version because of awscli issues
 
   ## jupyterlab and language server
