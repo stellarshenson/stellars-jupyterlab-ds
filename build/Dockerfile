@@ -2,7 +2,7 @@
 FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 
 # File Author / Maintainer
-MAINTAINER Konrad Jelen <konrad.jelen@gmail.com>
+LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
