@@ -8,6 +8,7 @@ packages:
     - git # git client
     - gpg # for keys manipulation and adding repos to apt
     - gpw # generates unique identifiers
+    - htop # colourful system resources monitor
     - iputils-ping # simple ping utility
     - less # interactive file reader
     - locate # file locator via updatedb
