@@ -1,6 +1,8 @@
 ## this dockergfile is loosely based on the github project
 FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 
+# nvidia/cuda:12.5.0-runtime-ubuntu22.04
+
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
 
@@ -46,7 +48,7 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 ########################################################
 
 ## user to be used with conda
-ENV CONDA_HOME /opt/conda
+ENV CONDA_HOME=/opt/conda
 ARG CONDA_USER=lab
 ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
@@ -95,8 +97,8 @@ USER root
 
 ## Create target env and ignore pip warnings
 ## you can use 'base' or 'jupyterlab' for env name
-ENV CONDA_DEFAULT_ENV base
-ENV CONDA_PYTHON_VERSION 3.11
+ENV CONDA_DEFAULT_ENV=base
+ENV CONDA_PYTHON_VERSION=3.11
 
 ## change ownership of conda folder to conda user
 RUN mkdir -p /opt/conda && chown -R :${JUPYTER_GROUP} ${CONDA_HOME} && chmod -R 770 ${CONDA_HOME}
@@ -112,7 +114,7 @@ USER ${CONDA_USER}
 WORKDIR ${CONDA_USER_HOME}
 
 ## set path to conda bin
-ENV PATH $PATH:/opt/conda/bin
+ENV PATH=$PATH:/opt/conda/bin
 
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
@@ -172,11 +174,11 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
 ## path can be obtained by using >> python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
-ENV CUDNN_PATH /opt/conda/lib/python3.11/site-packages/nvidia/cudnn
-ENV LD_LIBRARY_PATH ${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
+ENV CUDNN_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn
+ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 
 ## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
-ENV TF_CPP_MIN_LOG_LEVEL 3
+ENV TF_CPP_MIN_LOG_LEVEL=3
 
 ## install cuda accelerated numpy = cupy and conda-version
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
@@ -218,7 +220,7 @@ COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 ########################################################
 
 ## ignore pip warnings re root access
-ENV PIP_ROOT_USER_ACTION ignore
+ENV PIP_ROOT_USER_ACTION=ignore
 
 ## save build date for reference
 COPY --chmod=644 ./conf/misc/build-info.txt /
@@ -229,12 +231,12 @@ RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "gpw 1 4 | tr [:lower:] [:uppe
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
 ## update terminal and shell settings
-ENV TERM xterm-256color
+ENV TERM=xterm-256color
 
 ## startup ENV parameters for jupyterlab
-ENV JUPYTERLAB_SERVER_IP "*"
-ENV JUPYTERLAB_SERVER_TOKEN ""
-ENV JUPYTERLAB_SERVER_PASSWORD ""
+ENV JUPYTERLAB_SERVER_IP="*"
+ENV JUPYTERLAB_SERVER_TOKEN=""
+ENV JUPYTERLAB_SERVER_PASSWORD=""
 
 ## setup entry point, workdir and startup command
 WORKDIR ${CONDA_USER_WORKSPACE}
