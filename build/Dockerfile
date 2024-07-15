@@ -1,10 +1,10 @@
 ## this dockergfile is loosely based on the github project
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
-
-# nvidia/cuda:12.5.0-runtime-ubuntu22.04
+# FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
+
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
