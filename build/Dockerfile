@@ -1,3 +1,55 @@
+## this container will serve as a builder for some cuda-specific
+## libraries like huggingface llama_cpp
+
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04 AS builder
+
+# Install necessary packages for building
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    wget \
+    cmake \
+    python3 \
+    python3-pip \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# make sure we have conda
+ENV CONDA_DEFAULT_ENV=base
+ENV PATH=$PATH:/opt/conda/bin
+ARG CONDA_HOME=/opt/conda
+ARG CONDA_PYTHON_VERSION=3.11
+RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+ -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
+ && rm -rf ~/miniforge3.sh
+
+## update conda system & install required packages from environment.yml
+RUN conda install -n base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
+RUN conda update -n base -c defaults -y conda
+RUN conda install -n base -y cuda-toolkit=12.1
+
+# enable special shell for conda
+COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
+SHELL ["/conda-run.sh"]
+RUN conda init
+
+# create work directory
+ARG BUILD_DIR=/opt/build
+ARG EXPORT_DIR=/opt/exports
+RUN mkdir ${BUILD_DIR} ${EXPORT_DIR}
+WORKDIR ${BUILD_DIR}
+
+## Build the llama-cpp-python library with CUDA support
+## additional permisible params: -DGGML_CUDA_FORCE_CUBLAS=on -DGGML_CUDA_FORCE_MMQ=on 
+RUN CMAKE_ARGS="-DGGML_CUDA=on -DCUDA_ARCHITECTURES=all-major" FORCE_CMAKE=1 pip wheel llama-cpp-python --no-cache-dir
+
+# copy custom built packages to /opt/custo
+RUN cp llama*.whl ${EXPORT_DIR}
+
+##############################################################################################
+##############################################################################################
+
 ## this dockergfile is loosely based on the github project
 FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 # FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
@@ -6,6 +58,9 @@ FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
 ARG TENSORFLOW_VERSION="==2.16.1"
 
+# copy build dir from builder
+ARG EXPORT_DIR=/opt/exports
+COPY --from=builder ${EXPORT_DIR} ${EXPORT_DIR}
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
@@ -54,7 +109,6 @@ ARG CONDA_USER=lab
 ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
-# ARG JUPYTER_WORKSPACE=/mnt/workspace
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 
 ## create new user and add sudo rights
@@ -74,11 +128,6 @@ USER ${CONDA_USER}
 
 ## use predefined contents of a user home
 COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
-
-## use predefined jupyter and other config files
-#COPY --chown=${CONDA_USER} ./conf/dot.jupyter ${CONDA_USER_HOME}/.jupyter
-#COPY --chown=${CONDA_USER} ./conf/dot.config  ${CONDA_USER_HOME}/.config
-#COPY --chown=${CONDA_USER} --chmod=644 ./conf/dot.vimrc   ${CONDA_USER_HOME}/.vimrc
 
 ## ensure good permissions
 RUN find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700 \
@@ -188,9 +237,18 @@ ENV TF_CPP_MIN_LOG_LEVEL=3
 ## install torchvision, torch and ultralytics (yolo)
 ## also install libgl1 to avoid issues with libGL missing
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1
-RUN  CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
  pip install --upgrade torch torchvision ultralytics
 
+
+########################################################
+#  GENERATIVE AI SUPPORT                               #
+########################################################
+
+## packages were built by the builder container, install them all
+## among the packages is CUDA supported llama-cpp-python
+USER ${CONDA_USER}
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install ${EXPORT_DIR}/*.whl 
 
 ########################################################
 #  FINAL UPDATE AND CLEANUP                            #
