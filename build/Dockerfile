@@ -1,9 +1,10 @@
 ## this dockergfile is loosely based on the github project
-# FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
-FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+# FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
+ARG TENSORFLOW_VERSION="==2.16.1"
 
 
 # update sources list and increase timeouts
@@ -167,7 +168,7 @@ ENV CONDA_OVERRIDE_CUDA=12.4
 ## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
 ## installing tf-keras allows to use KERAS v2 (legacy)
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- pip install --upgrade tensorflow[and-cuda] tf-keras tensorboard keras-cv \
+ pip install --upgrade tensorflow[and-cuda]${TENSORFLOW_VERSION} tf-keras tensorboard keras-cv \
  keras-mdn-layer keras-multi-head keras-self-attention keras-tcn keras_nlp
 
 
