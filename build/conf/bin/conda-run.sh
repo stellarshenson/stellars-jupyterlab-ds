@@ -12,8 +12,9 @@
 ## The SHELL ["/run.sh"] command passes everything in the RUN stanza as a single string
 ## There may be a better way to unpack it. We must unpack before conda setup
 IFS=' ' read -ra ARGS <<< "${1}"
-FIRST=`eval echo ${ARGS[@]::1}`
-#before was: FIRST=${ARGS[@]::1}
+## FIRST=`eval echo ${ARGS[@]::1}`
+#before was: 
+FIRST=${ARGS[@]::1}
 
 ## setup conda - it will overwrite all conda variables
 __conda_setup="$('/opt/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
