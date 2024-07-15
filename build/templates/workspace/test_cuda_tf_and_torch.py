@@ -109,22 +109,18 @@ def check_pytorch():
         for i in range(0, torch.cuda.device_count()):
             coloured_print(f'GPU {i}: {torch.cuda.get_device_name(i)}', colour=colour)
 
-
 if __name__ == '__main__':
-    # Open /dev/null and get its file descriptor
-    with open(os.devnull, 'w') as devnull:
-        devnull_fd = devnull.fileno()
-        # Duplicate the original stderr file descriptor
-        original_stderr_fd = os.dup(sys.stderr.fileno())
+    # Redirect stderr to /dev/null but save orig fd
+    devnull = open(os.devnull, 'w')
+    devnull_fd = devnull.fileno()
+    original_stderr_fd = os.dup(sys.stderr.fileno())
+    os.dup2(devnull_fd, sys.stderr.fileno())
 
-        # Redirect stderr to /dev/null
-        os.dup2(devnull_fd, sys.stderr.fileno())
+    check_pytorch() # need to call before tensorflow    
+    check_tensorflow()
+    print('')
 
-        check_pytorch() # need to call before tensorflow    
-        check_tensorflow()
-        print('')
-
-        # Restore stderr
-        os.dup2(original_stderr_fd, sys.stderr.fileno())
+    # Restore stderr
+    os.dup2(original_stderr_fd, sys.stderr.fileno())
     
 # EOF
