@@ -34,6 +34,7 @@ dependencies:
     - IProgress # jupyterlab widget to show progress, used by optuna
     - Pillow # image manipulation library
     - build # to allow building packages in python
+    - boto3 # aws webservices client
     - click # input parameters processing for python scripts
     - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
