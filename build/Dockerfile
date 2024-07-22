@@ -231,6 +231,7 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 ENV TF_CPP_MIN_LOG_LEVEL=3
 ENV NVCCFLAGS="-Xptxas=--disable-warnings"
 
+
 ## install cuda accelerated numpy = cupy and conda-version
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
