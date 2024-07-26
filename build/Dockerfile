@@ -56,7 +56,7 @@ FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
-ARG TENSORFLOW_VERSION="==2.16.1"
+ARG TENSORFLOW_VERSION="<2.17"
 
 # copy build dir from builder
 ARG EXPORT_DIR=/opt/exports
