@@ -11,24 +11,27 @@ Jupyterlab settings saved to /home/lab/.jupyter
 
 Visit: https://github.com/stellarshenson/stellars-jupyterlab-ds                         
 
-
 In the workspace you will find the following helpful tools:
 - workspace-git-*.sh: help you keep workspace git projects up to date
 - test_cuda_tf_and_torch.py: test if tensorflow and pytorch can use your GPU
 - cookiecutter-new-project.sh: create new data-science project using cookiecutter
-- logger.py: helpful library enable your data-science projects with cool logging
 
-You can always verify which packages are available in the platform by calling:
+Tensorflow version is 2.16.2 [cuda] and Torch version is 2.0 [cuda]
+Tensorrt was not installed because of the license limitations
+Follow https://developer.nvidia.com/tensorrt/download/10x to install
+
+There were many useful scientific and machine learning packages preinstalled
+You can always verify which of them are available in the platform by executing:
 $ conda list
 
 You can also find out about installed packages by inspecting:
 - /environment.yml
 
-Miniforge3 environment (conda) was installed under /opt/conda. It was installed
-with nb_conda_kernels extension. This way whenever you create a new environment
-it will become automatically available to you as a kernel.
+Miniforge3 environment (conda) was installed in `/opt/conda`. 
+Thanks to `nb_conda_kernels` extension, whenever you create a new environment
+it will be available to you as a kernel in the jupyterlab environment
 
-To execute commands as root use sudo, password is 'password' unless changed
+To execute commands as root use `sudo`, password is 'password' unless changed
 
-This message is displayed once every day.
+This message will be displayed once every day.
 

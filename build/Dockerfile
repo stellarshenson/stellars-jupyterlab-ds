@@ -209,17 +209,16 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 ## needed if tensorflow or torch are installed using conda, otherwise this is ignored
 ENV CONDA_OVERRIDE_CUDA=12.4
 
-## install cuda toolkit - required by tensorflow and torch
-## disabled because required packages are already 
-## available in in nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
-# RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install cuda-toolkit -y
+## install libgl1 to avoid issues with libGL missing for ultralytics
+RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1
 
 ## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
 ## installing tf-keras allows to use KERAS v2 (legacy)
+## install pytorch with torchvision and ultralytics (yolo)
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
  pip install --upgrade tensorflow[and-cuda]${TENSORFLOW_VERSION} tf-keras tensorboard keras-cv \
- keras-mdn-layer keras-multi-head keras-self-attention keras-tcn keras_nlp
-
+ keras-mdn-layer keras-multi-head keras-self-attention keras-tcn keras_nlp \
+ torch torchvision ultralytics
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
@@ -231,17 +230,9 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 ENV TF_CPP_MIN_LOG_LEVEL=3
 ENV NVCCFLAGS="-Xptxas=--disable-warnings"
 
-
 ## install cuda accelerated numpy = cupy and conda-version
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
-
-## install torchvision, torch and ultralytics (yolo)
-## also install libgl1 to avoid issues with libGL missing
-RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
- pip install --upgrade torch torchvision ultralytics
-
 
 ########################################################
 #  GENERATIVE AI SUPPORT                               #
