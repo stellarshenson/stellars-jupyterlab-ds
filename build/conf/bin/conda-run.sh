@@ -40,7 +40,7 @@ else
 fi
 
 ##logging, this is just for debugging, you can enable this to sanity check or see what is happening
->&2 echo "ENV: ${_CONDA_DEFAULT_ENV}, COMMAND: ${EXEC_ARGS}"
+# >&2 echo "ENV: ${_CONDA_DEFAULT_ENV}, COMMAND: ${EXEC_ARGS}"
 conda activate "${_CONDA_DEFAULT_ENV}"
 /bin/bash -c "${EXEC_ARGS}"
 
