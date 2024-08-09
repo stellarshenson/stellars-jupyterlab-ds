@@ -48,7 +48,11 @@ There will be software required to be installed in order to run this:
 
 1. run `docker-compose pull` in the main folder to download the latest container image 
 2. (optional) run `docker-compose build` to build the image. Be aware that __building takes approx 1.5h__
-3. run `docker-compose up` in the main folder to run the container
+3. start container using either default or custom configuration
+    - run `docker-compose up` in the main folder to start the standard non-cuda container
+    - run `docker-compose -f docker-compose-nvidia.yml up` to start standard cuda container
+    - run `docker-compose -f local/your-custom-docker-compose.yml up` to start your custom container
+    - ... or use `bin/start*` scripts
 4. access https://localhost:8888 to run JupyterLab
 5. access http://localhost:6006 to run Tensorboard
 
