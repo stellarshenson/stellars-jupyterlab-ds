@@ -126,8 +126,6 @@ if __name__ == '__main__':
     except:
         pass
 
-    print('')
-
     # Restore stderr
     os.dup2(original_stderr_fd, sys.stderr.fileno())
     
