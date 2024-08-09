@@ -1,0 +1,22 @@
+name: tensorflow
+channels:
+  - conda-forge # default repo for miniforge3
+  - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
+
+dependencies:
+  - python=3.11 # latest python version for tensorflow to work
+  - pip
+
+  - pip:
+    - tensorflow[and-cuda]<2.17
+    - tf-keras 
+    - tensorboard 
+    - keras-cv 
+    - keras-mdn-layer 
+    - keras-multi-head 
+    - keras-self-attention 
+    - keras-tcn 
+    - keras_nlp
+
+# EOF
+

@@ -56,6 +56,10 @@ There will be software required to be installed in order to run this:
 4. access https://localhost:8888 to run JupyterLab
 5. access http://localhost:6006 to run Tensorboard
 
+**Quick Configuration**
+
+- use `CONDA_DEFAULT_ENV` variable in docker-compose `.yml` files to indicate your default conda env
+
 
 **Default settings**
 - work dir is `/opt/workspace`
