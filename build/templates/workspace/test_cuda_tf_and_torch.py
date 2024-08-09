@@ -89,7 +89,7 @@ def check_tensorflow():
             coloured_print(f'GPU {i}: {gpu_details["device_name"]}', colour=colour)
         
 
-def check_pytorch():
+def check_torch():
     # only initialise torch when called (prevents segfault)
     import torch
     
@@ -98,12 +98,12 @@ def check_pytorch():
     
     # check for torch devices
     coloured_print('', colour=colour)
-    coloured_print('#### pyTorch ###########################################', colour='light'+colour)
+    coloured_print('#### Torch #############################################', colour='light'+colour)
 
-    coloured_print(f'pyTorch version: {torch.__version__}', colour=colour)
-    coloured_print(f'pyTorch built with CUDA support: {torch.cuda.is_available()}', colour=colour)
-    if torch.cuda.is_available(): coloured_print(f"pyTorch CUDA version: {torch.version.cuda}", colour=colour)
-    coloured_print(f'pyTorch found CUDA devices: {torch.cuda.device_count()}', colour=colour)
+    coloured_print(f'Torch version: {torch.__version__}', colour=colour)
+    coloured_print(f'Torch built with CUDA support: {torch.cuda.is_available()}', colour=colour)
+    if torch.cuda.is_available(): coloured_print(f"Torch CUDA version: {torch.version.cuda}", colour=colour)
+    coloured_print(f'Torch found CUDA devices: {torch.cuda.device_count()}', colour=colour)
 
     if torch.cuda.device_count() > 0:
         for i in range(0, torch.cuda.device_count()):
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     os.dup2(devnull_fd, sys.stderr.fileno())
 
     try:
-        check_pytorch() # need to call before tensorflow    
+        check_torch() # need to call before tensorflow    
     except:
         pass
 
