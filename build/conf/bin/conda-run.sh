@@ -17,7 +17,7 @@ IFS=' ' read -ra ARGS <<< "${1}"
 FIRST=${ARGS[@]::1}
 
 ## setup conda - it will overwrite all conda variables
-__conda_setup="$('/opt/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$($CONDA_CMD 'shell.bash' 'hook' 2> /dev/null)"
 eval "$__conda_setup"
 unset __conda_setup
 

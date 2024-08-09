@@ -26,7 +26,7 @@
 ## cache the value because the shell hook step will remove it
 _CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV:-base}"
 
-__conda_setup="$('/opt/conda/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$($CONDA_CMD 'shell.bash' 'hook' 2> /dev/null)"
 eval "$__conda_setup"
 unset __conda_setup
 
