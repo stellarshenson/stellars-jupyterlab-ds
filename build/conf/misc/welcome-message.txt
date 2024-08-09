@@ -13,7 +13,7 @@ Visit: [34mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m
 
 In the workspace you will find the following helpful tools:
 - [94mworkspace-git-*.sh[0m: help you keep workspace git projects up to date
-- [94mtest_cuda_tf_and_torch.py[0m: test if tensorflow and pytorch can use your GPU
+- [94mtest_cuda_tf_and_torch.sh[0m: test if tensorflow and pytorch can use your GPU
 - [94mcookiecutter-new-project.sh[0m: create new data-science project using cookiecutter
 
 There were many useful scientific and machine learning packages preinstalled

@@ -15,7 +15,7 @@ Visit: https://github.com/stellarshenson/stellars-jupyterlab-ds
 
 In the workspace you will find the following helpful tools:
 - `workspace-git-*.sh`: help you keep workspace git projects up to date
-- `test_cuda_tf_and_torch.py`: test if tensorflow and pytorch can use your GPU
+- `test_cuda_tf_and_torch.sh`: test if tensorflow and pytorch can use your GPU
 - `cookiecutter-new-project.sh`: create new data-science project using cookiecutter
 
 There were many useful scientific and machine learning packages preinstalled
@@ -33,16 +33,16 @@ You can also find out about installed packages by inspecting manifest files:
 `/environment_base.yml`, `/environment_tensorflow.yml` and `/environment_torch.yml`
 
 Miniforge3 environment (conda) was installed in `/opt/conda`
-Thanks to `nb_conda_kernels` extension, whenever you create a new environment
-it will be available to you as a kernel in the jupyterlab environment
+Thanks to `nb_conda_kernels` extension, when you create new environment
+it will be automatically available to you as a kernel in the jupyterlab environment
 
 To execute commands as root use: `sudo`, password is: `password` unless changed
 
 
-# Projects Workspace
+## Projects Workspace
 
 - `cookiecutter-new-project.sh` - creates new project using enhanced cookiecutter datascience template
-- `test\_cuda\_tf\_and\_torch.py` - tests cuda components and GPU support
+- `test_cuda_tf_and_torch.sh` - tests cuda components and GPU support
 - `logger.py` - useful logging library for the notebooks
 - `workspace-git-commit.sh` - runs git commit for all repos in the workspace
 - `workspace-git-pull.sh` - runs git pull with rebase for all git repos in the workspace
