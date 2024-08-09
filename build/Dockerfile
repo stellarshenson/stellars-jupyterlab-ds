@@ -1,6 +1,6 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
-FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu20.04 AS builder
+FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
 
 
 # Install necessary packages for building
@@ -54,8 +54,8 @@ RUN cp llama*.whl ${EXPORT_DIR}
 ##############################################################################################
 
 ## this dockergfile is loosely based on the github project
-FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu20.04
-# FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
+# FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04
+FROM nvidia/cuda:12.5.1-runtime-ubuntu22.04
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
@@ -101,8 +101,8 @@ COPY --chmod=655  ./conf/misc/welcome-message.txt /welcome-message.txt
 ## we need to remove them all and install conda
 ## filter packages to not uninstall base packages
 RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
- && pip uninstall -r requirements-to-uninstall.txt -y 
-# && pip cache purge
+ && pip uninstall -r requirements-to-uninstall.txt -y  \
+ && pip cache purge
 
 
 ########################################################
