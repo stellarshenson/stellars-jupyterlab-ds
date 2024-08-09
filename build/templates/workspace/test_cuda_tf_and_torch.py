@@ -1,8 +1,8 @@
-#!/opt/conda/bin/python
-
+#!/usr/bin/env python
 from colorama import Fore, Back, Style
 import os
 import sys
+import io
 
 
 def coloured_text(text, colour="white", bg_colour="normal", style="normal") -> str:
@@ -116,11 +116,20 @@ if __name__ == '__main__':
     original_stderr_fd = os.dup(sys.stderr.fileno())
     os.dup2(devnull_fd, sys.stderr.fileno())
 
-    check_pytorch() # need to call before tensorflow    
-    check_tensorflow()
+    try:
+        check_pytorch() # need to call before tensorflow    
+    except:
+        pass
+
+    try:
+        check_tensorflow()
+    except:
+        pass
+
     print('')
 
     # Restore stderr
     os.dup2(original_stderr_fd, sys.stderr.fileno())
     
 # EOF
+

@@ -19,6 +19,7 @@ services:
        dockerfile: Dockerfile
     command: /start-jupyterlab.sh
     environment:
+       - CONDA_DEFAULT_ENV=base # choices are: base, tensorflow, torch
        - JUPYTERLAB_SERVER_IP=*
        - JUPYTERLAB_SERVER_TOKEN=
        - JUPYTERLAB_SERVER_PASSWORD=

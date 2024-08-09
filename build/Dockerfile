@@ -1,9 +1,10 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
+FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu20.04 AS builder
 
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04 AS builder
 
 # Install necessary packages for building
+ENV DEBIAN_FRONTEND=noninteractive 
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
@@ -24,7 +25,7 @@ RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Minif
  -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
  && rm -rf ~/miniforge3.sh
 
-## update conda system & install required packages from environment.yml
+## install base env
 RUN conda install -n base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
 RUN conda update -n base -c defaults -y conda
 RUN conda install -n base -y cuda-toolkit=12.1
@@ -51,7 +52,7 @@ RUN cp llama*.whl ${EXPORT_DIR}
 ##############################################################################################
 
 ## this dockergfile is loosely based on the github project
-FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
+FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu20.04
 # FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
 
 # File Author / Maintainer
@@ -70,6 +71,7 @@ COPY ./conf/apt-packages.yml /apt-packages.yml
 # RUN apt update && apt install -y software-properties-common
 # RUN add-apt-repository ppa:rmescandon/yq -y && apt update && apt install yq -y
 # and then copy /etc/apt/sources.list.d to docker image
+ENV DEBIAN_FRONTEND=noninteractive 
 RUN apt update && apt install yq -y 
 
 # install required packages, list will be taken from apt-packages.yml
@@ -78,7 +80,9 @@ RUN apt update && apt upgrade -y
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
-COPY --chmod=644  ./conf/environment.yml /environment.yml
+COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
+COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
+COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
 COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 COPY --chmod=755  ./conf/bin/start-jupyterlab.sh /start-jupyterlab.sh
@@ -95,8 +99,8 @@ COPY --chmod=655  ./conf/misc/welcome-message.txt /welcome-message.txt
 ## we need to remove them all and install conda
 ## filter packages to not uninstall base packages
 RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
- && pip uninstall -r requirements-to-uninstall.txt -y \
- && pip cache purge
+ && pip uninstall -r requirements-to-uninstall.txt -y 
+# && pip cache purge
 
 
 ########################################################
@@ -147,7 +151,10 @@ USER root
 
 ## Create target env and ignore pip warnings
 ## you can use 'base' or 'jupyterlab' for env name
+## also made dedicatedd tf and pt envs but they are not used yet
 ENV CONDA_DEFAULT_ENV=base
+ENV CONDA_TENSORFLOW_ENV=tensorflow
+ENV CONDA_TORCH_ENV=torch
 ENV CONDA_PYTHON_VERSION=3.11
 
 ## change ownership of conda folder to conda user
@@ -172,9 +179,11 @@ RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Minif
  && rm -rf ~/miniforge3.sh
 
 ## update conda system & install required packages from environment.yml
-RUN conda install -n base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
-RUN conda update -n base -c defaults -y conda
-RUN conda env update -n ${CONDA_DEFAULT_ENV:-base} -f /environment.yml 
+RUN conda install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
+RUN conda update --name base -c conda-forge -y conda
+
+## create first environment (should be base)
+RUN conda env update --name ${CONDA_DEFAULT_ENV:-base} -f /environment_base.yml 
 
 ## Tell the docker build process to use this for RUN.
 ## this script enables environment when used 
@@ -201,24 +210,37 @@ RUN cat ${CONDA_USER_HOME}/dot.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge \
 ## final update of the entire conda using conda-forge as preferred channel
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
 
+## clone built base env to both tensorflow and torch envs
+RUN conda create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
+RUN conda create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
+
+
+
 ########################################################
 #  NVIDIA CUDA & TENSORFLOW INSTALLATION               #
 ########################################################
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 ## needed if tensorflow or torch are installed using conda, otherwise this is ignored
-ENV CONDA_OVERRIDE_CUDA=12.4
+ENV CONDA_OVERRIDE_CUDA=12.5
 
 ## install libgl1 to avoid issues with libGL missing for ultralytics
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1
 
-## install tensorflow using pip using >>> pip install tensorflow[and-cuda]
+## install tensorflow using pip to its dedicated environment
 ## installing tf-keras allows to use KERAS v2 (legacy)
-## install pytorch with torchvision and ultralytics (yolo)
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
- pip install --upgrade tensorflow[and-cuda]${TENSORFLOW_VERSION} tf-keras tensorboard keras-cv \
- keras-mdn-layer keras-multi-head keras-self-attention keras-tcn keras_nlp \
- torch torchvision ultralytics
+#RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} \ 
+# pip install --upgrade tensorflow[and-cuda]${TENSORFLOW_VERSION} tf-keras tensorboard keras-cv \
+# keras-mdn-layer keras-multi-head keras-self-attention keras-tcn keras_nlp \
+# && pip cache purge
+RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV:-base} -f /environment_tensorflow.yml 
+
+## install torch to its dedicated environment
+## install torch with torchvision and ultralytics (yolo)
+#RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} \ 
+# pip install torch torchvision ultralytics \
+# && pip cache purge
+RUN conda env update -v --name ${CONDA_TORCH_ENV:-base} -f /environment_torch.yml 
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
@@ -228,7 +250,6 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 
 ## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
 ENV TF_CPP_MIN_LOG_LEVEL=3
-ENV NVCCFLAGS="-Xptxas=--disable-warnings"
 
 ## install cuda accelerated numpy = cupy and conda-version
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
@@ -241,7 +262,8 @@ ENV NVCCFLAGS="-Xptxas=--disable-warnings"
 ## packages were built by the builder container, install them all
 ## among the packages is CUDA supported llama-cpp-python
 USER ${CONDA_USER}
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install ${EXPORT_DIR}/*.whl 
+RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} pip install ${EXPORT_DIR}/*.whl 
+RUN CONDA_DEFAULT_ENV=${CONDA_PYTORCH_ENV} pip install ${EXPORT_DIR}/*.whl 
 
 ########################################################
 #  FINAL UPDATE AND CLEANUP                            #
@@ -253,7 +275,8 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} pip install ${EXPORT_DIR}/*.whl
 # conda update -c conda-forge --all -y
 
 ## conda and pip cleanup
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
+# RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
+RUN conda clean -ltpy && pip cache purge
 
 ## apt cleanup
 RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt autoremove -y \

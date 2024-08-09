@@ -1,14 +1,14 @@
 
 █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
-█ Build '@BUILD_NAME@' created on @BUILD_DATE@                                    █
+█ Build [36m@BUILD_NAME@[0m created on [36m@BUILD_DATE@[0m                                      █
 █ --------------------------------------------------------------------------------------- █
-█ Running JupyterLab server on  https://localhost:8888                                    █
-█ Connect VSCode to Jupyter on  https://localhost:8888/lab/tree                           █
-█ Running Tensorboard server on http://localhost:6006                                     █
-█ Tensorboard monitoring logs located in /tmp/tf_logs                                     █
-█ Using work dir (projects) /home/lab/workspace (mount)                                   █
-█ Jupyterlab settings saved to /home/lab/.jupyter                                         █
+█ Running JupyterLab server on  [34mhttps://localhost:8888[0m                                    █
+█ Connect VSCode to Jupyter on  [34mhttps://localhost:8888/lab/tree[0m                           █
+█ Running Tensorboard server on [34mhttp://localhost:6006[0m                                     █
+█ Tensorboard monitoring logs located in [34m/tmp/tf_logs[0m                                     █
+█ Using work dir (projects) [34m/home/lab/workspace[0m (mount)                                   █
+█ Jupyterlab settings saved to [34m/home/lab/.jupyter[0m                                         █
 █ --------------------------------------------------------------------------------------- █
-█ Visit: https://github.com/stellarshenson/stellars-jupyterlab-ds                         █
+█ Visit: [36mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m                         █
 █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
 

@@ -2,36 +2,38 @@ Welcome to stellars-jupyterlab-ds platform. This is your environment intended
 for data science and machine learning / ai projects. You will find a lot of
 packagages installed and configured for you in such way that it just works.
 
-Running JupyterLab server on  https://localhost:8888
-Connect VSCode to Jupyter on  https://localhost:8888/lab/tree
-Running Tensorboard server on http://localhost:6006
-Tensorboard monitoring logs located in /tmp/tf_logs
-Using work dir (projects) /home/lab/workspace (mount)
-Jupyterlab settings saved to /home/lab/.jupyter
+Running JupyterLab server on  [34mhttps://localhost:8888[0m
+Connect VSCode to Jupyter on  [34mhttps://localhost:8888/lab/tree[0m
+Running Tensorboard server on [34mhttp://localhost:6006[0m
+Tensorboard monitoring logs located in [34m/tmp/tf_logs[0m
+Using work dir (projects) [34m/home/lab/workspace[0m (mount)
+Jupyterlab settings saved to [34m/home/lab/.jupyter[0m
 
-Visit: https://github.com/stellarshenson/stellars-jupyterlab-ds                         
+Visit: [34mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m                       
 
 In the workspace you will find the following helpful tools:
-- workspace-git-*.sh: help you keep workspace git projects up to date
-- test_cuda_tf_and_torch.py: test if tensorflow and pytorch can use your GPU
-- cookiecutter-new-project.sh: create new data-science project using cookiecutter
-
-Tensorflow version is 2.16.2 [cuda] and Torch version is 2.0 [cuda]
-Tensorrt was not installed because of the license limitations
-Follow https://developer.nvidia.com/tensorrt/download/10x to install
+- [94mworkspace-git-*.sh[0m: help you keep workspace git projects up to date
+- [94mtest_cuda_tf_and_torch.py[0m: test if tensorflow and pytorch can use your GPU
+- [94mcookiecutter-new-project.sh[0m: create new data-science project using cookiecutter
 
 There were many useful scientific and machine learning packages preinstalled
 You can always verify which of them are available in the platform by executing:
-$ conda list
+[36m$ conda list[0m
 
-You can also find out about installed packages by inspecting:
-- /environment.yml
+There are by default three environments installed: [34mbase[0m, [34mtensorflow[0m and [34mtorch[0m
+You can change active environment using:
+[36m$ conda activate env_name[0m
 
-Miniforge3 environment (conda) was installed in `/opt/conda`. 
-Thanks to `nb_conda_kernels` extension, whenever you create a new environment
+Default environment is set using [36mCONDA_DEFAULT_ENV[0m in the docker-compose [36m.yml[0m file
+
+You can also find out about installed packages by inspecting manifest files:
+[97m/environment_base.yml[0m, [97m/environment_tensorflow.yml[0m and [97m/environment_torch.yml[0m
+
+Miniforge3 environment (conda) was installed in [97m/opt/conda[0m 
+Thanks to [97mnb_conda_kernels[0m extension, whenever you create a new environment
 it will be available to you as a kernel in the jupyterlab environment
 
-To execute commands as root use `sudo`, password is 'password' unless changed
+To execute commands as root use: [36msudo[0m, password is: [36mpassword[0m unless changed
 
 This message will be displayed once every day.
 

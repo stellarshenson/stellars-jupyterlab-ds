@@ -1,1 +1,1 @@
-Jupyterlab platform build @BUILD_NAME@ created on @BUILD_DATE@
+Jupyterlab platform build [97m@BUILD_NAME@[0m created on [97m@BUILD_DATE@[0m
