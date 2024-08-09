@@ -210,37 +210,38 @@ RUN cat ${CONDA_USER_HOME}/dot.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge \
 ## final update of the entire conda using conda-forge as preferred channel
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
 
+
+########################################################
+#  GENERATIVE AI WITHi CUDA SUPPORT                    #
+########################################################
+
+## packages were built by the builder container, install them all
+## among the packages is CUDA supported llama-cpp-python
+USER ${CONDA_USER}
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} pip install ${EXPORT_DIR}/*.whl 
+
+########################################################
+#  NVIDIA CUDA, TORCH & TENSORFLOW INSTALLATION        #
+########################################################
+
+## run installation as conda user
+USER ${CONDA_USER}
+
 ## clone built base env to both tensorflow and torch envs
 RUN conda create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
 RUN conda create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
-
-
-
-########################################################
-#  NVIDIA CUDA & TENSORFLOW INSTALLATION               #
-########################################################
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 ## needed if tensorflow or torch are installed using conda, otherwise this is ignored
 ENV CONDA_OVERRIDE_CUDA=12.5
 
-## install libgl1 to avoid issues with libGL missing for ultralytics
-RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt install -y libgl1
-
 ## install tensorflow using pip to its dedicated environment
 ## installing tf-keras allows to use KERAS v2 (legacy)
-#RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} \ 
-# pip install --upgrade tensorflow[and-cuda]${TENSORFLOW_VERSION} tf-keras tensorboard keras-cv \
-# keras-mdn-layer keras-multi-head keras-self-attention keras-tcn keras_nlp \
-# && pip cache purge
-RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV:-base} -f /environment_tensorflow.yml 
+RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} -f /environment_tensorflow.yml 
 
 ## install torch to its dedicated environment
 ## install torch with torchvision and ultralytics (yolo)
-#RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} \ 
-# pip install torch torchvision ultralytics \
-# && pip cache purge
-RUN conda env update -v --name ${CONDA_TORCH_ENV:-base} -f /environment_torch.yml 
+RUN conda env update -v --name ${CONDA_TORCH_ENV} -f /environment_torch.yml 
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
@@ -256,31 +257,17 @@ ENV TF_CPP_MIN_LOG_LEVEL=3
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
 ########################################################
-#  GENERATIVE AI SUPPORT                               #
-########################################################
-
-## packages were built by the builder container, install them all
-## among the packages is CUDA supported llama-cpp-python
-USER ${CONDA_USER}
-RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} pip install ${EXPORT_DIR}/*.whl 
-RUN CONDA_DEFAULT_ENV=${CONDA_PYTORCH_ENV} pip install ${EXPORT_DIR}/*.whl 
-
-########################################################
 #  FINAL UPDATE AND CLEANUP                            #
 ########################################################
 
-## final round of updates to keep all up to date
-## disabled update - it is automatically downgrading pytorch
-#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \
-# conda update -c conda-forge --all -y
-
-## conda and pip cleanup
-# RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
-RUN conda clean -ltpy && pip cache purge
+## final round of updates to keep all up to date and final cleanup
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
 
 ## apt cleanup
-RUN echo "${CONDA_USER_PASSWD}" | sudo -S apt autoremove -y \
- && echo "${CONDA_USER_PASSWD}" | sudo -S apt purge 
+USER root
+RUN apt autoremove -y && apt purge 
 
 ########################################################
 #  PREPARE JUPYTERLAB WORKSPACE AND CERTS              #
@@ -294,16 +281,17 @@ COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
 ########################################################
 
+USER root
+
 ## ignore pip warnings re root access
 ENV PIP_ROOT_USER_ACTION=ignore
 
 ## save build date for reference
 COPY --chmod=644 ./conf/misc/build-info.txt /
 COPY --chmod=644 ./conf/misc/motd-prototype.txt /
-RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "date >/build-date.txt"
-RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
-# RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c " rig | head -n 1 | awk '{print $2}'>/build-name.txt"
-RUN echo "${CONDA_USER_PASSWD}" | sudo -S bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
+RUN bash -c "date >/build-date.txt"
+RUN bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
+RUN bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
 
 ## update terminal and shell settings
 ENV TERM=xterm-256color
@@ -314,8 +302,10 @@ ENV JUPYTERLAB_SERVER_TOKEN=""
 ENV JUPYTERLAB_SERVER_PASSWORD=""
 
 ## setup entry point, workdir and startup command
+## and set user to be conda user
 WORKDIR ${CONDA_USER_WORKSPACE}
 ENTRYPOINT ["/conda-entry.sh"]
 CMD ["/start-jupyterlab.sh"]
+USER ${CONDA_USER}
 
 # EOF
