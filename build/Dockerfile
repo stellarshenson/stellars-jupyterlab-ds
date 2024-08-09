@@ -18,17 +18,17 @@ RUN apt-get update && apt-get install -y \
 
 # make sure we have conda
 ENV CONDA_DEFAULT_ENV=base
-ENV PATH=$PATH:/opt/conda/bin
 ARG CONDA_HOME=/opt/conda
+ARG CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_PYTHON_VERSION=3.11
 RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
  -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
  && rm -rf ~/miniforge3.sh
 
 ## install base env
-RUN conda install -n base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
-RUN conda update -n base -c defaults -y conda
-RUN conda install -n base -y cuda-toolkit=12.1
+RUN ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
+RUN ${CONDA_CMD} update --name base -c defaults -y conda
+RUN ${CONDA_CMD} install --name base -v -y cuda-toolkit=12.1
 
 # enable special shell for conda
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
@@ -114,6 +114,7 @@ ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
+ARG CONDA_CMD=${CONDA_HOME}/condabin/conda
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
@@ -170,20 +171,17 @@ RUN touch ${JUPYTER_LOG} \
 USER ${CONDA_USER}
 WORKDIR ${CONDA_USER_HOME}
 
-## set path to conda bin
-ENV PATH=$PATH:/opt/conda/bin
-
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
  -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
  && rm -rf ~/miniforge3.sh
 
 ## update conda system & install required packages from environment.yml
-RUN conda install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
-RUN conda update --name base -c conda-forge -y conda
+RUN ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
+RUN ${CONDA_CMD} update --name base -c conda-forge -y conda
 
 ## create first environment (should be base)
-RUN conda env update --name ${CONDA_DEFAULT_ENV:-base} -f /environment_base.yml 
+RUN ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV:-base} -f /environment_base.yml 
 
 ## Tell the docker build process to use this for RUN.
 ## this script enables environment when used 
