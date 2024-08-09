@@ -18,9 +18,11 @@ RUN apt-get update && apt-get install -y \
 
 # make sure we have conda
 ENV CONDA_DEFAULT_ENV=base
-ARG CONDA_HOME=/opt/conda
-ARG CONDA_CMD=${CONDA_HOME}/condabin/conda
+ENV CONDA_HOME=/opt/conda
+ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_PYTHON_VERSION=3.11
+
+# download and install conda
 RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
  -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
  && rm -rf ~/miniforge3.sh
@@ -109,12 +111,12 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 
 ## user to be used with conda
 ENV CONDA_HOME=/opt/conda
+ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_USER=lab
 ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
-ARG CONDA_CMD=${CONDA_HOME}/condabin/conda
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
