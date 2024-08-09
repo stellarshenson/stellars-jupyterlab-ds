@@ -218,7 +218,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 ## packages were built by the builder container, install them all
 ## among the packages is CUDA supported llama-cpp-python
 USER ${CONDA_USER}
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} pip install ${EXPORT_DIR}/*.whl 
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} /usr/bin/env pip install ${EXPORT_DIR}/*.whl 
 
 ########################################################
 #  NVIDIA CUDA, TORCH & TENSORFLOW INSTALLATION        #
@@ -261,9 +261,9 @@ ENV TF_CPP_MIN_LOG_LEVEL=3
 ########################################################
 
 ## final round of updates to keep all up to date and final cleanup
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
-RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
-RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && /usr/bin/env pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && /usr/bin/env pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && /usr/bin/env pip cache purge
 
 ## apt cleanup
 USER root

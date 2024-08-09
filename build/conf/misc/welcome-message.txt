@@ -1,6 +1,6 @@
-Welcome to stellars-jupyterlab-ds platform. This is your environment intended
+[97mWelcome to stellars-jupyterlab-ds platform. This is your environment intended
 for data science and machine learning / ai projects. You will find a lot of
-packagages installed and configured for you in such way that it just works.
+packagages installed and configured for you in such way that it just works.[0m
 
 Running JupyterLab server on  [34mhttps://localhost:8888[0m
 Connect VSCode to Jupyter on  [34mhttps://localhost:8888/lab/tree[0m
@@ -24,7 +24,8 @@ There are by default three environments installed: [34mbase[0m, [34mtensorflo
 You can change active environment using:
 [36m$ conda activate env_name[0m
 
-Default environment is set using [36mCONDA_DEFAULT_ENV[0m in the docker-compose [36m.yml[0m file
+Default conda environment is set by [36mCONDA_DEFAULT_ENV[0m environment variable
+You can change it in the docker-compose [34m.yml[0m file or [34m~/.profile[0m
 
 You can also find out about installed packages by inspecting manifest files:
 [97m/environment_base.yml[0m, [97m/environment_tensorflow.yml[0m and [97m/environment_torch.yml[0m
