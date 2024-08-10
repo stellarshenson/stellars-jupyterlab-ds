@@ -1,22 +1,23 @@
 name: tensorflow
 channels:
-  - conda-forge # default repo for miniforge3
-  - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
+  - conda-forge  # Primary channel for the latest stable packages including Python
+  - nvidia       # NVIDIA packages for CUDA to support TensorFlow GPU acceleration
 
 dependencies:
-  - python=3.11 # latest python version for tensorflow to work
-  - pip
+  - python=3.11  # Python version 3.11, compatible with TensorFlow for the latest features
+  - pip          # Pip package manager to install Python packages
+
 
   - pip:
-    - tensorflow[and-cuda]<2.17
-    - tf-keras 
-    - tensorboard 
-    - keras-cv 
-    - keras-mdn-layer 
-    - keras-multi-head 
-    - keras-self-attention 
-    - keras-tcn 
-    - keras_nlp
+    - tensorflow[and-cuda]<2.17  # TensorFlow with CUDA support for GPU acceleration, version less than 2.17
+    - tf-keras                  # TensorFlow's Keras implementation for building deep learning models
+    - tensorboard               # Tool for visualizing TensorFlow graphs, metrics, and debugging
+    - keras-cv                  # Keras package for computer vision tasks with TensorFlow
+    - keras-mdn-layer           # Mixture Density Network (MDN) layer for Keras, useful for probabilistic models
+    - keras-multi-head          # Keras layer that allows for multiple attention heads in neural networks
+    - keras-self-attention      # Implementation of self-attention mechanism for Keras models
+    - keras-tcn                 # Temporal Convolutional Networks (TCN) implementation for Keras
+    - keras_nlp                 # Keras Natural Language Processing (NLP) library, for handling NLP tasks
 
 # EOF
 
