@@ -256,6 +256,11 @@ ENV TF_CPP_MIN_LOG_LEVEL=3
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
+# test scripts
+COPY --chmod=644 ./conf/bin/check-cuda-tensorflow-torch.py /check-cuda-tensorflow-torch.py
+COPY --chmod=755 ./conf/bin/check-cuda-tensorflow-torch.sh /check-cuda-tensorflow-torch.sh
+RUN ln -s /check-cuda-tensorflow-torch.sh ${CONDA_USER_WORKSPACE}/check-cuda-tensorflow-torch.sh
+
 ########################################################
 #  FINAL UPDATE AND CLEANUP                            #
 ########################################################

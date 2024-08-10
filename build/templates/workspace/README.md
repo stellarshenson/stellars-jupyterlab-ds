@@ -15,7 +15,7 @@ Visit: https://github.com/stellarshenson/stellars-jupyterlab-ds
 
 In the workspace you will find the following helpful tools:
 - `workspace-git-*.sh`: help you keep workspace git projects up to date
-- `test_cuda_tf_and_torch.sh`: test if tensorflow and pytorch can use your GPU
+- `check-cuda-tensorflow-torch.sh`: check if tensorflow and torch can use your GPU
 - `cookiecutter-new-project.sh`: create new data-science project using cookiecutter
 
 There were many useful scientific and machine learning packages preinstalled
@@ -42,7 +42,7 @@ To execute commands as root use: `sudo`, password is: `password` unless changed
 ## Projects Workspace
 
 - `cookiecutter-new-project.sh` - creates new project using enhanced cookiecutter datascience template
-- `test_cuda_tf_and_torch.sh` - tests cuda components and GPU support
+- `check-cuda-tensorflow-torch.sh` - checks cuda components and GPU support
 - `logger.py` - useful logging library for the notebooks
 - `workspace-git-commit.sh` - runs git commit for all repos in the workspace
 - `workspace-git-pull.sh` - runs git pull with rebase for all git repos in the workspace
