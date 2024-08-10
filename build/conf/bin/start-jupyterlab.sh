@@ -12,7 +12,7 @@ cat /build-info.txt | sed "s/@BUILD_NAME@/$BUILD_NAME/g" | sed "s/@BUILD_DATE@/$
 
 # run tensorboard in the background
 mkdir /tmp/tensorboard 2>/dev/null
-/conda-run.sh 'CONDA_DEFAULT_ENV=tensorflow tensorboard --bind_all --logdir /tmp/tf_logs --port 6006' &
+/conda-run.sh 'CONDA_DEFAULT_ENV=tensorflow tensorboard --bind_all --logdir /tmp/tf_logs --port 6006 &' 
 
 # generate ssl keys if don't exist yet (happens first time the script is run)
 CERTS_DIR="/mnt/certs"
