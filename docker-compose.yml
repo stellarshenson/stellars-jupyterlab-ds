@@ -11,8 +11,8 @@ services:
   # run jupyterlab on a local port 8888
   # without any authentication
   jupyterlab:
-    container_name: jupyterlab
-    hostname: jupyterlab
+    container_name: lab
+    hostname: lab
     image: stellars/stellars-jupyterlab-ds:latest
     build:
        context: build

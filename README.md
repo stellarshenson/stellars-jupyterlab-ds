@@ -21,7 +21,7 @@ docker run -p 8888:8888 \
  -v stellars-jupyterlab-ds_workspace:/home/lab/workspace \
  -v stellars-jupyterlab-ds_certs:/mnt/certs \
  --name stellars-jupyterlab-ds \
- --hostname jupyterlab \
+ --hostname lab \
  stellars/stellars-jupyterlab-ds:latest
 ```
 
@@ -34,7 +34,7 @@ docker run -p 8888:8888 \
  -e GPU_SUPPORT_ENABLED=1 \
  --gpus all \
  --name stellars-jupyterlab-ds \
- --hostname jupyterlab-gpu \
+ --hostname lab-gpu \
  stellars/stellars-jupyterlab-ds:latest
 ```
 
