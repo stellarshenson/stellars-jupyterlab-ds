@@ -317,9 +317,9 @@ ENV JUPYTERLAB_SERVER_PASSWORD=""
 
 ## default values for GPU support envs
 # GPU_SUPPORT_ENABLED controls nvidia support of the system
-# and GPUSTAT_ENABLED enables gpu status message in terminal
+# and GPUSTAT_ENABLED enables gpu status message in terminal if GPU present
 ENV GPU_SUPPORT_ENABLED=0 
-ENV GPUSTAT_ENABLED=0
+ENV GPUSTAT_ENABLED=1
 
 ## setup entry point, workdir and startup command
 ## and set user to be conda user

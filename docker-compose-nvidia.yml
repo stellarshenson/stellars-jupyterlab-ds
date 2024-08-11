@@ -20,7 +20,6 @@ services:
     environment:
        - CONDA_DEFAULT_ENV=base # choices are: base, tensorflow, torch
        - GPU_SUPPORT_ENABLED=1 # system support for gpu
-       - GPUSTAT_ENABLED=1 # gpu status info in the terminal prompt
        - JUPYTERLAB_SERVER_IP=*
        - JUPYTERLAB_SERVER_TOKEN=
        - JUPYTERLAB_SERVER_PASSWORD=
