@@ -144,9 +144,14 @@ COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
 ## create workspace
 RUN mkdir ${CONDA_USER_WORKSPACE}
 
-## ensure good permissions
-RUN find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700 \
- && find ${CONDA_USER_HOME} -type f -printf '"%p"\n' | xargs chmod 600
+## ensure good permissions, this is because files in github repo
+## might have mixed permissions. we need to fix that
+RUN <<EOF
+ echo "all directories in the ${CONDA_USER_HOME} should be accessible only to user '${CONDA_USER}'"
+ find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700
+ echo "all files in the ${CONDA_USER_HOME} should be readible only to user '${CONDA_USER}'"
+ find ${CONDA_USER_HOME} -type f -printf '"%p"\n' | xargs chmod 600
+EOF
 
 ## set up vim with all its plugins
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
