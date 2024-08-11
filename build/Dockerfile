@@ -154,8 +154,10 @@ RUN <<EOF
 EOF
 
 ## set up vim with all its plugins including syntax colouring and autocomplete
-RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
- && vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
+RUN <<EOF
+ git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+ vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
+EOF
 
 ########################################################
 #  PREPARE JUPYTERLAB WORKSPACE AND CERTS              #
@@ -325,10 +327,16 @@ ENV PIP_ROOT_USER_ACTION=ignore
 
 ## save build date for reference
 COPY --chmod=644 ./conf/misc/build-info.txt /
-COPY --chmod=644 ./conf/misc/motd-prototype.txt /
-RUN bash -c "date >/build-date.txt"
-RUN bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
-RUN bash -c "cat /motd-prototype.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
+COPY --chmod=644 ./conf/misc/motd-template.txt /
+
+## generate build name and build date
+## and generate motd using template
+RUN <<EOF
+ back -c "date >/build-date.txt"
+ bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
+ bash -c "cat /motd-template.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
+ rm /motd-template.txt
+EOF
 
 ## update terminal and shell settings
 ENV TERM=xterm-256color
