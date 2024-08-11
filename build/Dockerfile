@@ -112,7 +112,7 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 ## user to be used with conda
 ENV CONDA_HOME=/opt/conda
 ARG UTILS_PATH=/opt/utils
-ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
+ARG CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_USER=lab
 ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
@@ -177,9 +177,9 @@ USER root
 ## you can use 'base' or 'jupyterlab' for env name
 ## also made dedicatedd tf and pt envs but they are not used yet
 ENV CONDA_DEFAULT_ENV=base
-ENV CONDA_TENSORFLOW_ENV=tensorflow
-ENV CONDA_TORCH_ENV=torch
-ENV CONDA_PYTHON_VERSION=3.11
+ARG CONDA_TENSORFLOW_ENV=tensorflow
+ARG CONDA_TORCH_ENV=torch
+ARG CONDA_PYTHON_VERSION=3.11
 
 ## change ownership of conda folder to conda user
 RUN mkdir -p /opt/conda && chown -R :${JUPYTER_GROUP} ${CONDA_HOME} && chmod -R 770 ${CONDA_HOME}
