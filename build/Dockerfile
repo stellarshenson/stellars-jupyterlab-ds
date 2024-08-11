@@ -90,8 +90,8 @@ COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 COPY --chmod=755  ./conf/bin/start-jupyterlab.sh /start-jupyterlab.sh
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
 COPY --chmod=755  ./conf/bin/welcome-message.sh /welcome-message.sh
-COPY --chmod=655  ./conf/misc/welcome-message.txt /welcome-message.txt
-
+COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
+copy --chmod=755  ./conf/utils /opt/utils
 
 ########################################################
 #  REMOVE DEFAULT PACKAGES                             #
@@ -111,6 +111,7 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 
 ## user to be used with conda
 ENV CONDA_HOME=/opt/conda
+ARG UTILS_PATH=/opt/utils
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_USER=lab
 ARG CONDA_USER_PASSWD=password
@@ -136,6 +137,9 @@ USER ${CONDA_USER}
 ## use predefined contents of a user home
 COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
 
+## create workspace
+RUN mkdir ${CONDA_USER_WORKSPACE}
+
 ## ensure good permissions
 RUN find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700 \
  && find ${CONDA_USER_HOME} -type f -printf '"%p"\n' | xargs chmod 600
@@ -144,6 +148,23 @@ RUN find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700 \
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
  && vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 
+########################################################
+#  PREPARE JUPYTERLAB WORKSPACE AND CERTS              #
+########################################################
+
+## templates should be owned by the user
+USER ${CONDA_USER}
+
+# make sure initial workspace has template files
+COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
+COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
+
+## install helpful scripts in the workspace as symlinks
+RUN <<EOF
+for x in `ls ${UTILS_PATH}/*.sh`; do 
+    ln -s ${UTILS_PATH}/`basename $x` ${CONDA_USER_WORKSPACE}/`basename $x`
+done
+EOF
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
@@ -256,10 +277,6 @@ ENV TF_CPP_MIN_LOG_LEVEL=3
 #RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
-# test scripts
-COPY --chmod=644 ./conf/bin/check-cuda-tensorflow-torch.py /check-cuda-tensorflow-torch.py
-COPY --chmod=755 ./conf/bin/check-cuda-tensorflow-torch.sh /check-cuda-tensorflow-torch.sh
-RUN ln -s /check-cuda-tensorflow-torch.sh ${CONDA_USER_WORKSPACE}/check-cuda-tensorflow-torch.sh
 
 ########################################################
 #  FINAL UPDATE AND CLEANUP                            #
@@ -273,14 +290,6 @@ RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && /usr/bin/env pip c
 ## apt cleanup
 USER root
 RUN apt autoremove -y && apt purge 
-
-########################################################
-#  PREPARE JUPYTERLAB WORKSPACE AND CERTS              #
-########################################################
-
-# make sure initial workspace has template files
-COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
-COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
