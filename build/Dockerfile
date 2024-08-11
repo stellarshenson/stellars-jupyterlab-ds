@@ -162,7 +162,7 @@ COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 ## install helpful scripts in the workspace as symlinks
 RUN <<EOF
 for x in `ls ${UTILS_PATH}/*.sh`; do 
-    ln -s ${UTILS_PATH}/`basename $x` ${CONDA_USER_WORKSPACE}/`basename $x`
+    ln -s $x ${CONDA_USER_WORKSPACE}/`basename $x`
 done
 EOF
 
