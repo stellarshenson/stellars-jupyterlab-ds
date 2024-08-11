@@ -1,105 +1,116 @@
-# Jupyterlab for Data Science Platform
-Miniforge 3 + Jupyterlab 4 for Data Science + Tensorflow (GPU) + pyTorch(GPU)
 
-This project defines a pre-packaged, pre-configured jupyterlab running over miniconda with nvidia support and 
-a list of pre-installed data science packages that would let you run your data science projects in a snap
+# JupyterLab for Data Science Platform
+**Miniforge 3 + JupyterLab 4 for Data Science + TensorFlow (GPU) + PyTorch (GPU)**
 
-![](./.resources/jupyterlab.png)
+This project provides a pre-packaged, pre-configured JupyterLab environment running on Miniconda with NVIDIA GPU support. It includes a curated set of data science packages, allowing you to start your data science projects with ease.
 
+![JupyterLab](./.resources/jupyterlab.png)
+![Docker Desktop](./.resources/docker-desktop.png)
+![CUDA Test](./.resources/cuda-test.jpg)
 
-![](./.resources/docker-desktop.png)
+## Key Features
+- **JupyterLab Extensions:**
+  - JupyterLab-Git extension
+  - JupyterLab-LSP (Python) for enhanced autocompletion and code suggestions with documentation
+  - Resource usage monitor
 
+- **TensorBoard:**
+  - TensorBoard server running on port `6006`, with logs stored in `/tmp/tf_logs` to monitor your ML/AI model training and neural network development
 
-![](./.resources/cuda-test.jpg) 
+For a complete list of installed packages, please refer to the [packages manifest](https://github.com/stellarshenson/stellars-jupyterlab-ds/blob/main/build/conf/environment.yml), which is frequently updated to ensure you have access to the best tools for your development needs.
 
+## About the Author
+**Name:** Konrad Jelen (aka Stellars Henson)  
+**Email:** konrad.jelen+github@gmail.com  
+**LinkedIn:** [Konrad Jelen](https://www.linkedin.com/in/konradjelen/)
 
-There were many jupyterlab features installed, among them:
-- jupyterlab-git extension
-- jupyterlab-lsp language servers (python) extension
-- autocompletion and code suggests with documentation
-- resource usage monitor
+Entrepreneur, enterprise architect, and data science/machine learning practitioner with extensive software development and product management experience. Previously an experimental physicist with a strong background in physics, electronics, manufacturing, and science.
 
-There also is a Tensorboard server running on `6006` port and `/tmp/tf_logs` logs directory to help you with your ML/AI development and tensorflow neural nets training monitoring
+## Installation
 
------
+To use this environment, Docker must be installed on your system. JupyterLab 4 is provided as a Docker container, ensuring complete isolation from your system's software.
 
-For complete list of packages, please refer to [packages manifest](https://github.com/stellarshenson/stellars-jupyterlab-ds/blob/main/build/conf/environment.yml). It is frequently updated to promote best tools that can help you with the development
+**Docker Hub Repository:** [Stellars JupyterLab DS](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
 
-### About me
-Name: Konrad Jelen (aka stellars henson) <konrad.jelen+github@gmail.com>  
-Linked-in: https://www.linkedin.com/in/konradjelen/
-
-Entreprenour, enterprise architect and data science / machine learning practitioner with vast software development and product management experience. I am also ex experimental physicist with solid physics, electronics, manufacturing and science background. 
-
-### Installation
-
-Installation is dependent on the docker software installed.
-Jupyterlab 4 is going to be availabe via container and will
-be completely isolated from the rest of the computer's software
-
-Docker hub repository: https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general
-
-There will be software required to be installed in order to run this:
-
-1. [docker desktop](https://www.docker.com/products/docker-desktop/) - this software comes with the docker-compose required to run the container
-2. `docker-compose` command - comes with the docker-desktop software
+### Required Software
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop/) - Includes the `docker-compose` command necessary to run the container.
+2. `docker-compose` - Installed automatically with Docker Desktop.
 
 ### Usage
 
-1. run `docker-compose pull` in the main folder to download the latest container image 
-2. (optional) run `docker-compose build` to build the image. Be aware that __building takes approx 1.5h__
-3. start container using either default or custom configuration
-    - run `docker-compose up` in the main folder to start the standard non-cuda container
-    - run `docker-compose -f docker-compose-nvidia.yml up` to start standard cuda container
-    - run `docker-compose -f local/your-custom-docker-compose.yml up` to start your custom container
-    - ... or use `bin/start*` scripts
-4. access https://localhost:8888 to run JupyterLab
-5. access http://localhost:6006 to run Tensorboard
+1. **Pull the latest container image:**
+   ```bash
+   docker-compose pull
+   ```
 
-**Quick Configuration**
+2. *(Optional)* **Build the image locally:**  
+   Note that building the image locally may take approximately 1.5 hours.
+   ```bash
+   docker-compose build
+   ```
 
-- use `CONDA_DEFAULT_ENV` variable in docker-compose `.yml` files to indicate your default conda env
+3. **Start the container with your desired configuration:**
+   - Standard non-CUDA container:
+     ```bash
+     docker-compose up
+     ```
+   - Standard CUDA container:
+     ```bash
+     docker-compose -f docker-compose-nvidia.yml up
+     ```
+   - Custom container configuration:
+     ```bash
+     docker-compose -f local/your-custom-docker-compose.yml up
+     ```
+   - Alternatively, use the provided `bin/start*` scripts.
 
+4. **Access JupyterLab:**  
+   Open [https://localhost:8888](https://localhost:8888) in your browser.
 
-**Default settings**
-- work dir is `/opt/workspace`
-- homedir with settings `/root`
-- jupyterlab settings are saved to `/root/.jupyter`
-- if you use `docker-compose`, ./home and ./workspace are mapped to local `/root` and `/opt/workspace`
-    - otherwise system uses base settings from jupyterlab distribution
-- you hava access to the local root account
-- tensorboard reads logs from `/tmp/tf_logs`
-- tensorboard is running on port 6006
-- jupyterlabl is running on port 8888
-- jupyterlab conda env name is `jupyterlab`
+5. **Access TensorBoard:**  
+   Open [http://localhost:6006](http://localhost:6006) in your browser.
 
+**Quick Configuration Tips:**
+- Use the `CONDA_DEFAULT_ENV` variable in the `docker-compose` `.yml` files to specify your default conda environment.
 
-**Tip:** you don't need to run `docker-compose build` if you pull the docker image from the docker hub. When you run `docker-compose up` for the first time docker will find out if you can use prebuilt package 
+## Default Settings
+- **Work Directory:** `/opt/workspace`
+- **Home Directory:** `/root` (contains user settings)
+- **JupyterLab Settings:** Stored in `/root/.jupyter`
+- **Volume Mapping:** If using `docker-compose`, local `./home` and `./workspace` directories are mapped to `/root` and `/opt/workspace` respectively.
+- **Root Access:** You have access to the local root account.
+- **TensorBoard Logs Directory:** `/tmp/tf_logs`
+- **Ports:**
+  - TensorBoard: `6006`
+  - JupyterLab: `8888`
+- **Conda Environment:** `jupyterlab`
 
-### Configuration
+**Tip:** You don't need to run `docker-compose build` if you pull the image from Docker Hub. Running `docker-compose up` for the first time will automatically use the pre-built package if available.
 
-- **./build** contains container build artefacts, you wouldn't need to look there
-- **./.env** contains name of the project - this will be used to name the volumes and the entire compose project
+## Configuration Details
 
-**Tip:** modify the `/opt/workspace` entry in the `volumes:` section of the<br>docker-compose files to map to a different projects location in your filesystem 
+- **./build:** Contains container build artifacts. Typically, you won't need to interact with this directory.
+- **./.env:** Contains the project name, used for naming volumes and the Docker Compose project.
 
-### Features
-* jupyterlab 4+ (see [jupyterlab homepage](https://jupyterlab.readthedocs.io/en/latest) for reference)
-* git, autocomplete and other extensions to jupyterlab
-* lsp extensions for python autocompletion
-* full set of ML libraries: keras, tensorflow, scikit-learn, scipy, numpy
-* full set of DM libraries pandas, polars
-* full set of graphs libraries matplotlib, seaborn
-* nvidia cuda enabled ML and DM libraries - cupy, cudf and tensorflow with gpu support
-* miniconda with nice jupyterlab terminal support
-* html and pdf (webpdf) generation support
-* memory profiler
-* configurable mapping to your filesystem folder that holds your projects
-* configurable settings files and folders used in __jupyterlab__, such as AWS credentials, GIT settings and jupyterlab settings, so that when you decide to shred the container and run it anew again, you can be sure your settings were saved
-* nice intellij dark theme (medium contrast)
-* favourites (useful when you have many projects)
-* nice colourful termina + mc and other useful tools
-* __tensorboard__ (already configured and running on port 6006)
-* tensorflow visualisation extensions
+**Tip:** Modify the `/opt/workspace` entry in the `volumes:` section of the `docker-compose` files to map to a different project location on your filesystem.
+
+## Platform Features
+- **JupyterLab 4+** ([JupyterLab Homepage](https://jupyterlab.readthedocs.io/en/latest) for reference)
+- **Extensions:** Git integration, autocompletion, and other useful tools.
+- **Language Server Protocol (LSP):** For Python autocompletion.
+- **Machine Learning Libraries:** Keras, TensorFlow, Scikit-learn, SciPy, NumPy.
+- **Data Manipulation Libraries:** Pandas, Polars.
+- **Visualization Libraries:** Matplotlib, Seaborn.
+- **NVIDIA CUDA Support:** GPU-accelerated libraries like CuPy, cuDF, and TensorFlow with GPU support.
+- **Miniconda:** With enhanced terminal support in JupyterLab.
+- **Output Formats:** HTML and PDF (WebPDF) generation.
+- **Memory Profiler:** Monitor resource usage.
+- **Customizable File Mapping:** Easily map your filesystem's project folder to the container.
+- **Persistent Settings:** Configurable files and folders for JupyterLab settings, AWS credentials, and Git settings.
+- **Themes:** IntelliJ dark theme with medium contrast.
+- **Favourites:** Quick access for projects.
+- **Enhanced Terminal:** Includes `mc` and other useful tools.
+- **TensorBoard:** Pre-configured and running on port 6006.
+- **TensorFlow Visualization Extensions:** For improved model insights.
 
 <!-- EOF -->
