@@ -10,8 +10,8 @@ This project provides a pre-packaged, pre-configured JupyterLab environment runn
 
 ## Quickstart
 
-You can start and test container without docker-compose, just with docker. 
-Commands below will create a container with persistent home folder (settings), certs mount (with https certificates for security) and workspace (your projects). Just copy and paste those the command in your terminal (linux).
+You can run the `stellars-jupyterlab-ds` container without docker-compose, just with docker. 
+Commands below will create a container with persistent home folder (settings), certs mount (with https certificates for security) and workspace (your projects). Use the commands below:
 
 IMPORTANT: make sure you have docker host running (i.e. [Docker Desktop](https://www.docker.com/products/docker-desktop/)) 
 
