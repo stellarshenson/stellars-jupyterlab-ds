@@ -222,11 +222,11 @@ RUN rm ~/.bashrc \
  && echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
 
 ## merge bashrc files - conda generated and copied
-COPY --chmod=644 ./conf/dot.bashrc ${CONDA_USER_HOME}/dot.bashrc
-RUN cat ${CONDA_USER_HOME}/dot.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge \
+COPY --chmod=644 ./conf/home.bashrc ${CONDA_USER_HOME}/home.bashrc
+RUN cat ${CONDA_USER_HOME}/home.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge \
  && cat ${CONDA_USER_HOME}/.bashrc >> ${CONDA_USER_HOME}/bashrc-to-merge \
  && mv  ${CONDA_USER_HOME}/bashrc-to-merge ${CONDA_USER_HOME}/.bashrc  \
- && rm  ${CONDA_USER_HOME}/dot.bashrc
+ && rm  ${CONDA_USER_HOME}/home.bashrc
 
 ## final update of the entire conda using conda-forge as preferred channel
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
