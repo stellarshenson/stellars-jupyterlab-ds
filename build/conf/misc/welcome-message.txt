@@ -25,7 +25,7 @@ You can change active environment using:
 [36m$ conda activate env_name[0m
 
 Default conda environment is set by [36mCONDA_DEFAULT_ENV[0m environment variable
-You can change it in the docker-compose [34m.yml[0m file or [34m~/.profile[0m
+You can change it in the docker-compose [94m.yml[0m file or [94m~/.profile[0m
 
 You can also find out about installed packages by inspecting manifest files:
 [94m/environment_base.yml[0m, [94m/environment_tensorflow.yml[0m and [94m/environment_torch.yml[0m
