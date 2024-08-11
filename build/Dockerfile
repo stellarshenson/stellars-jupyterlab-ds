@@ -121,12 +121,14 @@ ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
-RUN useradd -ms /bin/bash ${CONDA_USER} \
- && addgroup ${JUPYTER_GROUP} \
- && adduser -q ${CONDA_USER} sudo  \
- && adduser -q ${CONDA_USER} ${JUPYTER_GROUP} \
- && usermod -g ${JUPYTER_GROUP} ${CONDA_USER} \
- && echo "${CONDA_USER}:${CONDA_USER_PASSWD}" | chpasswd
+RUN <<EOF
+useradd -ms /bin/bash ${CONDA_USER}
+addgroup ${JUPYTER_GROUP}
+adduser -q ${CONDA_USER} sudo
+adduser -q ${CONDA_USER} ${JUPYTER_GROUP}
+usermod -g ${JUPYTER_GROUP} ${CONDA_USER}
+echo "${CONDA_USER}:${CONDA_USER_PASSWD}" | chpasswd
+EOF
 
 ## update sudoers to allow conda user sudo without password
 # RUN echo "${CONDA_USER} ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers.d/conda
