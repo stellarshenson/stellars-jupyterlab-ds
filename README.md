@@ -84,9 +84,9 @@ To use this environment, Docker must be installed on your system. JupyterLab 4 i
   - TensorBoard: `6006`
   - JupyterLab: `8888`
 - **Conda Environments:** 
-- `base` - basic machine learning tools and packages
-- `tensorflow` - environment with all tools from `base` and latest stable `tensorflow` installed with NVIDIA GPU support
-- `torch` - environment with all tools from `base` and latest stable `torch` installed with NVIDIA GPU support. Additionally packages from `ultralytics` were installed for your __YOLO__ projects
+  - `base` - basic machine learning tools and packages
+  - `tensorflow` - environment with all tools from `base` and latest stable `tensorflow` installed with NVIDIA GPU support
+  - `torch` - environment with all tools from `base` and latest stable `torch` installed with NVIDIA GPU support. Additionally packages from `ultralytics` were installed for your __YOLO__ projects
 
 **Tip:** You can change envionment using `conda activate env_name` command. You can also set default environment either by setting `CONDA_DEFAULT_ENV` in `docker-compose.yml` file or in the `~/.profile` file in your home directory
 
