@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help build push start start_nvidia clean
+.PHONY: help build push start start_gpu clean
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -30,9 +30,9 @@ push:
 start:
 	@cd ./bin && ./start.sh
 
-## start jupyterlab with nvidia support (fg)
-start_nvidia:
-	@cd ./bin && ./start_nvidia.sh
+## start jupyterlab with gpu support (fg)
+start_gpu:
+	@cd ./bin && ./start_gpu.sh
 
 ## start jupyterlab using local config yml
 start_local:
@@ -42,7 +42,7 @@ start_local:
 ## clean orphaned containers
 clean:
 	@echo 'removing dangling and unused images, containers, nets and volumes'
-	@docker-compose -f  docker-compose-nvidia.yml -f  docker-compose.yml down --remove-orphans
+	@docker-compose -f  docker-compose-gpu.yml -f  docker-compose.yml down --remove-orphans
 	@yes | docker image prune
 
 ## prints the list of available commands
