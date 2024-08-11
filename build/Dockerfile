@@ -141,7 +141,7 @@ USER ${CONDA_USER}
 ## use predefined contents of a user home
 COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
 
-## create workspace
+## create workspace, this is where user projects will be located
 RUN mkdir ${CONDA_USER_WORKSPACE}
 
 ## ensure good permissions, this is because files in github repo
@@ -153,7 +153,7 @@ RUN <<EOF
  find ${CONDA_USER_HOME} -type f -printf '"%p"\n' | xargs chmod 600
 EOF
 
-## set up vim with all its plugins
+## set up vim with all its plugins including syntax colouring and autocomplete
 RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
  && vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 
@@ -161,7 +161,7 @@ RUN git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.v
 #  PREPARE JUPYTERLAB WORKSPACE AND CERTS              #
 ########################################################
 
-## templates should be owned by the user
+## certs and workspace folders should be owned by the user
 USER ${CONDA_USER}
 
 # make sure initial workspace has template files
@@ -250,7 +250,7 @@ RUN <<EOF
 EOF
 
 
-## final update of the entire conda using conda-forge as preferred channel
+## final update of the entire conda base environment
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
 
 
@@ -260,6 +260,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 
 ## packages were built by the builder container, install them all
 ## among the packages is CUDA supported llama-cpp-python
+## other environments will inherit this when cloned from base
 USER ${CONDA_USER}
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} /usr/bin/env pip install ${EXPORT_DIR}/*.whl 
 
