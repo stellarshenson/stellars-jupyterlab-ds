@@ -1,4 +1,4 @@
-[97mWelcome to stellars-jupyterlab-ds platform. This is your environment intended
+[95mWelcome to stellars-jupyterlab-ds platform. This is your environment intended
 for data science and machine learning / ai projects. You will find a lot of
 packagages installed and configured for you in such way that it just works.[0m
 
@@ -28,10 +28,10 @@ Default conda environment is set by [36mCONDA_DEFAULT_ENV[0m environment varia
 You can change it in the docker-compose [34m.yml[0m file or [34m~/.profile[0m
 
 You can also find out about installed packages by inspecting manifest files:
-[97m/environment_base.yml[0m, [97m/environment_tensorflow.yml[0m and [97m/environment_torch.yml[0m
+[94m/environment_base.yml[0m, [94m/environment_tensorflow.yml[0m and [94m/environment_torch.yml[0m
 
-Miniforge3 environment (conda) was installed in [97m/opt/conda[0m 
-Thanks to [97mnb_conda_kernels[0m extension, whenever you create a new environment
+Miniforge3 environment (conda) was installed in [94m/opt/conda[0m 
+Thanks to [94mnb_conda_kernels[0m extension, whenever you create a new environment
 it will be available to you as a kernel in the jupyterlab environment
 
 To execute commands as root use: [36msudo[0m, password is: [36mpassword[0m unless changed

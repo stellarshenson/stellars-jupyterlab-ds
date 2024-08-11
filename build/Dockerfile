@@ -315,11 +315,26 @@ ENV JUPYTERLAB_SERVER_IP="*"
 ENV JUPYTERLAB_SERVER_TOKEN=""
 ENV JUPYTERLAB_SERVER_PASSWORD=""
 
+## default values for GPU support envs
+# GPU_SUPPORT_ENABLED controls nvidia support of the system
+# and GPUSTAT_ENABLED enables gpu status message in terminal
+ENV GPU_SUPPORT_ENABLED=0 
+ENV GPUSTAT_ENABLED=0
+
 ## setup entry point, workdir and startup command
 ## and set user to be conda user
 WORKDIR ${CONDA_USER_WORKSPACE}
 ENTRYPOINT ["/conda-entry.sh"]
 CMD ["/start-jupyterlab.sh"]
 USER ${CONDA_USER}
+
+## expose ports
+# 8888 - jupyterlab, 8000 and 8001 - jupyterhub
+# 6006 - tensorboard, 5000 - mlflow
+EXPOSE 8888 
+EXPOSE 8000
+EXPOSE 8001 
+EXPOSE 6006
+EXPOSE 5000
 
 # EOF
