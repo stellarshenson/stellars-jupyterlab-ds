@@ -1,6 +1,6 @@
 
 # JupyterLab for Data Science Platform
-**Miniforge 3 + JupyterLab 4 for Data Science + TensorFlow (GPU) + PyTorch (GPU)**
+**Miniforge 3 + JupyterLab 4 for Data Science + TensorFlow (with GPU support) + Torch (with GPU support)**
 
 This project provides a pre-packaged, pre-configured JupyterLab environment running on Miniconda with NVIDIA GPU support. It includes a curated set of data science packages, allowing you to start your data science projects with ease.
 
@@ -71,19 +71,24 @@ To use this environment, Docker must be installed on your system. JupyterLab 4 i
    Open [http://localhost:6006](http://localhost:6006) in your browser.
 
 **Quick Configuration Tips:**
-- Use the `CONDA_DEFAULT_ENV` variable in the `docker-compose` `.yml` files to specify your default conda environment.
+- Use the `CONDA_DEFAULT_ENV` variable in the `docker-compose.yml` files to specify your default conda environment.
 
 ## Default Settings
-- **Work Directory:** `/opt/workspace`
-- **Home Directory:** `/root` (contains user settings)
-- **JupyterLab Settings:** Stored in `/root/.jupyter`
-- **Volume Mapping:** If using `docker-compose`, local `./home` and `./workspace` directories are mapped to `/root` and `/opt/workspace` respectively.
-- **Root Access:** You have access to the local root account.
+- **Work Directory:** `~/workspace`
+- **Home Directory:** `/home/lab` (contains user settings)
+- **JupyterLab Settings:** Stored in `/home/lab/.jupyter`
+- **Volume Mapping:** If using `docker-compose`, local `/home` and `~/workspace` directories are mapped to persistent docker volumes respectivey. Thanks to this you can frequently update **stellars-jupyterlab-ds** container image without affecting your work
+- **Root Access:** You have access to the local root account with `sudo` (password: `password`).
 - **TensorBoard Logs Directory:** `/tmp/tf_logs`
 - **Ports:**
   - TensorBoard: `6006`
   - JupyterLab: `8888`
-- **Conda Environment:** `jupyterlab`
+- **Conda Environments:** 
+- `base` - basic machine learning tools and packages
+- `tensorflow` - environment with all tools from `base` and latest stable `tensorflow` installed with NVIDIA GPU support
+- `torch` - environment with all tools from `base` and latest stable `torch` installed with NVIDIA GPU support. Additionally packages from `ultralytics` were installed for your __YOLO__ projects
+
+**Tip:** You can change envionment using `conda activate env_name` command. You can also set default environment either by setting `CONDA_DEFAULT_ENV` in `docker-compose.yml` file or in the `~/.profile` file in your home directory
 
 **Tip:** You don't need to run `docker-compose build` if you pull the image from Docker Hub. Running `docker-compose up` for the first time will automatically use the pre-built package if available.
 
