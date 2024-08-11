@@ -8,6 +8,35 @@ This project provides a pre-packaged, pre-configured JupyterLab environment runn
 ![Docker Desktop](./.resources/docker-desktop.png)
 ![CUDA Test](./.resources/cuda-test.jpg)
 
+## Quickstart
+
+You can start and test container without docker-compose, just with docker. 
+Commands below will create a container with persistent home folder (settings), certs mount (with https certificates for security) and workspace (your projects). Just copy and paste those the command in your terminal (linux).
+
+IMPORTANT: make sure you have docker host running (i.e. [Docker Desktop](https://www.docker.com/products/docker-desktop/)) 
+
+**Without GPU support**
+```
+docker run -p 8888:8888 \
+ -v stellars-jupyterlab-ds_home:/home \
+ -v stellars-jupyterlab-ds_workspace:/home/lab/workspace \
+ -v stellars-jupyterlab-ds_certs:/mnt/certs \
+ --name stellars-jupyterlab-ds \ 
+ stellars/stellars-jupyterlab-ds:latest
+```
+
+**With GPU support (NVIDIA)**
+```
+docker run -p 8888:8888 \
+ -v stellars-jupyterlab-ds_home:/home \
+ -v stellars-jupyterlab-ds_workspace:/home/lab/workspace \
+ -v stellars-jupyterlab-ds_certs:/mnt/certs \
+ -e GPU_SUPPORT_ENABLED=1 \
+ --gpus all \
+ --name stellars-jupyterlab-ds \ 
+ stellars/stellars-jupyterlab-ds:latest
+```
+
 ## Key Features
 - **JupyterLab Extensions:**
   - JupyterLab-Git extension
