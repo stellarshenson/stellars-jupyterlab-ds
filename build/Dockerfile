@@ -167,7 +167,7 @@ EOF
 ## set up vim with all its plugins including syntax colouring and autocomplete
 ## last '|| echo ok' is required for docker to assume successful build, as vim
 ## plugins installation exits with non-zero exit code
-RUN --mount=type=cache,target=${CONDA_USER_HOME}/.vim <<-EOF
+RUN <<-EOF
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 EOF
