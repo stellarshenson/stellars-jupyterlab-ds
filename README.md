@@ -9,6 +9,8 @@ This project provides a pre-packaged, pre-configured JupyterLab environment runn
 
 ## Quickstart
 
+### Docker
+
 You can run the `stellars-jupyterlab-ds` container without docker-compose, just with docker. 
 Commands below will create a container with persistent home folder (settings), certs mount (with https certificates for security) and workspace (your projects). Use the commands below:
 
@@ -37,6 +39,14 @@ docker run -p 8888:8888 \
  --hostname lab-gpu \
  stellars/stellars-jupyterlab-ds:latest
 ```
+
+... and open https://localhost:8888 in your browser
+
+#### Docker Compose
+
+1. download `docker-compose.yml` or `docker-compose-gpu.yml` file
+2. run `docker-compose -f docker-compose.yml up` command
+3. open https://localhost:8888 in your browser
 
 ## Key Features
 - **JupyterLab Extensions:**
