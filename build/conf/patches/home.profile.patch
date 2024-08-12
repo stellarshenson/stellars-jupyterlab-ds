@@ -1,10 +1,10 @@
---- .profile	2024-08-11 20:47:59.434739753 +0000
-+++ .profile.new	2024-08-11 20:46:28.381715438 +0000
+--- .profile	2024-08-11 20:47:49.434739753 +0000
++++ .profile.new	2024-08-11 20:56:28.381715438 +0000
 @@ -8,6 +8,9 @@
  # for ssh logins, install and configure the libpam-umask package.
  #umask 022
  
-+# set default conda environment
++# set default conda environment 
 +# CONDA_DEFAULT_ENV=tensorflow
 +
  # if running bash

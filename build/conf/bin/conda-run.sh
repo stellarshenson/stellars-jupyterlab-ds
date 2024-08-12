@@ -1,47 +1,44 @@
 #!/bin/bash
-## in your Dockerfile
 # COPY conda_run.sh /conda_run.sh
+# Usage in Dockerfile:
 # RUN chmod +x /conda_run.sh
-# SHELL ["/conda_run.sh", "/bin/bash", "-c"]
+# SHELL ["/conda_run.sh"]
+# CONDA_DEFAULT_ENV=FOO <<-EOF
+#   command
+#   multi-line command
+# EOF
 
-## usage
-## CONDA_DEFAULT_ENV=FOO command arg1 arg2
-## or 
-## command arg1 arg2
+# fail if BASH_VERSION is not set
+if [ -z "$BASH_VERSION" ]; then
+  echo "Error: This script must be run in Bash."
+  exit 1
+fi
 
-## The SHELL ["/run.sh"] command passes everything in the RUN stanza as a single string
-## There may be a better way to unpack it. We must unpack before conda setup
-IFS=' ' read -ra ARGS <<< "${1}"
-## FIRST=`eval echo ${ARGS[@]::1}`
-#before was: 
-FIRST=${ARGS[@]::1}
+# Read the entire input as a single string
+COMMAND="${1}"
 
-## setup conda - it will overwrite all conda variables
+# Setup conda - it will overwrite all conda variables
 __conda_setup="$($CONDA_CMD 'shell.bash' 'hook' 2> /dev/null)"
 eval "$__conda_setup"
 unset __conda_setup
 
-## debugging, uncomment to see the args passed into this script
-#echo ...
-#echo "${1}"
-#echo "${ARGS[@]}"
-#echo "${@}"
-#echo "First: ${FIRST}"
-#echo ...
-
-## parse the possible first argument for setting conda env
-## This is not a "true environment variable", we just emulate the syntax for essentially syntactic sugar in Dockerfiles
-if [[ "$( echo ${FIRST}| cut -c-18)" == "CONDA_DEFAULT_ENV=" ]]; then
-        _CONDA_DEFAULT_ENV=$(echo "${FIRST}" | cut -c19-)
-  EXEC_ARGS=$(echo ${ARGS[@]:1})
+# Parse the first word for setting conda env
+if [[ "${COMMAND}" =~ ^CONDA_DEFAULT_ENV=([^[:space:]]+)[[:space:]]*(.*) ]]; then
+  _CONDA_DEFAULT_ENV=${BASH_REMATCH[1]}
+  EXEC_COMMAND=${BASH_REMATCH[2]}
 else
-  _CONDA_DEFAULT_ENV=base
-  EXEC_ARGS="$(echo ${ARGS[*]})"
+  _CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}
+  EXEC_COMMAND="${COMMAND}"
 fi
 
-##logging, this is just for debugging, you can enable this to sanity check or see what is happening
-# >&2 echo "ENV: ${_CONDA_DEFAULT_ENV}, COMMAND: ${EXEC_ARGS}"
+# Logging, this is just for debugging, you can enable this to sanity check or see what is happening
+#>&2 echo "ENV: ${_CONDA_DEFAULT_ENV}"
+#>&2 echo "COMMAND: ${EXEC_COMMAND}"
+
+# Activate the conda environment
 conda activate "${_CONDA_DEFAULT_ENV}"
-/bin/bash -c "${EXEC_ARGS}"
+
+# Execute the command(s)
+eval "${EXEC_COMMAND}"
 
 # EOF
