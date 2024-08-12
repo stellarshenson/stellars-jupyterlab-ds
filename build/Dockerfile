@@ -203,13 +203,19 @@ ARG CONDA_TORCH_ENV=torch
 ARG CONDA_PYTHON_VERSION=3.11
 
 ## change ownership of conda folder to conda user
-RUN mkdir -p /opt/conda && chown -R :${JUPYTER_GROUP} ${CONDA_HOME} && chmod -R 770 ${CONDA_HOME}
+RUN <<-EOF
+    mkdir -p /opt/conda
+    chown -R :${JUPYTER_GROUP} ${CONDA_HOME}
+    chmod -R 770 ${CONDA_HOME}
+EOF
 
 ## create empty logfile with permissions for jupyterlab to write
 ARG JUPYTER_LOG=/var/log/jupyterlab.log
-RUN touch ${JUPYTER_LOG} \
- && chown :${JUPYTER_GROUP} ${JUPYTER_LOG} \
- && chmod 664 ${JUPYTER_LOG}
+RUN <<-EOF
+    touch ${JUPYTER_LOG}
+    chown :${JUPYTER_GROUP} ${JUPYTER_LOG}
+    chmod 664 ${JUPYTER_LOG}
+EOF
 
 ## switch user to conda jupyterlab user
 USER ${CONDA_USER}
@@ -269,8 +275,7 @@ EOF
 
 
 ## final update of the entire conda base environment
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} echo "$CONDA_DEFAULT_ENV" && conda update -y -c conda-forge --all 
-
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT                    #
@@ -295,8 +300,11 @@ USER ${CONDA_USER}
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
 ## clone built base env to both tensorflow and torch envs
-RUN conda create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
-RUN conda create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
+RUN <<-EOF
+    echo "cloning ${CONDA_TENSORFLOW_ENV} and ${CONDA_TORCH_ENV} environments from ${CONDA_DEFAULT_ENV}"
+    conda create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
+    conda create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
+EOF
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 ## needed if tensorflow or torch are installed using conda, otherwise this is ignored
@@ -304,11 +312,11 @@ ENV CONDA_OVERRIDE_CUDA=12.5
 
 ## install tensorflow using pip to its dedicated environment
 ## installing tf-keras allows to use KERAS v2 (legacy)
-RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} -f /environment_tensorflow.yml 
+RUN conda env update --name ${CONDA_TENSORFLOW_ENV} -f /environment_tensorflow.yml 
 
 ## install torch to its dedicated environment
 ## install torch with torchvision and ultralytics (yolo)
-RUN conda env update -v --name ${CONDA_TORCH_ENV} -f /environment_torch.yml 
+RUN conda env update --name ${CONDA_TORCH_ENV} -f /environment_torch.yml 
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
