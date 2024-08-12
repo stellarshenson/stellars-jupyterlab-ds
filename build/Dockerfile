@@ -235,6 +235,10 @@ RUN <<-EOF
     ${CONDA_CMD} update --name base -c conda-forge -y conda
 EOF
 
+## prevent conda from initialising base environment automatically
+## this way conda will not overwrite CONDA_DEFAULT_ENV
+RUN ${CONDA_CMD} config --set auto_activate_base false
+
 ## create first environment (should be base)
 RUN ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV:-base} -f /environment_base.yml 
 
@@ -245,26 +249,8 @@ SHELL ["/conda-run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
-RUN <<-EOF
-    rm ${CONDA_USER_HOME}/.bashrc
-    echo '# saving the conda environment, as conda init is going to reset this to "base"' >> ${CONDA_USER_HOME}/.bashrc
-    echo '_CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}' >>  ${CONDA_USER_HOME}/.bashrc
-    conda init
-    echo '# restoring saved conda default env, as it was resetted to "base" by conda init' >> ${CONDA_USER_HOME}/.bashrc
-    echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ${CONDA_USER_HOME}/.bashrc
-    echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ${CONDA_USER_HOME}/.bashrc
-    echo "generated conda initialisation code in ${CONDA_USER_HOME}/.bashrc"
-EOF
-
-## merge bashrc files - conda generated and copied
-COPY --chmod=644 ./conf/home.bashrc ${CONDA_USER_HOME}/home.bashrc
-RUN <<-EOF
-    cat ${CONDA_USER_HOME}/home.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge
-    cat ${CONDA_USER_HOME}/.bashrc >> ${CONDA_USER_HOME}/bashrc-to-merge
-    mv  ${CONDA_USER_HOME}/bashrc-to-merge ${CONDA_USER_HOME}/.bashrc
-    rm  ${CONDA_USER_HOME}/home.bashrc
-    echo "merged ${CONDA_USER_HOME}/.bashrc template with conda initialisation code"
-EOF
+COPY --chmod=644 ./conf/home.bashrc ${CONDA_USER_HOME}/.bashrc
+RUN conda init
 
 ## patch ~/.profile to have an example of conda preferred environment
 RUN <<-EOF
@@ -272,7 +258,6 @@ RUN <<-EOF
     patch < ${PATCHES_PATH}/home.profile.patch
     echo "patched ${CONDA_USER_HOME}/.profile"
 EOF
-
 
 ## final update of the entire conda base environment
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all
