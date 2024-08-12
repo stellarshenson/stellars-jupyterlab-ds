@@ -25,21 +25,25 @@ unset __conda_setup
 # Decide the value of CONDA_ENV to be either
 # CONDA_DEFAULT_ENV or value of CONDA_DEFAULT_ENV from input
 if [[ "${COMMAND}" =~ ^CONDA_DEFAULT_ENV=([^[:space:]]+)[[:space:]]*(.*) ]]; then
-  CONDA_ENV=${BASH_REMATCH[1]}
+  CONDA_ENV=$(eval echo ${BASH_REMATCH[1]})
+  CONDA_ENV_SOURCE="command"
   EXEC_COMMAND=${BASH_REMATCH[2]}
 else
   CONDA_ENV=${CONDA_DEFAULT_ENV:-base}
+  CONDA_ENV_SOURCE="env"
   EXEC_COMMAND="${COMMAND}"
 fi
 
 # Logging, this is just for debugging, you can enable this to sanity check or see what is happening
-#>&2 echo "ENV: ${CONDA_ENV}"
-#>&2 echo "COMMAND: ${EXEC_COMMAND}"
+if [[ "${CONDA_RUN_DEBUG}" == "1" ]]; then
+    >&2 echo "ENV: ${CONDA_ENV} SOURCE: ${CONDA_ENV_SOURCE}" 
+    >&2 echo "COMMAND: ${EXEC_COMMAND}"
+fi
 
 # Activate the conda environment
 # and remove the CONDA_ENV variable
 conda activate "${CONDA_ENV}"
-unset CONDA_ENV
+# unset CONDA_ENV
 
 # Execute the command(s)
 eval "${EXEC_COMMAND}"

@@ -130,6 +130,7 @@ ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
+ENV CONDA_RUN_DEBUG=0
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
@@ -164,7 +165,9 @@ RUN <<-EOF
 EOF
 
 ## set up vim with all its plugins including syntax colouring and autocomplete
-RUN <<-EOF
+## last '|| echo ok' is required for docker to assume successful build, as vim
+## plugins installation exits with non-zero exit code
+RUN --mount=type=cache,target=${CONDA_USER_HOME}/.vim <<-EOF
     git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 EOF
@@ -194,13 +197,18 @@ EOF
 ## conda must be installed as root
 USER root
 
-## Create target env and ignore pip warnings
-## you can use 'base' or 'jupyterlab' for env name
-## also made dedicatedd tf and pt envs but they are not used yet
-ENV CONDA_DEFAULT_ENV=base
+## create default and additional environments. by default CONDA_DEFAULT_ENV should be 'base', 
+## but you can make it different. There are also dedicated 'tensorflow' and 'torch' environments 
+## to separate dependencies and avoid dependency conflicts. ARG CONDA_DEFAULT_ENV is required 
+## additionally to ENV for effective variable substitution in the RUN statements
 ARG CONDA_TENSORFLOW_ENV=tensorflow
 ARG CONDA_TORCH_ENV=torch
 ARG CONDA_PYTHON_VERSION=3.11
+ENV CONDA_DEFAULT_ENV=base
+
+## prevent automatic 'base' activation
+## alternative is 'conda config --set auto_activate_base false'
+ENV CONDA_AUTO_ACTIVATE_BASE=false
 
 ## change ownership of conda folder to conda user
 RUN <<-EOF
@@ -235,10 +243,6 @@ RUN <<-EOF
     ${CONDA_CMD} update --name base -c conda-forge -y conda
 EOF
 
-## prevent conda from initialising base environment automatically
-## this way conda will not overwrite CONDA_DEFAULT_ENV
-RUN ${CONDA_CMD} config --set auto_activate_base false
-
 ## create first environment (should be base)
 RUN ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV:-base} -f /environment_base.yml 
 
@@ -249,8 +253,13 @@ SHELL ["/conda-run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
-COPY --chmod=644 ./conf/home.bashrc ${CONDA_USER_HOME}/.bashrc
-RUN conda init
+RUN <<-EOF
+    conda init
+    echo "# activate environment set by CONDA_DEFAULT_ENV env variable" >> ${CONDA_USER_HOME}/.bashrc
+    echo "# it is initialised either in .profile or during container start" >> ${CONDA_USER_HOME}/.bashrc
+    echo 'conda activate ${CONDA_DEFAULT_ENV}' >> ${CONDA_USER_HOME}/.bashrc
+    echo "# EOF" >> ${CONDA_USER_HOME}/.bashrc
+EOF
 
 ## patch ~/.profile to have an example of conda preferred environment
 RUN <<-EOF
@@ -260,7 +269,7 @@ RUN <<-EOF
 EOF
 
 ## final update of the entire conda base environment
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all
+RUN CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV:-base}" conda update -y -c conda-forge --all
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT                    #
@@ -270,7 +279,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge 
 ## among the packages is CUDA supported llama-cpp-python
 ## other environments will inherit this when cloned from base
 USER ${CONDA_USER}
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} /usr/bin/env pip install ${EXPORT_DIR}/*.whl 
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} pip install ${EXPORT_DIR}/*.whl 
 
 ########################################################
 #  NVIDIA CUDA, TORCH & TENSORFLOW INSTALLATION        #
@@ -318,9 +327,9 @@ ENV TF_CPP_MIN_LOG_LEVEL=3
 ########################################################
 
 ## final round of updates to keep all up to date and final cleanup
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && /usr/bin/env pip cache purge
-RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && /usr/bin/env pip cache purge
-RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && /usr/bin/env pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
 
 ## apt cleanup
 USER root
