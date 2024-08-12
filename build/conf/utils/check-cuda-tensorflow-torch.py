@@ -104,7 +104,7 @@ def check_torch():
     
     coloured_print(f'Torch built with CUDA: {torch.backends.cudnn.enabled}', colour=colour)
     coloured_print(f'Torch CUDA is enabled: {torch.cuda.is_available()}', colour=colour)
-    if torch.cuda.is_available(): coloured_print(f"Torch CUDA version: {torch.version.cuda}", colour=colour)
+    if torch.backends.cudnn.enabled: coloured_print(f"Torch CUDA version: {torch.version.cuda}", colour=colour)
     coloured_print(f'Torch found CUDA devices: {torch.cuda.device_count()}', colour=colour)
 
     if torch.cuda.device_count() > 0:
