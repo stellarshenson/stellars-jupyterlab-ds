@@ -73,7 +73,7 @@ def check_tensorflow():
     
     # check if GPU is used
     coloured_print(f'Tensorflow version: {tf.__version__}', colour=colour)
-    coloured_print(f'Tensorflow built with CUDA support: {tf.test.is_built_with_cuda()}', colour=colour)
+    coloured_print(f'Tensorflow built with CUDA: {tf.test.is_built_with_cuda()}', colour=colour)
     
     # if cuda, print cuda version
     if tf.test.is_built_with_cuda():
