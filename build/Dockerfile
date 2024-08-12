@@ -95,6 +95,7 @@ COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
 COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
+COPY --chmod=755  ./conf/bin/mkchksum.sh /mkchksum.sh
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 COPY --chmod=755  ./conf/bin/start-jupyterlab.sh /start-jupyterlab.sh
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
@@ -126,6 +127,7 @@ ARG UTILS_PATH=/opt/utils
 ARG PATCHES_PATH=/tmp/patches
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_USER=lab
+ARG USER_DOCKER_CACHE_PATH=/tmp
 ARG CONDA_USER_PASSWD=password
 ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
@@ -168,8 +170,8 @@ EOF
 ## last '|| echo ok' is required for docker to assume successful build, as vim
 ## plugins installation exits with non-zero exit code
 RUN <<-EOF
-    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-    vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
+    git clone https://github.com/VundleVim/Vundle.vim.git ${CONDA_USER_HOME}/.vim/bundle/Vundle.vim
+    vim -E -S ${CONDA_USER_HOME}/.vimrc +PluginInstall +qall || echo ok
 EOF
 
 ########################################################
