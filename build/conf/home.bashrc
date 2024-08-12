@@ -119,5 +119,5 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# END OF DOT.BASHRC TEMPLATE
+# END OF HOME.BASHRC TEMPLATE ##############################################
 

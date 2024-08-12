@@ -5,16 +5,12 @@ FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
 
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
-RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    wget \
-    cmake \
-    python3 \
-    python3-pip \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
-
+RUN <<-EOF
+    apt-get update 
+    apt-get install -y git build-essential wget \
+	cmake python3 python3-pip python3-dev
+    rm -rf /var/lib/apt/lists/*
+EOF
 
 # make sure we have conda
 ENV CONDA_DEFAULT_ENV=base
@@ -22,15 +18,23 @@ ENV CONDA_HOME=/opt/conda
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_PYTHON_VERSION=3.11
 
+# cuda toolkit version - should be the same as torch
+ARG CUDA_TOOLKIT_VERSION=12.1
+
 # download and install conda
-RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
- -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
- && rm -rf ~/miniforge3.sh
+RUN <<-EOF
+    wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+	-O ~/miniforge3.sh
+    bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
+    rm -rf ~/miniforge3.sh
+EOF
 
 ## install base env
-RUN ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
-RUN ${CONDA_CMD} update --name base -c defaults -y conda
-RUN ${CONDA_CMD} install --name base -v -y cuda-toolkit=12.1
+RUN <<-EOF
+    ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
+    ${CONDA_CMD} update --name base -c conda-forge -y conda
+    ${CONDA_CMD} install --name base -v -y cuda-toolkit=${CUDA_TOOLKIT_VERSION}
+EOF
 
 # enable special shell for conda
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
@@ -45,9 +49,12 @@ WORKDIR ${BUILD_DIR}
 
 ## Build the llama-cpp-python library with CUDA support
 ## additional permisible params: -DGGML_CUDA_FORCE_CUBLAS=on -DGGML_CUDA_FORCE_MMQ=on 
-RUN CMAKE_ARGS="-DGGML_CUDA=on -DCUDA_ARCHITECTURES=all-major" FORCE_CMAKE=1 pip wheel llama-cpp-python --no-cache-dir
+RUN <<-EOF
+    CMAKE_ARGS="-DGGML_CUDA=on -DCUDA_ARCHITECTURES=all-major" FORCE_CMAKE=1 \
+    pip wheel llama-cpp-python --no-cache-dir
+EOF
 
-# copy custom built packages to /opt/custo
+# copy custom built packages to /opt/exports
 RUN cp llama*.whl ${EXPORT_DIR}
 
 ##############################################################################################
@@ -55,7 +62,7 @@ RUN cp llama*.whl ${EXPORT_DIR}
 
 ## this dockergfile is loosely based on the github project
 # FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04
-FROM nvidia/cuda:12.5.1-runtime-ubuntu22.04
+FROM nvidia/cuda:12.5.1-runtime-ubuntu22.04 AS target
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
@@ -77,8 +84,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt install yq -y 
 
 # install required packages, list will be taken from apt-packages.yml
-RUN apt install -y `yq eval '.packages[]' /apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
-RUN apt update && apt upgrade -y
+RUN <<-EOF
+    apt install -y `yq eval '.packages[]' /apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
+    apt update && apt upgrade -y
+EOF
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
@@ -101,10 +110,11 @@ COPY --chmod=644  ./conf/patches /tmp/patches
 ## container comes with pre-installed packages
 ## we need to remove them all and install conda
 ## filter packages to not uninstall base packages
-RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
- && pip uninstall -r requirements-to-uninstall.txt -y  \
- && pip cache purge
-
+RUN <<-EOF
+    pip freeze | grep -v blinker > requirements-to-uninstall.txt
+    pip uninstall -r requirements-to-uninstall.txt -y
+    pip cache purge
+EOF
 
 ########################################################
 #  CREATE JUPYTERLAB CONDA USER                        #
@@ -113,7 +123,7 @@ RUN pip freeze | grep -v blinker > requirements-to-uninstall.txt \
 ## user to be used with conda
 ENV CONDA_HOME=/opt/conda
 ARG UTILS_PATH=/opt/utils
-ARG PATCHES_PATH=/opt/patches
+ARG PATCHES_PATH=/tmp/patches
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_USER=lab
 ARG CONDA_USER_PASSWD=password
@@ -123,13 +133,13 @@ ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
-RUN <<EOF
-useradd -ms /bin/bash ${CONDA_USER}
-addgroup ${JUPYTER_GROUP}
-adduser -q ${CONDA_USER} sudo
-adduser -q ${CONDA_USER} ${JUPYTER_GROUP}
-usermod -g ${JUPYTER_GROUP} ${CONDA_USER}
-echo "${CONDA_USER}:${CONDA_USER_PASSWD}" | chpasswd
+RUN <<-EOF
+    useradd -ms /bin/bash ${CONDA_USER}
+    addgroup ${JUPYTER_GROUP}
+    adduser -q ${CONDA_USER} sudo
+    adduser -q ${CONDA_USER} ${JUPYTER_GROUP}
+    usermod -g ${JUPYTER_GROUP} ${CONDA_USER}
+    echo "${CONDA_USER}:${CONDA_USER_PASSWD}" | chpasswd
 EOF
 
 ## update sudoers to allow conda user sudo without password
@@ -146,17 +156,17 @@ RUN mkdir ${CONDA_USER_WORKSPACE}
 
 ## ensure good permissions, this is because files in github repo
 ## might have mixed permissions. we need to fix that
-RUN <<EOF
- echo "all directories in the ${CONDA_USER_HOME} should be accessible only to user '${CONDA_USER}'"
- find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700
- echo "all files in the ${CONDA_USER_HOME} should be readible only to user '${CONDA_USER}'"
- find ${CONDA_USER_HOME} -type f -printf '"%p"\n' | xargs chmod 600
+RUN <<-EOF
+    echo "all directories in the ${CONDA_USER_HOME} should be accessible only to user '${CONDA_USER}'"
+    find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700
+    echo "all files in the ${CONDA_USER_HOME} should be readible only to user '${CONDA_USER}'"
+    find ${CONDA_USER_HOME} -type f -printf '"%p"\n' | xargs chmod 600
 EOF
 
 ## set up vim with all its plugins including syntax colouring and autocomplete
-RUN <<EOF
- git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
- vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
+RUN <<-EOF
+    git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+    vim -E -S ~/.vimrc +PluginInstall +qall || echo ok
 EOF
 
 ########################################################
@@ -171,10 +181,10 @@ COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 
 ## install helpful scripts in the workspace as symlinks
-RUN <<EOF
-for x in `ls ${UTILS_PATH}/*.sh`; do 
-    ln -s $x ${CONDA_USER_WORKSPACE}/`basename $x`
-done
+RUN <<-EOF
+    for x in `ls ${UTILS_PATH}/*.sh`; do
+	ln -s $x ${CONDA_USER_WORKSPACE}/`basename $x`
+    done
 EOF
 
 ########################################################
@@ -206,13 +216,18 @@ USER ${CONDA_USER}
 WORKDIR ${CONDA_USER_HOME}
 
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
-RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
- -O ~/miniforge3.sh && bash ~/miniforge3.sh -b -u -p ${CONDA_HOME} \
- && rm -rf ~/miniforge3.sh
+RUN <<-EOF
+    wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+	-O ~/miniforge3.sh
+    bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
+    rm -rf ~/miniforge3.sh
+EOF
 
 ## update conda system & install required packages from environment.yml
-RUN ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
-RUN ${CONDA_CMD} update --name base -c conda-forge -y conda
+RUN <<-EOF 
+    ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
+    ${CONDA_CMD} update --name base -c conda-forge -y conda
+EOF
 
 ## create first environment (should be base)
 RUN ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV:-base} -f /environment_base.yml 
@@ -224,36 +239,37 @@ SHELL ["/conda-run.sh"]
 
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
-RUN <<EOF
- rm ~/.bashrc
- echo '###### START OF AUTOGENERATED CODE IN DOCKERFILE' >> ~/.bashrc
- echo '# saving the conda environment, as conda init is going to reset this to "base"' >> ~/.bashrc
- echo '_CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
- conda init
- echo '# restoring saved conda default env, as it was resetted to "base" by conda init' >> ~/.bashrc
- echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ~/.bashrc
- echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ~/.bashrc
- echo '###### END OF AUTOGENERATED CODE IN DOCKERFILE' >> ~/.bashrc
+RUN <<-EOF
+    rm ${CONDA_USER_HOME}/.bashrc
+    echo '# saving the conda environment, as conda init is going to reset this to "base"' >> ${CONDA_USER_HOME}/.bashrc
+    echo '_CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base}' >>  ${CONDA_USER_HOME}/.bashrc
+    conda init
+    echo '# restoring saved conda default env, as it was resetted to "base" by conda init' >> ${CONDA_USER_HOME}/.bashrc
+    echo 'CONDA_DEFAULT_ENV=${_CONDA_DEFAULT_ENV:-base}' >>  ${CONDA_USER_HOME}/.bashrc
+    echo 'conda activate "${CONDA_DEFAULT_ENV:-base}"' >>  ${CONDA_USER_HOME}/.bashrc
+    echo "generated conda initialisation code in ${CONDA_USER_HOME}/.bashrc"
 EOF
 
 ## merge bashrc files - conda generated and copied
 COPY --chmod=644 ./conf/home.bashrc ${CONDA_USER_HOME}/home.bashrc
-RUN <<EOF
- cat ${CONDA_USER_HOME}/home.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge
- cat ${CONDA_USER_HOME}/.bashrc >> ${CONDA_USER_HOME}/bashrc-to-merge
- mv  ${CONDA_USER_HOME}/bashrc-to-merge ${CONDA_USER_HOME}/.bashrc
- rm  ${CONDA_USER_HOME}/home.bashrc
+RUN <<-EOF
+    cat ${CONDA_USER_HOME}/home.bashrc > ${CONDA_USER_HOME}/bashrc-to-merge
+    cat ${CONDA_USER_HOME}/.bashrc >> ${CONDA_USER_HOME}/bashrc-to-merge
+    mv  ${CONDA_USER_HOME}/bashrc-to-merge ${CONDA_USER_HOME}/.bashrc
+    rm  ${CONDA_USER_HOME}/home.bashrc
+    echo "merged ${CONDA_USER_HOME}/.bashrc template with conda initialisation code"
 EOF
 
 ## patch ~/.profile to have an example of conda preferred environment
-RUN <<EOF
- cd ${CONDA_USER_HOME}
- patch < ${PATCHES_PATH}/home.profile.patch
+RUN <<-EOF
+    cd ${CONDA_USER_HOME}
+    patch < ${PATCHES_PATH}/home.profile.patch
+    echo "patched ${CONDA_USER_HOME}/.profile"
 EOF
 
 
 ## final update of the entire conda base environment
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda update -y -c conda-forge --all 
+RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} echo "$CONDA_DEFAULT_ENV" && conda update -y -c conda-forge --all 
 
 
 ########################################################
@@ -272,6 +288,11 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} /usr/bin/env pip install ${EXPORT_DIR
 
 ## run installation as conda user
 USER ${CONDA_USER}
+
+## install cuda accelerated numpy = cupy and conda-version in the base enviromnent
+## this should be available to both tensorflow and torch environments later
+#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
+# conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
 ## clone built base env to both tensorflow and torch envs
 RUN conda create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
@@ -297,10 +318,6 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 
 ## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
 ENV TF_CPP_MIN_LOG_LEVEL=3
-
-## install cuda accelerated numpy = cupy and conda-version
-#RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} \ 
-# conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
 
 ########################################################
@@ -331,11 +348,12 @@ COPY --chmod=644 ./conf/misc/motd-template.txt /
 
 ## generate build name and build date
 ## and generate motd using template
-RUN <<EOF
- back -c "date >/build-date.txt"
- bash -c "gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt"
- bash -c "cat /motd-template.txt | sed \"s/@BUILD_NAME@/$(cat /build-name.txt)/g\" | sed \"s/@BUILD_DATE@/$(cat /build-date.txt)/g\" > /etc/motd"
- rm /motd-template.txt
+RUN <<-EOF
+    date >/build-date.txt
+    gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
+    cat /motd-template.txt | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
+	| sed "s/@BUILD_DATE@/$(cat /build-date.txt)/g" > /etc/motd
+    rm /motd-template.txt
 EOF
 
 ## update terminal and shell settings
@@ -354,10 +372,10 @@ ENV GPUSTAT_ENABLED=1
 
 ## setup entry point, workdir and startup command
 ## and set user to be conda user
+USER ${CONDA_USER}
 WORKDIR ${CONDA_USER_WORKSPACE}
 ENTRYPOINT ["/conda-entry.sh"]
 CMD ["/start-jupyterlab.sh"]
-USER ${CONDA_USER}
 
 ## expose ports
 # 8888 - jupyterlab, 8000 and 8001 - jupyterhub
@@ -369,3 +387,4 @@ EXPOSE 6006
 EXPOSE 5000
 
 # EOF
+
