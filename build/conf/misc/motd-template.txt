@@ -1,1 +1,1 @@
-Jupyterlab platform build [94mAPPE[0m created on [94mSun Aug 11 12:09:30 UTC 2024[0m
+Jupyterlab platform build [94m@BUILD_NAME@[0m created on [94m@BUILD_DATE@[0m
