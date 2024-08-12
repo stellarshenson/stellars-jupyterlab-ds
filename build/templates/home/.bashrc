@@ -120,4 +120,3 @@ if ! shopt -oq posix; then
 fi
 
 # END OF BASHRC TEMPLATE ##############################################
-
