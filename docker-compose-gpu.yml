@@ -22,7 +22,6 @@ services:
        - GPU_SUPPORT_ENABLED=1 # system support for gpu
        - JUPYTERLAB_SERVER_IP=*
        - JUPYTERLAB_SERVER_TOKEN=
-       - JUPYTERLAB_SERVER_PASSWORD=
     ports:
        - 8888:8888 # jupyterlab
        - 8000:8000 # jupyterhub
