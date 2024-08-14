@@ -5,9 +5,7 @@ c.ServerApp.root_dir = "/home/lab/workspace"
 # terminal should be started with login shell
 # login shell allows to call .profile to set env name
 c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash", "--login"] }
-c.ServerApp.allow_root = False
 c.FileContentsManager.always_delete_dir = True
-c.Completer.use_jedi = False
 
 # ssl configuration to use https
 c.ServerApp.certfile = u'/mnt/certs/jupyterlab.crt'
