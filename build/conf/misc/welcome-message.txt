@@ -1,6 +1,6 @@
-[95mWelcome to stellars-jupyterlab-ds platform. This is your environment intended
+[95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. This is your environment intended
 for data science and machine learning / ai projects. You will find a lot of
-packagages installed and configured for you in such way that it just works.[0m
+packages installed and configured for you in such way that it just works.[0m
 
 Running JupyterLab server on  [34mhttps://localhost:8888[0m
 Connect VSCode to Jupyter on  [34mhttps://localhost:8888/lab/tree[0m
