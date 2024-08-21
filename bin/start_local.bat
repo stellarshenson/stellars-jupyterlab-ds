@@ -1,5 +1,8 @@
 @echo off
 
+REM Change directory to where the script is
+cd /d "%~dp0"
+
 REM Check for Nvidia GPU using wmic, only NVIDIA check is supported
 wmic path win32_VideoController get name | findstr /i "NVIDIA" >nul
 
