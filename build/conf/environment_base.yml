@@ -44,6 +44,7 @@ dependencies:
     - inference_sdk # universal inference client
     - make # build tools
     - matplotlib # plots library
+    - memory_profiler # for monitoring memory usage
     - mlflow # powerful mlops suite and experiment runner (library)
     - nltk # natural language processing library (used for embeddings and analysis)
     - numpy # advanced library for working with arrays
