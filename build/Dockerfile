@@ -1,6 +1,8 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
-FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
+# FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
+FROM nvidia/cuda:12.6.0-cudnn-runtime-ubuntu22.04 AS builder
+
 
 
 # Install necessary packages for building
@@ -62,7 +64,8 @@ RUN cp llama*.whl ${EXPORT_DIR}
 
 ## this dockergfile is loosely based on the github project
 # FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04
-FROM nvidia/cuda:12.5.1-runtime-ubuntu22.04 AS target
+# FROM nvidia/cuda:12.5.1-runtime-ubuntu22.04 AS target
+FROM nvidia/cuda:12.6.0-runtime-ubuntu22.04 AS target
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
