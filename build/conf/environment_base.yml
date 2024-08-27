@@ -1,4 +1,4 @@
-# updated on 2024-08-26
+# updated on 2024-08-27
 
 name: base
 channels:
@@ -15,7 +15,7 @@ dependencies:
 
   ## jupyterlab and language server
   - jupyterlab # makes sure latest jupyterlab is installed
-  - jupyterlab-lsp # language serever extension
+  - jupyterlab-lsp # language server extension
    
   ## jupyterlab extensions
   - jupyterlab-git # enables git extension for jupyterlab
