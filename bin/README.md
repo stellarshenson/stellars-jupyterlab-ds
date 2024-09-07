@@ -9,4 +9,5 @@
 * `start_gpu.sh` - linux script to start container with gpu support
 * `start_local.bat` - windows script to start container using custom dockerfiles in `local` directory
 * `start_local.sh` - linux script to start container using custom dockerfiles in `local` directory
+* `unregister_wsl_docker.bat` - windows script to reset wsl docker integration
 
