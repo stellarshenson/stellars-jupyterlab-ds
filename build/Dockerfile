@@ -50,7 +50,7 @@ RUN mkdir ${BUILD_DIR} ${EXPORT_DIR}
 WORKDIR ${BUILD_DIR}
 
 ## Build the llama-cpp-python library with CUDA support
-## additional permisible params: -DGGML_CUDA_FORCE_CUBLAS=on -DGGML_CUDA_FORCE_MMQ=on 
+## additional permissible params: -DGGML_CUDA_FORCE_CUBLAS=on -DGGML_CUDA_FORCE_MMQ=on 
 RUN <<-EOF
     CMAKE_ARGS="-DGGML_CUDA=on -DCUDA_ARCHITECTURES=all-major" FORCE_CMAKE=1 \
     pip wheel llama-cpp-python --no-cache-dir
