@@ -19,6 +19,7 @@ dependencies:
    
   ## jupyterlab extensions
   - jupyterlab-git # enables git extension for jupyterlab
+  - nbconvert # notebook conversion to HTML and other formats
   - nb_conda # provides conda environment and package access extension from jupyter
   - nb_conda_kernels # ability to add kernels (available only via conda)
 
