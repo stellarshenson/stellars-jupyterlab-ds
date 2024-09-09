@@ -369,7 +369,6 @@ ENV TERM=xterm-256color
 ## startup ENV parameters for jupyterlab
 ENV JUPYTERLAB_SERVER_IP="*"
 ENV JUPYTERLAB_SERVER_TOKEN=""
-ENV JUPYTERLAB_SERVER_PASSWORD=""
 
 ## default values for GPU support envs
 # GPU_SUPPORT_ENABLED controls nvidia support of the system
