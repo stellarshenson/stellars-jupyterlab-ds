@@ -1,8 +1,8 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
 # FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
-FROM nvidia/cuda:12.6.0-cudnn-runtime-ubuntu22.04 AS builder
-
+FROM nvidia/cuda:12.6.1-cudnn-runtime-ubuntu22.04 AS builder
+ARG CONDA_PYTHON_VERSION=3.11
 
 
 # Install necessary packages for building
@@ -18,7 +18,6 @@ EOF
 ENV CONDA_DEFAULT_ENV=base
 ENV CONDA_HOME=/opt/conda
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
-ARG CONDA_PYTHON_VERSION=3.11
 
 # cuda toolkit version - should be the same as torch
 ARG CUDA_TOOLKIT_VERSION=12.1
@@ -63,9 +62,7 @@ RUN cp llama*.whl ${EXPORT_DIR}
 ##############################################################################################
 
 ## this dockergfile is loosely based on the github project
-# FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04
-# FROM nvidia/cuda:12.5.1-runtime-ubuntu22.04 AS target
-FROM nvidia/cuda:12.6.0-runtime-ubuntu22.04 AS target
+FROM nvidia/cuda:12.6.1-runtime-ubuntu22.04 AS target
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
@@ -208,7 +205,6 @@ USER root
 ## additionally to ENV for effective variable substitution in the RUN statements
 ARG CONDA_TENSORFLOW_ENV=tensorflow
 ARG CONDA_TORCH_ENV=torch
-ARG CONDA_PYTHON_VERSION=3.11
 ENV CONDA_DEFAULT_ENV=base
 
 ## prevent automatic 'base' activation

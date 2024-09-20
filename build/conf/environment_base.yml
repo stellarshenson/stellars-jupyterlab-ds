@@ -1,4 +1,4 @@
-# updated on 2024-09-03
+# updated on 2024-09-20
 
 name: base
 channels:
@@ -7,7 +7,7 @@ channels:
   - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
 
 dependencies:
-  - python=3.11 # latest python version for tensorflow to work
+  - python=3.11 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
   - awscli>1 # aws client, binary install

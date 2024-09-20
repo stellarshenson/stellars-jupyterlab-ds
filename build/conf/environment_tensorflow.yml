@@ -4,7 +4,6 @@ channels:
   - nvidia       # NVIDIA packages for CUDA to support TensorFlow GPU acceleration
 
 dependencies:
-  - python=3.11  # Python version 3.11, compatible with TensorFlow for the latest features
   - pip          # Pip package manager to install Python packages
 
 
