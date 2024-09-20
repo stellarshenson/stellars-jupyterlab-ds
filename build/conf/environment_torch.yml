@@ -4,7 +4,6 @@ channels:
   - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
 
 dependencies:
-  - python=3.11 # latest python version for tensorflow to work
   - pip
 
   - pip:
