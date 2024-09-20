@@ -2,8 +2,6 @@
 ## libraries like huggingface llama_cpp
 # FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
 FROM nvidia/cuda:12.6.1-cudnn-runtime-ubuntu22.04 AS builder
-ARG CONDA_PYTHON_VERSION=3.11
-
 
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
@@ -18,6 +16,7 @@ EOF
 ENV CONDA_DEFAULT_ENV=base
 ENV CONDA_HOME=/opt/conda
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
+COPY --chmod=644  ./conf/environment_builder.yml /environment_builder.yml
 
 # cuda toolkit version - should be the same as torch
 ARG CUDA_TOOLKIT_VERSION=12.1
@@ -30,9 +29,9 @@ RUN <<-EOF
     rm -rf ~/miniforge3.sh
 EOF
 
-## install base env
+## install builder env in 'base'
 RUN <<-EOF
-    ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
+    ${CONDA_CMD} env update --name base -f /environment_builder.yml
     ${CONDA_CMD} update --name base -c conda-forge -y conda
     ${CONDA_CMD} install --name base -v -y cuda-toolkit=${CUDA_TOOLKIT_VERSION}
 EOF
@@ -91,7 +90,7 @@ EOF
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
-COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
+COPY --chmod=644  ./conf/environment_default.yml /environment_default.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
 COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
@@ -240,12 +239,14 @@ EOF
 
 ## update conda system & install required packages from environment.yml
 RUN <<-EOF 
-    ${CONDA_CMD} install --name base -c conda-forge -y python=${CONDA_PYTHON_VERSION}
-    ${CONDA_CMD} update --name base -c conda-forge -y conda
-EOF
+    echo "installing ${CONDA_DEFAULT_ENV} env with python version from env file"
+    if [[ ${CONDA_DEFAULT_ENV} != 'base' ]]; then
+	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
+    fi
 
-## create first environment (should be base)
-RUN ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV:-base} -f /environment_base.yml 
+    ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
+    ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} -f /environment_default.yml 
+EOF
 
 ## Tell the docker build process to use this for RUN.
 ## this script enables environment when used 
@@ -270,7 +271,7 @@ RUN <<-EOF
 EOF
 
 ## final update of the entire conda base environment
-RUN CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV:-base}" conda update -y -c conda-forge --all
+RUN CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV}" conda update -y -c conda-forge --all
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT                    #
