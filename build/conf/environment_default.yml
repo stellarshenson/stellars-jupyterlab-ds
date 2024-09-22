@@ -26,6 +26,7 @@ dependencies:
   - pip:
     ## jupyterlab extensions packages
     - python-lsp-server[all] # install autocompleter extentions
+    - jupyterlab-code-formatter # proxy to code formatting like black or isort
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
@@ -36,6 +37,7 @@ dependencies:
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
     - Pillow # image manipulation library
+    - black # pragmatic code formatter
     - build # to allow building packages in python
     - boto3 # aws webservices client
     - click # input parameters processing for python scripts
