@@ -3,6 +3,9 @@
 # FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
 FROM nvidia/cuda:12.6.1-cudnn-runtime-ubuntu22.04 AS builder
 
+# cuda toolkit version - should be the same as torch
+ARG CUDA_TOOLKIT_VERSION=12.1
+
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
 RUN <<-EOF
@@ -17,9 +20,6 @@ ENV CONDA_DEFAULT_ENV=base
 ENV CONDA_HOME=/opt/conda
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 COPY --chmod=644  ./conf/environment_builder.yml /environment_builder.yml
-
-# cuda toolkit version - should be the same as torch
-ARG CUDA_TOOLKIT_VERSION=12.1
 
 # download and install conda
 RUN <<-EOF
@@ -304,7 +304,7 @@ EOF
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 ## needed if tensorflow or torch are installed using conda, otherwise this is ignored
-ENV CONDA_OVERRIDE_CUDA=12.5
+ENV CONDA_OVERRIDE_CUDA=12.3
 
 ## install tensorflow using pip to its dedicated environment
 ## installing tf-keras allows to use KERAS v2 (legacy)
