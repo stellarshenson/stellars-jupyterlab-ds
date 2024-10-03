@@ -240,7 +240,7 @@ EOF
 ## update conda system & install required packages from environment.yml
 RUN <<-EOF 
     echo "installing ${CONDA_DEFAULT_ENV} env with python version from env file"
-    if [[ ${CONDA_DEFAULT_ENV} != 'base' ]]; then
+    if [ "${CONDA_DEFAULT_ENV}" != "base" ]; then
 	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
     fi
 
@@ -272,16 +272,6 @@ EOF
 
 ## final update of the entire conda base environment
 RUN CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV}" conda update -y -c conda-forge --all
-
-########################################################
-#  GENERATIVE AI WITHi CUDA SUPPORT                    #
-########################################################
-
-## packages were built by the builder container, install them all
-## among the packages is CUDA supported llama-cpp-python
-## other environments will inherit this when cloned from base
-USER ${CONDA_USER}
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV} pip install ${EXPORT_DIR}/*.whl 
 
 ########################################################
 #  NVIDIA CUDA, TORCH & TENSORFLOW INSTALLATION        #
@@ -320,9 +310,15 @@ RUN conda env update --name ${CONDA_TORCH_ENV} -f /environment_torch.yml
 ENV CUDNN_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn
 ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 
-## set env variables to disable tensorflow warnings and to enable new libstdc++.so.6
-ENV TF_CPP_MIN_LOG_LEVEL=3
+########################################################
+#  GENERATIVE AI WITHi CUDA SUPPORT ON TORCH           #
+########################################################
 
+## packages were built by the builder container, install them all
+## among the packages is CUDA supported llama-cpp-python
+## other environments will inherit this when cloned from base
+USER ${CONDA_USER}
+RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} pip install ${EXPORT_DIR}/*.whl 
 
 ########################################################
 #  FINAL UPDATE AND CLEANUP                            #
