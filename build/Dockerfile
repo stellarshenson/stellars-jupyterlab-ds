@@ -244,6 +244,7 @@ RUN <<-EOF
 	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
     fi
 
+    echo "updating the environment"
     ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
     ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} -f /environment_default.yml 
 EOF
