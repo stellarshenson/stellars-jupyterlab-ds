@@ -23,6 +23,7 @@ COPY --chmod=644  ./conf/environment_builder.yml /environment_builder.yml
 
 # download and install conda
 RUN <<-EOF
+    echo "installing miniforge"
     wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
 	-O ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
@@ -31,6 +32,7 @@ EOF
 
 ## install builder env in 'base'
 RUN <<-EOF
+    echo "installing builder environment in base"
     ${CONDA_CMD} env update --name base -f /environment_builder.yml
     ${CONDA_CMD} update --name base -c conda-forge -y conda
     ${CONDA_CMD} install --name base -v -y cuda-toolkit=${CUDA_TOOLKIT_VERSION}
@@ -84,6 +86,7 @@ RUN apt update && apt install yq -y
 
 # install required packages, list will be taken from apt-packages.yml
 RUN <<-EOF
+    echo "installing OS packages from manifest"
     apt install -y `yq eval '.packages[]' /apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
     apt update && apt upgrade -y
 EOF
@@ -111,6 +114,7 @@ COPY --chmod=644  ./conf/patches /tmp/patches
 ## we need to remove them all and install conda
 ## filter packages to not uninstall base packages
 RUN <<-EOF
+    echo "cleaning existing python installation"
     pip freeze | grep -v blinker > requirements-to-uninstall.txt
     pip uninstall -r requirements-to-uninstall.txt -y
     pip cache purge
@@ -136,6 +140,7 @@ ENV CONDA_RUN_DEBUG=0
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
 RUN <<-EOF
+    echo "creating conda user"
     useradd -ms /bin/bash ${CONDA_USER}
     addgroup ${JUPYTER_GROUP}
     adduser -q ${CONDA_USER} sudo
@@ -169,6 +174,7 @@ EOF
 ## last '|| echo ok' is required for docker to assume successful build, as vim
 ## plugins installation exits with non-zero exit code
 RUN <<-EOF
+    echo "installing VIM plugins"
     git clone https://github.com/VundleVim/Vundle.vim.git ${CONDA_USER_HOME}/.vim/bundle/Vundle.vim
     vim -E -S ${CONDA_USER_HOME}/.vimrc +PluginInstall +qall || echo ok
 EOF
@@ -186,6 +192,7 @@ COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 
 ## install helpful scripts in the workspace as symlinks
 RUN <<-EOF
+    echo "copying workspace helpful scripts"
     for x in `ls ${UTILS_PATH}/*.sh`; do
 	ln -s $x ${CONDA_USER_WORKSPACE}/`basename $x`
     done
@@ -231,6 +238,7 @@ WORKDIR ${CONDA_USER_HOME}
 
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN <<-EOF
+    echo "installing miniforge3"
     wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
 	-O ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
@@ -266,6 +274,7 @@ EOF
 
 ## patch ~/.profile to have an example of conda preferred environment
 RUN <<-EOF
+    echo "patching profile"
     cd ${CONDA_USER_HOME}
     patch < ${PATCHES_PATH}/home.profile.patch
     echo "patched ${CONDA_USER_HOME}/.profile"
@@ -350,6 +359,7 @@ COPY --chmod=644 ./conf/misc/motd-template.txt /
 ## generate build name and build date
 ## and generate motd using template
 RUN <<-EOF
+    echo "generating build name"
     date >/build-date.txt
     gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
     cat /motd-template.txt | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
