@@ -9,6 +9,7 @@ ARG CUDA_TOOLKIT_VERSION=12.1
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
 RUN <<-EOF
+    echo "installing necessary OS packages"
     apt-get update 
     apt-get install -y git build-essential wget \
 	cmake python3 python3-pip python3-dev
@@ -219,6 +220,7 @@ ENV CONDA_AUTO_ACTIVATE_BASE=false
 
 ## change ownership of conda folder to conda user
 RUN <<-EOF
+    echo "creating $CONDA_HOME directory"
     mkdir -p /opt/conda
     chown -R :${JUPYTER_GROUP} ${CONDA_HOME}
     chmod -R 770 ${CONDA_HOME}
@@ -227,6 +229,7 @@ EOF
 ## create empty logfile with permissions for jupyterlab to write
 ARG JUPYTER_LOG=/var/log/jupyterlab.log
 RUN <<-EOF
+    echo "creating jupyter logs directory accessible to users"
     touch ${JUPYTER_LOG}
     chown :${JUPYTER_GROUP} ${JUPYTER_LOG}
     chmod 664 ${JUPYTER_LOG}
@@ -265,6 +268,7 @@ SHELL ["/conda-run.sh"]
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
 RUN <<-EOF
+    echo "prepare bash shell initialisation script"
     conda init
     echo "# activate environment set by CONDA_DEFAULT_ENV env variable" >> ${CONDA_USER_HOME}/.bashrc
     echo "# it is initialised either in .profile or during container start" >> ${CONDA_USER_HOME}/.bashrc
@@ -274,7 +278,7 @@ EOF
 
 ## patch ~/.profile to have an example of conda preferred environment
 RUN <<-EOF
-    echo "patching profile"
+    echo "patching shell profile script" 
     cd ${CONDA_USER_HOME}
     patch < ${PATCHES_PATH}/home.profile.patch
     echo "patched ${CONDA_USER_HOME}/.profile"
