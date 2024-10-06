@@ -44,6 +44,7 @@ dependencies:
     - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
     - deprecation # decorators for function deprecation
+    - fastexcel # library for reading excel files by polars
     - gpustat # gpu status reporting tool
     - ipywidgets # jupyter widgets from IPython
     - inference_sdk # universal inference client
