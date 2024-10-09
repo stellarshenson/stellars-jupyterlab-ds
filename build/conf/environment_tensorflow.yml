@@ -12,11 +12,13 @@ dependencies:
     - tensorboard                # Tool for visualizing TensorFlow learning
     - tf-keras                   # TensorFlow's Keras implementation for building deep learning models
     - keras-cv                   # Keras package for computer vision tasks with TensorFlow
+    - kerasr-nlp                 # Keras Natural Language Processing (NLP) library, for handling NLP tasks
+
+    ## Third party libraries
     #- keras-mdn-layer            # Mixture Density Network (MDN) layer for Keras, useful for probabilistic models
     #- keras-multi-head           # Keras layer that allows for multiple attention heads in neural networks
     #- keras-self-attention       # Implementation of self-attention mechanism for Keras models
     #- keras-tcn                  # Temporal Convolutional Networks (TCN) implementation for Keras
-    #- kerasr-nlp                 # Keras Natural Language Processing (NLP) library, for handling NLP tasks
 
 # EOF
 
