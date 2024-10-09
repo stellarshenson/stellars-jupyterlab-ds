@@ -10,7 +10,7 @@ dependencies:
   - pip:
     - tensorflow[and-cuda]<2.17  # TensorFlow with CUDA support for GPU acceleration, version less than 2.17
     - tf-keras                  # TensorFlow's Keras implementation for building deep learning models
-    - tensorboard               # Tool for visualizing TensorFlow graphs, metrics, and debugging
+    # - tensorboard               # Tool for visualizing TensorFlow learning / disabled, installed with tf auto
     - keras-cv                  # Keras package for computer vision tasks with TensorFlow
     - keras-mdn-layer           # Mixture Density Network (MDN) layer for Keras, useful for probabilistic models
     - keras-multi-head          # Keras layer that allows for multiple attention heads in neural networks
