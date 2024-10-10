@@ -9,6 +9,14 @@ This project provides a pre-packaged, pre-configured JupyterLab environment runn
 
 ## Quickstart
 
+Preferred method for running the container is with **docker-compose**
+
+### Docker Compose
+
+1. download `docker-compose.yml` or `docker-compose-gpu.yml` file
+2. run `docker-compose -f docker-compose.yml up` command
+3. open https://localhost:8888 in your browser
+
 ### Docker
 
 You can run the `stellars-jupyterlab-ds` container without docker-compose, just with docker. 
@@ -41,12 +49,6 @@ docker run -p 8888:8888 \
 ```
 
 ... and open https://localhost:8888 in your browser
-
-#### Docker Compose
-
-1. download `docker-compose.yml` or `docker-compose-gpu.yml` file
-2. run `docker-compose -f docker-compose.yml up` command
-3. open https://localhost:8888 in your browser
 
 ## Key Features
 - **JupyterLab Extensions:**
