@@ -15,20 +15,22 @@ services:
     hostname: lab
     image: stellars/stellars-jupyterlab-ds:latest
     build:
-       context: build
-       dockerfile: Dockerfile
+      context: build
+      dockerfile: Dockerfile
     command: /start-jupyterlab.sh
     environment:
-       - CONDA_DEFAULT_ENV=base # choices are: base, tensorflow, torch
-       - JUPYTERLAB_SERVER_IP=*
-       - JUPYTERLAB_SERVER_TOKEN=
-       - TF_CPP_MIN_LOG_LEVEL=3 # reduce tensorflow logging level
+      - CONDA_DEFAULT_ENV=base # choices are: base, tensorflow, torch
+      - JUPYTERLAB_SERVER_IP=*
+      - JUPYTERLAB_SERVER_TOKEN=
+      - TF_CPP_MIN_LOG_LEVEL=3 # reduce tensorflow logging level
     ports:
-       - 8888:8888 # jupyterlab
-       - 8000:8000 # jupyterhub
-       - 8001:8001 # jupyterhub proxy
-       - 6006:6006 # tensorboard
-       - 5000:5000 # mlflow
+      - 8888:8888 # jupyterlab
+      - 8000:8000 # jupyterhub
+      - 8001:8001 # jupyterhub proxy
+      - 6006:6006 # tensorboard
+      - 5000:5000 # mlflow
+    networks:
+      - frontend
     volumes:
       - home:/home                    # jupyterlab user directory persistence
       - workspace:/home/lab/workspace # user projects workspace volume persistence
@@ -38,5 +40,10 @@ volumes:
   workspace:
   certs:
   home:
+
+networks:
+  frontend:
+    driver: bridge
+
 
 # EOF
