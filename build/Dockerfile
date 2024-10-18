@@ -108,7 +108,7 @@ COPY --chmod=755  ./conf/utils /opt/utils
 COPY --chmod=644  ./conf/patches /tmp/patches
 
 ########################################################
-#  REMOVE DEFAULT PACKAGES                             #
+#  FIX PACKAGES AND REMOVE UNNECESSARY                 #
 ########################################################
 
 ## container comes with pre-installed packages
@@ -119,6 +119,15 @@ RUN <<-EOF
     pip freeze | grep -v blinker > requirements-to-uninstall.txt
     pip uninstall -r requirements-to-uninstall.txt -y
     pip cache purge
+EOF
+
+## fix for 4.8.30 mc version (as in ubuntu 24.04)
+## this code will need to be removed when the issue is fixed 
+## see: https://bbs.archlinux.org/viewtopic.php?id=288511
+RUN <<-EOF
+    echo "fixing midnight-commander bug"
+    cp -a /etc/mc/mc.ext.ini /etc/mc/mc.ext.ini.bak 2>/dev/null || true
+    sed '/Regex=/s/\\/\\\\/g' -i /etc/mc/mc.ext.ini 2>/dev/null || true
 EOF
 
 ########################################################
@@ -137,11 +146,15 @@ ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ENV CONDA_RUN_DEBUG=0
+ENV PATH=${PATH}:${CONDA_HOME}/condabin
 
 ## create new user and add sudo rights
 ## also add group conda and add it to jupyterlab user
 RUN <<-EOF
-    echo "creating conda user"
+    echo "preparing conda user account"
+    echo "removing existing ubuntu account"
+    userdel -f -r ubuntu 2>/dev/null || true
+    echo "adding new ${CONDA_USER} account"
     useradd -ms /bin/bash ${CONDA_USER}
     addgroup ${JUPYTER_GROUP}
     adduser -q ${CONDA_USER} sudo

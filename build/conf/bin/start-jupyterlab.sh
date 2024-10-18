@@ -25,3 +25,4 @@ jupyter-lab --ip=$JUPYTERLAB_SERVER_IP --IdentityProvider.token=$JUPYTERLAB_SERV
     --no-browser 
 
 # EOF
+
