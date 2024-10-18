@@ -140,26 +140,39 @@ ARG UTILS_PATH=/opt/utils
 ARG PATCHES_PATH=/tmp/patches
 ENV CONDA_CMD=${CONDA_HOME}/condabin/conda
 ARG CONDA_USER=lab
+ARG CONDA_USER_UID=1000
+ARG CONDA_USER_GROUP=lab
+ARG CONDA_USER_GROUP_GID=1000
+ARG JUPYTER_GROUP=jupyter
+ARG JUPYTER_GROUP_GID=1001
 ARG USER_DOCKER_CACHE_PATH=/tmp
 ARG CONDA_USER_PASSWD=password
-ARG JUPYTER_GROUP=jupyter
 ARG CONDA_USER_HOME=/home/${CONDA_USER}
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ENV CONDA_RUN_DEBUG=0
 ENV PATH=${PATH}:${CONDA_HOME}/condabin
 
-## create new user and add sudo rights
+
+## create new user with specific UID and GID, and add sudo rights
 ## also add group conda and add it to jupyterlab user
 RUN <<-EOF
     echo "preparing conda user account"
-    echo "removing existing ubuntu account"
+    echo "removing existing ubuntu account if exists"
     userdel -f -r ubuntu 2>/dev/null || true
-    echo "adding new ${CONDA_USER} account"
-    useradd -ms /bin/bash ${CONDA_USER}
-    addgroup ${JUPYTER_GROUP}
+
+    echo "adding new ${CONDA_USER} account with specific UID=${CONDA_USER_UID} and GID=${CONDA_USER_GID}"
+    groupadd -g ${CONDA_USER_GROUP_GID} ${CONDA_USER_GROUP}
+    groupadd -g ${JUPYTER_GROUP_GID} ${JUPYTER_GROUP}
+    useradd -ms /bin/bash -u ${CONDA_USER_UID} -g ${CONDA_USER_GROUP_GID} ${CONDA_USER}
+    
     adduser -q ${CONDA_USER} sudo
     adduser -q ${CONDA_USER} ${JUPYTER_GROUP}
+    adduser -q ${CONDA_USER} ${CONDA_USER_GROUP}
+
+    echo "setting user ${CONDA_USER} default group to ${JUPYTER_GROUP}"
     usermod -g ${JUPYTER_GROUP} ${CONDA_USER}
+    
+    echo "setting user ${CONDA_USER} default password ${CONDA_USER_PASSWD}"
     echo "${CONDA_USER}:${CONDA_USER_PASSWD}" | chpasswd
 EOF
 
