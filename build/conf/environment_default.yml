@@ -31,8 +31,8 @@ dependencies:
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
-    - jupyter-ai # ai generative extension to jupyterlab
-    # - jupyterlab-unfold # vscode style folders unfolding
+    # - jupyter-ai # ai generative extension to jupyterlab // disabled for performance reasons
+    # - jupyterlab-unfold # vscode style folders unfolding // disabled because it is annoying
     - jupyterlab-filesystem-access # mount local folders in jupyterlab via browser
     - theme-darcula # dark theme with good contrast, from IntelliJ 
 
