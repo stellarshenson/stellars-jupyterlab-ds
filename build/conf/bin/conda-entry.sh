@@ -18,11 +18,9 @@
 ## It is insufficient to run `conda init bash` in a dockerfile, and then `source $HOME/.bashrc` in the entry script.
 ## This is mostly because the `RUN` directives are noninteractive, non-login shells, meaning `.bashrc` is never
 ## sourced, and `RUN source` does not behave the way one might naively think it should
-## However, by taking the `conda shell.bash hook` directly, we end up with a conda-tized
-## RUN directive!
+## However, by taking the `conda shell.bash hook` directly, we end up with a conda-tized RUN directive!
 ## The conda shell hook placed in `.bashrc` will reset our
 ## env to "base" on shell-ing into the container. If you want to start in a custom end,
-
 ## cache the value because the shell hook step will remove it
 _CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV:-base}"
 
