@@ -2,7 +2,6 @@
 
 name: base
 channels:
-  - defaults # explicit declaration required by new conda
   - conda-forge # default repo for miniforge3
   - rapidsai # nvidia packages, rapids library with cudf, cuml, cugraph
   - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
