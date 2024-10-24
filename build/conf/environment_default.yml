@@ -33,6 +33,11 @@ dependencies:
     # - jupyter-ai # ai generative extension to jupyterlab // disabled for performance reasons
     # - jupyterlab-unfold # vscode style folders unfolding // disabled because it is annoying
     - jupyterlab-filesystem-access # mount local folders in jupyterlab via browser
+    - jupyterlab-pdf-preview # nice pdf preview
+
+    ## themes
+    - jupyterlab_theme_solarized_dark
+    - jupyterlab-horizon-theme
     - theme-darcula # dark theme with good contrast, from IntelliJ 
 
     ## other libraries
