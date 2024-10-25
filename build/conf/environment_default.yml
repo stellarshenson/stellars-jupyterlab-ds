@@ -30,15 +30,12 @@ dependencies:
     - jupyter-resource-usage # enables cpu and mem monitoring
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
-    # - jupyter-ai # ai generative extension to jupyterlab // disabled for performance reasons
-    # - jupyterlab-unfold # vscode style folders unfolding // disabled because it is annoying
-    - jupyterlab-filesystem-access # mount local folders in jupyterlab via browser
     - jupyterlab-pdf-preview # nice pdf preview
+    # - jupyterlab-unfold # vscode style folders unfolding // disabled because it is annoying
 
     ## themes
-    - jupyterlab_theme_solarized_dark
-    - jupyterlab-horizon-theme
-    - theme-darcula # dark theme with good contrast, from IntelliJ 
+    - theme-darcula # dark theme with good contrast, inspired by IntelliJ 
+    - jupyter_base16_theme # dark simple theme  
 
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
@@ -64,14 +61,12 @@ dependencies:
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
     - optuna # hyperparameter tuning, see https://optuna.org/
     - pandas # data manipulation library
-    - pip_search # package catalogue searcher
     - polars  # superfast alternative to pandas
     - pyarrow # backend for polars
     - pytest # python test framework
     - python-dotenv # managing .env file loading in the runtime context
     - s3fs  # s3 filesystem access
     - scikit-learn # machine leanring library for python
-    - scikit-learn-intelex # intel optimisations for scipy
     - scipy # python scientific library
     - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
     - setuptools  # for packaging python libraries
