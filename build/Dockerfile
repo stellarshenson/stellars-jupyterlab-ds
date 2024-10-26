@@ -94,7 +94,7 @@ EOF
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
-COPY --chmod=644  ./conf/environment_default.yml /environment_default.yml
+COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
 COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
@@ -283,7 +283,7 @@ RUN <<-EOF
 
     echo "updating the environment"
     ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
-    ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} -f /environment_default.yml 
+    ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} -f /environment_base.yml 
 EOF
 
 ## Tell the docker build process to use this for RUN.
