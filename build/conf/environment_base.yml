@@ -34,8 +34,8 @@ dependencies:
     # - jupyterlab-unfold # vscode style folders unfolding // disabled because it is annoying
 
     ## themes
-    - theme-darcula # dark theme with good contrast, inspired by IntelliJ 
-    - jupyter_base16_theme # dark simple theme  
+    - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on original darcula
+    - stellars-jupyterlab-darcula-theme # gray IntelliJ darcula theme based on original darcula
 
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
