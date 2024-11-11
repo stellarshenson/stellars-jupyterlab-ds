@@ -33,6 +33,7 @@ You can also find out about installed packages by inspecting manifest files:
 Miniforge3 environment (conda) was installed in [94m/opt/conda[0m 
 Thanks to [94mnb_conda_kernels[0m extension, whenever you create a new environment
 it will be available to you as a kernel in the jupyterlab environment
+To help recognise new environment as kernel, install [94mipykernel[0m conda package
 
 To execute commands as root use: [36msudo[0m, password is: [36mpassword[0m unless changed
 
