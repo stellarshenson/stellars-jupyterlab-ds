@@ -21,7 +21,7 @@ if [ ! -e "$CERTS_DIR/jupyterlab.crt" ]; then
 fi
 
 # run jupyterlab, env params are configured in Dockerfile and docker-compose yml 
-jupyter-lab --ip=$JUPYTERLAB_SERVER_IP --IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
+jupyter-lab --autoreload --ip=$JUPYTERLAB_SERVER_IP --IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
     --no-browser 
 
 # EOF
