@@ -4,9 +4,15 @@
 #
 #   Jupyter Lab - http://localhost:8888
 #   Tensorboard - http://localhost:6006
+#   Obsidian    - http://localhost:3000
+#   Mermaid     - http://localhost:9080
+#
+#   You must uncomment obsidian & mermaid services to enable them
 #
 # ----------------------------------------------------------------------------------------
+
 services:
+
   # run jupyterlab on a local port 8888
   jupyterlab:
     container_name: lab-gpu
@@ -44,10 +50,44 @@ services:
               count: all
               capabilities: [gpu]
 
+
+  # obsidian notebook for managing markdown documentation
+  #obsidian:
+  #  image: lscr.io/linuxserver/obsidian:latest
+  #  container_name: obsidian
+  #  security_opt:
+  #    - seccomp:unconfined #optional
+  #  environment:
+  #    - PUID=1000
+  #    - PGID=1000
+  #    - TZ=Etc/UTC
+  #  volumes:
+  #    - obsidian:/config
+  #    - workspace:/config/workspace
+  #  ports:
+  #    - 3000:3000
+  #    - 3001:3001
+  #  networks:
+  #    - frontend
+  #  shm_size: "1gb"
+  #  restart: unless-stopped
+
+  # mermaid online diagramming
+  #mermaid:
+  #  image: ghcr.io/mermaid-js/mermaid-live-editor
+  #  container_name: mermaid
+  #ports:
+  #    - 9080:8080
+  #  networks:
+  #    - frontend
+  #  restart: unless-stopped
+
+
 volumes:
   workspace:
   certs:
   home:
+  #obsidian:
 
 networks:
   frontend:
