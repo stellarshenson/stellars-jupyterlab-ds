@@ -46,7 +46,6 @@ services:
   #  environment:
   #    - PUID=1000
   #    - PGID=1000
-  #    - TZ=Etc/UTC
   #  volumes:
   #    - obsidian:/config
   #    - workspace:/config/workspace
