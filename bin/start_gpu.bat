@@ -1,2 +1,2 @@
-docker-compose -f ..\docker-compose-gpu.yml up --no-recreate
+docker-compose -f ..\compose-gpu.yml up --no-recreate
 
