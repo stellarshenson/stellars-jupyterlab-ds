@@ -1,10 +1,11 @@
 [95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. This is your environment intended
-for data science and machine learning / ai projects. You will find a lot of
-packages installed and configured for you in such way that it just works.[0m
+for data science and machine learning / ai projects. [0m
 
-Running JupyterLab server on  [34mhttps://localhost:8888[0m
-Connect VSCode to Jupyter on  [34mhttps://localhost:8888/lab/tree[0m
-Running Tensorboard server on [34mhttp://localhost:6006[0m
+Running JupyterLab server on     [34mhttps://localhost:8888[0m
+Connect VSCode to Jupyter on     [34mhttps://localhost:8888/lab/tree[0m
+Running Tensorboard server on    [34mhttp://localhost:6006[0m
+(optional) Obsidian server on    [34mhttp://localhost:3000[0m 
+(optional) Mermaid Editor on     [34mhttp://localhost:9080[0m  
 Tensorboard monitoring logs located in [34m/tmp/tf_logs[0m
 Using work dir (projects) [34m/home/lab/workspace[0m (mount)
 Jupyterlab settings saved to [34m/home/lab/.jupyter[0m
@@ -20,9 +21,8 @@ There were many useful scientific and machine learning packages preinstalled
 You can always verify which of them are available in the platform by executing:
 [36m$ conda list[0m
 
-There are by default three environments installed: [34mbase[0m, [34mtensorflow[0m and [34mtorch[0m
-You can change active environment using:
-[36m$ conda activate env_name[0m
+Three environments iwere installed: [34mbase[0m, [34mtensorflow[0m and [34mtorch[0m
+You can change active environment using: [36m$ conda activate env_name[0m
 
 Default conda environment is set by [36mCONDA_DEFAULT_ENV[0m environment variable
 You can change it in the docker-compose [94m.yml[0m file or [94m~/.profile[0m
@@ -31,7 +31,7 @@ You can also find out about installed packages by inspecting manifest files:
 [94m/environment_base.yml[0m, [94m/environment_tensorflow.yml[0m and [94m/environment_torch.yml[0m
 
 Miniforge3 environment (conda) was installed in [94m/opt/conda[0m 
-Thanks to [94mnb_conda_kernels[0m extension, whenever you create a new environment
+With [94mnb_conda_kernels[0m extension, whenever you create a new environment
 it will be available to you as a kernel in the jupyterlab environment
 To help recognise new environment as kernel, install [94mipykernel[0m conda package
 
