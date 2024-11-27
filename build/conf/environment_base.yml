@@ -1,4 +1,4 @@
-# updated on 2024-11-27 v4
+# updated on 2024-11-27 v5
 
 name: base
 channels:
@@ -10,8 +10,6 @@ dependencies:
   - python=3.11 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
-  - awscli>1 # aws client, binary install
-  - urllib3<2 # specific version because of awscli issues
 
   ## jupyterlab and language server
   - jupyterlab # makes sure latest jupyterlab is installed
@@ -37,12 +35,15 @@ dependencies:
     - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on original darcula
     - stellars-jupyterlab-darcula-theme # gray IntelliJ darcula theme based on original darcula
 
+    ## aws client
+    - awscliv2 # v2 of the aws client
+    - boto3 # aws webservices client
+
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
     - Pillow # image manipulation library
     - black # pragmatic code formatter
     - build # to allow building packages in python
-    - boto3 # aws webservices client
     - click # input parameters processing for python scripts
     - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
@@ -72,7 +73,7 @@ dependencies:
     - setuptools  # for packaging python libraries
     - tabulate # print tables nicely
     - termcolor # print colors to terminal, i.e. coloured logs
-      #    - umap-learn # dimensional reduction library with Uniform Manifold Approximation Projection (umap)
+    - umap-learn # dimensional reduction library with Uniform Manifold Approximation Projection (umap)
     - xlsxwriter # library to generate excel files (used by i.e.polars)
 
 # EOF
