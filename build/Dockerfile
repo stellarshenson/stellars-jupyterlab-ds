@@ -359,7 +359,10 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 ## among the packages is CUDA supported llama-cpp-python
 ## other environments will inherit this when cloned from base
 USER ${CONDA_USER}
-RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} pip install ${EXPORT_DIR}/*.whl 
+RUN <<-EOF
+    echo "installing packages built with builder: `ls ${EXPORT_DIR}/*.whl`"
+    CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} pip install ${EXPORT_DIR}/*.whl 
+EOF
 
 ########################################################
 #  FINAL UPDATE AND CLEANUP                            #
@@ -370,8 +373,10 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache 
 RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
 RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
 
-## apt cleanup
+## remove prebuilt packages imported from builder
+## apt cleanup and remove prebuilt packages
 USER root
+RUN rm -rf ${EXPORT_DIR}
 RUN apt autoremove -y && apt purge 
 
 ########################################################
