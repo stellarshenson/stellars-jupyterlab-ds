@@ -10,15 +10,18 @@ packages:
     - gpw # generates unique identifiers
     - htop # colourful system resources monitor
     - iputils-ping # simple ping utility
+    - iproute2 # additional networking tools
     - less # interactive file reader
     - locate # file locator via updatedb
     - libgl1 # required by ultralytics (yolo)
     - man # man pages
     - mc # midnight commander
+    - netcat-traditional # netcat network swiss army tool
     - patch # tool to allow applying of diff/patches
     - pip # pip python package manager
     - software-properties-common
     - sudo # superuser command executor
+    - socat # port forwarding tool
     - vim # text editor
     - wget # file downloader
     - zip # file zipper and unzipper

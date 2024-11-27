@@ -130,6 +130,7 @@ RUN <<-EOF
     sed '/Regex=/s/\\/\\\\/g' -i /etc/mc/mc.ext.ini 2>/dev/null || true
 EOF
 
+
 ########################################################
 #  CREATE JUPYTERLAB CONDA USER                        #
 ########################################################
@@ -419,12 +420,14 @@ CMD ["/start-jupyterlab.sh"]
 
 ## expose ports
 # 8888 - jupyterlab, 8000 and 8001 - jupyterhub
-# 6006 - tensorboard, 5000 - mlflow
+# 6006 - tensorboard, 5000 - mlflow, 3030 - general purpose callback port
+# you would typically use socat to pass callback traffic to container
 EXPOSE 8888 
 EXPOSE 8000
 EXPOSE 8001 
 EXPOSE 6006
 EXPOSE 5000
+EXPOSE 3030
 
 # EOF
 

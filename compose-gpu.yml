@@ -35,6 +35,7 @@ services:
       - 8001:8001 # jupyterhub proxy
       - 6006:6006 # tensorboard
       - 5000:5000 # mlflow
+      - 3030:3030 # general purpose port for callbacks
     networks:
       - frontend
     volumes:
