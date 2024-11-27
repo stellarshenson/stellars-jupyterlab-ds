@@ -72,7 +72,7 @@ dependencies:
     - setuptools  # for packaging python libraries
     - tabulate # print tables nicely
     - termcolor # print colors to terminal, i.e. coloured logs
-    - umap-learn # dimensional reduction library with Uniform Manifold Approximation Projection (umap)
+      #    - umap-learn # dimensional reduction library with Uniform Manifold Approximation Projection (umap)
     - xlsxwriter # library to generate excel files (used by i.e.polars)
 
 # EOF
