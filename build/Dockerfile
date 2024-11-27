@@ -4,7 +4,7 @@
 FROM nvidia/cuda:12.6.1-cudnn-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
-ARG CUDA_TOOLKIT_VERSION=12.1
+ARG CUDA_TOOLKIT_VERSION=12.4
 
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
