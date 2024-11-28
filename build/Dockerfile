@@ -130,6 +130,17 @@ RUN <<-EOF
     sed '/Regex=/s/\\/\\\\/g' -i /etc/mc/mc.ext.ini 2>/dev/null || true
 EOF
 
+########################################################
+#  INSTALL AWS COMMANDLINE UTILITY V2                  #
+########################################################
+
+## need to install awscliv2 directly from amazon, otherwise it fails to work
+RUN <<-EOF
+    echo "installing amazon awscliv2 - AWS command line utility v2 "
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+    unzip /tmp/awscliv2.zip -d /tmp
+    /tmp/aws/install
+EOF
 
 ########################################################
 #  CREATE JUPYTERLAB CONDA USER                        #
