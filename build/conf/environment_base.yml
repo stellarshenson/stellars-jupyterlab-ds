@@ -35,8 +35,7 @@ dependencies:
     - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on original darcula
     - stellars-jupyterlab-darcula-theme # gray IntelliJ darcula theme based on original darcula
 
-    ## aws client
-    - awscliv2 # v2 of the aws client
+    ## aws client, we don't install cli - we use binary install
     - boto3 # aws webservices client
 
     ## other libraries
