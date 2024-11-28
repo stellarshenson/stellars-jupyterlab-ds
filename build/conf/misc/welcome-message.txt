@@ -18,8 +18,7 @@ In the workspace you will find the following helpful tools:
 - [94mcookiecutter-new-project.sh[0m: create new data-science project using cookiecutter
 
 There were many useful scientific and machine learning packages preinstalled
-You can always verify which of them are available in the platform by executing:
-[36m$ conda list[0m
+You can verify which packages are available by running: [36m$ conda list[0m
 
 Three environments iwere installed: [34mbase[0m, [34mtensorflow[0m and [34mtorch[0m
 You can change active environment using: [36m$ conda activate env_name[0m
