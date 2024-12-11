@@ -14,7 +14,7 @@ Preferred method for running the container is with **docker-compose**
 ### Docker Compose
 
 1. download `docker-compose.yml` or `docker-compose-gpu.yml` file
-2. run `docker-compose -f docker-compose.yml up` command
+2. run `docker-compose -f docker-compose.yml up --no-build` command
 3. open https://localhost:8888 in your browser
 
 ### Docker
