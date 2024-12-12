@@ -69,6 +69,7 @@ dependencies:
     - scikit-learn # machine leanring library for python
     - scipy # python scientific library
     - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
+    - setuptools # used for packaging python modules
     - tabulate # print tables nicely
     - termcolor # print colors to terminal, i.e. coloured logs
     - umap-learn # dimensional reduction library with Uniform Manifold Approximation Projection (umap)
