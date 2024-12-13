@@ -119,4 +119,10 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Fallback to 'base' conda environment if env in CONDA_DEFAULT_ENV does not exist
+if ! conda env list | grep -q $CONDA_DEFAULT_ENV; then
+    echo "WARNING: preferred environment '$CONDA_DEFAULT_ENV' does not exist, falling back to 'base'"
+    export CONDA_DEFAULT_ENV="base"
+fi
+
 # END OF BASHRC TEMPLATE ##############################################
