@@ -49,6 +49,7 @@ dependencies:
     - deprecation # decorators for function deprecation
     - fastexcel # library for reading excel files by polars
     - gpustat # gpu status reporting tool
+    - ipympl # matplotlib interactive backend
     - ipywidgets # jupyter widgets from IPython
     - inference_sdk # universal inference client
     - make # build tools
