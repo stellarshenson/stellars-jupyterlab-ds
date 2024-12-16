@@ -22,6 +22,7 @@ dependencies:
   - nb_conda_kernels # ability to add kernels (available only via conda)
 
   - pip:
+
     ## jupyterlab extensions packages
     - python-lsp-server[all] # install autocompleter extentions
     - jupyterlab-code-formatter # proxy to code formatting like black or isort
