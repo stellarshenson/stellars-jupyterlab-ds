@@ -5,5 +5,5 @@ docker run -d \
   --restart unless-stopped \
   -v /var/run/docker.sock:/var/run/docker.sock \
   containrrr/watchtower \
-  --interval-seconds 3600
+  --interval 3600
 
