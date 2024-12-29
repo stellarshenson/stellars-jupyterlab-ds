@@ -57,6 +57,7 @@ dependencies:
     - matplotlib # plots library
     - memory_profiler # for monitoring memory usage
     - mlflow # powerful mlops suite and experiment runner (library)
+    - nbdime # tool for diffing and merging jupyter notebooks
     - nltk # natural language processing library (used for embeddings and analysis)
     - numpy # advanced library for working with arrays
     - opencv-python # library for opensource computer vision
