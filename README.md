@@ -5,7 +5,7 @@ This project provides a pre-packaged, pre-configured JupyterLab environment runn
 
 ![JupyterLab](./.resources/jupyterlab.png)
 ![Docker Desktop](./.resources/docker-desktop.png)
-![CUDA Test](./.resources/cuda-test.jpg)
+![CUDA Test](./.resources/cuda-test.png)
 
 ## Quickstart
 
