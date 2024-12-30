@@ -121,7 +121,7 @@ RUN <<-EOF
     pip cache purge
 EOF
 
-## fix for 4.8.30 mc version (as in ubuntu 24.04)
+## fix for 4.8.30 mc version (as in ubuntu 24.04) - opening archives
 ## this code will need to be removed when the issue is fixed 
 ## see: https://bbs.archlinux.org/viewtopic.php?id=288511
 ## we used before: sed '/Regex=/s/\\/\\\\/g' -i /etc/mc/mc.ext.ini 2>/dev/null || true
