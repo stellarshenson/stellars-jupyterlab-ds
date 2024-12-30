@@ -124,10 +124,12 @@ EOF
 ## fix for 4.8.30 mc version (as in ubuntu 24.04)
 ## this code will need to be removed when the issue is fixed 
 ## see: https://bbs.archlinux.org/viewtopic.php?id=288511
+## we used before: sed '/Regex=/s/\\/\\\\/g' -i /etc/mc/mc.ext.ini 2>/dev/null || true
+## now we are using patch with additional changes
 RUN <<-EOF
     echo "fixing midnight-commander bug"
     cp -a /etc/mc/mc.ext.ini /etc/mc/mc.ext.ini.bak 2>/dev/null || true
-    sed '/Regex=/s/\\/\\\\/g' -i /etc/mc/mc.ext.ini 2>/dev/null || true
+    patch /etc/mc/mc.ext.ini /tmp/patches/mc.ext.ini.patch
 EOF
 
 ########################################################
