@@ -376,7 +376,7 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 USER ${CONDA_USER}
 RUN <<-EOF
     echo "installing packages built with builder: `ls ${EXPORT_DIR}/*.whl`"
-    CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} pip install ${EXPORT_DIR}/*.whl 
+    conda run -n ${CONDA_TORCH_ENV} pip install ${EXPORT_DIR}/*.whl
 EOF
 
 ########################################################
