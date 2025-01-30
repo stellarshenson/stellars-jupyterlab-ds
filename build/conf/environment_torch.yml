@@ -8,8 +8,6 @@ dependencies:
 
   - pip:
     - torch>=2.4    # PyTorch, a popular deep learning framework, version 2.4 or higher
-    - torchvision   # PyTorch package for computer vision, with datasets, models, and image transformations
-    - ultralytics   # Package for YOLO (You Only Look Once) object detection, developed by Ultralytics
 
 
 # EOF
