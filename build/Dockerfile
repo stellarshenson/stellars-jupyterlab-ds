@@ -326,6 +326,13 @@ RUN <<-EOF
     echo "patched ${CONDA_USER_HOME}/.profile"
 EOF
 
+## it must be configured to work with jupyter notebooks via nbdime
+RUN <<-EOF
+    echo "configuring git to work with jupyter notebooks"
+    conda run -n ${CONDA_DEFAULT_ENV} conda run pip install nbdime
+    conda run -n ${CONDA_DEFAULT_ENV} conda run nbdime config-git --enable --global
+EOF
+
 ## final update of the entire conda base environment
 RUN CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV}" conda update -y -c conda-forge --all
 
@@ -393,6 +400,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
 USER root
 RUN rm -rf ${EXPORT_DIR}
 RUN apt autoremove -y && apt purge 
+
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
