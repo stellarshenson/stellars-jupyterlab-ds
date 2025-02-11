@@ -1,6 +1,7 @@
 set nocompatible              " be iMproved, required
 " set mouse=a                 " enable mouse selections, scrolling etc..
 filetype off                  " required
+set viminfo='1000,<10000,s1000  " increase memory to 1000 commands, 10k lines and 1000kb of text
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -36,6 +37,7 @@ Plugin 'seesleestak/duo-mini'
 
 " Highlight requirements.txt files
 Plugin 'raimon49/requirements.txt.vim'
+Plugin 'chrisbra/unicode.vim'
 
 
 " All of your Plugins must be added before the following line
