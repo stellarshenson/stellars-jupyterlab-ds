@@ -64,6 +64,7 @@ dependencies:
     - openpyxl # MS excel support library, i.e. for exporting xlsx files
     - optuna # hyperparameter tuning, see https://optuna.org/
     - pandas # data manipulation library
+    - parquet-tools # commandline parquet viewer
     - polars  # superfast alternative to pandas
     - pyarrow # backend for polars
     - pytest # python test framework
