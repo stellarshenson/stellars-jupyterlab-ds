@@ -1,5 +1,5 @@
-[95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. This is your environment intended
-for data science and machine learning / ai projects. [0m
+[95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. This is your environment 
+designed for data science and machine learning / ai projects. [0m
 
 Running JupyterLab server on     [34mhttps://localhost:8888[0m
 Connect VSCode to Jupyter on     [34mhttps://localhost:8888/lab/tree[0m
@@ -37,4 +37,5 @@ To help recognise new environment as kernel, install [94mipykernel[0m conda pa
 To execute commands as root use: [36msudo[0m, password is: [36mpassword[0m unless changed
 
 This message will be displayed once every day.
+
 
