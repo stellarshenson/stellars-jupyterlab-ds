@@ -22,6 +22,7 @@ packages:
     - software-properties-common
     - sudo # superuser command executor
     - socat # port forwarding tool
+    - sqlite3 # client to sqlite often used with ml projects
     - vim # text editor
     - wget # file downloader
     - zip # file zipper and unzipper
