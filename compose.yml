@@ -41,6 +41,17 @@ services:
       - workspace:/home/lab/workspace # user projects workspace volume persistence
       - certs:/mnt/certs              # persistent certificate store for ssl
 
+
+  # for automatic environment refresh
+  #watchtower:
+  #  container_name: watchtower
+  #  image: containrrr/watchtower
+  #  restart: unless-stopped
+  #  volumes:
+  #    - /var/run/docker.sock:/var/run/docker.sock
+  #  command: --interval 3600
+
+
   # obsidian notebook for managing markdown documentation
   #obsidian:
   #  image: lscr.io/linuxserver/obsidian:latest
