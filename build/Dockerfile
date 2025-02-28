@@ -95,6 +95,7 @@ EOF
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
 COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
+COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyterlab.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
 COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
@@ -368,6 +369,20 @@ RUN conda env update --name ${CONDA_TORCH_ENV} -f /environment_torch.yml
 ## path can be obtained by using >> python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
 ENV CUDNN_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn
 ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
+
+
+########################################################
+#  JUPYTERLAB INSTALLATION                             #
+########################################################
+
+## update conda by installing jupyterlab
+## we didn't do this earlier to have jupyterlab only in base
+## and not to clone it to other environments
+RUN <<-EOF 
+    echo "installing Jupyterlab in ${CONDA_DEFAULT_ENV} env"
+    ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} -f /environment_base_jupyterlab.yml 
+EOF
+
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT ON TORCH           #
