@@ -1,4 +1,4 @@
-# updated on 2025-01-30
+# base environment definition without Jupyterlab
 
 name: base
 channels:
@@ -11,30 +11,7 @@ dependencies:
   - pip # package manager
   - pip-tools # other packaging tools
 
-  ## jupyterlab and language server
-  - jupyterlab # makes sure latest jupyterlab is installed
-  - jupyterlab-lsp # language server extension
-   
-  ## jupyterlab extensions
-  - jupyterlab-git # enables git extension for jupyterlab
-  - nbconvert # notebook conversion to HTML and other formats
-  - nb_conda # provides conda environment and package access extension from jupyter
-  - nb_conda_kernels # ability to add kernels (available only via conda)
-
   - pip:
-
-    ## jupyterlab extensions packages
-    - python-lsp-server[all] # install autocompleter extentions
-    - jupyterlab-code-formatter # proxy to code formatting like black or isort
-    - jupyter-resource-usage # enables cpu and mem monitoring
-    - jupyterlab-execute-time # shows last execution time / not available via conda
-    - jupyterlab_favorites # allows to define favourite locations / not available via conda
-    - jupyterlab-pdf-preview # nice pdf preview
-    # - jupyterlab-unfold # vscode style folders unfolding // disabled because it is annoying
-
-    ## themes
-    - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on original darcula
-    - stellars-jupyterlab-darcula-theme # gray IntelliJ darcula theme based on original darcula
 
     ## aws client, we don't install cli - we use binary install
     - boto3 # aws webservices client
