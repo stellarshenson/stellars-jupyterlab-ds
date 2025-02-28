@@ -39,6 +39,7 @@ dependencies:
     - boto3 # aws webservices client
 
     ## other libraries
+    - black # pragmatic code formatter
     - IProgress # jupyterlab widget to show progress, used by optuna
     - ipywidgets # jupyter widgets from IPython
     - nbdime # tool for diffing and merging jupyter notebooks
