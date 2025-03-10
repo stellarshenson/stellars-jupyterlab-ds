@@ -40,7 +40,7 @@ services:
       - home:/home                    # jupyterlab user directory persistence
       - workspace:/home/lab/workspace # user projects workspace volume persistence
       - certs:/mnt/certs              # persistent certificate store for ssl
-
+      - cache:/mnt/cache              # for persistent cache
 
   # for automatic environment refresh
   #watchtower:
@@ -83,6 +83,7 @@ volumes:
   workspace:
   certs:
   home:
+  cache:
   #obsidian:
 
 
