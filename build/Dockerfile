@@ -229,6 +229,7 @@ USER ${CONDA_USER}
 # make sure initial workspace has template files
 COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
+COPY --chown=${CONDA_USER} ./templates/cache /mnt/cache
 
 ## install helpful scripts in the workspace as symlinks
 RUN <<-EOF
