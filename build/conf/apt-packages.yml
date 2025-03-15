@@ -1,6 +1,6 @@
 # base packages to be installed by apt
 # this file can be used by apt with the following command:
-# >>> apt install -y `yq eval '.packages[]' apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
+# $ apt install -y `yq eval '.packages[]' apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
 packages:
     - bash-completion # completion for bash
     - curl # for downloading files
@@ -19,7 +19,7 @@ packages:
     - netcat-traditional # netcat network swiss army tool
     - patch # tool to allow applying of diff/patches
     - pip # pip python package manager
-    - software-properties-common
+    - software-properties-common # for building from any sourcecode
     - sudo # superuser command executor
     - socat # port forwarding tool
     - sqlite3 # client to sqlite often used with ml projects
