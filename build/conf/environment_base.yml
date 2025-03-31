@@ -1,4 +1,5 @@
 # base environment definition without Jupyterlab
+# update 2025-03-31
 
 name: base
 channels:
