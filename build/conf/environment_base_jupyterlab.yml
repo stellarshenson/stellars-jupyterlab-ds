@@ -29,6 +29,7 @@ dependencies:
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab-pdf-preview # nice pdf preview
+    - notebook-intelligence # github copilot plugin
     # - jupyterlab-unfold # vscode style folders unfolding // disabled because it is annoying
 
     ## themes
