@@ -410,7 +410,7 @@ RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
 ## remove prebuilt packages imported from builder
 ## apt cleanup and remove prebuilt packages
 USER root
-RUN rm -rf ${EXPORT_DIR}
+# RUN rm -rf ${EXPORT_DIR}
 RUN apt autoremove -y && apt purge 
 
 
