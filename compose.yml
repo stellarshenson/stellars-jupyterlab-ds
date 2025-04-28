@@ -27,12 +27,12 @@ services:
       - JUPYTERLAB_SERVER_IP=*
       - JUPYTERLAB_SERVER_TOKEN=
       - TF_CPP_MIN_LOG_LEVEL=3 # reduce tensorflow logging level
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
     ports:
       - 8888:8888 # jupyterlab
       - 8000:8000 # jupyterhub
       - 8001:8001 # jupyterhub proxy
       - 6006:6006 # tensorboard
-      - 5000:5000 # mlflow
       - 3030:3030 # general purpose port for callbacks
     networks:
       - frontend
@@ -41,9 +41,32 @@ services:
       - workspace:/home/lab/workspace # user projects workspace volume persistence
       - certs:/mnt/certs              # persistent certificate store for ssl
       - cache:/mnt/cache              # for persistent cache
+    restart: unless-stopped
+
+  # MLOPS platform for tracking experiments
+  # mlflow:
+  #   container_name: mlflow
+  #   hostname: mlflow
+  #   image: ghcr.io/mlflow/mlflow:v2.11.1
+  #   environment:
+  #     - MLFLOW_BACKEND_STORE_URI=sqlite:///mlflow.db
+  #     - MLFLOW_ARTIFACT_ROOT=/mlflow/artifacts
+  #   command: >
+  #     mlflow server
+  #     --backend-store-uri sqlite:///mlflow.db
+  #     --default-artifact-root /mlflow/artifacts
+  #     --host 0.0.0.0
+  #     --port 5000
+  #   ports:
+  #     - 5000:5000
+  #   volumes:
+  #     - mlflow:/mlflow
+  #   networks:
+  #     - frontend
+  #   restart: unless-stopped
 
   # for automatic environment refresh
-  #watchtower:
+  # watchtower:
   #  container_name: watchtower
   #  image: containrrr/watchtower
   #  volumes:
@@ -54,10 +77,8 @@ services:
   #  restart: unless-stopped
   #  privileged: true
 
-
-
   # obsidian notebook for managing markdown documentation
-  #obsidian:
+  # obsidian:
   #  image: lscr.io/linuxserver/obsidian:latest
   #  container_name: obsidian
   #  environment:
@@ -72,15 +93,17 @@ services:
   #  networks:
   #    - frontend
   #  shm_size: "1gb"
+  #  restart: unless-stopped
 
   # mermaid online diagramming
-  #mermaid:
+  # mermaid:
   #  image: ghcr.io/mermaid-js/mermaid-live-editor
   #  container_name: mermaid
   #  ports:
   #    - 9080:8080
   #  networks:
   #    - frontend
+  #  restart: unless-stopped
 
 
 volumes:
@@ -88,7 +111,8 @@ volumes:
   certs:
   home:
   cache:
-  #obsidian:
+  # mlflow:
+  # obsidian:
 
 
 networks:
