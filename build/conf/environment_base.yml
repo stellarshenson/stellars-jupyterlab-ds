@@ -13,9 +13,6 @@ dependencies:
 
   - pip:
 
-    ## aws client, we don't install cli - we use binary install
-    - boto3 # aws webservices client
-
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
     - build # to allow building packages in python
