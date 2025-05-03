@@ -34,7 +34,7 @@ EOF
 ## install builder env in 'base'
 RUN <<-EOF
     echo "installing builder environment in base"
-    ${CONDA_CMD} env update --name base -f /environment_builder.yml
+    ${CONDA_CMD} env update --name base --file=/environment_builder.yml
     ${CONDA_CMD} update --name base -c conda-forge -y conda
     ${CONDA_CMD} install --name base -v -y cuda-toolkit=${CUDA_TOOLKIT_VERSION}
 EOF
@@ -164,7 +164,7 @@ ARG CONDA_USER_HOME=/home/${CONDA_USER}
 ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ENV CONDA_RUN_DEBUG=0
 ENV PATH=${PATH}:${CONDA_HOME}/condabin
-
+ENV PIP_EXISTS_ACTION=w
 
 ## create new user with specific UID and GID, and add sudo rights
 ## also add group conda and add it to jupyterlab user
@@ -295,9 +295,8 @@ RUN <<-EOF
 	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
     fi
 
-    echo "updating the environment"
+    ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} --file=/environment_base.yml 
     ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
-    ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} -f /environment_base.yml 
 EOF
 
 ## Tell the docker build process to use this for RUN.
@@ -359,11 +358,11 @@ ENV CONDA_OVERRIDE_CUDA=12.3
 
 ## install tensorflow using pip to its dedicated environment
 ## installing tf-keras allows to use KERAS v2 (legacy)
-RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} -f /environment_tensorflow.yml 
+RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} --file=/environment_tensorflow.yml 
 
 ## install torch to its dedicated environment
 ## install torch with torchvision and ultralytics (yolo)
-RUN conda env update -v --name ${CONDA_TORCH_ENV} -f /environment_torch.yml 
+RUN conda env update -v --name ${CONDA_TORCH_ENV} --file=/environment_torch.yml 
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
@@ -381,7 +380,7 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 ## and not to clone it to other environments
 RUN <<-EOF 
     echo "installing Jupyterlab in ${CONDA_DEFAULT_ENV} env"
-    ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} -f /environment_base_jupyterlab.yml 
+    ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} --file=/environment_base_jupyterlab.yml 
 EOF
 
 
