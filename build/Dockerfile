@@ -1,10 +1,10 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
-# FROM nvidia/cuda:12.5.1-cudnn-runtime-ubuntu22.04 AS builder
-FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04 AS builder
+# FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04 AS builder
+FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
-ARG CUDA_TOOLKIT_VERSION=12.4
+ARG CUDA_TOOLKIT_VERSION=12.8
 
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
@@ -64,11 +64,11 @@ RUN cp llama*.whl ${EXPORT_DIR}
 ##############################################################################################
 
 ## this dockergfile is loosely based on the github project
-FROM nvidia/cuda:12.6.3-runtime-ubuntu24.04 AS target
+# FROM nvidia/cuda:12.6.3-runtime-ubuntu24.04 AS target
+FROM nvidia/cuda:12.8.1-runtime-ubuntu24.04 AS target
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
-ARG TENSORFLOW_VERSION="<2.17"
 
 # copy build dir from builder
 ARG EXPORT_DIR=/opt/exports
@@ -297,7 +297,7 @@ RUN <<-EOF
 
     echo "updating the environment"
     ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
-    ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} -f /environment_base.yml 
+    ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} -f /environment_base.yml 
 EOF
 
 ## Tell the docker build process to use this for RUN.
@@ -359,11 +359,11 @@ ENV CONDA_OVERRIDE_CUDA=12.3
 
 ## install tensorflow using pip to its dedicated environment
 ## installing tf-keras allows to use KERAS v2 (legacy)
-RUN conda env update --name ${CONDA_TENSORFLOW_ENV} -f /environment_tensorflow.yml 
+RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} -f /environment_tensorflow.yml 
 
 ## install torch to its dedicated environment
 ## install torch with torchvision and ultralytics (yolo)
-RUN conda env update --name ${CONDA_TORCH_ENV} -f /environment_torch.yml 
+RUN conda env update -v --name ${CONDA_TORCH_ENV} -f /environment_torch.yml 
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
