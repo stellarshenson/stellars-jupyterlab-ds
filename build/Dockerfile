@@ -105,9 +105,10 @@ COPY --chmod=755  ./conf/bin/start-server.sh /start-server.sh
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
 COPY --chmod=755  ./conf/bin/welcome-message.sh /welcome-message.sh
 COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
-COPY --chmod=644  ./conf/misc/welcome.html /welcome.html
+COPY --chmod=644  ./conf/misc/welcome-template.html /welcome-template.html
 COPY --chmod=755  ./conf/utils /opt/utils
 COPY --chmod=644  ./conf/patches /tmp/patches
+COPY --chmod=644  ./conf/jupyter /opt/conda/share/jupyter
 
 ########################################################
 #  FIX PACKAGES AND REMOVE UNNECESSARY                 #
@@ -435,7 +436,10 @@ RUN <<-EOF
     gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
     cat /motd-template.txt | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
 	| sed "s/@BUILD_DATE@/$(cat /build-date.txt)/g" > /etc/motd
+    cat /welcome-template.html | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
+	| sed "s/@BUILD_DATE@/$(cat /build-date.txt)/g" > /welcome.html
     rm /motd-template.txt
+    rm /welcome-template.html
 EOF
 
 ## update terminal and shell settings

@@ -30,7 +30,7 @@ dependencies:
     - jupyterlab-execute-time # shows last execution time / not available via conda
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab_iframe # allows opening webpages in iframe
-    - jupyterlab_launchpad # enhanced launcher for jupyterlab, better than tiles
+    - jupyter_app_launcher # allows adding custom launchers
     - jupyterlab-pdf-preview # nice pdf preview
     - notebook-intelligence # github copilot plugin
 
