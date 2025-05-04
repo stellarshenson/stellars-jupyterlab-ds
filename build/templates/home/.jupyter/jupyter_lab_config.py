@@ -11,6 +11,11 @@ c.FileContentsManager.always_delete_dir = True
 c.ServerApp.certfile = u'/mnt/certs/jupyterlab.crt'
 c.ServerApp.keyfile = u'/mnt/certs/jupyterlab.key'
 
+# welcome page
+c.JupyterLabIFrame.iframes = ['http://localhost:5000', 'http://localhost:61208']
+c.JupyterLabIFrame.welcome = 'file:///welcome.html'
+c.JupyterLabIFrame.local_files = ['/welcome.html']
+
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
 #------------------------------------------------------------------------------
