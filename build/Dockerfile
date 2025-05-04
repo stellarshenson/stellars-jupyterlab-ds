@@ -298,8 +298,8 @@ RUN <<-EOF
 	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
     fi
 
-    ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} --file=/environment_base.yml 
     ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
+    ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} --file=/environment_base.yml 
 EOF
 
 ## Tell the docker build process to use this for RUN.
@@ -409,10 +409,8 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache 
 RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
 RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
 
-## remove prebuilt packages imported from builder
 ## apt cleanup and remove prebuilt packages
 USER root
-# RUN rm -rf ${EXPORT_DIR}
 RUN apt autoremove -y && apt purge 
 
 
