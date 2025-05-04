@@ -105,6 +105,7 @@ COPY --chmod=755  ./conf/bin/start-server.sh /start-server.sh
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
 COPY --chmod=755  ./conf/bin/welcome-message.sh /welcome-message.sh
 COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
+COPY --chmod=644  ./conf/misc/welcome.html /welcome.html
 COPY --chmod=755  ./conf/utils /opt/utils
 COPY --chmod=644  ./conf/patches /tmp/patches
 
@@ -195,8 +196,9 @@ EOF
 ## switch user to update config file
 USER ${CONDA_USER}
 
-## use predefined contents of a user home
+## use predefined contents of a user home (and to tmp for reference)
 COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
+COPY --chown=${CONDA_USER} ./templates/home /tmp/template_home
 
 ## create workspace, this is where user projects will be located
 RUN mkdir ${CONDA_USER_WORKSPACE}
@@ -228,6 +230,7 @@ USER ${CONDA_USER}
 
 # make sure initial workspace has template files
 COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
+COPY --chown=${CONDA_USER} ./templates/workspace /tmp/template_workspace
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/cache /mnt/cache
 
