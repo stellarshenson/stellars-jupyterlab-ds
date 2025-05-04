@@ -12,10 +12,10 @@ set gpu_available=%errorlevel%
 REM Execute commands based on GPU availability
 if %gpu_available% equ 0 (
     echo GPU is available. Running local docker-compose-gpu.yml
-    docker-compose.exe -f ..\local\compose-gpu.yml up --no-recreate --no-build 
+    docker.exe compose -f ..\local\compose-gpu.yml up --no-recreate --no-build 
 ) else (
     echo GPU is not available. Running local docker-compose.yml
-    docker-compose.exe -f ..\local\compose.yml up --no-recreate --no-build 
+    docker.exe compose -f ..\local\compose.yml up --no-recreate --no-build 
 )
 
 REM EOF
