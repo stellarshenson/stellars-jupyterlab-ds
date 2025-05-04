@@ -1,1 +1,1 @@
-docker-compose -f ..\compose.yml build  --progress=plain
+docker.exe compose -f ..\compose.yml build  --progress=plain

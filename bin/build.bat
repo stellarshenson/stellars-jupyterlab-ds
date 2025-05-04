@@ -1,1 +1,1 @@
-docker-compose -f ..\compose.yml build 
+docker.exe compose -f ..\compose.yml build 
