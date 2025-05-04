@@ -15,7 +15,7 @@ services:
 
   # run jupyterlab on a local port 8888
   jupyterlab:
-    container_name: lab-gpu
+    container_name: lab-jupyterlab-gpu
     hostname: lab-gpu
     image: stellars/stellars-jupyterlab-ds:latest
     build:
@@ -57,7 +57,7 @@ services:
 
   # MLOPS platform for tracking experiments
   # mlflow:
-  #   container_name: mlflow
+  #   container_name: lab-mlflow
   #   hostname: mlflow
   #   image: ghcr.io/mlflow/mlflow:v2.11.1
   #   environment:
@@ -79,7 +79,7 @@ services:
 
   # for automatic environment refresh
   # watchtower:
-  #  container_name: watchtower
+  #  container_name: lab-watchtower
   #  image: containrrr/watchtower
   #  volumes:
   #    - /var/run/docker.sock:/var/run/docker.sock
@@ -93,7 +93,7 @@ services:
   # obsidian notebook for managing markdown documentation
   # obsidian:
   #  image: lscr.io/linuxserver/obsidian:latest
-  #  container_name: obsidian
+  #  container_name: lab-obsidian
   #  environment:
   #    - PUID=1000
   #    - PGID=1000
@@ -111,7 +111,7 @@ services:
   # mermaid online diagramming
   # mermaid:
   #  image: ghcr.io/mermaid-js/mermaid-live-editor
-  #  container_name: mermaid
+  #  container_name: lab-mermaid
   #  ports:
   #    - 9080:8080
   #  networks:
