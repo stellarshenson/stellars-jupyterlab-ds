@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>stellars-jupyterlab-ds - Welcome</title>
+  <style>
+    :root { color-scheme: light dark; }
+
+    body {
+      margin: 2em;
+      font-family: "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    h1 {
+      flex: 0 0 100%;
+      margin-bottom: 0.2em;
+      font-size: 1.4em;
+    }
+
+    p.intro {
+      flex: 0 0 100%;
+      margin-top: 0;
+      margin-bottom: 1.5em;
+    }
+
+    h2 {
+      font-size: 1.05em;
+      margin-bottom: 0.3em;
+    }
+
+    a {
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    code {
+      background-color: rgba(128,128,128,0.1);
+      padding: 1px 4px;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    .section {
+      flex: 0 0 48%;
+      margin-bottom: 1.2em;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.1em;
+    }
+
+    li {
+      margin: 0.2em 0;
+    }
+
+    .icon {
+      margin-right: 0.3em;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { background-color: #0d1117; color: #c9d1d9; }
+      h1, h2 { color: #58a6ff; }
+      a { color: #8ae9ff; }
+      code { background-color: #161b22; }
+    }
+
+    @media (prefers-color-scheme: light) {
+      body { background-color: #ffffff; color: #000000; }
+      h1, h2 { color: #003366; }
+      a { color: #0066cc; }
+      code { background-color: #f0f0f0; }
+    }
+
+    @media (max-width: 1000px) {
+      .section { flex: 0 0 100%; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to stellars-jupyterlab-ds build @BUILD_NAME@ created on @BUID_DATE@</h1>
+  <p class="intro">
+    This environment provides an integrated platform for data science, machine learning, deep learning, and model monitoring.
+  </p>
+
+  <div class="section">
+    <h2>Core Services</h2>
+    <ul>
+      <li><span class="icon">🗔</span><a href="https://localhost:8888" target="_blank">https://localhost:8888</a> – JupyterLab: main notebook interface</li>
+      <li><span class="icon">🗁</span><a href="https://localhost:8888/lab/tree" target="_blank">https://localhost:8888/lab/tree</a> – VSCode via JupyterLab</li>
+      <li><span class="icon">🗠</span><a href="http://localhost:6006" target="_blank">http://localhost:6006</a> – Tensorboard: training metrics visualization</li>
+      <li><span class="icon">🗡</span><a href="http://localhost:61208" target="_blank">http://localhost:61208</a> – Glances: system monitor for CPU, GPU, memory</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Optional Tools</h2>
+    <ul>
+      <li><span class="icon">🗐</span><a href="http://localhost:3000" target="_blank">http://localhost:3000</a> – Obsidian: markdown documentation</li>
+      <li><span class="icon">⌗</span><a href="http://localhost:9080" target="_blank">http://localhost:9080</a> – Mermaid Editor: create diagrams from text</li>
+      <li><span class="icon">🗃</span><a href="http://localhost:5000" target="_blank">http://localhost:5000</a> – MLFlow: track experiments and results</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Paths</h2>
+    <ul>
+      <li><code>/home/lab/workspace</code> – project workspace</li>
+      <li><code>/home/lab/.jupyter</code> – JupyterLab settings</li>
+      <li><code>/tmp/tf_logs</code> – Tensorboard logs</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Utilities</h2>
+    <ul>
+      <li><code>workspace-git-*.sh</code> – sync Git repositories</li>
+      <li><code>check-cuda-tensorflow-torch.sh</code> – test GPU availability</li>
+      <li><code>cookiecutter-new-project.sh</code> – scaffold new data science projects</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Conda Environments</h2>
+    <ul>
+      <li>Available: <code>base</code>, <code>tensorflow</code>, <code>torch</code></li>
+      <li>Activate with: <code>conda activate &lt;env&gt;</code></li>
+      <li>Kernels detected via: <code>nb_conda_kernels</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Additional Notes</h2>
+    <ul>
+      <li><code>/opt/exports</code> – contains precompiled <code>llama_cpp</code> wheel for NVIDIA CUDA</li>
+      <li>Use this if running LLaMA-based models with GPU acceleration</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Documentation</h2>
+    <ul>
+      <li><span class="icon">🗎</span><a href="https://github.com/stellarshenson/stellars-jupyterlab-ds" target="_blank">https://github.com/stellarshenson/stellars-jupyterlab-ds</a> – Project repository</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Access Control</h2>
+    <ul>
+      <li>Use <code>sudo</code> for administrative commands</li>
+      <li>Default password: <code>password</code> (unless changed)</li>
+    </ul>
+  </div>
+
+  <script>
+    // Replace all localhost-based links with the current hostname
+    document.querySelectorAll('a[href*="localhost"]').forEach(link => {
+      const original = new URL(link.href);
+      const dynamic = new URL(link.href);
+      dynamic.hostname = location.hostname;
+      link.href = dynamic.toString();
+      if (link.textContent.includes("localhost")) {
+        link.textContent = dynamic.toString();
+      }
+    });
+  </script>
+</body>
+</html>

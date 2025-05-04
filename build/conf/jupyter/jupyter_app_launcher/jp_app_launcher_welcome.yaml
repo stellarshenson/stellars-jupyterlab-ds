@@ -1,0 +1,9 @@
+- title: Welcome
+  description: Welcome Page
+  type: jupyterlab-commands
+  source:
+    - label: Welcome Page
+      id: 'iframe:open'
+      args:
+        path: local:///welcome.html
+  catalog: Other
