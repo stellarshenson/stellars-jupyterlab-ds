@@ -4,10 +4,11 @@
 █ --------------------------------------------------------------------------------------- █
 █ Running JupyterLab server on  [34mhttps://localhost:8888[0m                                    █
 █ Connect VSCode to Jupyter on  [34mhttps://localhost:8888/lab/tree[0m                           █
+█ Running MLFlow server on      [34mhttp://localhost:5000[0m                                     █
 █ Running Tensorboard server on [34mhttp://localhost:6006[0m                                     █
 █ Running Obsidian server on    [34mhttp://localhost:3000[0m                                     █
 █ Running Mermaid Editor on     [34mhttp://localhost:9080[0m                                     █
-█ Running Glances Web Monotor   [34mhttp://localhost:61208[0m                                    █
+█ Running Glances Web Monitor   [34mhttp://localhost:61208[0m                                    █
 █ Tensorboard monitoring logs located in [34m/tmp/tf_logs[0m                                     █
 █ Using work dir (projects) [34m/home/lab/workspace[0m (mount)                                   █
 █ Jupyterlab settings saved to [34m/home/lab/.jupyter[0m                                         █
