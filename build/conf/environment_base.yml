@@ -13,6 +13,10 @@ dependencies:
 
   - pip:
 
+    ## system monitoring
+    - glances # system web monitoring tool
+    - nvidia-ml-py3 # nvidia plugins
+
     ## other libraries
     - IProgress # jupyterlab widget to show progress, used by optuna
     - build # to allow building packages in python
