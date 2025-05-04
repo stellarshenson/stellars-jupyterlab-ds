@@ -12,9 +12,10 @@ c.ServerApp.certfile = u'/mnt/certs/jupyterlab.crt'
 c.ServerApp.keyfile = u'/mnt/certs/jupyterlab.key'
 
 # welcome page
-c.JupyterLabIFrame.iframes = ['http://localhost:5000', 'http://localhost:61208']
-c.JupyterLabIFrame.welcome = 'file:///welcome.html'
+c.JupyterLabIFrame.iframes = ['http://localhost:5000', 'http://localhost:61208', 'local:///welcome.html']
+c.JupyterLabIFrame.welcome = 'local:///welcome.html'
 c.JupyterLabIFrame.local_files = ['/welcome.html']
+c.JupyterLabIFrame.allow_any_local = False
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
