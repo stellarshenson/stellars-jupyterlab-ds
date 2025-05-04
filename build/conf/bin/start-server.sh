@@ -15,7 +15,7 @@ mkdir /tmp/tensorboard 2>/dev/null
 /conda-run.sh 'CONDA_DEFAULT_ENV=tensorflow tensorboard --bind_all --logdir /tmp/tf_logs --port 6006 &' 
 
 # run glances system monitor in the background
-/conda-run.sh 'CONDA_DEFAULT_ENV=base glances -w &' 
+/conda-run.sh 'CONDA_DEFAULT_ENV=base glances -w -t 0.25 &' 
 
 # generate ssl keys if don't exist yet (happens first time the script is run)
 CERTS_DIR="/mnt/certs"
