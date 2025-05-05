@@ -45,26 +45,26 @@ services:
     restart: unless-stopped
 
   # MLOPS platform for tracking experiments
-  # mlflow:
-  #   container_name: lab-mlflow
-  #   hostname: mlflow
-  #   image: ghcr.io/mlflow/mlflow:v2.11.1
-  #   environment:
-  #     - MLFLOW_BACKEND_STORE_URI=sqlite:///mlflow.db
-  #     - MLFLOW_ARTIFACT_ROOT=/mlflow/artifacts
-  #   command: >
-  #     mlflow server
-  #     --backend-store-uri sqlite:///mlflow.db
-  #     --default-artifact-root /mlflow/artifacts
-  #     --host 0.0.0.0
-  #     --port 5000
-  #   ports:
-  #     - 5000:5000
-  #   volumes:
-  #     - mlflow:/mlflow
-  #   networks:
-  #     - frontend
-  #   restart: unless-stopped
+  mlflow:
+    container_name: lab-mlflow
+    hostname: mlflow
+    image: ghcr.io/mlflow/mlflow:v2.11.1
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:///mlflow.db
+      - MLFLOW_ARTIFACT_ROOT=/mlflow/artifacts
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow.db
+      --default-artifact-root /mlflow/artifacts
+      --host 0.0.0.0
+      --port 5000
+    ports:
+      - 5000:5000
+    volumes:
+      - mlflow:/mlflow
+    networks:
+      - frontend
+    restart: unless-stopped
 
   # for automatic environment refresh
   # watchtower:
