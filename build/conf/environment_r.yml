@@ -1,4 +1,4 @@
-name: torch
+name: r
 channels:
   - conda-forge # default repo for miniforge3
   - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
