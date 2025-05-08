@@ -361,7 +361,8 @@ EOF
 ## install R environment with R kernel
 RUN <<-EOF
     echo "creating ${CONDA_R_ENV} with R kernel"
-    conda create --name ${CONDA_R_ENV} --file=/environment_r.yml
+    conda create --name ${CONDA_R_ENV} 
+    conda env update -v --name ${CONDA_R_ENV} --file=/environment_r.yml
 EOF
 
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
