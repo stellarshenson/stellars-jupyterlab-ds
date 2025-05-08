@@ -98,6 +98,7 @@ COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
 COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyterlab.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
+COPY --chmod=644  ./conf/environment_r.yml /environment_r.yml
 COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
 COPY --chmod=755  ./conf/bin/mkchksum.sh /mkchksum.sh
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
@@ -256,6 +257,7 @@ USER root
 ## additionally to ENV for effective variable substitution in the RUN statements
 ARG CONDA_TENSORFLOW_ENV=tensorflow
 ARG CONDA_TORCH_ENV=torch
+ARG CONDA_R_ENV=r_base
 ENV CONDA_DEFAULT_ENV=base
 
 ## prevent automatic 'base' activation
@@ -338,7 +340,7 @@ EOF
 RUN CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV}" conda update -y -c conda-forge --all
 
 ########################################################
-#  NVIDIA CUDA, TORCH & TENSORFLOW INSTALLATION        #
+#  NVIDIA CUDA, TORCH & TENSORFLOW & R INSTALLATION    #
 ########################################################
 
 ## run installation as conda user
@@ -356,16 +358,20 @@ RUN <<-EOF
     conda create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
 EOF
 
+## install R environment with R kernel
+RUN <<-EOF
+    echo "creating ${CONDA_R_ENV} with R kernel"
+    conda create --name ${CONDA_R_ENV} --file=/environment_r.yml
+EOF
+
 ## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
 ## needed if tensorflow or torch are installed using conda, otherwise this is ignored
 ENV CONDA_OVERRIDE_CUDA=12.3
 
 ## install tensorflow using pip to its dedicated environment
-## installing tf-keras allows to use KERAS v2 (legacy)
 RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} --file=/environment_tensorflow.yml 
 
 ## install torch to its dedicated environment
-## install torch with torchvision and ultralytics (yolo)
 RUN conda env update -v --name ${CONDA_TORCH_ENV} --file=/environment_torch.yml 
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda

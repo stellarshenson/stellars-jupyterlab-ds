@@ -112,7 +112,7 @@ volumes:
   certs:
   home:
   cache:
-  # mlflow:
+  mlflow:
   # obsidian:
 
 

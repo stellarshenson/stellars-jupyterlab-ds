@@ -1,0 +1,10 @@
+name: torch
+channels:
+  - conda-forge # default repo for miniforge3
+  - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
+
+dependencies:
+  - r-irkernel # kernel for R language
+
+# EOF
+
