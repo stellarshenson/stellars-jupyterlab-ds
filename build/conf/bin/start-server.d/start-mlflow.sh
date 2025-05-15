@@ -25,7 +25,7 @@
 # ----------------------------------------------------------------------------------------
 
 # key variables
-MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI:-sqlite:///mnt/mlflow/mlflow.db}
+MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI:-sqlite:////mnt/mlflow/mlflow.sqlite3}
 MLFLOW_ARTIFACT_ROOT=${MLFLOW_ARTIFACT_ROOT:-/mnt/mlflow/artifacts}
 MLFLOW_PORT=${MLFLOW_SERVER_PORT:-5000}
 MLFLOW_HOST=${MLFLOW_SERVER_HOST:-0.0.0.0}
@@ -42,7 +42,7 @@ EOF
 )
 
 # use conda to execute
-conda run -n base "$COMMAND"
+conda run -n base $COMMAND
 
 # EOF
 

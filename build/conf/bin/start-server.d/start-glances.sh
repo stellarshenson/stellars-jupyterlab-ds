@@ -29,6 +29,6 @@ EOF
 )
 
 # execute in conda base
-conda run -n base "$COMMAND"
+conda run -n base $COMMAND
 
 # EOF
