@@ -236,6 +236,7 @@ COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
 COPY --chown=${CONDA_USER} ./templates/workspace /tmp/template_workspace
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/cache /mnt/cache
+COPY --chown=${CONDA_USER} ./templates/mlflow /mnt/mlflow
 
 ## install helpful scripts in the workspace as symlinks
 RUN <<-EOF
