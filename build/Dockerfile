@@ -103,6 +103,7 @@ COPY --chmod=755  ./conf/bin/conda-entry.sh /conda-entry.sh
 COPY --chmod=755  ./conf/bin/mkchksum.sh /mkchksum.sh
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 COPY --chmod=755  ./conf/bin/start-server.sh /start-server.sh
+COPY --chmod=755  ./conf/bin/start-server.d /start-server.d
 COPY --chmod=755  ./conf/bin/generate-jupyterlab-ssl.sh /generate-jupyterlab-ssl.sh
 COPY --chmod=755  ./conf/bin/welcome-message.sh /welcome-message.sh
 COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
