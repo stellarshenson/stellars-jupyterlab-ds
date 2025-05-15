@@ -33,6 +33,7 @@ MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 
 # command to execute
 COMMAND=$(cat <<EOF
+echo "Launching MLFlow models artefacts and experiments management server"
 mlflow server \
   --backend-store-uri $MLFLOW_BACKEND_STORE_URI \
   --default-artifact-root $MLFLOW_ARTIFACT_ROOT \
@@ -42,7 +43,7 @@ EOF
 )
 
 # use conda to execute
-conda run -n base $COMMAND
+conda run -n base "$COMMAND"
 
 # EOF
 

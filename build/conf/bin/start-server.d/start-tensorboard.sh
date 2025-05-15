@@ -24,11 +24,13 @@
 
 # key variables
 TENSORBOARD_LOGDIR=${TENSORBOARD_LOGDIR:-/tmp/tensorboard}
+TENSORBOARD_PORT=${TENSORBOARD_PORT:-6006}
 
 # command to execute
 COMMAND=$(cat <<EOF
+echo "Launching tensorflow training monitoring and logging server on port $TENSORBOARD_PORT"
 mkdir -p $TENSORBOARD_LOGDIR 2>/dev/null
-tensorboard --bind_all --logdir $TENSORBOARD_LOGDIR --port 6006
+tensorboard --bind_all --logdir $TENSORBOARD_LOGDIR --port $TENSORBOARD_PORT
 EOF
 )
 
