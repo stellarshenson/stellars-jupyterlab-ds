@@ -33,6 +33,6 @@ EOF
 )
 
 # use conda to execute command
-conda run -n tensorflow $COMMAND
+conda run -n tensorflow "$COMMAND"
 
 # EOF
