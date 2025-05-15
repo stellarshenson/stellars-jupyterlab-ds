@@ -32,6 +32,7 @@ jupyter-lab \
     --autoreload \
     --ip=$JUPYTERLAB_SERVER_IP \
     --IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
+    --NotebookApp.base_url=$JUPYTERLAB_BASE_URL \
     --no-browser 
 
 # EOF
