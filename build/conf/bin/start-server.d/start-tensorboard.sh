@@ -27,12 +27,12 @@ TENSORBOARD_LOGDIR=${TENSORBOARD_LOGDIR:-/tmp/tensorboard}
 
 # command to execute
 COMMAND=$(cat <<EOF
-mkdir -p $TENSORBOARD_LOGDIR 2>/dev/null || \
+mkdir -p $TENSORBOARD_LOGDIR 2>/dev/null
 tensorboard --bind_all --logdir $TENSORBOARD_LOGDIR --port 6006
 EOF
 )
 
 # use conda to execute command
-conda run -n tensorflow "$COMMAND"
+conda run -n tensorflow $COMMAND
 
 # EOF
