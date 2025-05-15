@@ -19,6 +19,7 @@ for file in $START_SERVER_DIR/*; do
 done
 
 ## Jupyterlab will be launched in the foreground
+echo -e "Jupyterlab access token: \e[95m${JUPYTERLAB_SERVER_TOKEN}\e[0m"
 
 # generate ssl keys if don't exist yet (happens first time the script is run)
 CERTS_DIR="/mnt/certs"
@@ -27,7 +28,10 @@ if [ ! -e "$CERTS_DIR/jupyterlab.crt" ]; then
 fi
 
 # run jupyterlab, env params are configured in Dockerfile and docker-compose yml 
-jupyter-lab --autoreload --ip=$JUPYTERLAB_SERVER_IP --IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
+jupyter-lab \
+    --autoreload \
+    --ip=$JUPYTERLAB_SERVER_IP \
+    --IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
     --no-browser 
 
 # EOF
