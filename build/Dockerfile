@@ -455,9 +455,10 @@ EOF
 ## update terminal and shell settings
 ENV TERM=xterm-256color
 
-## startup ENV parameters for jupyterlab
+## default ENV parameters for jupyterlab
 ENV JUPYTERLAB_SERVER_IP="*"
 ENV JUPYTERLAB_SERVER_TOKEN=""
+ENV JUPYTERLAB_BASE_URL="/lab"
 
 ## default values for GPU support envs
 # GPU_SUPPORT_ENABLED controls nvidia support of the system
@@ -482,6 +483,7 @@ EXPOSE 8001
 EXPOSE 6006
 EXPOSE 5000
 EXPOSE 3030
+EXPOSE 61208
 
 # EOF
 
