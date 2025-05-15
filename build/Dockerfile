@@ -417,6 +417,7 @@ EOF
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
 RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
 RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
+RUN CONDA_DEFAULT_ENV=${CONDA_R_ENV} conda clean -ltpy && pip cache purge
 
 ## apt cleanup and remove prebuilt packages
 USER root
