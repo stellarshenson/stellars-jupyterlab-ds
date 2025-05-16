@@ -1,0 +1,6 @@
+# traefik certificates
+tls:
+  certificates:
+    - certFile: /data/stellars-jupyterlab-ds.crt
+      keyFile:  /data/stellars-jupyterlab-ds.key
+

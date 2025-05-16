@@ -2,27 +2,28 @@
 
 # Directory where the certificates will be stored is provided as 1st argument
 CERT_DIR="$1"
+CERT_PREFIX="$2"
 mkdir -p $CERT_DIR
 
 # Certificate details
-COMMON_NAME="stellars-jupyterlab-ds"
+COMMON_NAME=${CERT_PREFIX}
 
 # Certificate file names
-CERT_FILE="${CERT_DIR}/jupyterlab.crt"
-KEY_FILE="${CERT_DIR}/jupyterlab.key"
+CERT_FILE="${CERT_DIR}/${CERT_PREFIX}.crt"
+KEY_FILE="${CERT_DIR}/${CERT_PREFIX}.key"
 
 # Generate the private key
 openssl genrsa -out $KEY_FILE 2048
 
 # Generate the certificate signing request (CSR)
-openssl req -new -key $KEY_FILE -out "${CERT_DIR}/jupyterlab.csr" \
+openssl req -new -key $KEY_FILE -out "${CERT_DIR}/${CERT_PREFIX}.csr" \
     -subj "/CN=$COMMON_NAME"
 
 # Generate the self-signed certificate
-openssl x509 -req -days 365 -in "${CERT_DIR}/jupyterlab.csr" -signkey $KEY_FILE -out $CERT_FILE
+openssl x509 -req -days 365 -in "${CERT_DIR}/${CERT_PREFIX}.csr" -signkey $KEY_FILE -out $CERT_FILE
 
 # Clean up the CSR
-rm "${CERT_DIR}/jupyterlab.csr"
+rm "${CERT_DIR}/${CERT_PREFIX}.csr"
 
 # Change permissions of private key
 chmod 600 $CERT_FILE $KEY_FILE

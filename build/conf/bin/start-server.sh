@@ -24,8 +24,8 @@ echo -e "Jupyterlab access token: \e[95m${JUPYTERLAB_SERVER_TOKEN}\e[0m"
 # generate ssl keys if don't exist yet (happens first time the script is run)
 # skip this step if no certificate dir
 CERTS_DIR="/mnt/certs"
-if [[ -d "$CERTS_DIR" && ! -e "$CERTS_DIR/jupyterlab.crt"  ]]; then
-	/generate-jupyterlab-ssl.sh "$CERTS_DIR"
+if [[ -z $(find $CERTS_DIR -name '*.crt') ]]; then
+	/generate-jupyterlab-ssl.sh "$CERTS_DIR" "stellars-jupyterlab-ds"
 fi
 
 # run jupyterlab, env params are configured in Dockerfile and docker-compose yml 

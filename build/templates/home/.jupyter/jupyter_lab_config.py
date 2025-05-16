@@ -8,8 +8,8 @@ c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash", "--login"] }
 c.FileContentsManager.always_delete_dir = True
 
 ## ssl configuration to use https - only when not using traefik proxy
-# c.ServerApp.certfile = u'/mnt/certs/jupyterlab.crt'
-# c.ServerApp.keyfile = u'/mnt/certs/jupyterlab.key'
+# c.ServerApp.certfile = u'/mnt/certs/stellars-jupyterlab-ds.crt'
+# c.ServerApp.keyfile = u'/mnt/certs/stellars-jupyterlab-ds.key'
 
 ## welcome pages and additional services
 c.JupyterLabIFrame.iframes = ['local:///welcome.html']
