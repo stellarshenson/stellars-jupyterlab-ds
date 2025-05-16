@@ -11,6 +11,9 @@ BUILD_DATE=`cat /build-date.txt`
 BUILD_NAME=`cat /build-name.txt`
 cat /build-info.txt | sed "s/@BUILD_NAME@/$BUILD_NAME/g" | sed "s/@BUILD_DATE@/$BUILD_DATE/g" 
 
+# update welcome.html with LAB_USER
+sed -i "s/@LAB_USER@/${LAB_USER:-default}/g" /welcome.html
+
 # run  servers start scripts in the background
 for file in $START_SERVER_DIR/*; do
     if [ -f "$file" ] && [ -x "$file" ]; then
