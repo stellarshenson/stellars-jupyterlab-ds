@@ -2,7 +2,7 @@
 tls:
   stores:
     default:
-    defaultCertificate:
-      certFile: /certs/stellars-jupyterlab-ds.crt
-      keyFile:  /certs/stellars-jupyterlab-ds.key
+      defaultCertificate:
+        certFile: /mnt/certs/stellars-jupyterlab-ds.crt
+        keyFile:  /mnt/certs/stellars-jupyterlab-ds.key
 
