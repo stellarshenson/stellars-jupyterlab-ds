@@ -127,6 +127,9 @@ services:
     security_opt:
       - seccomp:unconfined #optional
     restart: unless-stopped
+    depends_on:
+      - lab
+      - traefik
     privileged: true
 
   # obsidian notebook for managing markdown documentation
