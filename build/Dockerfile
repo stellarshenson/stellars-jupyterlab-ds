@@ -450,6 +450,7 @@ RUN <<-EOF
 	| sed "s/@BUILD_DATE@/$(cat /build-date.txt)/g" > /welcome.html
     rm /motd-template.txt
     rm /welcome-template.html
+    chmod 666 /welcome.html
 EOF
 
 ## update terminal and shell settings
