@@ -1,18 +1,18 @@
-# Configuration file for lab.
+## Configuration file for lab.
 c = get_config()  #noqa
 c.ServerApp.root_dir = "/home/lab/workspace"
 
-# terminal should be started with login shell
-# login shell allows to call .profile to set env name
+## terminal should be started with login shell
+## login shell allows to call .profile to set env name
 c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash", "--login"] }
 c.FileContentsManager.always_delete_dir = True
 
-# ssl configuration to use https
-c.ServerApp.certfile = u'/mnt/certs/jupyterlab.crt'
-c.ServerApp.keyfile = u'/mnt/certs/jupyterlab.key'
+## ssl configuration to use https - only when not using traefik proxy
+# c.ServerApp.certfile = u'/mnt/certs/jupyterlab.crt'
+# c.ServerApp.keyfile = u'/mnt/certs/jupyterlab.key'
 
-# welcome page
-c.JupyterLabIFrame.iframes = ['http://localhost:5000', 'http://localhost:61208', 'local:///welcome.html']
+## welcome pages and additional services
+c.JupyterLabIFrame.iframes = ['local:///welcome.html']
 c.JupyterLabIFrame.welcome = 'local:///welcome.html'
 c.JupyterLabIFrame.local_files = ['/welcome.html']
 c.JupyterLabIFrame.allow_any_local = False

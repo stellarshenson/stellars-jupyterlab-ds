@@ -22,8 +22,9 @@ done
 echo -e "Jupyterlab access token: \e[95m${JUPYTERLAB_SERVER_TOKEN}\e[0m"
 
 # generate ssl keys if don't exist yet (happens first time the script is run)
+# skip this step if no certificate dir
 CERTS_DIR="/mnt/certs"
-if [ ! -e "$CERTS_DIR/jupyterlab.crt" ]; then
+if [[ -d "$CERTS_DIR" && ! -e "$CERTS_DIR/jupyterlab.crt"  ]]; then
 	/generate-jupyterlab-ssl.sh "$CERTS_DIR"
 fi
 
@@ -32,7 +33,7 @@ jupyter-lab \
     --autoreload \
     --ip=$JUPYTERLAB_SERVER_IP \
     --IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
-    --NotebookApp.base_url=$JUPYTERLAB_BASE_URL \
+    --ServerApp.base_url=$JUPYTERLAB_BASE_URL \
     --no-browser 
 
 # EOF
