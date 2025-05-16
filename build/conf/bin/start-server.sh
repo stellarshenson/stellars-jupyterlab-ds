@@ -12,8 +12,11 @@ BUILD_NAME=`cat /build-name.txt`
 cat /build-info.txt | sed "s/@BUILD_NAME@/$BUILD_NAME/g" | sed "s/@BUILD_DATE@/$BUILD_DATE/g" 
 
 # update welcome.html with LAB_USER
+# it is a bit tricky because we can only do inplace changes
 cat /welcome.html | sed "s/@LAB_USER@/${LAB_USER:-default}/g" > /tmp/welcome.html.new
-mv /tmp/welcome.html.new /welcome.html
+truncate /welcome.html --size 0
+cat /tmp/welcome.html.new >> /welcome.html
+rm /tmp/welcome.html.new
 
 # run  servers start scripts in the background
 for file in $START_SERVER_DIR/*; do
