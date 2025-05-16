@@ -42,7 +42,8 @@ start_local:
 ## clean orphaned containers
 clean:
 	@echo 'removing dangling and unused images, containers, nets and volumes'
-	@docker compose -f  compose-gpu.yml -f  compose.yml down --remove-orphans
+	@docker compose -f compose-gpu.yml down --remove-orphans
+	@docker compose -f compose.yml down --remove-orphans
 	@yes | docker image prune
 
 ## prints the list of available commands
