@@ -65,6 +65,7 @@ fi
 # ---- Step 4: Download Compose File if Missing ----
 REPO_BASE_URL="https://raw.githubusercontent.com/stellarshenson/stellars-jupyterlab-ds/main"
 
+clear
 if [[ ! -f "$COMPOSE_FILE" ]]; then
   echo "Downloading $COMPOSE_FILE from $REPO_BASE_URL..."
   curl -fsSL "$REPO_BASE_URL/$COMPOSE_FILE" -o "$COMPOSE_FILE"
@@ -84,10 +85,10 @@ LAB_USER: $LAB_USER
 Server Token: $JUPYTERLAB_SERVER_TOKEN
 
 URLs:
- - https://localhost/$LAB_USER/jupyterlab
- - https://localhost/$LAB_USER/tensorboard
- - https://localhost/$LAB_USER/mlflow
- - https://localhost/$LAB_USER/glances
+ - https://localhost/$COMPOSE_PROJECT_NAME/jupyterlab
+ - https://localhost/$COMPOSE_PROJECT_NAME/tensorboard
+ - https://localhost/$COMPOSE_PROJECT_NAME/mlflow
+ - https://localhost/$COMPOSE_PROJECT_NAME/glances
 
 Environment will be deployed using Docker Compose.
 An env file named 'project.env' will be created.
@@ -122,7 +123,7 @@ Compose Profile: $ENV_DESC
 Compose File Used: $COMPOSE_FILE
 Env File: project.env
 
-Access: https://localhost/$LAB_USER/jupyterlab
+Access: https://localhost/$COMPOSE_PROJECT_NAME/jupyterlab
 Token: $JUPYTERLAB_SERVER_TOKEN
 " 12 60
 
