@@ -1,3 +1,3 @@
-wsl --unregister docker-desktop
-wsl --unregister docker-desktop-data
+wsl.exe --unregister docker-desktop
+wsl.exe --unregister docker-desktop-data
 pause
