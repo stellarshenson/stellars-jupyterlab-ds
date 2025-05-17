@@ -1,0 +1,15 @@
+#!/bin/bash
+# ----------------------------------------------------------------------------------------
+# Generates SSL keys used by jupyterlab & traefik
+# ----------------------------------------------------------------------------------------
+
+# generate ssl keys if don't exist yet (happens first time the script is run)
+# skip this step if no certificate dir
+CERTS_DIR="/mnt/certs"
+if [[ -z $(find $CERTS_DIR -name '*.crt') ]]; then
+	/mksslcert.sh "$CERTS_DIR" "stellars-jupyterlab-ds"
+fi
+
+
+# EOF
+
