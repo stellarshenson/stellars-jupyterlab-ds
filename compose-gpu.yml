@@ -2,10 +2,10 @@
 #
 #   Jupyterlab setup with GPU support
 #
-#   Jupyter Lab - https://localhost/lab/jupyterlab
-#   Tensorboard - https://localhost/lab/tensorboard
-#   MLFlow      - https://localhost/lab/mlflow
-#   Glances     - https://localhost/lab/glances
+#   Jupyter Lab - https://localhost/lab-default/jupyterlab
+#   Tensorboard - https://localhost/lab-default/tensorboard
+#   MLFlow      - https://localhost/lab-default/mlflow
+#   Glances     - https://localhost/lab-default/glances
 #
 # ----------------------------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ services:
   # to host multiple similar containers 
   traefik:
     image: traefik:latest
-    container_name: lab-${LAB_USER:-default}-traefik
+    container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-traefik
     command:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
@@ -41,8 +41,8 @@ services:
 
   ## Run jupyterlab via traefic with glances, mlflow and tensorboard
   lab:
-    container_name: lab-${LAB_USER:-default}-jupyterlab
-    hostname: lab-${LAB_USER:-default}-jupyterlab
+    container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
+    hostname: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
     image: stellars/stellars-jupyterlab-ds:latest
     build:
       context: build
@@ -52,7 +52,7 @@ services:
       - GPU_SUPPORT_ENABLED=1
       - JUPYTERLAB_SERVER_IP=*
       - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-}
-      - JUPYTERLAB_BASE_URL=/${LAB_USER:-default}/jupyterlab
+      - JUPYTERLAB_BASE_URL=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab
       - TF_CPP_MIN_LOG_LEVEL=3
       - TENSORBOARD_LOGDIR=/tmp/tensorboard
       - MLFLOW_TRACKING_URI=http://localhost:5000
@@ -64,7 +64,7 @@ services:
       - "traefik.enable=true"
 
       # ⚙ JupyterLab Service (8888)
-      - "traefik.http.routers.jupyterlab-rtr.rule=Path(`/${LAB_USER:-default}/jupyterlab`) || PathPrefix(`/${LAB_USER:-default}/jupyterlab/`)"
+      - "traefik.http.routers.jupyterlab-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab/`)"
       - "traefik.http.routers.jupyterlab-rtr.entrypoints=websecure"
       - "traefik.http.routers.jupyterlab-rtr.service=jupyterlab-svc"
       - "traefik.http.routers.jupyterlab-rtr.tls=true"
@@ -72,36 +72,36 @@ services:
       - "traefik.http.services.jupyterlab-svc.loadbalancer.server.port=8888"
 
       # ⚙ MLflow Service (5000)
-      - "traefik.http.routers.mlflow-rtr.rule=Path(`/${LAB_USER:-default}/mlflow`) || PathPrefix(`/${LAB_USER:-default}/mlflow/`)"
+      - "traefik.http.routers.mlflow-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/mlflow`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/mlflow/`)"
       - "traefik.http.routers.mlflow-rtr.entrypoints=websecure"
       - "traefik.http.routers.mlflow-rtr.tls=true"        
-      - "traefik.http.middlewares.mlflow-stripprefix.stripprefix.prefixes=/${LAB_USER:-default}/mlflow"
-      - "traefik.http.middlewares.mlflow-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${LAB_USER:-default}/mlflow$$"
-      - "traefik.http.middlewares.mlflow-redirectregex.redirectregex.replacement=$${1}/${LAB_USER:-default}/mlflow/"
+      - "traefik.http.middlewares.mlflow-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/mlflow"
+      - "traefik.http.middlewares.mlflow-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/mlflow$$"
+      - "traefik.http.middlewares.mlflow-redirectregex.redirectregex.replacement=$${1}/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/mlflow/"
       - "traefik.http.middlewares.mlflow-chain.chain.middlewares=mlflow-redirectregex,mlflow-stripprefix"
       - "traefik.http.routers.mlflow-rtr.middlewares=mlflow-chain"
       - "traefik.http.routers.mlflow-rtr.service=mlflow-svc"
       - "traefik.http.services.mlflow-svc.loadbalancer.server.port=5000"
 
       # ⚙ Glances Service (61208)
-      - "traefik.http.routers.glances-rtr.rule=Path(`/${LAB_USER:-default}/glances`) || PathPrefix(`/${LAB_USER:-default}/glances/`)"
+      - "traefik.http.routers.glances-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/glances`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/glances/`)"
       - "traefik.http.routers.glances-rtr.entrypoints=websecure"
       - "traefik.http.routers.glances-rtr.tls=true"        
-      - "traefik.http.middlewares.glances-stripprefix.stripprefix.prefixes=/${LAB_USER:-default}/glances"
-      - "traefik.http.middlewares.glances-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${LAB_USER:-default}/glances$$"
-      - "traefik.http.middlewares.glances-redirectregex.redirectregex.replacement=$${1}/${LAB_USER:-default}/glances/"
+      - "traefik.http.middlewares.glances-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/glances"
+      - "traefik.http.middlewares.glances-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/glances$$"
+      - "traefik.http.middlewares.glances-redirectregex.redirectregex.replacement=$${1}/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/glances/"
       - "traefik.http.middlewares.glances-chain.chain.middlewares=glances-redirectregex,glances-stripprefix"
       - "traefik.http.routers.glances-rtr.middlewares=glances-chain"
       - "traefik.http.routers.glances-rtr.service=glances-svc"
       - "traefik.http.services.glances-svc.loadbalancer.server.port=61208"
 
       # ⚙ TensorBoard Service (6006)
-      - "traefik.http.routers.tensorboard-rtr.rule=Path(`/${LAB_USER:-default}/tensorboard`) || PathPrefix(`/${LAB_USER:-default}/tensorboard/`)"
+      - "traefik.http.routers.tensorboard-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/tensorboard`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/tensorboard/`)"
       - "traefik.http.routers.tensorboard-rtr.entrypoints=websecure"
       - "traefik.http.routers.tensorboard-rtr.tls=true"        
-      - "traefik.http.middlewares.tensorboard-stripprefix.stripprefix.prefixes=/${LAB_USER:-default}/tensorboard"
-      - "traefik.http.middlewares.tensorboard-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${LAB_USER:-default}/tensorboard$$"
-      - "traefik.http.middlewares.tensorboard-redirectregex.redirectregex.replacement=$${1}/${LAB_USER:-default}/tensorboard/"
+      - "traefik.http.middlewares.tensorboard-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/tensorboard"
+      - "traefik.http.middlewares.tensorboard-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/tensorboard$$"
+      - "traefik.http.middlewares.tensorboard-redirectregex.redirectregex.replacement=$${1}/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/tensorboard/"
       - "traefik.http.middlewares.tensorboard-chain.chain.middlewares=tensorboard-redirectregex,tensorboard-stripprefix"
       - "traefik.http.routers.tensorboard-rtr.middlewares=tensorboard-chain"
       - "traefik.http.routers.tensorboard-rtr.service=tensorboard-svc"
@@ -126,46 +126,18 @@ services:
 
   # for automatic environment refresh
   watchtower:
-    container_name: lab-${LAB_USER:-default}-watchtower
+    container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-watchtower
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 3600
     security_opt:
       - seccomp:unconfined #optional
-    restart: unless-stopped
     depends_on:
       - lab
       - traefik
+    restart: unless-stopped
     privileged: true
-
-  # obsidian notebook for managing markdown documentation
-  # obsidian:
-  #  image: lscr.io/linuxserver/obsidian:latest
-  #  container_name: lab-obsidian
-  #  environment:
-  #    - PUID=1000
-  #    - PGID=1000
-  #  volumes:
-  #    - obsidian:/config
-  #    - workspace:/config/workspace
-  #  ports:
-  #    - 3000:3000
-  #    - 3001:3001
-  #  networks:
-  #    - frontend
-  #  shm_size: "1gb"
-  #  restart: unless-stopped
-
-  # mermaid online diagramming
-  # mermaid:
-  #  image: ghcr.io/mermaid-js/mermaid-live-editor
-  #  container_name: lab-mermaid
-  #  ports:
-  #    - 9080:8080
-  #  networks:
-  #    - frontend
-  #  restart: unless-stopped
 
 volumes:
   lab_workspace:
@@ -173,7 +145,6 @@ volumes:
   lab_home:
   lab_mlflow:
   lab_certs: 
-  # obsidian:
 
 networks:
   proxy-network:
@@ -181,3 +152,4 @@ networks:
     driver: bridge
 
 # EOF
+
