@@ -16,6 +16,7 @@
 #   COMPOSE_PROJECT_NAME=my-lab-platform
 #   LAB_USER=jack_daniels
 #   JUPYTERLAB_SERVER_TOKEN=my_secret_token123
+#   GPU_SUPPORT_ENABLED=1
 #
 # --------------------------------------------------------------------------------------------------
 
@@ -60,7 +61,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - CONDA_DEFAULT_ENV=base
-      - GPU_SUPPORT_ENABLED=0 
+      - GPU_SUPPORT_ENABLED=0
       - JUPYTERLAB_SERVER_IP=*
       - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # if token not provided - no passwor required
       - JUPYTERLAB_BASE_URL=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab
@@ -79,7 +80,7 @@ services:
       - lab_mlflow:/mnt/mlflow            # persistent mlflow volume for experiments logs
     networks:
       - proxy-network
-     labels:
+    labels:
       # Enable proxy support from Traefik
       - "traefik.enable=true"
 
