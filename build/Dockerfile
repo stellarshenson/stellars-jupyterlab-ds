@@ -463,7 +463,7 @@ ENV GPUSTAT_ENABLED=1
 USER ${CONDA_USER}
 WORKDIR ${CONDA_USER_WORKSPACE}
 ENTRYPOINT ["/conda-entry.sh"]
-CMD ["/start-server.sh"]
+CMD ["/start-platform.sh"]
 
 ## expose ports
 # 8888 - jupyterlab, 8000 and 8001 - jupyterhub
@@ -472,6 +472,8 @@ CMD ["/start-server.sh"]
 EXPOSE 8888 
 EXPOSE 8000
 EXPOSE 8001 
+EXPOSE 8080 
+EXPOSE 8030 
 EXPOSE 6006
 EXPOSE 5000
 EXPOSE 3030

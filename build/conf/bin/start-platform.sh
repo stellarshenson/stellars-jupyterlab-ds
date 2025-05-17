@@ -2,8 +2,8 @@
 
 # run series of start scripts
 # (services will need to run in background)
-START_SERVER_DIR='/start-server.d'
-for file in $START_SERVER_DIR/*; do
+START_PLATFORM_DIR='/start-server.d'
+for file in $START_PLATFORM_DIR/*; do
     if [ -f "$file" ] && [ -x "$file" ]; then
         "$file" 
     fi
