@@ -2,7 +2,7 @@
 designed for data science and machine learning / ai projects. [0m
 
 Running JupyterLab server on     [34mhttps://localhost/@LAB_NAME@/jupyterlab[0m
-Connect VSCode to Jupyter on     [34mhttps://localhost/@LAB_NAME/lab/tree[0m
+Connect VSCode to Jupyter on     [34mhttps://localhost/@LAB_NAME@/lab/tree[0m
 Running Tensorboard server on    [34mhttps://localhost/@LAB_NAME@/tensorboard[0m
 Running Glances System Monitor   [34mhttps://localhost/@LAB_NAME@/glances[0m  
 Running MLFlow on                [34mhttps://localhost/@LAB_NAME@/mlflow[0m  
