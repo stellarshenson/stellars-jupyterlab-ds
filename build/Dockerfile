@@ -100,6 +100,7 @@ COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
 COPY --chmod=644  ./conf/environment_r.yml /environment_r.yml
 COPY --chmod=755  ./conf/bin/* /
+COPY --chmod=644  ./conf/misc/motd-template.txt /
 COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
 COPY --chmod=644  ./conf/misc/welcome-template.html /welcome-template.html
 COPY --chmod=755  ./conf/utils /opt/utils
@@ -427,10 +428,6 @@ USER root
 
 ## ignore pip warnings re root access
 ENV PIP_ROOT_USER_ACTION=ignore
-
-## save build date for reference
-COPY --chmod=644 ./conf/misc/build-info.txt /
-COPY --chmod=644 ./conf/misc/motd-template.txt /
 
 ## generate build name and build date
 ## and generate motd using template
