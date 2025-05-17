@@ -1,18 +1,16 @@
 
-█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
-█ Build [36m@BUILD_NAME@[0m created on [36m@BUILD_DATE@[0m                                      █
-█ --------------------------------------------------------------------------------------- █
-█ Running JupyterLab server on  [34mhttps://localhost:8888[0m                                    █
-█ Connect VSCode to Jupyter on  [34mhttps://localhost:8888/lab/tree[0m                           █
-█ Running MLFlow server on      [34mhttp://localhost:5000[0m                                     █
-█ Running Tensorboard server on [34mhttp://localhost:6006[0m                                     █
-█ Running Obsidian server on    [34mhttp://localhost:3000[0m                                     █
-█ Running Mermaid Editor on     [34mhttp://localhost:9080[0m                                     █
-█ Running Glances Web Monitor   [34mhttp://localhost:61208[0m                                    █
-█ Tensorboard monitoring logs located in [34m/tmp/tf_logs[0m                                     █
-█ Using work dir (projects) [34m/home/lab/workspace[0m (mount)                                   █
-█ Jupyterlab settings saved to [34m/home/lab/.jupyter[0m                                         █
-█ --------------------------------------------------------------------------------------- █
-█ Visit: [36mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m                         █
-█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
+█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
+█ Build [36m@BUILD_NAME@[0m created on [36m@BUILD_DATE@[0m                                              █
+█ ----------------------------------------------------------------------------------------------- █
+█ Running JupyterLab server on  [34mhttps://localhost/@LAB_NAME@/jupyterlab[0m                           █
+█ Connect VSCode to Jupyter on  [34mhttps://localhost/@LAB_NAME@/jupyterlab/lab/tree[0m                  █
+█ Running MLFlow server on      [34mhttps://localhost/@LAB_NAME@/mlflow[0m                               █
+█ Running Tensorboard server on [34mhttps://localhost/@LAB_NAME@/tensorboard[0m                          █
+█ Running Glances Web Monitor   [34mhttps://localhost/@LAB_NAME@/glances[0m                              █
+█ Using work dir (projects) [34m/home/lab/workspace[0m (mount)                                           █
+█ Using certs (ssl) dir [34m/mnt/certs[0m (mount)                                                        █
+█ Jupyterlab settings saved to [34m/home/lab/.jupyter[0m                                                 █
+█ ----------------------------------------------------------------------------------------------- █
+█ Visit: [36mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m                                 █
+█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
 

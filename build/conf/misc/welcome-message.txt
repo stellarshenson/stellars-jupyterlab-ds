@@ -1,15 +1,14 @@
 [95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. This is your environment 
 designed for data science and machine learning / ai projects. [0m
 
-Running JupyterLab server on     [34mhttps://localhost:8888[0m
-Connect VSCode to Jupyter on     [34mhttps://localhost:8888/lab/tree[0m
-Running Tensorboard server on    [34mhttp://localhost:6006[0m
-Running Glances System Monitor   [34mhttp://localhost:61208[0m  
-(optional) Obsidian server on    [34mhttp://localhost:3000[0m 
-(optional) Mermaid Editor on     [34mhttp://localhost:9080[0m  
-(optional) MLFlow on             [34mhttp://localhost:5000[0m  
-Tensorboard monitoring logs located in [34m/tmp/tf_logs[0m
-Using work dir (projects) [34m/home/lab/workspace[0m (mount)
+Running JupyterLab server on     [34mhttps://localhost/@LAB_NAME@/jupyterlab[0m
+Connect VSCode to Jupyter on     [34mhttps://localhost/@LAB_NAME/lab/tree[0m
+Running Tensorboard server on    [34mhttp://localhost/@LAB_NAME@/tensorboard[0m
+Running Glances System Monitor   [34mhttp://localhost/@LAB_NAME@/glances[0m  
+Running MLFlow on                [34mhttp://localhost@LAB_NAME@/mlflow[0m  
+Optuna will be available on      [34mhttp://localhost@LAB_NAME@/optuna[0m  
+Tensorboard monitoring logs located in [34m/tmp/tensorboard[0m
+Project dir: [34m/home/lab/workspace[0m (mount)
 Jupyterlab settings saved to [34m/home/lab/.jupyter[0m
 
 Visit: [34mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m                       

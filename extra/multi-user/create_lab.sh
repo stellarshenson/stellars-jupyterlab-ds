@@ -46,14 +46,14 @@ fi
 
 # ---- Step 3: Choose Compose Type ----
 dialog --title "Select Environment Type" --menu "Choose your data science deployment platform:" 12 60 2 \
-  1 "JupyterLab for CPU Platform (no GPU support)" \
+  1 "JupyterLab for non-GPU platforms" \
   2 "JupyterLab with NVIDIA GPU Enabled" 2> "$TMPFILE"
 CHOICE=$(<"$TMPFILE")
 rm "$TMPFILE"
 
 if [[ "$CHOICE" == "1" ]]; then
   COMPOSE_FILE="compose.yml"
-  ENV_DESC="JupyterLab for CPU Platform"
+  ENV_DESC="JupyterLab for non-GPU platforms"
 elif [[ "$CHOICE" == "2" ]]; then
   COMPOSE_FILE="compose-gpu.yml"
   ENV_DESC="JupyterLab with NVIDIA GPU Enabled"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MESSAGE=$(cat /welcome-message.txt)
+MESSAGE=$(cat /welcome-message.txt | sed s/@LAB_NAME@/${LAB_NAME}/g)
 TIMESTAMP_FILE="$HOME/.last_message_timestamp"
 
 # Get the current date

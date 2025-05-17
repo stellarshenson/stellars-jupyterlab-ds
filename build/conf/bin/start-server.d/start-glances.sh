@@ -25,7 +25,7 @@
 # command to execute 
 COMMAND=$(cat <<EOF
 echo "Launching glances resources monitoring server"
-glances -w -t 0.25 
+glances -w -t 0.25 &
 EOF
 )
 
