@@ -24,7 +24,7 @@ LAB_USER=$(<"$TMPFILE")
 rm "$TMPFILE"
 
 # Sanitize LAB_USER
-LAB_USER=$(echo "$LAB_USER" | tr -cd '[:alnum:]-_')
+LAB_USER=$(echo "$LAB_USER" | sed 's/\./-/g' | tr -cd '[:alnum:]-_')
 if [[ -z "$LAB_USER" ]]; then
   echo "Invalid LAB_USER. Must contain at least one alphanumeric character."
   exit 1
@@ -46,17 +46,17 @@ fi
 
 # ---- Step 3: Choose Compose Type ----
 dialog --title "Select Environment Type" --menu "Choose your data science deployment platform:" 12 60 2 \
-  1 "JupyterLab for non-GPU platforms" \
-  2 "JupyterLab with NVIDIA GPU Enabled" 2> "$TMPFILE"
+  1 "Stellars-JupyterLab-DS for non-GPU platforms" \
+  2 "Stellars-JupyterLab-DS with NVIDIA GPU enabled" 2> "$TMPFILE"
 CHOICE=$(<"$TMPFILE")
 rm "$TMPFILE"
 
 if [[ "$CHOICE" == "1" ]]; then
   COMPOSE_FILE="compose.yml"
-  ENV_DESC="JupyterLab for non-GPU platforms"
+  ENV_DESC="Stellars-JupyterLab-DS for non-GPU platforms"
 elif [[ "$CHOICE" == "2" ]]; then
   COMPOSE_FILE="compose-gpu.yml"
-  ENV_DESC="JupyterLab with NVIDIA GPU Enabled"
+  ENV_DESC="Stellars-JupyterLab-DS with NVIDIA GPU enabled"
 else
   echo "Invalid selection."
   exit 1
@@ -113,7 +113,12 @@ COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME
 EOF
 
 # ---- Step 8: Deploy ----
-docker-compose --env-file project.env -f "$COMPOSE_FILE" up -d
+clear
+COMPOSE_COMMAND="docker-compose --env-file ./project.env -f ./$COMPOSE_FILE up  --no-recreate --no-build -d"
+echo "Executing command: $COMPOSE_COMMAND"
+$COMPOSE_COMMAND
+echo "Press ENTER to continue..."
+read
 
 # ---- Step 9: Final Message ----
 dialog --title "Deployment Complete" --msgbox "
