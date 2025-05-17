@@ -1,7 +1,7 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
-# FROM nvidia/cuda:12.6.3-cudnn-runtime-ubuntu24.04 AS builder
-FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04 AS builder
+# FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04 AS builder
+FROM nvidia/cuda:12.9.0-cudnn-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
 ARG CUDA_TOOLKIT_VERSION=12.8
@@ -64,8 +64,8 @@ RUN cp llama*.whl ${EXPORT_DIR}
 ##############################################################################################
 
 ## this dockergfile is loosely based on the github project
-# FROM nvidia/cuda:12.6.3-runtime-ubuntu24.04 AS target
-FROM nvidia/cuda:12.8.1-runtime-ubuntu24.04 AS target
+# FROM nvidia/cuda:12.8.1-runtime-ubuntu24.04 AS target
+FROM nvidia/cuda:12.9.0-runtime-ubuntu24.04 AS target
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
