@@ -17,6 +17,7 @@ if command -v nvidia-smi &> /dev/null; then
 else
     echo "nvidia-smi command not found. Nvidia GPU not available."
     # Run the command for when GPU is not available
+    export GPU_SUPPORT_ENABLED=0
     docker compose --env-file ../local/project.env -f ../local/compose.yml up  --no-recreate --no-build $1
 fi
 

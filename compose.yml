@@ -1,13 +1,23 @@
-# ----------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 #
-#   Jupyterlab setup for CPU only platform 
+#   Stellars Jupyterlab DS Platform 
+#   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
+#   This compose file support both GPU and non-GPU platforms
 #
-#   Jupyter Lab - https://localhost/lab-default/jupyterlab
-#   Tensorboard - https://localhost/lab-default/tensorboard
-#   MLFlow      - https://localhost/lab-default/mlflow
-#   Glances     - https://localhost/lab-default/glances
+#   Jupyter Lab      - https://localhost/<compose_name>/jupyterlab (running locally on port :8888)
+#   Tensorboard      - https://localhost/<compose_name>/tensorboard (running locally on port :6006)
+#   MLFlow           - https://localhost/<compose_name>/mlflow (running locally on port :5000) 
+#   Glances          - https://localhost/<compose_name>/glances (running locally on port :61208)
+#   Optuna           - https://localhost/<compose_name>/optuna (running locally on port :8080)
+#   Generic app      - https://localhost/<compose_name>/generic-app (running locally on port :8080)
+#   Generic callback - https://localhost/<compose_name>/generic-app (running locally on port :8030)
 #
-# ----------------------------------------------------------------------------------------
+#   Example project .env file content:
+#   COMPOSE_PROJECT_NAME=my-lab-platform
+#   LAB_USER=jack_daniels
+#   JUPYTERLAB_SERVER_TOKEN=my_secret_token123
+#
+# --------------------------------------------------------------------------------------------------
 
 services:
 
@@ -35,12 +45,13 @@ services:
     networks:
       - proxy-network
     depends_on:
-      - lab
+      - jupyterlab
     restart: unless-stopped
 
 
-  ## Run jupyterlab via traefic with glances, mlflow and tensorboard
-  lab:
+  ## Run jupyterlab via traefic with glances, mlflow, optuna and tensorboard
+  ## Services are mapped to distinct URLs using traefic proxy
+  jupyterlab:
     container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
     hostname: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
     image: stellars/stellars-jupyterlab-ds:latest
@@ -49,17 +60,26 @@ services:
       dockerfile: Dockerfile
     environment:
       - CONDA_DEFAULT_ENV=base
-      - GPU_SUPPORT_ENABLED=0
+      - GPU_SUPPORT_ENABLED=0 
       - JUPYTERLAB_SERVER_IP=*
-      - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-}
+      - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # if token not provided - no passwor required
       - JUPYTERLAB_BASE_URL=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab
-      - TF_CPP_MIN_LOG_LEVEL=3
+      - TF_CPP_MIN_LOG_LEVEL=3 # tensorflow logs ERR only
       - TENSORBOARD_LOGDIR=/tmp/tensorboard
       - MLFLOW_TRACKING_URI=http://localhost:5000
       - MLFLOW_PORT=5000
       - MLFLOW_HOST=*
       - LAB_USER=${LAB_USER:-default}
-    labels:
+      - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}
+    volumes:
+      - lab_home:/home                    # jupyterlab user directory persistence
+      - lab_workspace:/home/lab/workspace # user projects workspace volume persistence
+      - lab_cache:/mnt/cache              # persistent cache volume for calculation results
+      - lab_certs:/mnt/certs              # tsl certificates used by traefic and jupyterlab
+      - lab_mlflow:/mnt/mlflow            # persistent mlflow volume for experiments logs
+    networks:
+      - proxy-network
+     labels:
       # Enable proxy support from Traefik
       - "traefik.enable=true"
 
@@ -106,14 +126,43 @@ services:
       - "traefik.http.routers.tensorboard-rtr.middlewares=tensorboard-chain"
       - "traefik.http.routers.tensorboard-rtr.service=tensorboard-svc"
       - "traefik.http.services.tensorboard-svc.loadbalancer.server.port=6006"
-    networks:
-      - proxy-network
-    volumes:
-      - lab_home:/home                    # jupyterlab user directory persistence
-      - lab_workspace:/home/lab/workspace # user projects workspace volume persistence
-      - lab_cache:/mnt/cache              # persistent cache volume for calculation results
-      - lab_certs:/mnt/certs              # tsl certificates used by traefic and jupyterlab
-      - lab_mlflow:/mnt/mlflow            # persistent mlflow volume for experiments logs
+
+      # ⚙ Optuna Service (8080)
+      - "traefik.http.routers.optuna-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/optuna`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/optuna/`)"
+      - "traefik.http.routers.optuna-rtr.entrypoints=websecure"
+      - "traefik.http.routers.optuna-rtr.tls=true"        
+      - "traefik.http.middlewares.optuna-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/optuna"
+      - "traefik.http.middlewares.optuna-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/optuna$$"
+      - "traefik.http.middlewares.optuna-redirectregex.redirectregex.replacement=$${1}/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/optuna/"
+      - "traefik.http.middlewares.optuna-chain.chain.middlewares=optuna-redirectregex,optuna-stripprefix"
+      - "traefik.http.routers.optuna-rtr.middlewares=optuna-chain"
+      - "traefik.http.routers.optuna-rtr.service=optuna-svc"
+      - "traefik.http.services.optuna-svc.loadbalancer.server.port=8080"
+
+      # ⚙ Generic App Service (8080)
+      - "traefik.http.routers.generic-app-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app/`)"
+      - "traefik.http.routers.generic-app-rtr.entrypoints=websecure"
+      - "traefik.http.routers.generic-app-rtr.tls=true"        
+      - "traefik.http.middlewares.generic-app-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app"
+      - "traefik.http.middlewares.generic-app-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app$$"
+      - "traefik.http.middlewares.generic-app-redirectregex.redirectregex.replacement=$${1}/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app/"
+      - "traefik.http.middlewares.generic-app-chain.chain.middlewares=generic-app-redirectregex,generic-app-stripprefix"
+      - "traefik.http.routers.generic-app-rtr.middlewares=generic-app-chain"
+      - "traefik.http.routers.generic-app-rtr.service=generic-app-svc"
+      - "traefik.http.services.generic-app-svc.loadbalancer.server.port=8080"
+
+
+      # ⚙  HTTP Generic Callback Service (8030)
+      - "traefik.http.routers.generic-callback-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback/`)"
+      - "traefik.http.routers.generic-callback-rtr.entrypoints=websecure"
+      - "traefik.http.routers.generic-callback-rtr.tls=true"        
+      - "traefik.http.middlewares.generic-callback-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback"
+      - "traefik.http.middlewares.generic-callback-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback$$"
+      - "traefik.http.middlewares.generic-callback-redirectregex.redirectregex.replacement=$${1}/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback/"
+      - "traefik.http.middlewares.generic-callback-chain.chain.middlewares=generic-callback-redirectregex,generic-callback-stripprefix"
+      - "traefik.http.routers.generic-callback-rtr.middlewares=generic-callback-chain"
+      - "traefik.http.routers.generic-callback-rtr.service=generic-callback-svc"
+      - "traefik.http.services.generic-callback-svc.loadbalancer.server.port=8030"
     ipc: host
     restart: unless-stopped
 
@@ -127,7 +176,7 @@ services:
     security_opt:
       - seccomp:unconfined #optional
     depends_on:
-      - lab
+      - jupyterlab
       - traefik
     restart: unless-stopped
     privileged: true
