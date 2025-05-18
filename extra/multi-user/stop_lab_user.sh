@@ -7,15 +7,26 @@ if ! command -v dialog &>/dev/null; then
   exit 1
 fi
 
-# 2. Check for compose file
-if [ ! -f "compose.yml" ] && [ ! -f "docker-compose.yml" ]; then
-  dialog --msgbox "No compose.yml or docker-compose.yml found." 10 50
+# 2. Check for compose file and download if needed
+clear
+COMPOSE_FILE="compose.yml"
+REPO_BASE_URL="https://raw.githubusercontent.com/stellarshenson/stellars-jupyterlab-ds/main"
+if [[ ! -f "$COMPOSE_FILE" ]]; then
+  echo "Downloading $COMPOSE_FILE from $REPO_BASE_URL..."
+  curl -fsSL "$REPO_BASE_URL/$COMPOSE_FILE" -o "$COMPOSE_FILE"
+  if [[ $? -ne 0 ]]; then
+    echo "Failed to download $COMPOSE_FILE. Aborting."
+    exit 1
+  fi
+fi
+
+# check if file downloaded 
+if [ ! -f "compose.yml" ]; then
+  dialog --msgbox "No compose.yml found." 10 50
   clear
   exit 1
 fi
 
-COMPOSE_FILE="compose.yml"
-[ -f "docker-compose.yml" ] && COMPOSE_FILE="docker-compose.yml"
 
 # 3. Locate .env files
 mapfile -t ENV_FILES < <(find . -maxdepth 1 -name "*.env" | sort)

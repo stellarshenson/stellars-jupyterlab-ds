@@ -1,5 +1,35 @@
 #!/bin/bash
 
+# Generare override file for traefik
+cat << EOF > compose-override.yml
+# --------------------------------------------------------------------------------------------------
+#
+#   Stellars Jupyterlab DS Platform 
+#   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
+#   This compose disables traefik, watchtower and makes proxy network 'external'
+#
+# --------------------------------------------------------------------------------------------------
+
+services:
+
+  ## disable traefik using profiles
+  traefik:
+    profiles: [disabled]
+
+  ## disable watchtower using profiles
+  watchtower:
+    profiles: [disabled]
+
+networks:
+  ## mark proxy-network as external
+  proxy-network:
+    name: traefik-network
+    driver: bridge
+    external: true
+
+# EOF
+EOF
+
 # Check for dialog
 if ! command -v dialog &> /dev/null; then
   echo "dialog command not found. Install it with: sudo apt install dialog"
@@ -122,7 +152,7 @@ EOF
 # ---- Step 8: Deploy ----
 clear
 if [[ $TRAEFIK_RUNNING == 1 ]]; then
-    COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f compose-override-traefik.yml"
+    COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f compose-override.yml"
 fi
 
 COMPOSE_COMMAND="docker-compose --env-file $ENV_FILE $COMPOSE_FILES_OPTS up  --no-recreate --no-build -d"
