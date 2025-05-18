@@ -80,11 +80,11 @@ done
 
 # ---- Step 5: Project Name and Summary ----
 COMPOSE_PROJECT_NAME="lab-${LAB_USER}"
+ENV_FILE="${COMPOSE_PROJECT_NAME}.env"
 
 dialog --title "Deployment Summary" --msgbox "
 Environment: $ENV_DESC
 Project Name: $COMPOSE_PROJECT_NAME
-LAB_USER: $LAB_USER
 Server Token: $JUPYTERLAB_SERVER_TOKEN
 
 URLs:
@@ -94,7 +94,7 @@ URLs:
  - https://localhost/$COMPOSE_PROJECT_NAME/glances
 
 Environment will be deployed using Docker Compose.
-An env file named 'project.env' will be created.
+An env file named '$ENV_FILE' will be created.
 " 20 70
 
 # ---- Step 6: Confirm Deployment ----
@@ -109,7 +109,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # ---- Step 7: Create Env File ----
-cat <<EOF > project.env
+cat <<EOF > $ENV_FILE
 LAB_USER=$LAB_USER
 JUPYTERLAB_SERVER_TOKEN=$JUPYTERLAB_SERVER_TOKEN
 COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME
@@ -117,9 +117,9 @@ EOF
 
 # ---- Step 8: Deploy ----
 clear
-COMPOSE_COMMAND="docker-compose --env-file ./project.env $COMPOSE_FILES_OPTS up  --no-recreate --no-build -d"
+COMPOSE_COMMAND="docker-compose --env-file $ENV_FILE $COMPOSE_FILES_OPTS up  --no-recreate --no-build -d"
 echo "Executing command: $COMPOSE_COMMAND"
-#$COMPOSE_COMMAND
+$COMPOSE_COMMAND
 echo "Press ENTER to continue..."
 read
 
@@ -129,7 +129,7 @@ Deployment successful.
 
 Compose Profile: $ENV_DESC
 Compose Files Used: $COMPOSE_FILES
-Env File: project.env
+Env File: $ENV_FILE
 
 Access: https://localhost/$COMPOSE_PROJECT_NAME/jupyterlab
 Token: $JUPYTERLAB_SERVER_TOKEN
