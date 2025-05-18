@@ -204,6 +204,7 @@ networks:
   proxy-network:
     name: traefik-network
     driver: bridge
+    external: true
 
 # EOF
 
