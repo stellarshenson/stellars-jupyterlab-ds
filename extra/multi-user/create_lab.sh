@@ -46,17 +46,17 @@ fi
 
 # ---- Step 3: Choose Compose Type ----
 dialog --title "Select Environment Type" --menu "Choose your data science deployment platform:" 12 60 2 \
-  1 "Stellars-JupyterLab-DS for non-GPU platforms" \
-  2 "Stellars-JupyterLab-DS with NVIDIA GPU enabled" 2> "$TMPFILE"
+  1 "Platform for non-GPU systems" \
+  2 "Platform for NVIDIA GPU systems" 2> "$TMPFILE"
 CHOICE=$(<"$TMPFILE")
 rm "$TMPFILE"
 
 if [[ "$CHOICE" == "1" ]]; then
-  COMPOSE_FILE="compose.yml"
-  ENV_DESC="Stellars-JupyterLab-DS for non-GPU platforms"
+  COMPOSE_FILES_OPTS="-f compose.yml"
+  ENV_DESC="Platform non-GPU systems"
 elif [[ "$CHOICE" == "2" ]]; then
-  COMPOSE_FILE="compose-gpu.yml"
-  ENV_DESC="Stellars-JupyterLab-DS with NVIDIA GPU enabled"
+  COMPOSE_FILES_OPTS="-f compose.yml -f compose-gpu.yml"
+  ENV_DESC="Platform for NVIDIA GPU systems"
 else
   echo "Invalid selection."
   exit 1
@@ -66,14 +66,17 @@ fi
 REPO_BASE_URL="https://raw.githubusercontent.com/stellarshenson/stellars-jupyterlab-ds/main"
 
 clear
-if [[ ! -f "$COMPOSE_FILE" ]]; then
-  echo "Downloading $COMPOSE_FILE from $REPO_BASE_URL..."
-  curl -fsSL "$REPO_BASE_URL/$COMPOSE_FILE" -o "$COMPOSE_FILE"
-  if [[ $? -ne 0 ]]; then
-    echo "Failed to download $COMPOSE_FILE. Aborting."
-    exit 1
-  fi
-fi
+COMPOSE_FILES=$(echo $COMPOSE_FILES_OPTS | sed 's/-f//g')
+for COMPOSE_FILE in $COMPOSE_FILES; do
+    if [[ ! -f "$COMPOSE_FILE" ]]; then
+      echo "Downloading $COMPOSE_FILE from $REPO_BASE_URL..."
+      curl -fsSL "$REPO_BASE_URL/$COMPOSE_FILE" -o "$COMPOSE_FILE"
+      if [[ $? -ne 0 ]]; then
+	echo "Failed to download $COMPOSE_FILE. Aborting."
+	exit 1
+      fi
+    fi
+done
 
 # ---- Step 5: Project Name and Summary ----
 COMPOSE_PROJECT_NAME="lab-${LAB_USER}"
@@ -114,9 +117,9 @@ EOF
 
 # ---- Step 8: Deploy ----
 clear
-COMPOSE_COMMAND="docker-compose --env-file ./project.env -f ./$COMPOSE_FILE up  --no-recreate --no-build -d"
+COMPOSE_COMMAND="docker-compose --env-file ./project.env $COMPOSE_FILES_OPTS up  --no-recreate --no-build -d"
 echo "Executing command: $COMPOSE_COMMAND"
-$COMPOSE_COMMAND
+#$COMPOSE_COMMAND
 echo "Press ENTER to continue..."
 read
 
@@ -125,7 +128,7 @@ dialog --title "Deployment Complete" --msgbox "
 Deployment successful.
 
 Compose Profile: $ENV_DESC
-Compose File Used: $COMPOSE_FILE
+Compose Files Used: $COMPOSE_FILES
 Env File: project.env
 
 Access: https://localhost/$COMPOSE_PROJECT_NAME/jupyterlab
