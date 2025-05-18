@@ -30,11 +30,11 @@ TENSORBOARD_PORT=${TENSORBOARD_PORT:-6006}
 COMMAND=$(cat <<EOF
 echo "Launching tensorflow training monitoring and logging server on port $TENSORBOARD_PORT"
 mkdir -p $TENSORBOARD_LOGDIR 2>/dev/null
-tensorboard --bind_all --logdir $TENSORBOARD_LOGDIR --port $TENSORBOARD_PORT &
+tensorboard --bind_all --logdir $TENSORBOARD_LOGDIR --port $TENSORBOARD_PORT
 EOF
 )
 
 # use conda to execute command
-conda run -n tensorflow "$COMMAND"
+conda run -n tensorflow "$COMMAND" &
 
 # EOF
