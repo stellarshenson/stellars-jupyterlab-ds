@@ -1,4 +1,33 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------------
+#   Stellars JupyterLab DS Platform Shutdown Script
+#
+#   Author      : Stellars Henson                   
+#   Script Name : stop_lab_user.sh
+#   Description : 
+#     Interactive shell script to gracefully stop and optionally clean up a deployed 
+#     JupyterLab data science environment managed by Docker Compose.
+#
+#     Features:
+#       - Uses 'dialog' interface for selection of target environment
+#       - Automatically detects available .env configurations
+#       - Prompts user to confirm project shutdown
+#       - Offers optional volume deletion with confirmation
+#       - Handles missing compose file by downloading from canonical repo if necessary
+#       - Uses environment variables to identify the Docker Compose project
+#
+#   Prerequisites:
+#       - 'dialog' CLI tool must be installed (sudo apt install dialog)
+#       - Docker and Docker Compose must be installed and in the system PATH
+#
+#   Output:
+#       - Graceful teardown of Docker services and containers
+#       - Optional deletion of persistent volumes
+#
+#   Project Home : https://github.com/stellarshenson/stellars-jupyterlab-ds
+#   License      : MIT
+# --------------------------------------------------------------------------------------------------
+
 set -e
 
 # 1. Check if 'dialog' is available
