@@ -168,11 +168,11 @@ services:
     ipc: host
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-fsSL", "http://localhost:8888/lab"]
-      interval: 100s
+      test: ["CMD-SHELL", "pgrep -f jupyter-lab > /dev/null || exit 1"]
+      interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 10
+      start_period: 5s
 
   # for automatic environment refresh
   watchtower:
