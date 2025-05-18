@@ -141,9 +141,9 @@ services:
       - "traefik.http.routers.optuna-rtr.service=optuna-svc"
       - "traefik.http.services.optuna-svc.loadbalancer.server.port=8080"
 
-      # ⚙ Generic App Service (8080)
+      # ⚙ Generic HTTP App Service (8080)
       - "traefik.http.routers.generic-app-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app/`)"
-      - "traefik.http.routers.generic-app-rtr.entrypoints=websecure"
+      - "traefik.http.routers.generic-app-rtr.entrypoints=web"
       - "traefik.http.routers.generic-app-rtr.tls=true"        
       - "traefik.http.middlewares.generic-app-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app"
       - "traefik.http.middlewares.generic-app-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-app$$"
@@ -154,9 +154,9 @@ services:
       - "traefik.http.services.generic-app-svc.loadbalancer.server.port=8080"
 
 
-      # ⚙  HTTP Generic Callback Service (8030)
+      # ⚙  HTTP Generic HTTP Callback Service (8030)
       - "traefik.http.routers.generic-callback-rtr.rule=Path(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback`) || PathPrefix(`/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback/`)"
-      - "traefik.http.routers.generic-callback-rtr.entrypoints=websecure"
+      - "traefik.http.routers.generic-callback-rtr.entrypoints=web"
       - "traefik.http.routers.generic-callback-rtr.tls=true"        
       - "traefik.http.middlewares.generic-callback-stripprefix.stripprefix.prefixes=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback"
       - "traefik.http.middlewares.generic-callback-redirectregex.redirectregex.regex=^(http[s]?://[^/]+)/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/generic-callback$$"
