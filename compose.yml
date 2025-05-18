@@ -22,8 +22,8 @@
 
 services:
 
-  # Proxy for smart trafic routing to make it possible
-  # to host multiple similar containers 
+  ## Proxy for smart trafic routing to make it possible to host multiple similar containers 
+  ## exposing ports 80, 413 & 8080 to force docker to keep only one traefik service
   traefik:
     image: traefik:latest
     container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-traefik
@@ -171,7 +171,8 @@ services:
       retries: 10
       start_period: 5s
 
-  # for automatic environment refresh
+  ## watchtower for automatic docker image refresh
+  ## exposing port to force docker to allow only one instance of service
   watchtower:
     container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-watchtower
     image: containrrr/watchtower
@@ -185,6 +186,10 @@ services:
         condition: service_healthy 
       traefik:
         condition: service_started
+    ports:
+      - "9911:9911"
+    networks:
+      - proxy-network
     restart: unless-stopped
     privileged: true
 
