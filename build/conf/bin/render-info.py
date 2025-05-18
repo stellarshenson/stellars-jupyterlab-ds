@@ -48,11 +48,16 @@ def substitute_vars(text):
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
-if len(sys.argv) != 5:
+if len(sys.argv) < 4:
     print("Usage: render_build_info.py <LAB_NAME> <BUILD_NAME> <BUILD_DATE> <SERVER_TOKEN>")
     sys.exit(1)
 
-lab_name, build_name, build_date, server_token = sys.argv[1:]
+lab_name, build_name, build_date, server_token = "", "", "", ""
+if len(sys.argv) == 5:
+    lab_name, build_name, build_date, server_token = sys.argv[1:]
+elif len(sys.argv) == 4:
+    lab_name, build_name, build_date = sys.argv[1:]
+
 
 # Raw content block
 raw_info = """
