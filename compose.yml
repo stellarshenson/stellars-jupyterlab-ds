@@ -42,7 +42,7 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - lab_certs:/mnt/certs # named volume to hold certificates
+      - vol_certs:/mnt/certs # named volume to hold certificates
     networks:
       - proxy-network
     depends_on:
@@ -74,11 +74,11 @@ services:
       - LAB_USER=${LAB_USER:-default}
       - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}
     volumes:
-      - lab_home:/home                    # jupyterlab user directory persistence
-      - lab_workspace:/home/lab/workspace # user projects workspace volume persistence
-      - lab_cache:/mnt/cache              # persistent cache volume for calculation results
-      - lab_certs:/mnt/certs              # tsl certificates used by traefic and jupyterlab
-      - lab_mlflow:/mnt/mlflow            # persistent mlflow volume for experiments logs
+      - vol_home:/home                    # jupyterlab user directory persistence
+      - vol_workspace:/home/lab/workspace # user projects workspace volume persistence
+      - vol_cache:/mnt/cache              # persistent cache volume for calculation results
+      - vol_certs:/mnt/certs              # tsl certificates used by traefic and jupyterlab
+      - vol_mlflow:/mnt/mlflow            # persistent mlflow volume for experiments logs
     networks:
       - proxy-network
     labels:
@@ -192,11 +192,11 @@ services:
     privileged: true
 
 volumes:
-  lab_workspace:
-  lab_cache:
-  lab_home:
-  lab_mlflow:
-  lab_certs: 
+  vol_workspace:
+  vol_cache:
+  vol_home:
+  vol_mlflow:
+  vol_certs: 
 
 networks:
   proxy-network:
