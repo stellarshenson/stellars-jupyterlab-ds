@@ -82,6 +82,10 @@ done
 COMPOSE_PROJECT_NAME="lab-${LAB_USER}"
 ENV_FILE="${COMPOSE_PROJECT_NAME}.env"
 
+# check if traefik is running
+docker ps --filter ancestor=traefik --format '{{.ID}}' | grep -q .
+TRAEFIK_RUNNING=$((! $?))
+
 dialog --title "Deployment Summary" --msgbox "
 Environment: $ENV_DESC
 Project Name: $COMPOSE_PROJECT_NAME
@@ -117,6 +121,10 @@ EOF
 
 # ---- Step 8: Deploy ----
 clear
+if [[ $TRAEFIK_RUNNING == 1 ]]; then
+    COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f compose-override-traefik.yml"
+fi
+
 COMPOSE_COMMAND="docker-compose --env-file $ENV_FILE $COMPOSE_FILES_OPTS up  --no-recreate --no-build -d"
 echo "Executing command: $COMPOSE_COMMAND"
 $COMPOSE_COMMAND

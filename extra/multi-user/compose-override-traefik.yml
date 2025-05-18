@@ -1,0 +1,27 @@
+# --------------------------------------------------------------------------------------------------
+#
+#   Stellars Jupyterlab DS Platform 
+#   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
+#   This compose disables traefik, watchtower and makes proxy network 'external'
+#
+# --------------------------------------------------------------------------------------------------
+
+services:
+
+  ## disable traefik using profiles
+  traefik:
+    profiles: [disabled]
+
+  ## disable watchtower using profiles
+  watchtower:
+    profiles: [disabled]
+
+networks:
+  ## mark proxy-network as external
+  proxy-network:
+    name: traefik-network
+    driver: bridge
+    external: true
+
+# EOF
+
