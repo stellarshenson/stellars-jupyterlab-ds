@@ -46,7 +46,8 @@ services:
     networks:
       - proxy-network
     depends_on:
-      - jupyterlab
+      jupyterlab:
+        condition: service_healthy
     restart: unless-stopped
 
 
@@ -166,6 +167,12 @@ services:
       - "traefik.http.services.generic-callback-svc.loadbalancer.server.port=8030"
     ipc: host
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsSL", "http://localhost:8888/lab"]
+      interval: 100s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   # for automatic environment refresh
   watchtower:
@@ -177,8 +184,10 @@ services:
     security_opt:
       - seccomp:unconfined #optional
     depends_on:
-      - jupyterlab
-      - traefik
+      jupyterlab:
+        condition: service_healthy 
+      traefik:
+        condition: service_started
     restart: unless-stopped
     privileged: true
 
