@@ -3,23 +3,38 @@
 
 This project provides a pre-packaged, pre-configured JupyterLab environment running on Miniconda with NVIDIA GPU support. It includes a curated set of data science packages, allowing you to start your data science projects with ease.
 
+Jupyterlab, Tensorboard, Optuna, MLFlow and other services are running over **Traefik** reverse proxy that makes it possible to launch multiple environments without any port collisions. All services are available via distinct URLs
+
+ - Jupyterlab: [https://localhost/stellars-jupyterlab-ds/jupyterlab](https://localhost/stellars-jupyterlab-ds/jupyterlab) to access Jupyterlab IDE
+ - MLFlow: [https://localhost/stellars-jupyterlab-ds/mlflow](https://localhost/stellars-jupyterlab-ds/mlflow) to access MLFlow workbench
+ - Tensorboard: [https://localhost/stellars-jupyterlab-ds/tensorboard](https://localhost/stellars-jupyterlab-ds/tensorboard) to access Tensorboard dashboard
+ - Glances: [https://localhost/stellars-jupyterlab-ds/glances](https://localhost/stellars-jupyterlab-ds/glances) to access CPU + MEM + GPU monitor
+ - Optuna: [https://localhost/stellars-jupyterlab-ds/optuna](https://localhost/stellars-jupyterlab-ds/optuna) to access Optuna dashboard (when running)
+
+
 ![JupyterLab](./.resources/jupyterlab.png)
 ![Docker Desktop](./.resources/docker-desktop.png)
 ![CUDA Test](./.resources/cuda-test.png)
 
 ## Quickstart
 
-Preferred method for running the container is with **docker-compose**
+Preferred method for running the container is with **docker compose**
 
 ### Docker Compose
 
-1. download `docker-compose.yml` or `docker-compose-gpu.yml` file
-2. run `docker-compose -f docker-compose.yml up --no-build` command
-3. open https://localhost:8888 in your browser
+1. download `compose.yml` or `compose-gpu.yml` file
+2. run `docker compose -f docker-compose.yml up --no-build` command
+3. open https://localhost/stellars-jupyterlab-ds/jupyterlab in your browser
+
+### Multi User Deployment
+
+We have recently created a convenient launcher for multi-user platform, see https://github.com/stellarshenson/stellars-jupyterlab-ds/tree/main/multi-user
+- `start-lab-user.sh` - script that launches new environment for a new user
+- `stop-lab-user.sh` - script that shuts user's environment down
 
 ### Docker
 
-You can run the `stellars-jupyterlab-ds` container without docker-compose, just with docker. 
+You can run the `stellars-jupyterlab-ds` container without `docker compose`, just with regular `docker`. 
 Commands below will create a container with persistent home folder (settings), certs mount (with https certificates for security) and workspace (your projects). Use the commands below:
 
 IMPORTANT: make sure you have docker host running (i.e. [Docker Desktop](https://www.docker.com/products/docker-desktop/)) 
@@ -59,7 +74,7 @@ docker run -p 8888:8888 \
 - **TensorBoard:**
   - TensorBoard server running on port `6006`, with logs stored in `/tmp/tf_logs` to monitor your ML/AI model training and neural network development
 
-For a complete list of installed packages, please refer to the [packages manifest](https://github.com/stellarshenson/stellars-jupyterlab-ds/blob/main/build/conf/environment.yml), which is frequently updated to ensure you have access to the best tools for your development needs.
+For a complete list of installed packages, please refer to the [packages manifest](https://github.com/stellarshenson/stellars-jupyterlab-ds/blob/main/build/conf/environment_base.yml), which is frequently updated to ensure you have access to the best tools for your development needs.
 
 ## About the Author
 **Name:** Konrad Jelen (aka Stellars Henson)  
@@ -82,62 +97,55 @@ To use this environment, Docker must be installed on your system. JupyterLab 4 i
 
 1. **Pull the latest container image:**
    ```bash
-   docker-compose pull
+   docker compose -f compose.yml pull
    ```
 
 2. *(Optional)* **Build the image locally:**  
    Note that building the image locally may take approximately 1.5 hours.
    ```bash
-   docker-compose build
+   docker compose -f compose.yml build
    ```
 
 3. **Start the container with your desired configuration:**
    - Standard non-CUDA container:
      ```bash
-     docker-compose up
+     docker compose -f compose.yml up
      ```
    - Standard CUDA container:
      ```bash
-     docker-compose -f docker-compose-gpu.yml up
+     docker compose -f compose.yml -f compose-gpu.yml up
      ```
    - Custom container configuration:
      ```bash
-     docker-compose -f local/your-custom-docker-compose.yml up
+     docker compose -f local/your-custom-compose.yml up
      ```
-   - Alternatively, use the provided `bin/start*` scripts.
-
-4. **Access JupyterLab:**  
-   Open [https://localhost:8888](https://localhost:8888) in your browser.
-
-5. **Access TensorBoard:**  
-   Open [http://localhost:6006](http://localhost:6006) in your browser.
+   - Alternatively, use the provided `start.sh` or `start.bat` scripts.
 
 **Quick Configuration Tips:**
-- Use the `CONDA_DEFAULT_ENV` variable in the `docker-compose.yml` files to specify your default conda environment.
+- Use the `CONDA_DEFAULT_ENV` variable in your home `~/.profile` file to specify your default conda environment.
+- Alternatively set `CONDA_DEFAULT_ENV` variable in `compose.yml` file 
 
 ## Default Settings
 - **Work Directory:** `~/workspace`
 - **Home Directory:** `/home/lab` (contains user settings)
 - **JupyterLab Settings:** Stored in `/home/lab/.jupyter`
-- **Volume Mapping:** If using `docker-compose`, local `/home` and `~/workspace` directories are mapped to persistent docker volumes respectivey. Thanks to this you can frequently update **stellars-jupyterlab-ds** container image without affecting your work
+- **Volume Mapping:** With `docker compose`, both `home` and `workspace` directories are mounted as volumes. Thanks to this you can frequently update **stellars-jupyterlab-ds** container image without affecting your work
 - **Root Access:** You have access to the local root account with `sudo` (password: `password`).
-- **TensorBoard Logs Directory:** `/tmp/tf_logs`
-- **Ports:**
-  - TensorBoard: `6006`
-  - JupyterLab: `8888`
+- **TensorBoard Logs Directory:** `/tmp/tensorboard`
 - **Conda Environments:** 
   - `base` - basic machine learning tools and packages
-  - `tensorflow` - environment with all tools from `base` and latest stable `tensorflow` installed with NVIDIA GPU support
-  - `torch` - environment with all tools from `base` and latest stable `torch` installed with NVIDIA GPU support. Additionally packages from `ultralytics` were installed for your __YOLO__ projects
+  - `tensorflow` - latest stable `tensorflow` installed with NVIDIA CUDA GPU support
+  - `torch` - latest pytorch environment with NVIDIA CUDA GPU support
+  - `r_base` - environment equipped with R installation and jupyterlab kernel
 
-**Tip:** You can change envionment using `conda activate env_name` command. You can also set default environment either by setting `CONDA_DEFAULT_ENV` in `docker-compose.yml` file or in the `~/.profile` file in your home directory
+**Tip:** You can change envionment using `conda activate env_name` command. You can also set default environment either by setting `CONDA_DEFAULT_ENV` in `compose.yml` file or in the `~/.profile` file in your home directory
 
-**Tip:** You don't need to run `docker-compose build` if you pull the image from Docker Hub. Running `docker-compose up` for the first time will automatically use the pre-built package if available.
+**Tip:** You don't need to run `docker compose build` if you pull the image from Docker Hub. Running `docker compose up` for the first time will automatically use the pre-built package if available.
 
 ## Configuration Details
 
-- **./build:** Contains container build artifacts. Typically, you won't need to interact with this directory.
-- **./.env:** Contains the project name, used for naming volumes and the Docker Compose project.
+- **`build`:** Contains container build artifacts. Typically, you won't need to interact with this directory.
+- **`project.env`:** Contains the project name, used for naming volumes and the Docker Compose project.
 
 **Tip:** Modify the `/opt/workspace` entry in the `volumes:` section of the `docker-compose` files to map to a different project location on your filesystem.
 
