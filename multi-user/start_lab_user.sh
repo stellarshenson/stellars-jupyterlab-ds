@@ -1,6 +1,36 @@
 #!/bin/bash
+# --------------------------------------------------------------------------------------------------
+#   Stellars JupyterLab DS Platform Deployment Script
+#
+#   Author      : Stellars Henson                   
+#   Script Name : start_lab_user.sh
+#   Description : 
+#     Interactive shell script to deploy a personalized JupyterLab data science environment
+#     using Docker Compose. Supports both GPU and non-GPU configurations. 
+#
+#     Features:
+#       - Prompts for LAB_USER and authentication token
+#       - Auto-generates a unique environment with dedicated URLs
+#       - Allows selection between CPU-only and GPU-enabled compose setups
+#       - Auto-fetches missing compose files from remote repository
+#       - Configures override for external traefik network if traefik is active
+#       - Outputs deployment summary and confirms execution
+#       - Generates environment-specific `.env` file
+#       - Launches containers with Docker Compose and profiles
+#
+#   Prerequisites:
+#       - 'dialog' CLI tool must be installed (sudo apt install dialog)
+#       - Docker and Docker Compose must be installed and available in PATH
+#
+#   Output:
+#       - Deployment summary with service URLs
+#       - Environment file for future reference
+#
+#   Project Home : https://github.com/stellarshenson/stellars-jupyterlab-ds
+#   License      : MIT
+# --------------------------------------------------------------------------------------------------
 
-# Generare override file for traefik
+# Generare override file for traefik, watchtower and network
 cat << EOF > compose-override.yml
 # --------------------------------------------------------------------------------------------------
 #
