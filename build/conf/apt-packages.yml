@@ -6,6 +6,7 @@ packages:
     - curl # for downloading files
     - gcc # compiler, required
     - git # git client
+    - git-lfs # git plugin for large file storage
     - gpg # for keys manipulation and adding repos to apt
     - gpw # generates unique identifiers
     - htop # colourful system resources monitor
