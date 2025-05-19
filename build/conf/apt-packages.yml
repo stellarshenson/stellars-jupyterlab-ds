@@ -4,6 +4,7 @@
 packages:
     - bash-completion # completion for bash
     - curl # for downloading files
+    - cifs-utils # for mounting SMB drives
     - gcc # compiler, required
     - git # git client
     - git-lfs # git plugin for large file storage
