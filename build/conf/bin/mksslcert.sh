@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# Directory where the certificates will be stored is provided as 1st argument
+# Validate input arguments
+if [ -z "$1" ] || [ -z "$2" ]; then
+  echo "Usage: $0 <certificate_directory> <certificate_prefix>"
+  echo "Example: $0 /etc/ssl/mycerts mydomain"
+  exit 1
+fi
+
+# Directory where the certificates will be stored is provided as 1st argument#
 CERT_DIR="$1"
 CERT_PREFIX="$2"
 mkdir -p $CERT_DIR
