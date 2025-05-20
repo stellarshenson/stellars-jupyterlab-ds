@@ -79,7 +79,7 @@ This name will:
 - Be stripped of spaces and special characters.
 
 Each user gets their own dedicated environment and a private URL.
-" 15 70 2> "$TMPFILE"
+" 15 80 2> "$TMPFILE"
 LAB_USER=$(<"$TMPFILE")
 rm "$TMPFILE"
 
@@ -95,7 +95,7 @@ dialog --title "JupyterLab Server Token" --inputbox "
 Set the JupyterLab server token.
 
 This token will act as the login password.
-" 10 60 2> "$TMPFILE"
+" 10 80 2> "$TMPFILE"
 JUPYTERLAB_SERVER_TOKEN=$(<"$TMPFILE")
 rm "$TMPFILE"
 
@@ -159,12 +159,12 @@ URLs:
 
 Environment will be deployed using Docker Compose.
 An env file named '$ENV_FILE' will be created.
-" 20 70
+" 20 80
 
 # ---- Step 6: Confirm Deployment ----
 dialog --title "Confirm Deployment" --yesno "
 Shall we proceed with deployment of this environment?
-" 10 60
+" 10 80
 
 if [[ $? -ne 0 ]]; then
   dialog --title "Aborted" --msgbox "Operation cancelled. No changes were made." 6 40
@@ -201,7 +201,7 @@ Env File: $ENV_FILE
 
 Access: https://localhost/$COMPOSE_PROJECT_NAME/jupyterlab
 Token: $JUPYTERLAB_SERVER_TOKEN
-" 12 60
+" 12 80
 
 clear
 
