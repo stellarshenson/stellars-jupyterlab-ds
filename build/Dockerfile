@@ -234,13 +234,6 @@ COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/cache /mnt/cache
 COPY --chown=${CONDA_USER} ./templates/mlflow /mnt/mlflow
 
-## install helpful scripts in the workspace as symlinks
-RUN <<-EOF
-    echo "copying workspace helpful scripts"
-    for x in `ls ${UTILS_PATH}/*.sh`; do
-	ln -s $x ${CONDA_USER_WORKSPACE}/`basename $x`
-    done
-EOF
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
