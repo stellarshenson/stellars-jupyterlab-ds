@@ -76,7 +76,7 @@ services:
   jupyterlab:
     # generate SSL certificates and enter idle mode
     entrypoint: "/bin/bash -c '/start-platform.d/00_generate_ssl_cert.sh && tail -f /dev/null'"  
-    container_name: ${COMPOSE_PROJECT_NAME:-lab-admin}-certificates-generator
+    container_name: \${COMPOSE_PROJECT_NAME:-lab-admin}-certificates-generator
     restart: no
 EOF
 
@@ -300,7 +300,7 @@ fi
 
 COMPOSE_COMMAND="docker-compose --env-file $ENV_FILE $COMPOSE_FILES_OPTS up  --no-recreate --no-build -d"
 echo "Executing command: $COMPOSE_COMMAND"
-$COMPOSE_COMMAND
+yes n | $COMPOSE_COMMAND
 echo "Press ENTER to continue..."
 read
 
