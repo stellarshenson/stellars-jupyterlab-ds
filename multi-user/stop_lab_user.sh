@@ -47,6 +47,7 @@ fi
 
 # 2. Check for compose file and download if needed
 clear
+echo "Downloading compose files required to platform down..."
 COMPOSE_FILE="resources/compose.yml"
 REPO_BASE_URL="https://raw.githubusercontent.com/stellarshenson/stellars-jupyterlab-ds/main"
 if [[ ! -f "$COMPOSE_FILE" ]]; then
@@ -76,19 +77,32 @@ if [ ${#ENV_FILES[@]} -eq 0 ]; then
 fi
 
 # 4. Dialog menu to select env file
+echo "Identifying containers status..."
+TMPFILE=$(mktemp)
+docker compose ls -a 2>&1 1>$TMPFILE 
 for f in "${ENV_FILES[@]}"; do
   fname=$(basename "$f")
   project_name=$(grep -E '^COMPOSE_PROJECT_NAME=' "$f" | cut -d '=' -f2-)
-
-  if docker compose -p "$project_name" ps -q | grep -q .; then
-    display_name="(running)"
+  if $(cat $TMPFILE | grep "$project_name" | grep -q .); then
+    if $(cat $TMPFILE | grep "$project_name" | grep 'running' | grep -q .); then
+      echo "$fname is online"
+      display_name="online"
+    elif $(cat $TMPFILE | grep "$project_name" | grep 'exited' | grep -q .); then
+      echo "$fname is stopped"
+      display_name="stopped"
+    else
+      echo "$fname - unknown status"
+      display_name="n/a"
+    fi    
   else
+    echo "$fname - n/a"
     display_name=""
   fi
 
   MENU_OPTS+=("$fname" "$display_name")
 done
 
+# display options
 CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
 if [[ -z $CHOICE ]]; then
     clear
