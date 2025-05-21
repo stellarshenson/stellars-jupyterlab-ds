@@ -77,28 +77,24 @@ if [ ${#ENV_FILES[@]} -eq 0 ]; then
 fi
 
 # 4. Dialog menu to select env file
-echo "Identifying containers status..."
 TMPFILE=$(mktemp)
+MENU_OPTS=()
 docker compose ls -a 2>&1 1>$TMPFILE 
 for f in "${ENV_FILES[@]}"; do
   fname=$(basename "$f")
   project_name=$(grep -E '^COMPOSE_PROJECT_NAME=' "$f" | cut -d '=' -f2-)
   if $(cat $TMPFILE | grep "$project_name" | grep -q .); then
     if $(cat $TMPFILE | grep "$project_name" | grep 'running' | grep -q .); then
-      echo "$fname is online"
       display_name="online"
     elif $(cat $TMPFILE | grep "$project_name" | grep 'exited' | grep -q .); then
-      echo "$fname is stopped"
       display_name="stopped"
     else
-      echo "$fname - unknown status"
       display_name="n/a"
     fi    
   else
     echo "$fname - n/a"
     display_name=""
   fi
-
   MENU_OPTS+=("$fname" "$display_name")
 done
 
@@ -158,5 +154,12 @@ if [ "$VOLUME_CONFIRM" -eq 0 ]; then
 fi
 
 # 10. Finished 
+dialog --title "Shutdown Complete" --msgbox "
+Project $COMPOSE_PROJECT_NAME was shut down successfully.
+
+Env File: $ENV_FILE
+" 8 80
+
+clear
 echo "Shutdown complete."
 
