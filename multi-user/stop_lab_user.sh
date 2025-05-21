@@ -87,7 +87,7 @@ ENV_FILE="resources/$CHOICE"
 # 5. Extract project name and user
 COMPOSE_PROJECT_NAME=$(grep -E '^COMPOSE_PROJECT_NAME=' "$ENV_FILE" | cut -d '=' -f2-)
 LAB_USER=$(grep -E '^LAB_USER=' "$ENV_FILE" | cut -d '=' -f2-)
-COMPOSE_PERSONAL_FILE="compose-${LAB_USER}-override.yml"
+COMPOSE_PERSONAL_FILE="compose-override-${LAB_USER}.yml"
 if [[ -f $COMPOSE_PERSONAL_FILE ]]; then
     COMPOSE_FILES_OPTS="-f ${COMPOSE_FILE} -f ${COMPOSE_PERSONAL_FILE}"
 else

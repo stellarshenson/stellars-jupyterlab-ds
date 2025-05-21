@@ -144,7 +144,7 @@ if [[ $PROFILE_TYPE == 'New' ]]; then
 fi
 
 # Generate Personal override compose file if doesn't exist
-COMPOSE_PERSONAL_FILE="${RESOURCES_DIR}/compose-${LAB_USER}-override.yml"
+COMPOSE_PERSONAL_FILE="${RESOURCES_DIR}/compose-override-${LAB_USER}.yml"
 [[ -f $COMPOSE_PERSONAL_FILE ]] || cat << EOF > $COMPOSE_PERSONAL_FILE
 # --------------------------------------------------------------------------------------------------
 #
