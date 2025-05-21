@@ -122,7 +122,13 @@ if [[ $PROFILE_TYPE == 'Existing' ]]; then
       MENU_OPTS+=("$fname" "")
     done
     
-    CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3)
+    CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
+    if [[ -z $CHOICE ]]; then
+	clear
+	echo "Aborting..."
+	exit 0
+    fi
+
     ENV_FILE="resources/$CHOICE"
     COMPOSE_PROJECT_NAME=$(grep -E '^COMPOSE_PROJECT_NAME=' "$ENV_FILE" | cut -d '=' -f2-)
     JUPYTERLAB_SERVER_TOKEN=$(grep -E '^JUPYTERLAB_SERVER_TOKEN=' "$ENV_FILE" | cut -d '=' -f2-)
