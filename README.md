@@ -15,7 +15,7 @@ Jupyterlab, Tensorboard, Optuna, MLFlow and other services are running over **Tr
 ![JupyterLab](./.resources/jupyterlab.png)
 ![Docker Desktop](./.resources/docker-desktop.png)
 ![CUDA Test](./.resources/cuda-test.png)
-![Multi User 1](./.resources/multiuser-1.png)
+![Multi User 1](./.resources/multiuser-shutdown.png)
 
 ## Quickstart
 
