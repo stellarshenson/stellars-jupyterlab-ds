@@ -153,6 +153,8 @@ COMPOSE_PERSONAL_FILE="${RESOURCES_DIR}/compose-${LAB_USER}-override.yml"
 #   This compose adds user specific configurable overrides  like extra services, volumes etc
 #
 # --------------------------------------------------------------------------------------------------
+services:
+    jupyterlab:
 
 # EOF
 EOF
