@@ -116,10 +116,24 @@ if [[ $PROFILE_TYPE == 'Existing' ]]; then
       exit 1
     fi
     
+    # make list of env files and container status
     MENU_OPTS=()
+    docker compose ls -a 2>&1 1>$TMPFILE 
     for f in "${ENV_FILES[@]}"; do
       fname=$(basename "$f")
-      MENU_OPTS+=("$fname" "")
+      project_name=$(grep -E '^COMPOSE_PROJECT_NAME=' "$f" | cut -d '=' -f2-)
+      if $(cat $TMPFILE | grep "$project_name" | grep -q .); then
+	if $(cat $TMPFILE | grep "$project_name" | grep 'running' | grep -q .); then
+	  display_name="online"
+	elif $(cat $TMPFILE | grep "$project_name" | grep 'exited' | grep -q .); then
+	  display_name="stopped"
+	else
+	  display_name="n/a"
+	fi    
+      else
+	display_name=""
+      fi
+      MENU_OPTS+=("$fname" "$display_name")
     done
     
     CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
