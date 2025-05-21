@@ -93,7 +93,7 @@ TMPFILE=$(mktemp)
 # ---- Step 0: Prompt if new or existing ----
 
 # Ask if new user or existing 
-dialog --title "New or Existing Profile" --menu "Choose if we start existing or create new profile:" 12 60 2 \
+dialog --title "New or Existing Profile" --menu "\nChoose if we start existing or create new profile:" 12 60 2 \
   New "Create New Profile" \
   Existing "Use Existing Profile" 2> "$TMPFILE"
 RESULT=$?
@@ -136,7 +136,7 @@ if [[ $PROFILE_TYPE == 'Existing' ]]; then
       MENU_OPTS+=("$fname" "$display_name")
     done
     
-    CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
+    CHOICE=$(dialog --title "Environment to start or restart" --menu "\nSelect an env file with the profile to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
     if [[ -z $CHOICE ]]; then
 	clear
 	echo "Aborting..."

@@ -99,7 +99,7 @@ for f in "${ENV_FILES[@]}"; do
 done
 
 # display options
-CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
+CHOICE=$(dialog --title "Environment to shut down" --menu "\nSelect an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
 if [[ -z $CHOICE ]]; then
     clear
     echo "Aborting..."
