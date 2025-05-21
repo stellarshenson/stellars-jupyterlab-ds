@@ -30,16 +30,10 @@ push:
 start:
 	@cd ./bin && ./start.sh
 
-## start jupyterlab using local config yml
-start_local:
-	@cd ./bin && ./start_local.sh
-
-
 ## clean orphaned containers
 clean:
 	@echo 'removing dangling and unused images, containers, nets and volumes'
 	@docker compose --env-file project.env -f compose.yml down --remove-orphans
-	@docker compose --env-file ./local/project.env -f ./local/compose.yml down --remove-orphans
 	@yes | docker image prune
 
 
