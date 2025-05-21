@@ -79,7 +79,7 @@ for f in "${ENV_FILES[@]}"; do
   project_name=$(grep -E '^COMPOSE_PROJECT_NAME=' "$f" | cut -d '=' -f2-)
 
   if docker compose -p "$project_name" ps -q | grep -q .; then
-    display_name="running"
+    display_name="(running)"
   else
     display_name=""
   fi
