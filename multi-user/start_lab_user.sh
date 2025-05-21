@@ -90,6 +90,20 @@ if [[ -z "$LAB_USER" ]]; then
   exit 1
 fi
 
+# Generate Personal override compose file
+COMPOSE_PERSONAL_FILE="compose-${LAB_USER}-override.yml"
+[[ -f $COMPOSE_PERSONAL_FILE ]] || cat << EOF > $COMPOSE_PERSONAL_FILE
+# --------------------------------------------------------------------------------------------------
+#
+#   Stellars Jupyterlab DS Platform 
+#   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
+#   This compose adds user specific configurable overrides  like extra services, volumes etc
+#
+# --------------------------------------------------------------------------------------------------
+
+# EOF
+EOF
+
 # ---- Step 2: Prompt JUPYTERLAB_SERVER_TOKEN ----
 dialog --title "JupyterLab Server Token" --inputbox "
 Set the JupyterLab server token.
@@ -184,6 +198,9 @@ clear
 if [[ $TRAEFIK_RUNNING == 1 ]]; then
     COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f compose-override.yml"
 fi
+if [[ -f $COMPOSE_PERSONAL_FILE ]]; then
+    COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f ${COMPOSE_PERSONAL_FILE}"
+fi
 
 COMPOSE_COMMAND="docker-compose --env-file $ENV_FILE $COMPOSE_FILES_OPTS up  --no-recreate --no-build -d"
 echo "Executing command: $COMPOSE_COMMAND"
@@ -196,7 +213,6 @@ dialog --title "Deployment Complete" --msgbox "
 Deployment successful.
 
 Compose Profile: $ENV_DESC
-Compose Files Used: $COMPOSE_FILES
 Env File: $ENV_FILE
 
 Access: https://localhost/$COMPOSE_PROJECT_NAME/jupyterlab

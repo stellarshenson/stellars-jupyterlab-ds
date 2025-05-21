@@ -79,6 +79,8 @@ ENV_FILE="./$CHOICE"
 # 5. Extract project name and user
 COMPOSE_PROJECT_NAME=$(grep -E '^COMPOSE_PROJECT_NAME=' "$ENV_FILE" | cut -d '=' -f2-)
 LAB_USER=$(grep -E '^LAB_USER=' "$ENV_FILE" | cut -d '=' -f2-)
+COMPOSE_PERSONAL_FILE="compose-${LAB_USER}-override.yml"
+COMPOSE_FILES_OPTS="-f ${COMPOSE_FILE} -f ${COMPOSE_PERSONAL_FILE}"
 
 # 6. Confirm shutdown
 CONFIRM_TEXT="Shut down Compose project?\n\nCOMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME\nLAB_USER=$LAB_USER\n\nEnv File: $ENV_FILE"
@@ -100,7 +102,9 @@ clear
 
 # 8. Shutdown the compose project
 echo "Shutting down project '$COMPOSE_PROJECT_NAME' using env file '$ENV_FILE'..."
-docker compose --env-file "$ENV_FILE" -f "$COMPOSE_FILE" down --remove-orphans
+COMPOSE_COMMAND="docker compose --env-file "${ENV_FILE}" ${COMPOSE_FILES_OPTS} down --remove-orphans"
+echo "Executing: $COMPOSE_COMMAND"
+$COMPOSE_COMMAND
 
 # 9. Remove volumes if confirmed
 if [ "$VOLUME_CONFIRM" -eq 0 ]; then
