@@ -74,10 +74,17 @@ if [ ${#ENV_FILES[@]} -eq 0 ]; then
 fi
 
 # 4. Dialog menu to select env file
-MENU_OPTS=()
 for f in "${ENV_FILES[@]}"; do
   fname=$(basename "$f")
-  MENU_OPTS+=("$fname" "")
+  project_name=$(grep -E '^COMPOSE_PROJECT_NAME=' "$f" | cut -d '=' -f2-)
+
+  if docker compose -p "$project_name" ps -q | grep -q .; then
+    display_name="running"
+  else
+    display_name=""
+  fi
+
+  MENU_OPTS+=("$fname" "$display_name")
 done
 
 CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3)
