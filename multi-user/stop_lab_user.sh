@@ -97,7 +97,7 @@ clear
 
 # 7. Ask about volume deletion, isolate return code
 VOLUME_CONFIRM=0  # default to YES
-dialog --yesno --defaultno "Also remove volumes for project '$COMPOSE_PROJECT_NAME'?\nThis cannot be undone." 10 60 || {
+dialog --defaultno --yesno "Also remove volumes for project '$COMPOSE_PROJECT_NAME'?\nThis cannot be undone." 10 60 || {
     clear
     echo "Volumes will be retained."
     VOLUME_CONFIRM=1
