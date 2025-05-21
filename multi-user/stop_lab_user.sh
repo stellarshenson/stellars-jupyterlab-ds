@@ -36,6 +36,14 @@ if ! command -v dialog &>/dev/null; then
   exit 1
 fi
 
+# check for resources
+RESOURCES_DIR="resources"
+if [[ ! -d "${RESOURCES_DIR}" ]]; then
+  echo "No saved environments directory '$RESOURCES_DIR' found to stop"
+  exit 1
+fi
+
+
 # 2. Check for compose file and download if needed
 clear
 COMPOSE_FILE="resources/compose.yml"
@@ -51,7 +59,7 @@ fi
 
 # check if file downloaded 
 if [ ! -f $COMPOSE_FILE ]; then
-  dialog --msgbox "No $COMPOSE_FILE found." 10 50
+  dialog --msgbox "No '$COMPOSE_FILE' found." 10 50
   clear
   exit 1
 fi
@@ -110,12 +118,16 @@ COMPOSE_COMMAND="docker compose --env-file "${ENV_FILE}" ${COMPOSE_FILES_OPTS} d
 echo "Executing: $COMPOSE_COMMAND"
 $COMPOSE_COMMAND
 
-# 9. Remove volumes if confirmed
+# 9. clean networks
+echo "Removing unused networks"
+yes | docker network prune 2>/dev/null
+
+# 10. Remove volumes if confirmed
 if [ "$VOLUME_CONFIRM" -eq 0 ]; then
   echo "Removing volumes associated with '$COMPOSE_PROJECT_NAME'..."
   docker volume ls --filter "label=com.docker.compose.project=$COMPOSE_PROJECT_NAME" -q | xargs -r docker volume rm
 fi
 
-# 10. Victory
+# 10. Finished 
 echo "Shutdown complete."
 

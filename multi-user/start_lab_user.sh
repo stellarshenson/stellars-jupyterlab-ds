@@ -30,8 +30,12 @@
 #   License      : MIT
 # --------------------------------------------------------------------------------------------------
 
+# create resources dir if doesn't exist
+RESOURCES_DIR="resources"
+[[ -d ${RESOURCES_DIR} ]] || mkdir ${RESOURCES_DIR}
+
 # Generare override file for traefik, watchtower and network
-COMPOSE_OVERRIDE_FILE='resources/compose-override.yml'
+COMPOSE_OVERRIDE_FILE="${RESOURCES_DIR}/compose-override.yml"
 [[ -f $COMPOSE_OVERRIDE_FILE ]] || cat << EOF > $COMPOSE_OVERRIDE_FILE
 # --------------------------------------------------------------------------------------------------
 #
@@ -69,30 +73,78 @@ fi
 
 TMPFILE=$(mktemp)
 
-# ---- Step 1: Prompt LAB_USER ----
-dialog --title "JupyterLab Environment Setup" --inputbox "
-Enter the LAB_USER name.
+# ---- Step 0: Prompt if new or existing ----
 
-This name will:
-- Uniquely identify the user.
-- Be used in service URLs (e.g., /<LAB_USER>/jupyterlab).
-- Isolate each user's data science environment.
-- Be stripped of spaces and special characters.
-
-Each user gets their own dedicated environment and a private URL.
-" 15 80 2> "$TMPFILE"
-LAB_USER=$(<"$TMPFILE")
-rm "$TMPFILE"
-
-# Sanitize LAB_USER
-LAB_USER=$(echo "$LAB_USER" | sed 's/\./-/g' | tr -cd '[:alnum:]-_')
-if [[ -z "$LAB_USER" ]]; then
-  echo "Invalid LAB_USER. Must contain at least one alphanumeric character."
-  exit 1
+# Ask if new user or existing 
+dialog --title "New or Existing Profile" --menu "Choose if we start existing or create new profile:" 12 60 2 \
+  New "Create New Profile" \
+  Existing "Use Existing Profile" 2> "$TMPFILE"
+RESULT=$?
+if [[ $RESULT == 1 ]]; then
+    clear
+    echo "Aborting..."
+    exit 0
 fi
 
-# Generate Personal override compose file
-COMPOSE_PERSONAL_FILE="resources/compose-${LAB_USER}-override.yml"
+PROFILE_TYPE=$(<"$TMPFILE")
+rm "$TMPFILE"
+
+# if existing profile
+if [[ $PROFILE_TYPE == 'Existing' ]]; then
+    # Dialog menu to select env file
+    mapfile -t ENV_FILES < <(find ./resources -maxdepth 1 -name "*.env" | sort)
+    if [ ${#ENV_FILES[@]} -eq 0 ]; then
+      dialog --msgbox "No .env files found." 10 50
+      clear
+      exit 1
+    fi
+    
+    MENU_OPTS=()
+    for f in "${ENV_FILES[@]}"; do
+      fname=$(basename "$f")
+      MENU_OPTS+=("$fname" "")
+    done
+    
+    CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3)
+    ENV_FILE="resources/$CHOICE"
+    COMPOSE_PROJECT_NAME=$(grep -E '^COMPOSE_PROJECT_NAME=' "$ENV_FILE" | cut -d '=' -f2-)
+    JUPYTERLAB_SERVER_TOKEN=$(grep -E '^JUPYTERLAB_SERVER_TOKEN=' "$ENV_FILE" | cut -d '=' -f2-)
+    LAB_USER=$(grep -E '^LAB_USER=' "$ENV_FILE" | cut -d '=' -f2-)
+fi
+
+# ---- Step 1: Prompt LAB_USER ----
+if [[ $PROFILE_TYPE == 'New' ]]; then
+    dialog --title "JupyterLab Environment Setup" --inputbox "
+    Enter the LAB_USER name.
+    
+    This name will:
+    - Uniquely identify the user.
+    - Be used in service URLs (e.g., /<LAB_USER>/jupyterlab).
+    - Isolate each user's data science environment.
+    - Be stripped of spaces and special characters.
+    
+    Each user gets their own dedicated environment and a private URL.
+    " 18 80 2> "$TMPFILE"
+    RESULT=$?
+    if [[ $RESULT == 1 ]]; then
+	clear
+        echo "Aborting..."
+        exit 0
+    fi
+
+    LAB_USER=$(<"$TMPFILE")
+    rm "$TMPFILE"
+    
+    # Sanitize LAB_USER
+    LAB_USER=$(echo "$LAB_USER" | sed 's/\./-/g' | tr -cd '[:alnum:]-_')
+    if [[ -z "$LAB_USER" ]]; then
+      echo "Invalid LAB_USER. Must contain at least one alphanumeric character."
+      exit 1
+    fi
+fi
+
+# Generate Personal override compose file if doesn't exist
+COMPOSE_PERSONAL_FILE="${RESOURCES_DIR}/compose-${LAB_USER}-override.yml"
 [[ -f $COMPOSE_PERSONAL_FILE ]] || cat << EOF > $COMPOSE_PERSONAL_FILE
 # --------------------------------------------------------------------------------------------------
 #
@@ -106,17 +158,26 @@ COMPOSE_PERSONAL_FILE="resources/compose-${LAB_USER}-override.yml"
 EOF
 
 # ---- Step 2: Prompt JUPYTERLAB_SERVER_TOKEN ----
-dialog --title "JupyterLab Server Token" --inputbox "
-Set the JupyterLab server token.
+if [[ $PROFILE_TYPE == 'New' ]]; then
+    dialog --title "JupyterLab Server Token" --inputbox "
+    Set the JupyterLab server token.
 
-This token will act as the login password.
-" 10 80 2> "$TMPFILE"
-JUPYTERLAB_SERVER_TOKEN=$(<"$TMPFILE")
-rm "$TMPFILE"
+    This token will act as the login password.
+    " 10 80 2> "$TMPFILE"
+    RESULT=$?
+    if [[ $RESULT == 1 ]]; then
+	clear
+        echo "Aborting..."
+        exit 0
+    fi
 
-if [[ -z "$JUPYTERLAB_SERVER_TOKEN" ]]; then
-  echo "Server token cannot be empty."
-  exit 1
+    JUPYTERLAB_SERVER_TOKEN=$(<"$TMPFILE")
+    rm "$TMPFILE"
+
+    if [[ -z "$JUPYTERLAB_SERVER_TOKEN" ]]; then
+      echo "Server token cannot be empty."
+      exit 1
+    fi
 fi
 
 # ---- Step 3: Choose Compose Type ----
@@ -127,10 +188,10 @@ CHOICE=$(<"$TMPFILE")
 rm "$TMPFILE"
 
 if [[ "$CHOICE" == "1" ]]; then
-  COMPOSE_FILES_OPTS="-f resources/compose.yml"
+  COMPOSE_FILES_OPTS="-f ${RESOURCES_DIR}/compose.yml"
   ENV_DESC="Platform non-GPU systems"
 elif [[ "$CHOICE" == "2" ]]; then
-  COMPOSE_FILES_OPTS="-f resources/compose.yml -f resources/compose-gpu.yml"
+  COMPOSE_FILES_OPTS="-f ${RESOURCES_DIR}/compose.yml -f ${RESOURCES_DIR}/compose-gpu.yml"
   ENV_DESC="Platform for NVIDIA GPU systems"
 else
   echo "Invalid selection."
@@ -155,12 +216,10 @@ for COMPOSE_FILE in $COMPOSE_FILES; do
 done
 
 # ---- Step 5: Project Name and Summary ----
-COMPOSE_PROJECT_NAME="lab-${LAB_USER}"
-ENV_FILE="resources/${COMPOSE_PROJECT_NAME}.env"
-
-# check if traefik is running
-docker ps --filter ancestor=traefik --format '{{.ID}}' | grep -q .
-TRAEFIK_RUNNING=$((! $?))
+if [[ $PROFILE_TYPE == 'New' ]]; then
+    COMPOSE_PROJECT_NAME="lab-${LAB_USER}"
+    ENV_FILE="${RESOURCES_DIR}/${COMPOSE_PROJECT_NAME}.env"
+fi
 
 dialog --title "Deployment Summary" --msgbox "
 Environment: $ENV_DESC
@@ -189,17 +248,30 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # ---- Step 7: Create Env File ----
-cat <<EOF > $ENV_FILE
+cat <<EOF > $TMPFILE
 LAB_USER=$LAB_USER
 JUPYTERLAB_SERVER_TOKEN=$JUPYTERLAB_SERVER_TOKEN
 COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME
 EOF
 
+if [[ $PROFILE_TYPE == 'New' ]]; then
+    cp $TMPFILE $ENV_FILE
+fi
+
 # ---- Step 8: Deploy ----
 clear
+
+# check if traefik is running
+docker ps --filter ancestor=traefik --format '{{.ID}}' | grep -q .
+TRAEFIK_RUNNING=$((! $?))
+
+# check if watchtower and traefik are running
 if [[ $TRAEFIK_RUNNING == 1 ]]; then
+    echo "Traefik and Watchtower are running, using override to not start them again"
     COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f ${COMPOSE_OVERRIDE_FILE}"
 fi
+
+# add personal compose file to the list
 if [[ -f $COMPOSE_PERSONAL_FILE ]]; then
     COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f ${COMPOSE_PERSONAL_FILE}"
 fi
