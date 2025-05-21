@@ -31,7 +31,8 @@
 # --------------------------------------------------------------------------------------------------
 
 # Generare override file for traefik, watchtower and network
-cat << EOF > compose-override.yml
+COMPOSE_OVERRIDE_FILE='resources/compose-override.yml'
+[[ -f $COMPOSE_OVERRIDE_FILE ]] || cat << EOF > $COMPOSE_OVERRIDE_FILE
 # --------------------------------------------------------------------------------------------------
 #
 #   Stellars Jupyterlab DS Platform 
@@ -91,7 +92,7 @@ if [[ -z "$LAB_USER" ]]; then
 fi
 
 # Generate Personal override compose file
-COMPOSE_PERSONAL_FILE="compose-${LAB_USER}-override.yml"
+COMPOSE_PERSONAL_FILE="resources/compose-${LAB_USER}-override.yml"
 [[ -f $COMPOSE_PERSONAL_FILE ]] || cat << EOF > $COMPOSE_PERSONAL_FILE
 # --------------------------------------------------------------------------------------------------
 #
@@ -126,10 +127,10 @@ CHOICE=$(<"$TMPFILE")
 rm "$TMPFILE"
 
 if [[ "$CHOICE" == "1" ]]; then
-  COMPOSE_FILES_OPTS="-f compose.yml"
+  COMPOSE_FILES_OPTS="-f resources/compose.yml"
   ENV_DESC="Platform non-GPU systems"
 elif [[ "$CHOICE" == "2" ]]; then
-  COMPOSE_FILES_OPTS="-f compose.yml -f compose-gpu.yml"
+  COMPOSE_FILES_OPTS="-f resources/compose.yml -f resources/compose-gpu.yml"
   ENV_DESC="Platform for NVIDIA GPU systems"
 else
   echo "Invalid selection."
@@ -144,7 +145,8 @@ COMPOSE_FILES=$(echo $COMPOSE_FILES_OPTS | sed 's/-f//g')
 for COMPOSE_FILE in $COMPOSE_FILES; do
     if [[ ! -f "$COMPOSE_FILE" ]]; then
       echo "Downloading $COMPOSE_FILE from $REPO_BASE_URL..."
-      curl -fsSL "$REPO_BASE_URL/$COMPOSE_FILE" -o "$COMPOSE_FILE"
+      BASENAME_COMPOSE_FILE=$(basename $COMPOSE_FILE)
+      curl -fsSL "$REPO_BASE_URL/$BASENAME_COMPOSE_FILE" -o "$COMPOSE_FILE"
       if [[ $? -ne 0 ]]; then
 	echo "Failed to download $COMPOSE_FILE. Aborting."
 	exit 1
@@ -154,7 +156,7 @@ done
 
 # ---- Step 5: Project Name and Summary ----
 COMPOSE_PROJECT_NAME="lab-${LAB_USER}"
-ENV_FILE="${COMPOSE_PROJECT_NAME}.env"
+ENV_FILE="resources/${COMPOSE_PROJECT_NAME}.env"
 
 # check if traefik is running
 docker ps --filter ancestor=traefik --format '{{.ID}}' | grep -q .
@@ -196,7 +198,7 @@ EOF
 # ---- Step 8: Deploy ----
 clear
 if [[ $TRAEFIK_RUNNING == 1 ]]; then
-    COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f compose-override.yml"
+    COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f ${COMPOSE_OVERRIDE_FILE}"
 fi
 if [[ -f $COMPOSE_PERSONAL_FILE ]]; then
     COMPOSE_FILES_OPTS="${COMPOSE_FILES_OPTS} -f ${COMPOSE_PERSONAL_FILE}"
