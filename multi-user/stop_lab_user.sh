@@ -38,7 +38,7 @@ fi
 
 # 2. Check for compose file and download if needed
 clear
-COMPOSE_FILE="compose.yml"
+COMPOSE_FILE="resources/compose.yml"
 REPO_BASE_URL="https://raw.githubusercontent.com/stellarshenson/stellars-jupyterlab-ds/main"
 if [[ ! -f "$COMPOSE_FILE" ]]; then
   echo "Downloading $COMPOSE_FILE from $REPO_BASE_URL..."
@@ -50,15 +50,15 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
 fi
 
 # check if file downloaded 
-if [ ! -f "compose.yml" ]; then
-  dialog --msgbox "No compose.yml found." 10 50
+if [ ! -f $COMPOSE_FILE ]; then
+  dialog --msgbox "No $COMPOSE_FILE found." 10 50
   clear
   exit 1
 fi
 
 
 # 3. Locate .env files
-mapfile -t ENV_FILES < <(find . -maxdepth 1 -name "*.env" | sort)
+mapfile -t ENV_FILES < <(find ./resources -maxdepth 1 -name "*.env" | sort)
 if [ ${#ENV_FILES[@]} -eq 0 ]; then
   dialog --msgbox "No .env files found." 10 50
   clear
@@ -74,7 +74,7 @@ done
 
 CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3)
 clear
-ENV_FILE="./$CHOICE"
+ENV_FILE="resources/$CHOICE"
 
 # 5. Extract project name and user
 COMPOSE_PROJECT_NAME=$(grep -E '^COMPOSE_PROJECT_NAME=' "$ENV_FILE" | cut -d '=' -f2-)
