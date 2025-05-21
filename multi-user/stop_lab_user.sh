@@ -39,6 +39,7 @@ fi
 # check for resources
 RESOURCES_DIR="resources"
 if [[ ! -d "${RESOURCES_DIR}" ]]; then
+    clear
   echo "No saved environments directory '$RESOURCES_DIR' found to stop"
   exit 1
 fi
@@ -52,6 +53,7 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
   echo "Downloading $COMPOSE_FILE from $REPO_BASE_URL..."
   curl -fsSL "$REPO_BASE_URL/$COMPOSE_FILE" -o "$COMPOSE_FILE"
   if [[ $? -ne 0 ]]; then
+    clear
     echo "Failed to download $COMPOSE_FILE. Aborting."
     exit 1
   fi
@@ -87,7 +89,13 @@ for f in "${ENV_FILES[@]}"; do
   MENU_OPTS+=("$fname" "$display_name")
 done
 
-CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3)
+CHOICE=$(dialog --menu "Select an env file to use:" 15 60 6 "${MENU_OPTS[@]}" 3>&1 1>&2 2>&3 || true)
+if [[ -z $CHOICE ]]; then
+    clear
+    echo "Aborting..."
+    exit 0
+fi
+
 clear
 ENV_FILE="resources/$CHOICE"
 
