@@ -165,6 +165,7 @@ ENV CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ENV CONDA_RUN_DEBUG=0
 ENV PATH=${PATH}:${CONDA_HOME}/condabin
 ENV PIP_EXISTS_ACTION=w
+ARG JUPYTER_SHARE_PATH=/opt/conda/share/jupyter
 
 ## create new user with specific UID and GID, and add sudo rights
 ## also add group conda and add it to jupyterlab user
@@ -380,11 +381,18 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 ## update conda by installing jupyterlab
 ## we didn't do this earlier to have jupyterlab only in base
 ## and not to clone it to other environments
+USER ${CONDA_USER}
 RUN <<-EOF 
     echo "installing Jupyterlab in ${CONDA_DEFAULT_ENV} env"
     ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} --file=/environment_base_jupyterlab.yml 
 EOF
 
+## change persmissions of shared resources
+USER root
+RUN <<-EOF 
+    echo "changing permissions of files in the shared folder app extension"
+    find ${JUPYTER_SHARE_PATH}/jupyter_app_launcher -type f -exec chmod a-x {} +
+EOF
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT ON TORCH           #
