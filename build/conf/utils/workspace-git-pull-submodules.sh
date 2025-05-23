@@ -1,5 +1,6 @@
 #!/bin/sh
 
+git submodule update --remote
 git submodule foreach '
   echo "==> $name"
   if ! git fetch; then
