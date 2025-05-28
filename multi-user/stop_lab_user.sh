@@ -143,7 +143,9 @@ COMPOSE_COMMAND="docker compose --env-file "${ENV_FILE}" ${COMPOSE_FILES_OPTS} d
 echo "Executing: $COMPOSE_COMMAND"
 $COMPOSE_COMMAND
 
-# 9. clean networks
+# 9. clean networks and images
+echo "Removing unused images"
+yes | docker image prune
 echo "Removing unused networks"
 yes | docker network prune 2>/dev/null
 
