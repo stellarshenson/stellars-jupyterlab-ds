@@ -178,7 +178,7 @@ services:
     image: containrrr/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 86400 # every 24h
+    command: --cleanup --schedule "0 0 * * *" # run every day at midnight
     security_opt:
       - seccomp:unconfined #optional
     depends_on:
