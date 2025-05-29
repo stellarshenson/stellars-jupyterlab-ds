@@ -77,6 +77,7 @@ services:
     # generate SSL certificates and enter idle mode
     entrypoint: "/bin/bash -c '/start-platform.d/00_generate_ssl_cert.sh && tail -f /dev/null'"  
     container_name: \${COMPOSE_PROJECT_NAME:-lab-admin}-certificates-generator
+    restart: no
 EOF
 
 
@@ -285,9 +286,12 @@ fi
 
 # ---- Step 7: Create Env File ----
 cat <<EOF > $TMPFILE
-LAB_USER=$LAB_USER
-JUPYTERLAB_SERVER_TOKEN=$JUPYTERLAB_SERVER_TOKEN
-COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME
+# users's personal env file
+# environment will be available under https://<hostname>/${COMPOSE_PROJECT_NAME}
+# password for the environment is controlled using JUPYTERLAB_SERVER_TOKEN
+LAB_USER=${LAB_USER}
+JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN}
+COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
 EOF
 
 if [[ $PROFILE_TYPE == 'New' ]]; then
