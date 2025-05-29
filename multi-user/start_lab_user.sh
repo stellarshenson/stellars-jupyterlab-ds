@@ -287,7 +287,7 @@ fi
 # ---- Step 7: Create Env File ----
 cat <<EOF > $TMPFILE
 # users's personal env file
-# environment will be available under https://<hostname>/${COMPOSE_PROJECT_NAME}
+# environment will be available under https://<hostname>/${COMPOSE_PROJECT_NAME}/jupyterlab
 # password for the environment is controlled using JUPYTERLAB_SERVER_TOKEN
 LAB_USER=${LAB_USER}
 JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN}
