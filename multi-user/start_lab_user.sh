@@ -77,7 +77,6 @@ services:
     # generate SSL certificates and enter idle mode
     entrypoint: "/bin/bash -c '/start-platform.d/00_generate_ssl_cert.sh && tail -f /dev/null'"  
     container_name: \${COMPOSE_PROJECT_NAME:-lab-admin}-certificates-generator
-    restart: no
 EOF
 
 
