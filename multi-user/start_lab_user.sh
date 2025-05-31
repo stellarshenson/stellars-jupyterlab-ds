@@ -128,7 +128,7 @@ if [[ $PROFILE_TYPE == 'Existing' ]]; then
 	elif $(cat $TMPFILE | grep "$project_name" | grep 'exited' | grep -q .); then
 	  display_name="stopped"
 	else
-	  display_name="n/a"
+	  display_name="undetermined"
 	fi    
       else
 	display_name=""

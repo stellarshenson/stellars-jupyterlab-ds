@@ -89,10 +89,9 @@ for f in "${ENV_FILES[@]}"; do
     elif $(cat $TMPFILE | grep "$project_name" | grep 'exited' | grep -q .); then
       display_name="stopped"
     else
-      display_name="n/a"
+      display_name="undetermined"
     fi    
   else
-    echo "$fname - n/a"
     display_name=""
   fi
   MENU_OPTS+=("$fname" "$display_name")
