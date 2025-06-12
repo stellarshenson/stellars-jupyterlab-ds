@@ -24,6 +24,7 @@ services:
 
   # Proxy for smart trafic routing to make it possible to host multiple similar containers 
   # exposing ports 80, 413 & 8080 to force docker to keep only one traefik service
+  # traefik dashboard is available under http://localhost:8080/dashboard
   traefik:
     image: traefik:latest
     container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-traefik
