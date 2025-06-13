@@ -173,7 +173,7 @@ if [[ $PROFILE_TYPE == 'New' ]]; then
     rm "$TMPFILE"
     
     # Sanitize LAB_USER
-    LAB_USER=$(echo "$LAB_USER" | sed 's/\./-/g' | tr -cd '[:alnum:]-_')
+    LAB_USER=$(echo "$LAB_USER" | sed 's/\./-/g' | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-_')
     if [[ -z "$LAB_USER" ]]; then
       echo "Invalid LAB_USER. Must contain at least one alphanumeric character."
       exit 1
