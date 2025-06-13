@@ -87,6 +87,14 @@ if ! command -v dialog &> /dev/null; then
   exit 1
 fi
 
+# Check for dialog
+if ! command -v pwgen &> /dev/null; then
+  echo "pwgen command not found. Install it with: sudo apt install pwgen"
+  exit 1
+fi
+
+
+
 # this helps keep track of dialog choices
 TMPFILE=$(mktemp)
 
