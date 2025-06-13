@@ -180,27 +180,14 @@ if [[ $PROFILE_TYPE == 'New' ]]; then
     fi
 fi
 
-# Generate Personal override compose file if doesn't exist
-COMPOSE_PERSONAL_FILE="${RESOURCES_DIR}/compose-override-${LAB_USER}.yml"
-[[ -f $COMPOSE_PERSONAL_FILE ]] || cat << EOF > $COMPOSE_PERSONAL_FILE
-# --------------------------------------------------------------------------------------------------
-#   Stellars Jupyterlab DS Platform 
-#   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
-#   This compose adds user specific configurable overrides  like extra services, volumes etc
-# --------------------------------------------------------------------------------------------------
-services:
-    jupyterlab:
-
-# EOF
-EOF
-
 # ---- Step 2: Prompt JUPYTERLAB_SERVER_TOKEN ----
+TEMP_TOKEN=$(pwgen -n 12 -1)
 if [[ $PROFILE_TYPE == 'New' ]]; then
     dialog --title "JupyterLab Server Token" --inputbox "
     Set the JupyterLab server token.
 
     This token will act as the login password.
-    " 10 80 2> "$TMPFILE"
+    " 10 80 ${TEMP_TOKEN} 2> "$TMPFILE"
     RESULT=$?
     if [[ $RESULT == 1 ]]; then
 	clear
@@ -284,7 +271,7 @@ if [[ $? -ne 0 ]]; then
   exit 0
 fi
 
-# ---- Step 7: Create Env File ----
+# ---- Step 7: Create Personal YML and Env File ----
 cat <<EOF > $TMPFILE
 # users's personal env file
 # environment will be available under https://<hostname>/${COMPOSE_PROJECT_NAME}/jupyterlab
@@ -293,6 +280,22 @@ LAB_USER=${LAB_USER}
 JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN}
 COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
 EOF
+
+# Generate Personal override compose file if doesn't exist
+COMPOSE_PERSONAL_FILE="${RESOURCES_DIR}/compose-override-${LAB_USER}.yml"
+[[ -f $COMPOSE_PERSONAL_FILE ]] || cat << EOF > $COMPOSE_PERSONAL_FILE
+# --------------------------------------------------------------------------------------------------
+#   Stellars Jupyterlab DS Platform 
+#   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
+#   This compose adds user specific configurable overrides  like extra services, volumes etc
+# --------------------------------------------------------------------------------------------------
+services:
+    jupyterlab:
+
+# EOF
+EOF
+
+
 
 if [[ $PROFILE_TYPE == 'New' ]]; then
     cp $TMPFILE $ENV_FILE
