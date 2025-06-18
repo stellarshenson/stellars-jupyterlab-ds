@@ -459,6 +459,10 @@ ENV JUPYTERLAB_BASE_URL="/lab"
 # and GPUSTAT_ENABLED enables gpu status message in terminal if GPU present
 ENV GPU_SUPPORT_ENABLED=0 
 ENV GPUSTAT_ENABLED=1
+ENV ENABLE_SERVICE_MLFLOW=1
+ENV ENABLE_SERVICE_GLANCES=1
+ENV ENABLE_SERVICE_TENSORBOARD=1
+
 
 ## setup entry point, workdir and startup command
 ## and set user to be conda user
