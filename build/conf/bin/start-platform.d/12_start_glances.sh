@@ -22,6 +22,11 @@
 #   - Accessible via http://<host>:61208 by default
 # ----------------------------------------------------------------------------------------
 
+# check if enabled
+if [[ ${ENABLE_SERVICE_GLANCES} != 1 ]]; then
+    exit 0
+fi
+
 # command to execute 
 COMMAND=$(cat <<EOF
 echo "Launching glances resources monitoring server"
