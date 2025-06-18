@@ -21,6 +21,10 @@
 #   - Runs TensorBoard bound to all interfaces on port 6006
 # ----------------------------------------------------------------------------------------
 
+# check if enabled
+if [[ ${ENABLE_SERVICE_TENSORBOARD} != 1 ]]; then
+    exit 0
+fi
 
 # key variables
 TENSORBOARD_LOGDIR=${TENSORBOARD_LOGDIR:-/tmp/tensorboard}

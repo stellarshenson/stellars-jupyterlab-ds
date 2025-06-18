@@ -24,6 +24,11 @@
 #   - MLflow must be installed in the 'base' Conda environment
 # ----------------------------------------------------------------------------------------
 
+# check if enabled
+if [[ ${ENABLE_SERVICE_MLFLOW} != 1 ]]; then
+    exit 0
+fi
+
 # key variables
 MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI:-sqlite:////mnt/mlflow/mlflow.sqlite3}
 MLFLOW_ARTIFACT_ROOT=${MLFLOW_ARTIFACT_ROOT:-/mnt/mlflow/artifacts}

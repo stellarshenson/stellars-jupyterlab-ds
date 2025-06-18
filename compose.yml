@@ -17,6 +17,7 @@
 #   LAB_USER=jack_daniels
 #   JUPYTERLAB_SERVER_TOKEN=my_secret_token123
 #   GPU_SUPPORT_ENABLED=1
+#   ENABLE_SERVICE_MLFLOW=1
 #
 # --------------------------------------------------------------------------------------------------
 
@@ -74,6 +75,9 @@ services:
       - MLFLOW_HOST=*
       - LAB_USER=${LAB_USER:-default}
       - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}
+      - ENABLE_SERVICE_MLFLOW=1
+      - ENABLE_SERVICE_GLANCES=1
+      - ENABLE_SERVICE_TENSORBOARD=1
     volumes:
       - vol_home:/home                    # jupyterlab user directory persistence
       - vol_workspace:/home/lab/workspace # user projects workspace volume persistence
