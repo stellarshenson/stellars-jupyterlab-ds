@@ -14,7 +14,6 @@ packages:
     - iproute2 # additional networking tools
     - less # interactive file reader
     - locate # file locator via updatedb
-    - libgl1 # required by ultralytics (yolo)
     - man # man pages
     - mc # midnight commander
     - netcat-traditional # netcat network swiss army tool
