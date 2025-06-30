@@ -10,7 +10,6 @@ dependencies:
   - pip:
     - tensorflow[and-cuda] >=2.18 # TensorFlow with CUDA support for GPU acceleration
     - tensorboard                 # Tool for visualizing TensorFlow learning
-    - tf-keras                    # TensorFlow's Keras implementation for building deep learning models
     - ipykernel # to make this env appear as kernel
 
 # EOF
