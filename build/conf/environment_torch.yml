@@ -9,6 +9,7 @@ dependencies:
   - pip:
     - torch>=2.4    # PyTorch, a popular deep learning framework, version 2.4 or higher
     - ipykernel # to make this env appear as kernel
+    # for installation of ultralytics yolo you will need libgl1 with apt
 
 # EOF
 
