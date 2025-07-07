@@ -6,6 +6,7 @@ c.ServerApp.root_dir = "/home/lab/workspace"
 ## login shell allows to call .profile to set env name
 c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash", "--login"] }
 c.FileContentsManager.always_delete_dir = True
+c.ContentsManager.allow_hidden = True
 
 ## ssl configuration to use https - only when not using traefik proxy
 # c.ServerApp.certfile = u'/mnt/certs/stellars-jupyterlab-ds.crt'
