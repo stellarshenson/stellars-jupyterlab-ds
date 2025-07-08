@@ -1,0 +1,8 @@
+{
+    "ignoreSeverities": [
+        "Warning",
+        "Information",
+        "Hint"
+    ],
+    "disable": false
+}
