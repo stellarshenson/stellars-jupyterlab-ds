@@ -1,6 +1,12 @@
 #!/bin/sh
 
+# in case submodules are missing init them
+git submodule update --init --recursive
+
+# update submodules from remote
 git submodule update --remote
+
+# and iterate over modules
 git submodule foreach '
   echo "==> $name"
   if ! git fetch; then
