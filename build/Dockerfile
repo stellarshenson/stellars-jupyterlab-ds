@@ -93,7 +93,7 @@ RUN <<-EOF
 EOF
 
 # create directories
-RUN mkdir /opt/etc/jupyter
+RUN mkdir -p /opt/etc/jupyter
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
