@@ -206,7 +206,7 @@ COPY --chown=${CONDA_USER} ./templates/home /tmp/template_home
 RUN <<-EOF
     echo "preparing user directory from template"
     ln -s /opt/etc/jupyter/jupyter_lab_config.py /tmp/template_home/.jupyter
-    cp -r ./templates/home ${CONDA_USER_HOME}
+    cp -r /tmp/template_home ${CONDA_USER_HOME}
 EOF
 
 ## create workspace, this is where user projects will be located
