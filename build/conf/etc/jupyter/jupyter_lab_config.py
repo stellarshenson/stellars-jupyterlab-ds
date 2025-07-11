@@ -1,6 +1,10 @@
+## load references to home
+import os
+HOME = os.environ.get("HOME")
+
 ## Configuration file for lab.
 c = get_config()  #noqa
-c.ServerApp.root_dir = "/home/lab/workspace"
+c.ServerApp.root_dir = f"{HOME}/workspace"
 
 ## terminal should be started with login shell
 ## login shell allows to call .profile to set env name
