@@ -92,8 +92,12 @@ RUN <<-EOF
     apt update && apt upgrade -y
 EOF
 
+# create directories
+RUN mkdir /opt/etc/jupyter
+
 # copy all config files and scripts
-COPY --chmod=644  ./conf/etc.bash.bashrc /etc/bash.bashrc
+COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
+COPY --chmod=644  ./conf/etc/jupyter/jupyter_lab_config.py /opt/etc/jupyter
 COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
 COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyterlab.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
@@ -197,8 +201,13 @@ EOF
 USER ${CONDA_USER}
 
 ## use predefined contents of a user home (and to tmp for reference)
-COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
+## and also link standard config file to the template for jupyterlab
 COPY --chown=${CONDA_USER} ./templates/home /tmp/template_home
+RUN <<-EOF
+    echo "preparing user directory from template"
+    cp -r ./templates/home ${CONDA_USER_HOME}
+    ln -s /opt/etc/jupyter/jupyter_lab_config.py ${CONDA_USER_HOME}/.jupyter
+EOF
 
 ## create workspace, this is where user projects will be located
 RUN mkdir ${CONDA_USER_WORKSPACE}
