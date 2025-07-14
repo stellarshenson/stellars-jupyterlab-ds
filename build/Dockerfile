@@ -202,10 +202,11 @@ USER ${CONDA_USER}
 
 ## use predefined contents of a user home (and to tmp for reference)
 ## and also link standard config file to the template for jupyterlab
-COPY --chown=${CONDA_USER} ./templates/home /tmp/template_home
+COPY --chown=${CONDA_USER} ./templates/home /home/template_home
 RUN <<-EOF
     echo "preparing user directory from template"
-    ln -s /opt/etc/jupyter/jupyter_lab_config.py /tmp/template_home/.jupyter
+    ln -s /opt/etc/jupyter/jupyter_lab_config.py /home/template_home/.jupyter
+    rm -rf ${CONDA_USER_HOME}
     cp -r /tmp/template_home ${CONDA_USER_HOME}
 EOF
 
