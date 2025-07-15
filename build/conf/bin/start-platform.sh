@@ -17,11 +17,12 @@ if [[ -z ${JUPYTERLAB_STARTUP_MODE} ||  ${JUPYTERLAB_STARTUP_MODE} == 'jupyterla
 	--ip=$JUPYTERLAB_SERVER_IP \
 	--IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
 	--ServerApp.base_url=$JUPYTERLAB_BASE_URL \
-	--no-browser 
+	--no-browser \
+	"$@"
 # run in jupyterhub mode
 elif [[ ${JUPYTERLAB_STARTUP_MODE} == 'jupyterhub' ]]; then 
     echo "starting jupyterhub-singleuser server"
-    jupyterhub-singleuser
+    jupyterhub-singleuser "$@"
 fi
 
 # EOF
