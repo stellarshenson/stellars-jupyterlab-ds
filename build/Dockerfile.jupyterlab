@@ -252,6 +252,7 @@ COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
 COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE_TEMPLATE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/cache /mnt/cache
+COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
 COPY --chown=${CONDA_USER} ./templates/mlflow /mnt/mlflow
 
 ########################################################
