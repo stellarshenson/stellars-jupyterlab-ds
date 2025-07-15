@@ -15,6 +15,7 @@ dependencies:
   - jupyterlab # makes sure latest jupyterlab is installed
   - jupyterhub # to install jupyterhub and allow lab in hub mode
   - jupyterlab-lsp # language server extension
+  - jupyter-server-proxy # advanced proxy for additional services when running hub
    
   ## jupyterlab extensions
   - jupyterlab-git # enables git extension for jupyterlab
