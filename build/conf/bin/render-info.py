@@ -63,8 +63,8 @@ elif len(sys.argv) == 4:
 raw_info = """
 Build @BUILD_NAME@ created on @BUILD_DATE@
 --------------------------------------------------------------------------------
-Running JupyterLab server on  \033[36mhttps://localhost/@LAB_NAME@/jupyterlab\033[0m
-Connect VSCode to Jupyter on  \033[36mhttps://localhost/@LAB_NAME@/jupyterlab/lab/tree\033[0m
+Running JupyterLab server on  \033[36mhttps://localhost/@LAB_NAME@\033[0m
+Connect VSCode to Jupyter on  \033[36mhttps://localhost/@LAB_NAME@/lab/tree\033[0m
 Running MLFlow server on      \033[36mhttps://localhost/@LAB_NAME@/mlflow\033[0m
 Running Tensorboard server on \033[36mhttps://localhost/@LAB_NAME@/tensorboard\033[0m
 Running Glances Web Monitor   \033[36mhttps://localhost/@LAB_NAME@/glances\033[0m
