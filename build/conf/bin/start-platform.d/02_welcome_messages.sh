@@ -34,9 +34,9 @@ else
     > /tmp/welcome.html.new
 fi
 
-#truncate /welcome.html --size 0
-#cat /tmp/welcome.html.new >> /welcome.html
-#rm /tmp/welcome.html.new
+truncate /welcome.html --size 0
+cat /tmp/welcome.html.new >> /welcome.html
+rm /tmp/welcome.html.new
 
 
 # EOF
