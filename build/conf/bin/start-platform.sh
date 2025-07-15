@@ -9,8 +9,13 @@ for file in $START_PLATFORM_DIR/*; do
     fi
 done
 
-# run jupyterlab, env params are configured in Dockerfile and docker-compose yml 
-if [[ -z ${JUPYTERLAB_STARTUP_MODE} ||  ${JUPYTERLAB_STARTUP_MODE} == 'jupyterlab' ]]; then
+# if jupyterhub
+if [[ -n ${JUPYTERHUB_USER} ]]; then
+    echo "starting jupyterlab under hub supervision"
+    jupyter-labhub "$@"
+
+# standalone jupyterlab
+else 
     echo "starting jupyterlab server"
     jupyter-lab \
 	--autoreload \
@@ -19,10 +24,6 @@ if [[ -z ${JUPYTERLAB_STARTUP_MODE} ||  ${JUPYTERLAB_STARTUP_MODE} == 'jupyterla
 	--ServerApp.base_url=$JUPYTERLAB_BASE_URL \
 	--no-browser \
 	"$@"
-# run in jupyterhub mode
-elif [[ ${JUPYTERLAB_STARTUP_MODE} == 'jupyterhub' ]]; then 
-    echo "starting single user jupyterlab server"
-    jupyter-labhub "$@"
 fi
 
 # EOF
