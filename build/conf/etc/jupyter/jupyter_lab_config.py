@@ -22,6 +22,14 @@ c.JupyterLabIFrame.welcome = 'local:///welcome.html'
 c.JupyterLabIFrame.local_files = ['/welcome.html']
 c.JupyterLabIFrame.allow_any_local = False
 
+## fix for the iframes loading local pages
+## this configuration is potentially dangerous
+c.JupyterHub.tornado_settings = {
+    'headers': {
+        'Content-Security-Policy': "frame-ancestors 'self'; default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;"
+    }
+}
+
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
 #------------------------------------------------------------------------------
