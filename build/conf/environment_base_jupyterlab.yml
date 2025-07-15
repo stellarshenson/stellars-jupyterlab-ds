@@ -13,6 +13,7 @@ dependencies:
 
   ## jupyterlab and language server
   - jupyterlab # makes sure latest jupyterlab is installed
+  - jupyterhub # to install jupyterhub and allow lab in hub mode
   - jupyterlab-lsp # language server extension
    
   ## jupyterlab extensions
