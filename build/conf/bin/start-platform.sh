@@ -21,8 +21,8 @@ if [[ -z ${JUPYTERLAB_STARTUP_MODE} ||  ${JUPYTERLAB_STARTUP_MODE} == 'jupyterla
 	"$@"
 # run in jupyterhub mode
 elif [[ ${JUPYTERLAB_STARTUP_MODE} == 'jupyterhub' ]]; then 
-    echo "starting jupyterhub-singleuser server"
-    jupyterhub-singleuser "$@"
+    echo "starting single user jupyterlab server"
+    jupyter-labhub "$@"
 fi
 
 # EOF
