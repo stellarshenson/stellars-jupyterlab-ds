@@ -30,7 +30,7 @@ else
     echo "updating welcome.html"
     REPLACEMENT=${LAB_NAME:-stellars-jupyterlab-ds}
     REPLACEMENT=$(echo ${REPLACEMENT} | sed 's/\/$//g' | sed 's/\//\\\//g')
-    /usr/bin/sed "s/@LAB_NAME@/${REPLACEMENT}/g" /welcome.html | \
+    /usr/bin/sed "s/@LAB_NAME@/${REPLACEMENT}/g" /welcome.html \
     > /tmp/welcome.html.new
 fi
 
