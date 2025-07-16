@@ -12,11 +12,11 @@
 
 ## build docker containers
 build:
-	@cd ./bin && ./build.sh
+	@cd ./scripts && ./build.sh
 
 ## build docker containers and output logs
 build_verbose:
-	@cd ./bin && ./build_verbose.sh
+	@cd ./scripts && ./build_verbose.sh
 
 ## pull docker image from dockerhub
 pull:
@@ -28,13 +28,14 @@ push:
 
 ## start jupyterlab (fg)
 start:
-	@cd ./bin && ./start.sh
+	@cd ./scripts && ./start.sh
 
 ## clean orphaned containers
 clean:
 	@echo 'removing dangling and unused images, containers, nets and volumes'
-	@docker compose --env-file project.env -f compose.yml down --remove-orphans
+	@docker compose --env-file .env -f compose.yml down --remove-orphans
 	@yes | docker image prune
+	@yes | docker network prune
 
 
 ## prints the list of available commands
