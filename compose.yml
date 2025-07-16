@@ -60,7 +60,7 @@ services:
     hostname: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
     image: stellars/stellars-jupyterlab-ds:latest
     build:
-      context: build
+      context: services/jupyterlab
       dockerfile: Dockerfile.jupyterlab
     environment:
       - CONDA_DEFAULT_ENV=base
