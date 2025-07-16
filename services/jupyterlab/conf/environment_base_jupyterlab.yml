@@ -1,5 +1,5 @@
 # base environment update with Jupyterlab installation
-# 2025-05-27
+# 2025-07-16
 
 name: base
 channels:
