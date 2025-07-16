@@ -30,6 +30,59 @@ c.ServerApp.tornado_settings = {
     }
 }
 
+## proxy config for selected services
+## this is mandatory when using hub
+c.ServerProxy.servers = {
+    "glances": {
+        "command": [],
+        "absolute_url": False,
+        "port": 61208,
+        "launcher_entry": {
+            "enabled": False    
+        }
+    },
+    "mlflow": {
+        "command": [],
+        "absolute_url": False,
+        "port": 5000,
+        "launcher_entry": {
+            "enabled": False    
+        }
+    },
+    "tensorboard": {
+        "command": [],
+        "absolute_url": False,
+        "port": 6006,
+        "launcher_entry": {
+            "enabled": False    
+        }
+    },
+    "optuna": {
+        "command": [],
+        "absolute_url": False,
+        "port": 8080,
+        "launcher_entry": {
+            "enabled": False    
+        }
+    },
+    "generic-callback": {
+        "command": [],
+        "absolute_url": False,
+        "port": 8030,
+        "launcher_entry": {
+            "enabled": False    
+        }
+    },
+    "generic-app": {
+        "command": [],
+        "absolute_url": False,
+        "port": 8080,
+        "launcher_entry": {
+            "enabled": False    
+        }
+    },
+}
+
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
 #------------------------------------------------------------------------------
