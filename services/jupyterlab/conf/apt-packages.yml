@@ -13,7 +13,6 @@ packages:
     - iputils-ping # simple ping utility
     - iproute2 # additional networking tools
     - less # interactive file reader
-    - locate # file locator via updatedb
     - man # man pages
     - mc # midnight commander
     - netcat-traditional # netcat network swiss army tool
@@ -24,5 +23,4 @@ packages:
     - socat # port forwarding tool
     - sqlite3 # client to sqlite often used with ml projects
     - vim # text editor
-    - wget # file downloader
     - zip # file zipper and unzipper

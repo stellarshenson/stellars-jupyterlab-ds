@@ -4,14 +4,14 @@
 FROM nvidia/cuda:12.9.1-cudnn-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
-ARG CUDA_TOOLKIT_VERSION=12.8
+ARG CUDA_TOOLKIT_VERSION=12.9
 
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
 RUN <<-EOF
     echo "installing necessary OS packages"
     apt-get update 
-    apt-get install -y git build-essential wget \
+    apt-get install -y git build-essential curl \
 	cmake python3 python3-pip python3-dev
     rm -rf /var/lib/apt/lists/*
 EOF
@@ -25,8 +25,8 @@ COPY --chmod=644  ./conf/environment_builder.yml /environment_builder.yml
 # download and install conda
 RUN <<-EOF
     echo "installing miniforge"
-    wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
-	-O ~/miniforge3.sh
+    curl https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+	-o ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
     rm -rf ~/miniforge3.sh
 EOF
@@ -299,8 +299,8 @@ WORKDIR ${CONDA_USER_HOME}
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN <<-EOF
     echo "installing miniforge3"
-    wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
-	-O ~/miniforge3.sh
+    curl https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+	-o ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
     rm -rf ~/miniforge3.sh
 EOF
