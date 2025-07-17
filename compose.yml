@@ -65,7 +65,6 @@ services:
     environment:
       - CONDA_DEFAULT_ENV=base
       - GPU_SUPPORT_ENABLED=0
-      - JUPYTERLAB_STARTUP_MODE=jupyterlab
       - JUPYTERLAB_SERVER_IP=*
       - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # if token not provided - no passwor required
       - JUPYTERLAB_BASE_URL=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab

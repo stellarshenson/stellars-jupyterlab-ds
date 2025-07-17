@@ -1,19 +1,20 @@
 #!/bin/bash
 
 # Validate input arguments
-if [ -z "$1" ] || [ -z "$2" ]; then
-  echo "Usage: $0 <certificate_directory> <certificate_prefix>"
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+  echo "Usage: $0 <certificate_directory> <common_name> <certificate_prefix>"
   echo "Example: $0 /etc/ssl/mycerts mydomain"
   exit 1
 fi
 
 # Directory where the certificates will be stored is provided as 1st argument#
 CERT_DIR="$1"
-CERT_PREFIX="$2"
+CERT_CN="$2"
+CERT_PREFIX="$3"
 mkdir -p $CERT_DIR
 
 # Certificate details
-COMMON_NAME=${CERT_PREFIX}
+COMMON_NAME=${CERT_CN}
 
 # Certificate file names
 CERT_FILE="${CERT_DIR}/${CERT_PREFIX}.crt"

@@ -95,20 +95,20 @@
   <div class="section">
     <h2>Core Services</h2>
     <ul>
-	<li><span class="icon"></span><a href="https://localhost/@LAB_NAME@/jupyterlab" target="_blank">https://localhost/@LAB_NAME@/jupyterlab</a> – <b>JupyterLab</b>: main notebook interface</li>
-	<li><span class="icon"></span><a href="https://localhost/@LAB_NAME@/jupyterlab/lab/tree" target="_blank">https://localhost/@LAB_NAME@/jupyterlab/lab/tree</a> – <b>VSCode</b> access to Jupyterlab kernels</li>
-	<li><span class="icon"></span><a href="https://localhost/@LAB_NAME@/tensorboard" target="_blank">https://localhost/@LAB_NAME@/tensorboard</a> – <b>Tensorboard</b>: training metrics visualization</li>
-	<li><span class="icon"></span><a href="https://localhost/@LAB_NAME@/mlflow" target="_blank">https://localhost/@LAB_NAME@/mlflow</a> – <b>MLFlow</b>: track ML/AI experiments and their results</li>
-	<li><span class="icon"></span><a href="https://localhost/@LAB_NAME@/glances" target="_blank">https://localhost/@LAB_NAME@/glances</a> – <b>Glances</b>: system monitor for CPU, GPU, memory</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@" target="_blank">http://@JUPYTERLAB_SERVICE_URL@</a> – <b>JupyterLab</b>: main notebook interface</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/lab/tree" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/lab/tree</a> – <b>VSCode</b> access to Jupyterlab kernels</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/tensorboard" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/tensorboard</a> – <b>Tensorboard</b>: training metrics visualization</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/mlflow" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/mlflow</a> – <b>MLFlow</b>: track ML/AI experiments and their results</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/glances" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/glances</a> – <b>Glances</b>: system monitor for CPU, GPU, memory</li>
     </ul>
   </div>
 
   <div class="section">
     <h2>Optional Tools</h2>
     <ul>
-	<li><span class="icon"></span><a href="https://localhost/@LAB_NAME@/optuna" target="_blank">https://localhost/@LAB_NAME@/optuna</a> – Optuna Dashboard on port :8080</li>
-	<li><span class="icon"></span><a href="http://localhost/@LAB_NAME@/generic-callback" target="_blank">http://localhost/@LAB_NAME@/generic-callback</a> – Generic HTTP Callback using port :8030 </li>
-	<li><span class="icon"></span><a href="http://localhost/@LAB_NAME@/generic-app" target="_blank">http://localhost/@LAB_NAME@/generic-app</a> – Generic Application using port :8080</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/optuna" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/optuna</a> – Optuna Dashboard on port :8080</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/generic-callback" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/generic-callback</a> – Generic HTTP Callback using port :8030 </li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/generic-app" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/generic-app</a> – Generic Application using port :8080</li>
     </ul>
   </div>
 
@@ -172,16 +172,16 @@
   </div>
 
   <script>
-    // Replace all localhost-based links with the current hostname
-    document.querySelectorAll('a[href*="localhost"]').forEach(link => {
-      const original = new URL(link.href);
-      const dynamic = new URL(link.href);
-      dynamic.hostname = location.hostname;
-      link.href = dynamic.toString();
-      if (link.textContent.includes("localhost")) {
-        link.textContent = dynamic.toString();
-      }
-    });
+    (function() {
+      // const base = window.location.pathname.split("iframes").slice(0, 1)[0].trim('/');  // e.g., /jupyterhub/user/<username>
+      const base = window.location.pathname.replace(/\/iframes.*$/, '');
+      let jupyterlabUrl = '';
+      jupyterlabUrl = `${location.origin}${base}`;
+      document.querySelectorAll("a").forEach(link => {
+          link.textContent = link.textContent.replace("http://@JUPYTERLAB_SERVICE_URL@", jupyterlabUrl);
+          link.href = link.href.replace("http://@JUPYTERLAB_SERVICE_URL@", jupyterlabUrl);
+      });
+    })();
   </script>
 </body>
 </html>

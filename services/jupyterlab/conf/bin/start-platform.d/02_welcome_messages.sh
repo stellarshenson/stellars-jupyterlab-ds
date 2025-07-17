@@ -15,29 +15,6 @@ else
     conda run -n base python /render-info.py "$LAB_NAME/jupyterlab" "$BUILD_NAME" "$BUILD_DATE" "$JUPYTERLAB_SERVER_TOKEN"
 fi
 
-# update welcome.html with LAB_NAME or JUPYTERHUB_SERVICE_PREFIX
-# jupyterhub config
-if [[ -n ${JUPYTERHUB_USER} ]]; then
-    echo "updating welcome.html for jupyterhub"
-    REPLACEMENT=${JUPYTERHUB_SERVICE_PREFIX:-stellars-jupyterlab-ds}
-    REPLACEMENT=$(echo ${REPLACEMENT} | sed 's/\/$//g' | sed 's/\//\\\//g')
-    /usr/bin/sed "s/\/@LAB_NAME@\/jupyterlab/${REPLACEMENT}/g" /welcome.html | \
-    /usr/bin/sed "s/\/@LAB_NAME@/${REPLACEMENT}/g" \
-    > /tmp/welcome.html.new
-
-# standalone jupyterlab
-else
-    echo "updating welcome.html"
-    REPLACEMENT=${LAB_NAME:-stellars-jupyterlab-ds}
-    REPLACEMENT=$(echo ${REPLACEMENT} | sed 's/\/$//g' | sed 's/\//\\\//g')
-    /usr/bin/sed "s/@LAB_NAME@/${REPLACEMENT}/g" /welcome.html \
-    > /tmp/welcome.html.new
-fi
-
-truncate /welcome.html --size 0
-cat /tmp/welcome.html.new >> /welcome.html
-rm /tmp/welcome.html.new
-
 
 # EOF
 
