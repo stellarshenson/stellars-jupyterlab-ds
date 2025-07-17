@@ -83,7 +83,6 @@ services:
       - vol_workspace:/home/lab/workspace # user projects workspace volume persistence
       - vol_cache:/mnt/cache              # persistent cache volume for calculation results
       - vol_certs:/mnt/certs              # tsl certificates used by traefic and jupyterlab
-      - vol_mlflow:/mnt/mlflow            # persistent mlflow volume for experiments logs
     networks:
       - proxy-network
     labels:
@@ -133,7 +132,6 @@ volumes:
   vol_workspace:
   vol_cache:
   vol_home:
-  vol_mlflow:
   vol_certs: 
 
 networks:
