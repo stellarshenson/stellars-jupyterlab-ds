@@ -29,6 +29,12 @@ Preferred method for running the container is with **docker compose**
 
 ### Multi User Deployment
 
+#### Jupyterhub
+
+Another **Jupyterhub** based project **https://github.com/stellarshenson/stellars-jupyterhub-ds** introduces true, configurable multi-user environmnet where users can be created, managed and authorised in a way that is both convenient for individual environments as well as with the corporate multi-user access policies. Please consult the project for details
+
+#### Standalone launcher
+
 We have recently created a convenient launcher for multi-user platform, see https://github.com/stellarshenson/stellars-jupyterlab-ds/tree/main/multi-user
 - `start-lab-user.sh` - script that launches new environment for a new user
 - `stop-lab-user.sh` - script that shuts user's environment down
