@@ -1,5 +1,5 @@
 # base environment definition without Jupyterlab
-# update 2025-05-26
+# update 2025-07-18
 
 name: base
 channels:
@@ -25,7 +25,6 @@ dependencies:
     - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
     - gpustat # gpu status reporting tool
-    - ipympl # matplotlib interactive backend
     - ipywidgets # jupyter widgets from IPython
     - make # build tools
     - matplotlib # plots library

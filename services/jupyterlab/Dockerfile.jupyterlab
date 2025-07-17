@@ -24,8 +24,8 @@ COPY --chmod=644  ./conf/environment_builder.yml /environment_builder.yml
 
 # download and install conda
 RUN <<-EOF
-    echo "installing miniforge"
-    curl https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+    echo "installing miniforge3"
+    curl --location "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
 	-o ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
     rm -rf ~/miniforge3.sh
@@ -125,6 +125,7 @@ RUN <<-EOF
     pip freeze | grep -v blinker > requirements-to-uninstall.txt
     pip uninstall -r requirements-to-uninstall.txt -y
     pip cache purge
+    apt uninstall pip -y || true
 EOF
 
 ## allow viewer extensions to midnight commander - like for parquet files
@@ -141,7 +142,7 @@ EOF
 ## need to install awscliv2 directly from amazon, otherwise it fails to work
 RUN <<-EOF
     echo "installing amazon awscliv2 - AWS command line utility v2 "
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+    curl  --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
     unzip /tmp/awscliv2.zip -d /tmp
     /tmp/aws/install
     echo "removing awscli installation files"
@@ -299,7 +300,7 @@ WORKDIR ${CONDA_USER_HOME}
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN <<-EOF
     echo "installing miniforge3"
-    curl https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+    curl -L "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
 	-o ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
     rm -rf ~/miniforge3.sh
@@ -487,7 +488,6 @@ ENV TENSORBOARD_LOGDIR=/tmp/tensorboard
 ENV MLFLOW_TRACKING_URI=http://localhost:5000
 ENV MLFLOW_PORT=5000
 ENV MLFLOW_HOST=*
-ENV JUPYTERLAB_STARTUP_MODE=jupyterlab
 
 ## setup entry point, workdir and startup command
 ## and set user to be conda user
