@@ -167,6 +167,7 @@ ARG JUPYTER_GROUP_GID=1001
 ARG USER_DOCKER_CACHE_PATH=/tmp
 ARG CONDA_USER_PASSWD=password
 ENV CONDA_USER_HOME=/home/${CONDA_USER}
+ARG CONDA_USER_CACHE=${CONDA_USER_HOME}/.cache
 ARG CONDA_USER_HOME_TEMPLATE=/opt/templates/template_home
 ENV CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ENV CONDA_USER_WORKSPACE_TEMPLATE=/opt/templates/template_workspace
@@ -251,10 +252,10 @@ USER ${CONDA_USER}
 # make sure initial workspace has template files
 COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
 COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE_TEMPLATE}
-COPY --chown=${CONDA_USER} ./templates/cache ${CONDA_USER_HOME}/.cache
+COPY --chown=${CONDA_USER} ./templates/cache ${CONDA_USER_CACHE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
-COPY --chown=${CONDA_USER} ./templates/mlflow /mnt/mlflow
+COPY --chown=${CONDA_USER} ./templates/mlflow ${CONDA_USER_CACHE}/mlfow
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
@@ -485,7 +486,7 @@ ENV ENABLE_SERVICE_TENSORBOARD=1
 ENV CONDA_DEFAULT_ENV=base
 ENV TF_CPP_MIN_LOG_LEVEL=3 
 ENV TENSORBOARD_LOGDIR=/tmp/tensorboard
-ENV MLFLOW_DATA=${CONDA_USER_HOME}/.cache/mlflow
+ENV MLFLOW_DATA=${CONDA_USER_CACHE}/mlflow
 ENV MLFLOW_TRACKING_URI=http://localhost:5000
 ENV MLFLOW_PORT=5000
 ENV MLFLOW_HOST=*
