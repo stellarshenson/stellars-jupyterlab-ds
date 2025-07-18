@@ -255,7 +255,7 @@ COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE_TEMPLATE
 COPY --chown=${CONDA_USER} ./templates/cache ${CONDA_USER_CACHE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
-COPY --chown=${CONDA_USER} ./templates/mlflow ${CONDA_USER_CACHE}/mlfow
+COPY --chown=${CONDA_USER} ./templates/mlflow ${CONDA_USER_CACHE}/mlflow
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
