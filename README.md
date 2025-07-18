@@ -13,13 +13,14 @@ Jupyterlab, Tensorboard, Optuna, MLFlow and other services are running over **Tr
  - Glances: [https://localhost/stellars-jupyterlab-ds/glances](https://localhost/stellars-jupyterlab-ds/glances) to access CPU + MEM + GPU monitor
  - Optuna: [https://localhost/stellars-jupyterlab-ds/optuna](https://localhost/stellars-jupyterlab-ds/optuna) to access Optuna dashboard (when running)
 
+Jupyterlab was also integrated with **stellars-jupyterhub-ds** - true multi-user data science environment based on jupyterhub project (see:  https://gitlab.delaval.cloud/cognitive-platform/delaval-jupyterlab-ds)
+
 
 ![JupyterLab](./.resources/jupyterlab.png)
 ![Docker Desktop](./.resources/docker-desktop.png)
 ![CUDA Test](./.resources/cuda-test.png)
 ![Multi User 1](./.resources/multiuser-shutdown.png)
 
-**stellars-jupyterhub-ds** - true multi-user data science environment (see:  https://gitlab.delaval.cloud/cognitive-platform/delaval-jupyterlab-ds)
 
 ## Quickstart
 
