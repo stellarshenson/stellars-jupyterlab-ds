@@ -19,6 +19,8 @@ Jupyterlab, Tensorboard, Optuna, MLFlow and other services are running over **Tr
 ![CUDA Test](./.resources/cuda-test.png)
 ![Multi User 1](./.resources/multiuser-shutdown.png)
 
+**stellars-jupyterhub-ds** - true multi-user data science environment (see:  https://gitlab.delaval.cloud/cognitive-platform/delaval-jupyterlab-ds)
+
 ## Quickstart
 
 Preferred method for running the container is with **docker compose**
@@ -32,6 +34,8 @@ Preferred method for running the container is with **docker compose**
 ### Multi User Deployment
 
 #### Jupyterhub
+
+[Stellars Jupyterhub DS](https://github.com/stellarshenson/stellars-jupyterhub-ds) - true multi user environment management
 
 Another **Jupyterhub** based project **https://github.com/stellarshenson/stellars-jupyterhub-ds** introduces true, configurable multi-user environmnet where users can be created, managed and authorised in a way that is both convenient for individual environments as well as with the corporate multi-user access policies. Please consult the project for details
 
