@@ -81,7 +81,7 @@ services:
     volumes:
       - vol_home:/home                    # jupyterlab user directory persistence
       - vol_workspace:/home/lab/workspace # user projects workspace volume persistence
-      - vol_cache:/mnt/cache              # persistent cache volume for calculation results
+      - vol_cache:/home/lab/.cache        # persistent cache volume for calculation results
       - vol_certs:/mnt/certs              # tsl certificates used by traefic and jupyterlab
     networks:
       - proxy-network
