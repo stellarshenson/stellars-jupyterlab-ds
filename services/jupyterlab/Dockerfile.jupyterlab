@@ -171,6 +171,7 @@ ARG CONDA_USER_CACHE=${CONDA_USER_HOME}/.cache
 ARG CONDA_USER_HOME_TEMPLATE=/opt/templates/template_home
 ENV CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ENV CONDA_USER_WORKSPACE_TEMPLATE=/opt/templates/template_workspace
+ARG CONDA_USER_SHARED=/mnt/shared
 ENV CONDA_RUN_DEBUG=0
 ENV PATH=${PATH}:${CONDA_HOME}/condabin
 ENV PIP_EXISTS_ACTION=w
@@ -256,6 +257,13 @@ COPY --chown=${CONDA_USER} ./templates/cache ${CONDA_USER_CACHE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
 COPY --chown=${CONDA_USER} ./templates/mlflow ${CONDA_USER_CACHE}/mlflow
+
+# create workspace links to common resourses
+RUN<<-EOF
+    echo "creating useful workspace links"
+    ln -s ${CONDA_USER_CACHE} ${CONDA_USER_WORKSPACE}/@cache
+    ln -s ${CONDA_USER_SHARED} ${CONDA_USER_WORKSPACE}/@shared
+EOF
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
