@@ -73,6 +73,7 @@ services:
       - MLFLOW_TRACKING_URI=http://localhost:5000
       - MLFLOW_PORT=5000
       - MLFLOW_HOST=*
+      - MLFLOW_WORKERS=1
       - LAB_USER=${LAB_USER:-default}
       - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}
       - ENABLE_SERVICE_MLFLOW=1
