@@ -41,7 +41,6 @@ MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 # command to execute
 COMMAND=$(cat <<EOF
 echo "Launching MLFlow models artefacts and experiments management server"
-echo "MLFLow WORKERS: $MLFLOW_WORKERS"
 mlflow server \
   --backend-store-uri $MLFLOW_BACKEND_STORE_URI \
   --default-artifact-root $MLFLOW_ARTIFACT_ROOT \
