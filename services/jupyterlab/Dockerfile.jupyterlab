@@ -259,7 +259,7 @@ COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
 COPY --chown=${CONDA_USER} ./templates/mlflow ${CONDA_USER_CACHE}/mlflow
 
 # create workspace links to common resourses
-RUN<<-EOF
+RUN <<-EOF
     echo "creating useful workspace links"
     ln -s ${CONDA_USER_CACHE} ${CONDA_USER_WORKSPACE}/@cache
     ln -s ${CONDA_USER_SHARED} ${CONDA_USER_WORKSPACE}/@shared
