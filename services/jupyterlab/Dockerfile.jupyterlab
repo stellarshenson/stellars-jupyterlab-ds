@@ -498,6 +498,7 @@ ENV MLFLOW_DATA=${CONDA_USER_CACHE}/mlflow
 ENV MLFLOW_TRACKING_URI=http://localhost:5000
 ENV MLFLOW_PORT=5000
 ENV MLFLOW_HOST=*
+ENV MLFLOW_WORKERS=1
 
 ## setup entry point, workdir and startup command
 ## and set user to be conda user

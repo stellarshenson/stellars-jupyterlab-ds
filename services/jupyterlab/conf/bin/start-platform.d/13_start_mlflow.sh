@@ -34,6 +34,7 @@ MLFLOW_DATA=${MLFLOW_DATA:-$HOME/.cache/mlflow} && mkdir -p ${MLFLOW_DATA}
 MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI:-sqlite:///${MLFLOW_DATA}/mlflow.sqlite3}
 MLFLOW_ARTIFACT_ROOT=${MLFLOW_ARTIFACT_ROOT:-${MLFLOW_DATA}/artifacts}
 MLFLOW_PORT=${MLFLOW_SERVER_PORT:-5000}
+MLFLOW_WORKERS=${MLFLOW_WORKERS:-1}
 MLFLOW_HOST=${MLFLOW_SERVER_HOST:-0.0.0.0}
 MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 
@@ -43,6 +44,7 @@ echo "Launching MLFlow models artefacts and experiments management server"
 mlflow server \
   --backend-store-uri $MLFLOW_BACKEND_STORE_URI \
   --default-artifact-root $MLFLOW_ARTIFACT_ROOT \
+  --workers $MLFOW_WORKERS \
   --host $MLFLOW_HOST \
   --port $MLFLOW_PORT
 EOF
