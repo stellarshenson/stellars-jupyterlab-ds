@@ -4,7 +4,7 @@
 packages:
     - bash-completion # completion for bash
     - curl # for downloading files
-    - gcc # compiler, required for building some native packages 
+    # - gcc # compiler, required for building some native packages 
     - git # git client
     - git-lfs # git plugin for large file storage
     # - gpg # for keys manipulation and adding repos to apt
