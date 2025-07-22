@@ -257,15 +257,6 @@ COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
 COPY --chown=${CONDA_USER} ./templates/mlflow ${CONDA_USER_CACHE}/mlflow
 
-# create workspace links to common resourses
-# those shortcuts will be copied to user workspace
-RUN <<-EOF
-    echo "creating useful workspace links"
-    mkdir -p ${TEMPLATES_DIR}/workspace_shortcuts
-    ln -s ${CONDA_USER_CACHE} ${TEMPLATES_DIR}/workspace_shortcuts/@cache
-    ln -s ${CONDA_USER_SHARED} ${TEMPLATES_DIR}/workspace_shortcuts/@shared
-EOF
-
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
 ########################################################
