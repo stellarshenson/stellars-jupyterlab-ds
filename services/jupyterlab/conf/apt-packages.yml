@@ -4,10 +4,10 @@
 packages:
     - bash-completion # completion for bash
     - curl # for downloading files
-    - gcc # compiler, required
+    - gcc # compiler, required for building some native packages 
     - git # git client
     - git-lfs # git plugin for large file storage
-    - gpg # for keys manipulation and adding repos to apt
+    # - gpg # for keys manipulation and adding repos to apt
     - gpw # generates unique identifiers
     - htop # colourful system resources monitor
     # - iputils-ping # simple ping utility
@@ -24,3 +24,5 @@ packages:
     # - sqlite3 # client to sqlite often used with ml projects
     - vim # text editor
     - zip # file zipper and unzipper
+
+# EOF
