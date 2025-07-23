@@ -16,7 +16,7 @@
 #   COMPOSE_PROJECT_NAME=my-lab-platform
 #   LAB_USER=jack_daniels
 #   JUPYTERLAB_SERVER_TOKEN=my_secret_token123
-#   GPU_SUPPORT_ENABLED=1
+#   ENABLE_GPU_SUPPORT=1
 #   ENABLE_SERVICE_MLFLOW=1
 #
 # --------------------------------------------------------------------------------------------------
