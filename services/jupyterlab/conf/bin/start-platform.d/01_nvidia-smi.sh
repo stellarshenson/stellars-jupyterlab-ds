@@ -4,8 +4,8 @@
 # ----------------------------------------------------------------------------------------
 
 # show result of nvidia-smi if nvidia GPU available
-# and if GPU_SUPPORT_ENABLED env set
-if [[ $GPU_SUPPORT_ENABLED == 1 ]]; then
+# and if ENABLE_GPU_SUPPORT env set
+if [[ ${ENABLE_GPU_SUPPORT} == 1 ]]; then
     /usr/bin/nvidia-smi
 fi
 

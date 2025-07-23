@@ -11,7 +11,7 @@ services:
   ## adds NVIDIA GPU support to Jupyterlab service
   jupyterlab:
     environment:
-      - GPU_SUPPORT_ENABLED=1
+      - ENABLE_GPU_SUPPORT=1
     deploy:
        resources:
          reservations:

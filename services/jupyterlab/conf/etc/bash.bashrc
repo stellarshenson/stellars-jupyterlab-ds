@@ -43,7 +43,7 @@ if [[ -f /etc/motd ]]; then
 fi
 
 # display gpustat
-if [[ "$GPU_SUPPORT_ENABLED" = 1 ]] && [[ "$GPUSTAT_ENABLED" = 1 ]]; then
+if [[ "${ENABLE_GPU_SUPPORT}" = 1 ]] && [[ "${ENABLE_GPUSTAT}" = 1 ]]; then
     /opt/conda/bin/gpustat --no-color --no-header --no-processes
 fi
 
