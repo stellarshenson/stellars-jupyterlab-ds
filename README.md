@@ -70,7 +70,7 @@ docker run -p 8888:8888 \
  -v stellars-jupyterlab-ds_home:/home \
  -v stellars-jupyterlab-ds_workspace:/home/lab/workspace \
  -v stellars-jupyterlab-ds_certs:/mnt/certs \
- -e GPU_SUPPORT_ENABLED=1 \
+ -e ENABLE_GPU_SUPPORT=1 \
  --gpus all \
  --name lab-gpu \
  --hostname lab-gpu \
