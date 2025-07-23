@@ -64,7 +64,6 @@ services:
       dockerfile: Dockerfile.jupyterlab
     environment:
       - CONDA_DEFAULT_ENV=base
-      - GPU_SUPPORT_ENABLED=0
       - JUPYTERLAB_SERVER_IP=*
       - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # if token not provided - no passwor required
       - JUPYTERLAB_BASE_URL=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab
@@ -79,6 +78,7 @@ services:
       - ENABLE_SERVICE_MLFLOW=1
       - ENABLE_SERVICE_GLANCES=1
       - ENABLE_SERVICE_TENSORBOARD=1
+      - ENABLE_GPU_SUPPORT=0
     volumes:
       - vol_home:/home                    # jupyterlab user directory persistence
       - vol_workspace:/home/lab/workspace # user projects workspace volume persistence

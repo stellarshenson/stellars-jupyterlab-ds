@@ -476,13 +476,14 @@ ENV JUPYTERLAB_SERVER_TOKEN=""
 ENV JUPYTERLAB_BASE_URL="/lab"
 
 ## default values for GPU support envs
-# GPU_SUPPORT_ENABLED controls nvidia support of the system
-# and GPUSTAT_ENABLED enables gpu status message in terminal if GPU present
-ENV GPU_SUPPORT_ENABLED=0 
-ENV GPUSTAT_ENABLED=1
+# ENABLE_GPU_SUPPORT controls nvidia support of the system
+# and ENABLE_GPUSTAT enables gpu status message in terminal if GPU present
+ENV ENABLE_GPU_SUPPORT=0 
+ENV ENABLE_GPUSTAT=1
 ENV ENABLE_SERVICE_MLFLOW=1
 ENV ENABLE_SERVICE_GLANCES=1
 ENV ENABLE_SERVICE_TENSORBOARD=1
+ENV ENABLE_LOCAL_SCRIPTS=1
 ENV CONDA_DEFAULT_ENV=base
 ENV TF_CPP_MIN_LOG_LEVEL=3 
 ENV TENSORBOARD_LOGDIR=/tmp/tensorboard
@@ -491,6 +492,9 @@ ENV MLFLOW_TRACKING_URI=http://localhost:5000
 ENV MLFLOW_PORT=5000
 ENV MLFLOW_HOST=*
 ENV MLFLOW_WORKERS=1
+
+# local directory with user's own start scripts
+ENV LOCAL_SCRIPTS_DIR=${CONDA_USER_HOME}/.local/start-platform.d
 
 ## setup entry point, workdir and startup command
 ## and set user to be conda user
