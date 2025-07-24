@@ -5,8 +5,13 @@
 CONDA_USER_WORKSPACE=${CONDA_USER_WORKSPACE:-/home/lab/workspace}
 
 echo "Creating useful shortcuts in the workspace"
-ln -s /mnt/shared /home/lab/workspace/@shared 2>&1 >/dev/null
-ln -s /home/lab/.cache /home/lab/workspace/@cache 2>&1 >/dev/null
+if [[ ! -f "${CONDA_USER_WORKSPACE}/@shared" ]]; then
+    ln -s /mnt/shared ${CONDA_USER_WORKSPACE}/@shared 2>&1 >/dev/null
+fi
+
+if [[ ! -f "${CONDA_USER_WORKSPACE}/@cache" ]]; then
+    ln -s /home/lab/.cache ${CONDA_USER_WORKSPACE}/@cache 2>&1 >/dev/null
+fi
 
 # EOF
 
