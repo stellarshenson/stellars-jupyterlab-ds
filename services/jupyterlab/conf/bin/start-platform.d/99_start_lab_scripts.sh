@@ -15,9 +15,9 @@ fi
 LOCAL_SCRIPTS_DIR="${LOCAL_SCRIPTS_DIR:-${HOME}/.local/start-platform.d}"
 if [[ -d "${LAB_SCRIPTS_DIR}" ]]; then
     echo "executing local scripts from ${LOCAL_SCRIPTS_DIR}"
-    for file in ${LAB_SCRIPTS_DIR}/*; do
-	if [ -f "$file" ] && [ -x "$file" ]; then
-	    "$file" 
+    for file in ${LAB_SCRIPTS_DIR}/*.sh; do
+	if [ -f "${file}" ] && [ -x "${file}" ]; then
+	    "${file}" 
 	fi
     done
 fi

@@ -3,9 +3,9 @@
 # run series of start scripts
 # (services will need to run in background)
 START_PLATFORM_DIR='/start-platform.d'
-for file in $START_PLATFORM_DIR/*; do
-    if [ -f "$file" ] && [ -x "$file" ]; then
-        "$file" 
+for file in ${START_PLATFORM_DIR}/*.sh; do
+    if [ -f "${file}" ] && [ -x "${file}" ]; then
+        "${file}" 
     fi
 done
 
