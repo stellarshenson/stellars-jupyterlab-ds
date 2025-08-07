@@ -97,6 +97,7 @@ RUN mkdir -p ${TEMPLATES_DIR}
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
+COPY --chmod=644  ./conf/etc/aws-completion /etc/bash_completion.d
 COPY --chmod=644  ./conf/etc/jupyter/jupyter_lab_config.py /opt/etc/jupyter
 COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
 COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyterlab.yml
@@ -132,20 +133,6 @@ RUN <<-EOF
     echo "patching midnight-commander extensions"
     cp -a /etc/mc/mc.ext.ini /etc/mc/mc.ext.ini.bak 2>/dev/null || true
     patch /etc/mc/mc.ext.ini /tmp/patches/mc.ext.ini.patch
-EOF
-
-########################################################
-#  INSTALL AWS COMMANDLINE UTILITY V2                  #
-########################################################
-
-## need to install awscliv2 directly from amazon, otherwise it fails to work
-RUN <<-EOF
-    echo "installing amazon awscliv2 - AWS command line utility v2 "
-    curl  --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
-    unzip /tmp/awscliv2.zip -d /tmp
-    /tmp/aws/install
-    echo "removing awscli installation files"
-    rm -rf /tmp/aws /tmp/awscliv2.zip
 EOF
 
 ########################################################
@@ -256,6 +243,23 @@ COPY --chown=${CONDA_USER} ./templates/cache ${CONDA_USER_CACHE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
 COPY --chown=${CONDA_USER} ./templates/mlflow ${CONDA_USER_CACHE}/mlflow
+
+########################################################
+#  INSTALL AWS COMMANDLINE UTILITY V2                  #
+########################################################
+
+USER root
+
+## need to install awscliv2 directly from amazon, otherwise it fails to work
+RUN <<-EOF
+    echo "installing amazon awscliv2 - AWS command line utility v2 "
+    curl  --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+    unzip /tmp/awscliv2.zip -d /tmp
+    /tmp/aws/install
+    echo "removing awscli installation files"
+    rm -rf /tmp/aws /tmp/awscliv2.zip
+    echo "installing aws autocompleter"
+EOF
 
 ########################################################
 #  CONDA JUPYTERLAB ENVIRONMENT INSTALLATION           #
