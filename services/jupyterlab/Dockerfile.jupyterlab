@@ -383,10 +383,6 @@ RUN <<-EOF
     conda env update -v --name ${CONDA_R_ENV} --file=/environment_r.yml
 EOF
 
-## need to set CONDA_OVERRIDE_CUDA, see https://conda-forge.org/blog/2021/11/03/tensorflow-gpu/
-## needed if tensorflow or torch are installed using conda, otherwise this is ignored
-ENV CONDA_OVERRIDE_CUDA=12.3
-
 ## install tensorflow using pip to its dedicated environment
 RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} --file=/environment_tensorflow.yml 
 
