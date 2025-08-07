@@ -14,6 +14,7 @@ packages:
     # - iproute2 # additional networking tools
     - less # interactive file reader
     # - man # man pages
+    - mandoc # for showing manpages
     - mc # midnight commander
     - netcat-traditional # netcat network swiss army tool
     - patch # tool to allow applying of diff/patches
