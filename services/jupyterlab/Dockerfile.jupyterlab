@@ -63,7 +63,8 @@ RUN cp llama*.whl ${EXPORT_DIR}
 ##############################################################################################
 
 ## this dockergfile is loosely based on the github project
-FROM nvidia/cuda:12.9.1-runtime-ubuntu24.04 AS target
+# FROM nvidia/cuda:12.9.1-runtime-ubuntu24.04 AS target
+FROM nvidia/cuda:12.9.1-base-ubuntu24.04 AS target
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
