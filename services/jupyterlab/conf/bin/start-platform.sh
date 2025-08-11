@@ -11,12 +11,12 @@ done
 
 # if jupyterhub
 if [[ -n ${JUPYTERHUB_USER} ]]; then
-    echo "starting jupyterlab under hub supervision"
+    echo "Starting jupyterlab under jupyterhub"
     jupyter-labhub "$@"
 
 # standalone jupyterlab
 else 
-    echo "starting jupyterlab server"
+    echo "Starting standalone jupyterlab server"
     jupyter-lab \
 	--autoreload \
 	--ip=$JUPYTERLAB_SERVER_IP \
