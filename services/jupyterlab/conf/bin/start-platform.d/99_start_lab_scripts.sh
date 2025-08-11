@@ -14,7 +14,7 @@ fi
 # (services will need to run in background)
 LOCAL_SCRIPTS_DIR="${LOCAL_SCRIPTS_DIR:-${HOME}/.local/start-platform.d}"
 if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
-    echo "executing local scripts from ${LOCAL_SCRIPTS_DIR}"
+    echo "Executing user startup scripts from ${LOCAL_SCRIPTS_DIR}"
     for file in ${LOCAL_SCRIPTS_DIR}/*.sh; do
 	if [ -f "${file}" ] && [ -x "${file}" ]; then
 	    "${file}" 
