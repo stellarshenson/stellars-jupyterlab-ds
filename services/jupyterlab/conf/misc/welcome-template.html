@@ -95,20 +95,20 @@
   <div class="section">
     <h2>Core Services</h2>
     <ul>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@" target="_blank">http://@JUPYTERLAB_SERVICE_URL@</a> – <b>JupyterLab</b>: main notebook interface</li>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/lab/tree" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/lab/tree</a> – <b>VSCode</b> access to Jupyterlab kernels</li>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/tensorboard" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/tensorboard</a> – <b>Tensorboard</b>: training metrics visualization</li>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/mlflow" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/mlflow</a> – <b>MLFlow</b>: track ML/AI experiments and their results</li>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/glances" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/glances</a> – <b>Glances</b>: system monitor for CPU, GPU, memory</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@" target="_blank">Jupyterlab Environment</a> – main notebook lab interface</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/lab/tree" target="_blank">Jupyerlab Kernels</a> – <b>for VSCode</b> access to Jupyterlab kernels</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/tensorboard" target="_blank">Tensorboard Service</a> – tensorflow training tracking and visualization</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/mlflow" target="_blank">MLFlow</a> – track ML/AI experiments and their results</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/glances" target="_blank">Glances</a> – system resources monitoring</li>
     </ul>
   </div>
 
   <div class="section">
     <h2>Optional Tools</h2>
     <ul>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/optuna" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/optuna</a> – Optuna Dashboard on port :8080</li>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/generic-callback" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/generic-callback</a> – Generic HTTP Callback using port :8030 </li>
-	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/generic-app" target="_blank">http://@JUPYTERLAB_SERVICE_URL@/generic-app</a> – Generic Application using port :8080</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/optuna" target="_blank">Optuna</a> – Optuna Dashboard on port :8080 (must run it first)</li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/generic-callback" target="_blank">Generic HTTP Callback</a> – optional, using port :8030 </li>
+	<li><span class="icon"></span><a href="http://@JUPYTERLAB_SERVICE_URL@/generic-app" target="_blank">Generic WebApp</a> – Generic Web Application access on port :8080</li>
     </ul>
   </div>
 
@@ -120,6 +120,7 @@
       <li><code>/home/lab/workspace</code> – persistent project workspace</li>
       <li><code>/home/lab</code> – persistent user home and settings</li>
       <li><code>/home/lab/.jupyter</code> – persistent Jupyterlab settings</li>
+      <li><code>/home/lab/.local/start-platform.d</code> –custom startup scripts</li>
       <li><code>/home/lab/.cache</code> – persistent cache storage (i.e. datasets)</li>
       <li><code>/home/lab/.cache/mlflow</code> – persistent MLFlow db and artefacts</li>
       <li><code>/tmp/tensorboard</code> – Tensorboard logs (temporary)</li>
