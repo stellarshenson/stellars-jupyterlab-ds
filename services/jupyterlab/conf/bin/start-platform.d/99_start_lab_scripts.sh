@@ -13,9 +13,9 @@ fi
 # run series of local start scripts
 # (services will need to run in background)
 LOCAL_SCRIPTS_DIR="${LOCAL_SCRIPTS_DIR:-${HOME}/.local/start-platform.d}"
-if [[ -d "${LAB_SCRIPTS_DIR}" ]]; then
+if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
     echo "executing local scripts from ${LOCAL_SCRIPTS_DIR}"
-    for file in ${LAB_SCRIPTS_DIR}/*.sh; do
+    for file in ${LOCAL_SCRIPTS_DIR}/*.sh; do
 	if [ -f "${file}" ] && [ -x "${file}" ]; then
 	    "${file}" 
 	fi
