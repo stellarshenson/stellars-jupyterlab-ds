@@ -1,5 +1,5 @@
 # base environment update with Jupyterlab installation
-# 2025-07-16
+# 2025-08-12
 
 name: base
 channels:
@@ -11,21 +11,23 @@ dependencies:
   - python=3.12 # make sure we have correct python version
   - pip # package manager
 
-  ## jupyterlab and language server
-  - jupyterlab # makes sure latest jupyterlab is installed
-  - jupyterhub # to install jupyterhub and allow lab in hub mode
-  - jupyterlab-lsp # language server extension
-  - jupyter-server-proxy # advanced proxy for additional services when running hub
-   
   ## jupyterlab extensions
-  - jupyterlab-git # enables git extension for jupyterlab
-  - nbconvert # notebook conversion to HTML and other formats
   - nb_conda # provides conda environment and package access extension from jupyter
   - nb_conda_kernels # ability to add kernels (available only via conda)
 
   - pip:
 
-    ## jupyterlab extensions packages
+    ## jupyterlab and language server
+    - jupyterlab # makes sure latest jupyterlab is installed
+    - jupyterhub # to install jupyterhub and allow lab in hub mode
+    - jupyterlab-lsp # language server extension
+    - jupyter-server-proxy # advanced proxy for additional services when running hub
+    - jupyterlab-git # enables git extension for jupyterlab
+    - nbconvert # notebook conversion to HTML and other formats
+
+     ## jupyterlab extensions packages
+    - jupyter-client # latest client
+    - notebook # latesrt notebook module 
     - python-lsp-server[all] # install autocompleter extentions
     - jupyterlab-code-formatter # proxy to code formatting like black or isort
     - jupyter-resource-usage # enables cpu and mem monitoring
