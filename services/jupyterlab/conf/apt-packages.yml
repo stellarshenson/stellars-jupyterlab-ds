@@ -13,6 +13,7 @@ packages:
     # - iputils-ping # simple ping utility
     # - iproute2 # additional networking tools
     - less # interactive file reader
+    # - libgl1 # for torch / ultralytics to work properly
     # - man # man pages
     - mandoc # for showing manpages
     - mc # midnight commander
