@@ -27,7 +27,6 @@ dependencies:
 
      ## jupyterlab extensions packages
     - jupyter-client # latest client
-    - notebook # latesrt notebook module 
     - python-lsp-server[all] # install autocompleter extentions
     - jupyterlab-code-formatter # proxy to code formatting like black or isort
     - jupyter-resource-usage # enables cpu and mem monitoring
