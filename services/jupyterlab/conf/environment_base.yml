@@ -4,7 +4,6 @@
 name: base
 channels:
   - conda-forge # default repo for miniforge3
-  - nvidia   # nvidia packages with cuda to support tensorflow gpu acceleration
 
 dependencies:
   - python=3.12 # make sure we have correct python version
@@ -15,17 +14,15 @@ dependencies:
 
     ## system monitoring
     - glances # system web monitoring tool
-    - nvidia-ml-py3 # nvidia plugins
+    - nvidia-ml-py3 # nvidia plugins to allow nvidia monitoring with glances
+    - gpustat # gpu status reporting tool
 
     ## other libraries
-    - IProgress # jupyterlab widget to show progress, used by optuna
     - build # to allow building packages in python
     - boto3 # aws webservices client
     - click # input parameters processing for python scripts
     - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
-    - gpustat # gpu status reporting tool
-    - ipywidgets # jupyter widgets from IPython
     - make # build tools
     - matplotlib # plots library
     - mlflow # powerful mlops suite and experiment runner (library)
@@ -33,12 +30,9 @@ dependencies:
     - pandas # data manipulation library
     - parquet-tools # commandline parquet viewer
     - polars  # superfast alternative to pandas
-    - pyarrow # backend for polars
-    - pytest # python test framework
     - python-dotenv # managing .env file loading in the runtime context
     - scikit-learn # machine leanring library for python
     - scipy # python scientific library
-    - seaborn # advanced charts / plotting library (uses matplotlib under the hood)
 
 # EOF
 
