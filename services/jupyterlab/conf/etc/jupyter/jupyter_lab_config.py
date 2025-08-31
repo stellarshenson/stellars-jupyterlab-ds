@@ -26,7 +26,7 @@ c.JupyterLabIFrame.allow_any_local = False
 ## this configuration is potentially dangerous
 c.ServerApp.tornado_settings = {
     'headers': {
-        'Content-Security-Policy': "frame-ancestors 'self'; default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; img-src *;"
+        'Content-Security-Policy': "frame-ancestors 'self'; default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; img-src * data: blob: 'unsafe-inline' 'unsafe-eval';"
     }
 }
 
