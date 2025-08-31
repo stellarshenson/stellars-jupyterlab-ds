@@ -13,8 +13,8 @@ dependencies:
 
     ## system monitoring
     - glances # system web monitoring tool
-    - nvidia-ml-py3 # nvidia plugins to allow nvidia monitoring with glances
     - gpustat # gpu status reporting tool
+    - nvtop # nvidia gpu monitoring tool
 
     ## other libraries
     - build # to allow building packages in python
