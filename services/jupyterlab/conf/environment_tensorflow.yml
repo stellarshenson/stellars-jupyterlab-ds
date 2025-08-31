@@ -1,3 +1,5 @@
+# base environment for tensorflow (GPU enabled)
+
 name: tensorflow
 channels:
   - conda-forge  # Primary channel for the latest stable packages including Python

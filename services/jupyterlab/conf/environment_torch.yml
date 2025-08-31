@@ -1,3 +1,5 @@
+# base environment for torch (GPU enabled)
+
 name: torch
 channels:
   - conda-forge # default repo for miniforge3

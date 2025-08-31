@@ -1,3 +1,5 @@
+# base environment for R
+
 name: r
 channels:
   - conda-forge # default repo for miniforge3
