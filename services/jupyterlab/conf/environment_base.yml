@@ -8,13 +8,14 @@ dependencies:
   - python=3.12 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
+  - nvtop # nvidia gpu monitoring tool
 
   - pip:
 
     ## system monitoring
-    - glances # system web monitoring tool
+    - glances[gpu] # system web monitoring tool
+    - nvidia-ml-py3 # needed by glances to monitor GPU
     - gpustat # gpu status reporting tool
-    - nvtop # nvidia gpu monitoring tool
 
     ## other libraries
     - build # to allow building packages in python
