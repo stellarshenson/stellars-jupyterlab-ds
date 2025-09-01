@@ -1,4 +1,5 @@
 # base environment definition without Jupyterlab
+# this environment will be cloned to tensorflow and torch
 
 name: base
 channels:
@@ -8,20 +9,10 @@ dependencies:
   - python=3.12 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
-  - nvtop # nvidia gpu monitoring tool
 
   - pip:
 
-    ## system monitoring
-    - glances[gpu] # system web monitoring tool
-    - nvidia-ml-py3 # needed by glances to monitor GPU
-    - gpustat # gpu status reporting tool
-
     ## other libraries
-    - build # to allow building packages in python
-    - boto3 # aws webservices client
-    - click # input parameters processing for python scripts
-    - colorama # text colouring
     - cookiecutter # projects directory + resources template (ds projects)
     - make # build tools
     - matplotlib # plots library

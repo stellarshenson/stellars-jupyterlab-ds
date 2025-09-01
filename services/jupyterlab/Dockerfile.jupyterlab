@@ -100,7 +100,7 @@ RUN mkdir -p ${TEMPLATES_DIR}
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
 COPY --chmod=644  ./conf/etc/aws-completion /etc/bash_completion.d
 COPY --chmod=644  ./conf/etc/jupyter/jupyter_lab_config.py /opt/etc/jupyter
-COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml
+COPY --chmod=644  ./conf/environment_base_template.yml /environment_base_template.yml
 COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyterlab.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
@@ -320,7 +320,7 @@ RUN <<-EOF
     fi
 
     ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
-    ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} --file=/environment_base.yml 
+    ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} --file=/environment_base_template.yml 
 EOF
 
 ## Tell the docker build process to use this for RUN.
