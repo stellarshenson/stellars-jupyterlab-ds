@@ -1,4 +1,5 @@
 # base environment update with Jupyterlab installation
+# this environment has also additional tools available
 
 name: base
 channels:
@@ -12,7 +13,15 @@ dependencies:
   - nb_conda # provides conda environment and package access extension from jupyter
   - nb_conda_kernels # ability to add kernels (available only via conda)
 
+  ## environment monitoring
+  - nvtop # nvidia gpu monitoring tool (must be available everywhere)
+
   - pip:
+
+    ## system monitoring
+    - glances[gpu] # system web monitoring tool
+    - nvidia-ml-py3 # needed by glances to monitor GPU
+    - gpustat # gpu status reporting tool
 
     ## jupyterlab and language server
     - jupyterlab # makes sure latest jupyterlab is installed
