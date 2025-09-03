@@ -47,11 +47,10 @@ dependencies:
     - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on original darcula
     - stellars-jupyterlab-darcula-theme # gray IntelliJ darcula theme based on original darcula
 
-    ## aws client, we don't install cli - we use binary install
-
     ## other libraries
     - black # pragmatic code formatter
     - nbdime # tool for diffing and merging jupyter notebooks
+    - cookiecutter # projects directory + resources template (ds projects)
 
     # EOF
 
