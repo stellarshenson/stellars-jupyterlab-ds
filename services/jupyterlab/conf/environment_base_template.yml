@@ -13,7 +13,6 @@ dependencies:
   - pip:
 
     ## other libraries
-    - cookiecutter # projects directory + resources template (ds projects)
     - make # build tools
     - matplotlib # plots library
     - mlflow # powerful mlops suite and experiment runner (library)
