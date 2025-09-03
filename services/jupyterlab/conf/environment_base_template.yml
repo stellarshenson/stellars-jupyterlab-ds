@@ -16,7 +16,6 @@ dependencies:
     - cookiecutter # projects directory + resources template (ds projects)
     - make # build tools
     - matplotlib # plots library
-    - mlflow # powerful mlops suite and experiment runner (library)
     - numpy # advanced library for working with arrays
     - pandas # data manipulation library
     - parquet-tools # commandline parquet viewer
