@@ -13,8 +13,8 @@ c.FileContentsManager.always_delete_dir = True
 c.ContentsManager.allow_hidden = True
 
 ## ssl configuration to use https - only when not using traefik proxy
-# c.ServerApp.certfile = u'/mnt/certs/stellars-jupyterlab-ds.crt'
-# c.ServerApp.keyfile = u'/mnt/certs/stellars-jupyterlab-ds.key'
+# c.ServerApp.certfile = u'/mnt/certs/server.crt'
+# c.ServerApp.keyfile = u'/mnt/certs/server.key'
 
 ## welcome pages and additional services
 c.JupyterLabIFrame.iframes = ['local:///welcome.html']
