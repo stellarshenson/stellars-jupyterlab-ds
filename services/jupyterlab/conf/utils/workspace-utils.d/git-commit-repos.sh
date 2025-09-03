@@ -1,10 +1,10 @@
 #!/bin/bash
+## Runs git commit on all git repos in workspace
 
 OIFS="$IFS" # old separator
 IFS=$'\n' # new separator - newline
 CURRENT_DIR=$(pwd)
 LOGFILE=/tmp/git-workspace.log
-OK_LOG="Already up to date."
 
 # colours
 RED='\033[0;31m'
@@ -12,7 +12,7 @@ GRN='\033[0;32m'
 YEL='\033[0;33m'
 NC='\033[0m' # No Color
 
-
+OK_LOG="nothing to commit, working tree clean"
 
 # list repos, but exclude @archive and tutorials
 REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep -v '@archive')
@@ -21,11 +21,12 @@ REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep 
 declare -i COUNTER=1
 for r in $REPOS;
 do
+    # run git command
     cd $CURRENT_DIR
-    echo "[$COUNTER] executing pull for $r"
+    echo "[$COUNTER] executing commit for $r"
     cd $(realpath $r)
     cd ..
-    git pull --rebase | tee $LOGFILE
+    git commit -a 2>&1 | tee $LOGFILE
     GIT_EXITCODE=$?
 
     # check logs and exit codes
@@ -49,5 +50,3 @@ done
 cd $CURRENT_DIR
 
 IFS="$OIFS" # restore separator
-
-

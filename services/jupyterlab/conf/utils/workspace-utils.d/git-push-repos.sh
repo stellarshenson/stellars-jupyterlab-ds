@@ -1,17 +1,17 @@
 #!/bin/bash
+## Runs git push on all git repos found in the workspace
 
 OIFS="$IFS" # old separator
 IFS=$'\n' # new separator - newline
 CURRENT_DIR=$(pwd)
 LOGFILE=/tmp/git-workspace.log
+OK_LOG="Everything up-to-date"
 
 # colours
 RED='\033[0;31m'
 GRN='\033[0;32m'
 YEL='\033[0;33m'
 NC='\033[0m' # No Color
-
-OK_LOG="nothing to commit, working tree clean"
 
 # list repos, but exclude @archive and tutorials
 REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep -v '@archive')
@@ -20,12 +20,11 @@ REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep 
 declare -i COUNTER=1
 for r in $REPOS;
 do
-    # run git command
     cd $CURRENT_DIR
-    echo "[$COUNTER] executing commit for $r"
+    echo "[$COUNTER] executing push for $r"
     cd $(realpath $r)
     cd ..
-    git commit -a 2>&1 | tee $LOGFILE
+    git push 2>&1 | tee $LOGFILE
     GIT_EXITCODE=$?
 
     # check logs and exit codes
@@ -41,7 +40,6 @@ do
 	echo -e "$RED""ERROR""$NC"
     fi
 
-    # update counter
     let COUNTER=$COUNTER+1
 done
 

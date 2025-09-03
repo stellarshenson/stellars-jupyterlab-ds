@@ -1,4 +1,5 @@
 #!/bin/sh
+## Runs pull on all git submodules in the workspace
 
 # in case submodules are missing init them
 git submodule update --init --recursive
