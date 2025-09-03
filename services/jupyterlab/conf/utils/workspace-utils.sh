@@ -78,19 +78,20 @@ for i in "${!SCRIPT_DATA[@]}"; do
 done
 
 # Show selection dialog
-CHOICE=$(dialog --clear --title "Workspace Utils" \
-                --menu "Select utility to execute:" \
-                20 120 10 \
-                "${MENU_OPTIONS[@]}" \
-                2>&1 >/dev/tty)
+TEMPFILE=$(mktemp)
+dialog --clear --title "Workspace Utils" \
+	--menu "Select utility to execute:" \
+	20 120 10 \
+	"${MENU_OPTIONS[@]}" \
+	2>$TEMPFILE >/dev/tty || {
 
-# Check if user cancelled
-if [[ $? -ne 0 ]]; then
     clear
-    echo "Cancelled"
     exit 0
-fi
+}
 
+# save up response and clean up the screen
+CHOICE=$(cat $TEMPFILE)
+rm $TEMPFILE
 clear
 
 # Execute the selected script
