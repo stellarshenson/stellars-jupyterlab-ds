@@ -98,7 +98,7 @@ RUN mkdir -p ${TEMPLATES_DIR}
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
-COPY --chmod=644  ./conf/etc/aws-completion /etc/bash_completion.d
+COPY --chmod=644  ./conf/etc/bash_completion.d/* /etc/bash_completion.d
 COPY --chmod=644  ./conf/etc/jupyter/jupyter_lab_config.py /opt/etc/jupyter
 COPY --chmod=644  ./conf/environment_base_template.yml /environment_base_template.yml
 COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyterlab.yml
@@ -259,7 +259,6 @@ RUN <<-EOF
     /tmp/aws/install
     echo "removing awscli installation files"
     rm -rf /tmp/aws /tmp/awscliv2.zip
-    echo "installing aws autocompleter"
 EOF
 
 ########################################################
