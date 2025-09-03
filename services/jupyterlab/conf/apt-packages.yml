@@ -1,9 +1,11 @@
 # base packages to be installed by apt
 # this file can be used by apt with the following command:
 # $ apt install -y `yq eval '.packages[]' apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
+#
 packages:
     - bash-completion # completion for bash
     - curl # for downloading files
+    - dialog # ncures shell GUI tool for workspace scripts
     # - gcc # compiler, required for building some native packages 
     - git # git client
     - git-lfs # git plugin for large file storage
