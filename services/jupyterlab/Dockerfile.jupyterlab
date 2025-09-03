@@ -392,7 +392,7 @@ RUN conda env update -v --name ${CONDA_TORCH_ENV} --file=/environment_torch.yml
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
 ## path can be obtained by using >> python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
-ENV CUDNN_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn
+ENV CUDNN_PATH=/opt/conda/lib/python3.1/site-packages/nvidia/cudnn
 ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 
 
