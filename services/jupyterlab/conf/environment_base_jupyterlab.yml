@@ -22,7 +22,6 @@ dependencies:
     - glances[gpu] # system web monitoring tool
     - nvidia-ml-py3 # needed by glances to monitor GPU
     - gpustat # gpu status reporting tool
-    - mlflow # powerful mlops suite and experiment runner (library)
 
     ## jupyterlab and language server
     - jupyterlab # makes sure latest jupyterlab is installed
