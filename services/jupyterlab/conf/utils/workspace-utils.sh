@@ -94,5 +94,7 @@ fi
 clear
 
 # Execute the selected script
-cd "$SCRIPTS_DIR"
-"./$CHOICE"
+echo "Executing: ${SCRIPTS_DIR}/$CHOICE"
+"${SCRIPTS_DIR}/$CHOICE"
+
+# EOF
