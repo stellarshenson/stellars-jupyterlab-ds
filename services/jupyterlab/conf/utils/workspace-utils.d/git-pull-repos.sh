@@ -1,16 +1,19 @@
 #!/bin/bash
+## Runs git pull on all git repos in workspace
 
 OIFS="$IFS" # old separator
 IFS=$'\n' # new separator - newline
 CURRENT_DIR=$(pwd)
 LOGFILE=/tmp/git-workspace.log
-OK_LOG="Everything up-to-date"
+OK_LOG="Already up to date."
 
 # colours
 RED='\033[0;31m'
 GRN='\033[0;32m'
 YEL='\033[0;33m'
 NC='\033[0m' # No Color
+
+
 
 # list repos, but exclude @archive and tutorials
 REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep -v '@archive')
@@ -20,10 +23,10 @@ declare -i COUNTER=1
 for r in $REPOS;
 do
     cd $CURRENT_DIR
-    echo "[$COUNTER] executing push for $r"
+    echo "[$COUNTER] executing pull for $r"
     cd $(realpath $r)
     cd ..
-    git push 2>&1 | tee $LOGFILE
+    git pull --rebase | tee $LOGFILE
     GIT_EXITCODE=$?
 
     # check logs and exit codes
@@ -39,6 +42,7 @@ do
 	echo -e "$RED""ERROR""$NC"
     fi
 
+    # update counter
     let COUNTER=$COUNTER+1
 done
 
@@ -46,3 +50,5 @@ done
 cd $CURRENT_DIR
 
 IFS="$OIFS" # restore separator
+
+
