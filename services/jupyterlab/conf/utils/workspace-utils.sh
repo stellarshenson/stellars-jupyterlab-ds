@@ -95,6 +95,7 @@ rm $TEMPFILE
 clear
 
 # Execute the selected script
+cd ${CONDA_USER_WORKSPACE}
 echo "Executing: ${SCRIPTS_DIR}/$CHOICE"
 "${SCRIPTS_DIR}/$CHOICE"
 
