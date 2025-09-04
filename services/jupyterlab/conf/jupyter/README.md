@@ -1,0 +1,1 @@
+- `jupyter_app_launcher` - folder with the configuration file for custom widgets for _Jupyterlab Launcher_
