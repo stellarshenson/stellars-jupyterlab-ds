@@ -163,6 +163,28 @@ To use this environment, Docker must be installed on your system. JupyterLab 4 i
 
 **Tip:** Modify the `/opt/workspace` entry in the `volumes:` section of the `docker-compose` files to map to a different project location on your filesystem.
 
+### Environment Variables
+
+Below is the list of environment variables used by the system
+
+- `CONDA_DEFAULT_ENV` - default conda environment to set
+- `JUPYTERLAB_SERVER_IP` - IP address to run Jupyterlab on, defaults to `0.0.0.0` (all interfaces)
+- `JUPYTERLAB_SERVER_TOKEN` - access token to use when logging in to Jupyterlab
+- `JUPYTERLAB_BASE_URL` - base URL for jupyterlab, defaults to `/lab`, it needs to be the same as one used by reverse proxy
+- `ENABLE_GPU_SUPPORT` - enable features that make use of NVidia GPU
+- `ENABLE_GPUSTAT` - enable GPU monitoring
+- `ENABLE_SERVICE_MLFLOW` - enable private MLFlow service
+- `ENABLE_SERVICE_GLANCES` - enable Glances HTTP resources monitoring service
+- `ENABLE_SERVICE_TENSORBOARD` - enable tensorboard
+- `ENABLE_LOCAL_SCRIPTS` - enable ability for user to define startup scripts
+- `TF_CPP_MIN_LOG_LEVEL` - tensorflow default logging level (helps avoid verbose outputs by default), defaults to `3`
+- `TENSORBOARD_LOGDIR` - location of tensorboard log files (use this to output tensorflow training logfiles)
+- `MLFLOW_TRACKING_URI` - MLFlow default tracking URI (defaults to local MLFlow instance)
+- `MLFLOW_PORT` - port on which local MLFlow service is running (defaults to `5000`)
+- `MLFLOW_HOST` - IP address on which mlflow service will be running (defaults to `*` - to run on all interfaces)
+- `MLFLOW_WORKERS` - default number of workers for the local MLFlow (defaults to `1`)
+
+
 ## Platform Features
 - **JupyterLab 4+** ([JupyterLab Homepage](https://jupyterlab.readthedocs.io/en/latest) for reference)
 - **Extensions:** Git integration, autocompletion, and other useful tools.
