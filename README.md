@@ -163,6 +163,14 @@ To use this environment, Docker must be installed on your system. JupyterLab 4 i
 
 **Tip:** Modify the `/opt/workspace` entry in the `volumes:` section of the `docker-compose` files to map to a different project location on your filesystem.
 
+## Workspace Utilities
+
+System implements number of helpful _Workspace Utilities_ to support streamlined development and to help with everyday tasks. 
+
+`workspace-utils.sh` script available in the user's workspace provides a convenient visual dialog for launching of the different utils along with a short description of what they are used for
+
+![workspace utils](./.resources/workspace-utils.png)
+
 ### Environment Variables
 
 Below is the list of environment variables used by the system
