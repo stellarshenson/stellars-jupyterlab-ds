@@ -8,6 +8,9 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+# set default conda environment
+CONDA_DEFAULT_ENV="base"
+
 # aliases - dark midnight commander
 alias mc='mc -b'
 

@@ -339,14 +339,6 @@ RUN <<-EOF
     echo "# EOF" >> ${CONDA_USER_HOME}/.bashrc
 EOF
 
-## patch ~/.profile to have an example of conda preferred environment
-RUN <<-EOF
-    echo "patching shell profile script" 
-    cd ${CONDA_USER_HOME}
-    patch < ${PATCHES_PATH}/home.profile.patch
-    echo "patched ${CONDA_USER_HOME}/.profile"
-EOF
-
 ## it must be configured to work with jupyter notebooks via nbdime
 RUN <<-EOF
     echo "configuring git to work with jupyter notebooks"
