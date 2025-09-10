@@ -13,6 +13,9 @@ GRN='\033[0;32m'
 YEL='\033[0;33m'
 NC='\033[0m' # No Color
 
+# change folder to workspace
+cd ${CONDA_USER_WORKSPACE}
+
 # list repos, but exclude @archive and tutorials
 REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep -v '@archive')
 
