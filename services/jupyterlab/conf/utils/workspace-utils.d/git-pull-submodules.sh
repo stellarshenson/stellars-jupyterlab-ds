@@ -1,6 +1,10 @@
 #!/bin/sh
 ## Runs pull on all git submodules in the workspace
 
+# change folder to workspace
+cd ${CONDA_USER_WORKSPACE}
+
+
 # in case submodules are missing init them
 git submodule update --init --recursive
 

@@ -6,6 +6,9 @@ IFS=$'\n' # new separator - newline
 CURRENT_DIR=$(pwd)
 LOGFILE=/tmp/git-workspace.log
 
+# change folder to workspace
+cd ${CONDA_USER_WORKSPACE}
+
 # colours
 RED='\033[0;31m'
 GRN='\033[0;32m'

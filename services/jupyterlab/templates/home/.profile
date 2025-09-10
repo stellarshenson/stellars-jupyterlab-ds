@@ -6,10 +6,13 @@
 
 # the default umask is set in /etc/profile; for setting the umask
 # for ssh logins, install and configure the libpam-umask package.
-#umask 022
+umask 022
 
 # set default conda environment
-CONDA_DEFAULT_ENV="base"
+export CONDA_DEFAULT_ENV="base"
+
+# set default AWS profile
+export AWS_PROFILE="default"
 
 # aliases - dark midnight commander
 alias mc='mc -b'
