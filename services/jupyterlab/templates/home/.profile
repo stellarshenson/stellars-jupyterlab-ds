@@ -25,9 +25,6 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-# include opt utils scripts in PATH
-PATH="/opt/utils:$PATH"
-
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"

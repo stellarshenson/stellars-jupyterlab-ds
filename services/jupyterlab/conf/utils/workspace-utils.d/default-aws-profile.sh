@@ -44,7 +44,7 @@ update_profile() {
     # Check if AWS_PROFILE line exists
     if grep -q "AWS_PROFILE=" "$PROFILE_FILE" 2>/dev/null; then
         # Replace existing line
-        sed -i "s/AWS_PROFILE=.*/AWS_PROFILE=\"$selected_profile\"/" "$PROFILE_FILE"
+	sed -i "s/^\s*\(export\s\+\)\?AWS_PROFILE\s*=.*/export AWS_PROFILE=\"$selected_profile\"/" "$PROFILE_FILE"
     else
         # Add new line after the comment or at the end
         if grep -q "# set default AWS profile" "$PROFILE_FILE" 2>/dev/null; then
