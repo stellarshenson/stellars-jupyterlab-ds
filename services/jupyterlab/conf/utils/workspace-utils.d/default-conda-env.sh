@@ -30,7 +30,7 @@ update_profile() {
     # Check if CONDA_DEFAULT_ENV line exists
     if grep -q "CONDA_DEFAULT_ENV=" "$PROFILE_FILE" 2>/dev/null; then
         # Replace existing line
-        sed -i "s/CONDA_DEFAULT_ENV=.*/CONDA_DEFAULT_ENV=\"$selected_env\"/" "$PROFILE_FILE"
+        sed -i "s/^\s*\(export\s\+\)\?CONDA_DEFAULT_ENV=.*/export CONDA_DEFAULT_ENV=\"$selected_env\"/" "$PROFILE_FILE"
     else
         # Add new line after the comment or at the end
         if grep -q "# set default conda environment" "$PROFILE_FILE" 2>/dev/null; then

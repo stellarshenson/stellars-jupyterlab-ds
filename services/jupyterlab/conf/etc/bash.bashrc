@@ -25,6 +25,9 @@ alias ls="ls --color=auto"
 # Fix CUDA loading for running nvidia-smi
 ldconfig 2>/dev/null
 
+# include opt utils scripts in PATH
+export PATH="/opt/utils:$PATH"
+
 # show motd only for SHLVL less or equal 2
 if [[ "$SHLVL" -gt 2 ]]; then
     return
