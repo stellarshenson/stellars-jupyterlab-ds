@@ -1,5 +1,6 @@
 # base environment definition without Jupyterlab
 # this environment will be cloned to tensorflow and torch
+# 2025-09-26
 
 name: base
 channels:
