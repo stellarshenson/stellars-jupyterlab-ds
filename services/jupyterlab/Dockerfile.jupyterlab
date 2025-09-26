@@ -1,9 +1,10 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
-FROM nvidia/cuda:12.9.1-cudnn-runtime-ubuntu24.04 AS builder
+ARG CUDA_VERSION=13.0.1
+FROM nvidia/cuda:${CUDA_VERSION}-cudnn-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
-ARG CUDA_TOOLKIT_VERSION=12.9.1
+ARG CUDA_TOOLKIT_VERSION=${CUDA_VERSION}
 
 # Install necessary packages for building
 ENV DEBIAN_FRONTEND=noninteractive 
@@ -64,7 +65,7 @@ RUN cp llama*.whl ${EXPORT_DIR}
 
 ## this dockergfile is loosely based on the github project
 # FROM nvidia/cuda:12.9.1-runtime-ubuntu24.04 AS target
-FROM nvidia/cuda:12.9.1-base-ubuntu24.04 AS target
+FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu24.04 AS target
 
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
@@ -198,11 +199,10 @@ EOF
 
 ## use predefined contents of a user home (and to tmp for reference)
 ## and also link standard config file to the template for jupyterlab
-COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME_TEMPLATE}
+COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
 RUN <<-EOF
     echo "preparing user directory from template"
-    ln -s /opt/etc/jupyter/jupyter_lab_config.py ${CONDA_USER_HOME_TEMPLATE}/.jupyter
-    cp -r ${CONDA_USER_HOME_TEMPLATE} ${CONDA_USER_HOME}
+    ln -s /opt/etc/jupyter/jupyter_lab_config.py ${CONDA_USER_HOME}/.jupyter
     chown -R ${CONDA_USER} ${CONDA_USER_HOME}
 EOF
 
@@ -437,6 +437,16 @@ RUN apt autoremove -y && apt purge
 
 
 ########################################################
+#  SAVE COPY OF USER HOME AS TEMPLATE                  #
+########################################################
+
+## now that user home is fully configured, copy to templates
+RUN <<-EOF
+    echo "saving pre-configured user home as template"
+    cp -r ${CONDA_USER_HOME} ${CONDA_USER_HOME_TEMPLATE}
+    chown -R root ${CONDA_USER_HOME}
+EOF
+
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
