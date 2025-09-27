@@ -1,6 +1,6 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
-ARG CUDA_VERSION=13.0.1
+ARG CUDA_VERSION=12.9.1
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
@@ -94,13 +94,14 @@ EOF
 
 # create directories
 ARG TEMPLATES_DIR=/opt/templates
-RUN mkdir -p /opt/etc/jupyter
+ARG JUPYTER_ETC_DIR=/opt/conda/etc/jupyter
+RUN mkdir -p ${JUPYTER_ETC_DIR}
 RUN mkdir -p ${TEMPLATES_DIR}
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
 COPY --chmod=644  ./conf/etc/bash_completion.d/* /etc/bash_completion.d
-COPY --chmod=644  ./conf/etc/jupyter/jupyter_lab_config.py /opt/etc/jupyter
+COPY --chmod=644  ./conf/etc/jupyter/jupyter_lab_config.py ${JUPYTER_ETC_DIR}
 COPY --chmod=644  ./conf/environment_base_template.yml /environment_base_template.yml
 COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyterlab.yml
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
@@ -157,8 +158,8 @@ ARG CONDA_USER_PASSWD=password
 ENV CONDA_USER_HOME=/home/${CONDA_USER}
 ENV CONDA_USER_CACHE=${CONDA_USER_HOME}/.cache
 ARG CONDA_USER_HOME_TEMPLATE=${TEMPLATES_DIR}/template_home
-ENV CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
-ENV CONDA_USER_WORKSPACE_TEMPLATE=${TEMPLATES_DIR}/template_workspace
+ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
+ARG CONDA_USER_WORKSPACE_TEMPLATE=${TEMPLATES_DIR}/template_workspace
 ARG CONDA_USER_SHARED=/mnt/shared
 ENV CONDA_RUN_DEBUG=0
 ENV PATH=${PATH}:${CONDA_HOME}/condabin
@@ -202,7 +203,7 @@ EOF
 COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
 RUN <<-EOF
     echo "preparing user directory from template"
-    ln -s /opt/etc/jupyter/jupyter_lab_config.py ${CONDA_USER_HOME}/.jupyter
+    ln -s ${JUPYTER_ETC_DIR}/jupyter_lab_config.py ${CONDA_USER_HOME}/.jupyter
     chown -R ${CONDA_USER} ${CONDA_USER_HOME}
 EOF
 
@@ -239,7 +240,7 @@ USER ${CONDA_USER}
 
 # make sure initial workspace has template files
 COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
-COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE_TEMPLATE}
+# COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE_TEMPLATE}
 COPY --chown=${CONDA_USER} ./templates/cache ${CONDA_USER_CACHE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
