@@ -93,10 +93,12 @@ RUN <<-EOF
 EOF
 
 # create directories
-ARG TEMPLATES_DIR=/opt/templates
 ARG JUPYTER_ETC_DIR=/opt/conda/etc/jupyter
 RUN mkdir -p ${JUPYTER_ETC_DIR}
-RUN mkdir -p ${TEMPLATES_DIR}
+
+# create templates directory
+#ARG TEMPLATES_DIR=/opt/templates
+#RUN mkdir -p ${TEMPLATES_DIR}
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
@@ -157,8 +159,8 @@ ARG USER_DOCKER_CACHE_PATH=/tmp
 ARG CONDA_USER_PASSWD=password
 ENV CONDA_USER_HOME=/home/${CONDA_USER}
 ENV CONDA_USER_CACHE=${CONDA_USER_HOME}/.cache
+ENV CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ARG CONDA_USER_HOME_TEMPLATE=${TEMPLATES_DIR}/template_home
-ARG CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ARG CONDA_USER_WORKSPACE_TEMPLATE=${TEMPLATES_DIR}/template_workspace
 ARG CONDA_USER_SHARED=/mnt/shared
 ENV CONDA_RUN_DEBUG=0
