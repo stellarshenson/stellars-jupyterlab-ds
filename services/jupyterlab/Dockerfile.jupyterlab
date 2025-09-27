@@ -46,7 +46,7 @@ RUN conda init
 
 # create work directory
 ARG BUILD_DIR=/opt/build
-ARG EXPORT_DIR=/opt/exports
+ARG EXPORT_DIR=/opt/extra
 RUN mkdir ${BUILD_DIR} ${EXPORT_DIR}
 WORKDIR ${BUILD_DIR}
 
@@ -71,7 +71,7 @@ FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu24.04 AS target
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
 
 # copy build dir from builder
-ARG EXPORT_DIR=/opt/exports
+ARG EXPORT_DIR=/opt/extra
 COPY --from=builder ${EXPORT_DIR} ${EXPORT_DIR}
 
 # update sources list and increase timeouts
@@ -295,7 +295,7 @@ ARG JUPYTER_LOG=/var/log/jupyterlab.log
 RUN <<-EOF
     echo "creating jupyter logs directory accessible to users"
     touch ${JUPYTER_LOG}
-    chown :${JUPYTER_GROUP} ${JUPYTER_LOG}
+    chown ${CONDA_USER}:${JUPYTER_GROUP} ${JUPYTER_LOG}
     chmod 664 ${JUPYTER_LOG}
 EOF
 
@@ -415,11 +415,11 @@ EOF
 ## packages were built by the builder container, install them all
 ## among the packages is CUDA supported llama-cpp-python
 ## other environments will inherit this when cloned from base
-USER ${CONDA_USER}
-RUN <<-EOF
-    echo "installing packages built with builder: `ls ${EXPORT_DIR}/*.whl`"
-    conda run -n ${CONDA_TORCH_ENV} pip install ${EXPORT_DIR}/*.whl
-EOF
+#USER ${CONDA_USER}
+#RUN <<-EOF
+#    echo "installing packages built with builder: `ls ${EXPORT_DIR}/*.whl`"
+#    conda run -n ${CONDA_TORCH_ENV} pip install ${EXPORT_DIR}/*.whl
+#EOF
 
 ########################################################
 #  FINAL UPDATE AND CLEANUP                            #
@@ -441,12 +441,11 @@ RUN apt autoremove -y && apt purge
 ########################################################
 
 ## now that user home is fully configured, copy to templates
-RUN <<-EOF
-    echo "saving pre-configured user home as template"
-    cp -r ${CONDA_USER_HOME} ${CONDA_USER_HOME_TEMPLATE}
-    chown -R root ${CONDA_USER_HOME}
-EOF
-
+#RUN <<-EOF
+#    echo "saving pre-configured user home as template"
+#    cp -r ${CONDA_USER_HOME} ${CONDA_USER_HOME_TEMPLATE}
+#    chown -R ${CONDA_USER}:${JUPYTER_GROUP} ${CONDA_USER_HOME}
+#EOF
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #

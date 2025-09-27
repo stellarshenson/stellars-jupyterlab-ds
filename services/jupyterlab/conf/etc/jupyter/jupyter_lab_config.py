@@ -1,5 +1,7 @@
 ## load references to home
 import os
+import logging
+
 HOME = os.environ.get("HOME")
 
 ## Configuration file for lab.
@@ -82,6 +84,40 @@ c.ServerProxy.servers = {
         }
     },
 }
+
+c.Application.logging_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+        },
+    },
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "level": "INFO",
+            "formatter": "standard",
+            "filename": "/var/log/jupyterlab.log",
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "standard",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "tornado": {"level": "INFO", "handlers": ["console", "file"], "propagate": False},
+        "jupyterlab": {"level": "INFO", "handlers": ["console", "file"], "propagate": False},
+        "notebook": {"level": "INFO", "handlers": ["console", "file"], "propagate": False},
+        "SingleUserLabApp": {"level": "INFO", "handlers": ["console", "file"], "propagate": False},
+    },
+}
+
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration

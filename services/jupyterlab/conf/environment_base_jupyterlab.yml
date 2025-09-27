@@ -1,5 +1,6 @@
 # base environment update with Jupyterlab installation
 # this environment has also additional tools available
+# 2025-09-27
 
 name: base
 channels:
@@ -31,7 +32,7 @@ dependencies:
     - jupyterlab-git # enables git extension for jupyterlab
     - nbconvert # notebook conversion to HTML and other formats
 
-     ## jupyterlab extensions packages
+    ## jupyterlab extensions packages
     - jupyter-client # latest client
     - python-lsp-server[all] # install autocompleter extentions
     - jupyterlab-code-formatter # proxy to code formatting like black or isort
@@ -41,6 +42,7 @@ dependencies:
     - jupyterlab_iframe # allows opening webpages in iframe
     - jupyter_app_launcher # allows adding custom launchers
     - jupyterlab-pdf-preview # nice pdf preview
+    - jupyterlab_zip_extension # zip archive and unarchive
     - notebook-intelligence # github copilot plugin
 
     ## themes
