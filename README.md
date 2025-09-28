@@ -88,7 +88,7 @@ docker run -p 8888:8888 \
 - **TensorBoard:**
   - TensorBoard server running on port `6006`, with logs stored in `/tmp/tf_logs` to monitor your ML/AI model training and neural network development
 
-For a complete list of installed packages, please refer to the [packages manifest](https://github.com/stellarshenson/stellars-jupyterlab-ds/blob/main/build/conf/environment_base.yml), which is frequently updated to ensure you have access to the best tools for your development needs.
+For a complete list of installed packages, please refer to the [packages manifest](https://github.com/stellarshenson/stellars-jupyterlab-ds/blob/main/services/jupyterlab/conf), which is frequently updated to ensure you have access to the best tools for your development needs.
 
 ## About the Author
 **Name:** Konrad Jelen (aka Stellars Henson)  
