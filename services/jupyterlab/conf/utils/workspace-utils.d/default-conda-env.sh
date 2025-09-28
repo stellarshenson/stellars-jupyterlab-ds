@@ -1,5 +1,5 @@
 #!/bin/bash
-## Conda default environment selector 
+## Default Conda environment selector 
 
 PROFILE_FILE="$HOME/.profile"
 CONDA_CMD=/opt/conda/bin/conda

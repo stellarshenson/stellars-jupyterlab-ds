@@ -1,5 +1,5 @@
 #!/bin/bash
-## AWS profile default environment selector 
+## Default AWS profile selector 
 
 PROFILE_FILE="$HOME/.profile"
 AWS_CONFIG_FILE="$HOME/.aws/config"
