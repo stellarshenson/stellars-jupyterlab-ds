@@ -320,10 +320,12 @@ RUN <<-EOF
     echo "installing ${CONDA_DEFAULT_ENV} env with python version from env file"
     if [ "${CONDA_DEFAULT_ENV}" != "base" ]; then
 	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
+	${CONDA_CMD} clean -a -y
     fi
 
     ${CONDA_CMD} update --name ${CONDA_DEFAULT_ENV} -c conda-forge -y conda
     ${CONDA_CMD} env update -v --name ${CONDA_DEFAULT_ENV} --file=/environment_base_template.yml 
+    ${CONDA_CMD} clean -a -y
 EOF
 
 ## Tell the docker build process to use this for RUN.
@@ -345,7 +347,7 @@ EOF
 ## it must be configured to work with jupyter notebooks via nbdime
 RUN <<-EOF
     echo "configuring git to work with jupyter notebooks"
-    conda run -n ${CONDA_DEFAULT_ENV} conda run pip install nbdime
+    conda run -n ${CONDA_DEFAULT_ENV} conda run pip install nbdime --no-cache-dir
     conda run -n ${CONDA_DEFAULT_ENV} conda run nbdime config-git --enable --global
 EOF
 
@@ -367,22 +369,31 @@ USER ${CONDA_USER}
 ## clone built base env to both tensorflow and torch envs
 RUN <<-EOF
     echo "cloning ${CONDA_TENSORFLOW_ENV} and ${CONDA_TORCH_ENV} environments from ${CONDA_DEFAULT_ENV}"
-    conda create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
-    conda create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
+    ${CONDA_CMD} create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
+    ${CONDA_CMD} create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
+    ${CONDA_CMD} clean -a -y
 EOF
 
 ## install R environment with R kernel
 RUN <<-EOF
     echo "creating ${CONDA_R_ENV} with R kernel"
-    conda create --name ${CONDA_R_ENV} 
-    conda env update -v --name ${CONDA_R_ENV} --file=/environment_r.yml
+    ${CONDA_CMD} create --name ${CONDA_R_ENV} 
+    ${CONDA_CMD} env update -v --name ${CONDA_R_ENV} --file=/environment_r.yml
+    ${CONDA_CMD} clean -a -y
 EOF
 
 ## install tensorflow using pip to its dedicated environment
-RUN conda env update -v --name ${CONDA_TENSORFLOW_ENV} --file=/environment_tensorflow.yml 
-
+RUN <<-EOF
+    echo "installing tensorflow environment"
+    ${CONDA_CMD} env update -v --name ${CONDA_TENSORFLOW_ENV} --file=/environment_tensorflow.yml 
+    ${CONDA_CMD} clean -a -y
+EOF
 ## install torch to its dedicated environment
-RUN conda env update -v --name ${CONDA_TORCH_ENV} --file=/environment_torch.yml 
+RUN <<-EOF 
+    echo "installing torch environment"
+    ${CONDA_CMD} env update -v --name ${CONDA_TORCH_ENV} --file=/environment_torch.yml 
+    ${CONDA_CMD} clean -a -y
+EOF
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
@@ -402,6 +413,7 @@ USER ${CONDA_USER}
 RUN <<-EOF 
     echo "installing Jupyterlab in ${CONDA_DEFAULT_ENV} env"
     ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} --file=/environment_base_jupyterlab.yml 
+    ${CONDA_CMD} clean -a -y
 EOF
 
 ## change persmissions of shared resources
