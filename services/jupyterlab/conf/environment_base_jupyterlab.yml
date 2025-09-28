@@ -33,6 +33,7 @@ dependencies:
     - nbconvert # notebook conversion to HTML and other formats
 
     ## jupyterlab extensions packages
+    - jupytext # lightweight notebook over .py files
     - jupyter-client # latest client
     - python-lsp-server[all] # install autocompleter extentions
     - jupyterlab-code-formatter # proxy to code formatting like black or isort
