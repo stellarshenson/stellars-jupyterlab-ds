@@ -1,6 +1,5 @@
 # base environment update with Jupyterlab installation
 # this environment has also additional tools available
-# 2025-09-27
 
 name: base
 channels:
@@ -42,7 +41,6 @@ dependencies:
     - jupyterlab_favorites # allows to define favourite locations / not available via conda
     - jupyterlab_iframe # allows opening webpages in iframe
     - jupyter_app_launcher # allows adding custom launchers
-    - jupyterlab-pdf-preview # nice pdf preview
     - jupyterlab_zip_extension # zip archive and unarchive
     - notebook-intelligence # github copilot plugin
 

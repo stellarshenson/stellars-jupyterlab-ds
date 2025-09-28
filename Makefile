@@ -6,6 +6,9 @@
 .DEFAULT_GOAL := help
 .PHONY: help build push start clean
 
+# Get latest git tag
+TAG := $(shell git describe --tags --abbrev=0)
+
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -23,8 +26,13 @@ pull:
 	docker pull stellars/stellars-jupyterlab-ds:latest
 
 ## push docker containers to repo
-push:
+push: tag
 	docker push stellars/stellars-jupyterlab-ds:latest
+	docker push stellars/stellars-jupyterlab-ds:$(TAG)
+
+tag:
+	@echo "Using git tag: $(TAG)"
+	docker tag stellars/stellars-jupyterlab-ds:latest stellars/stellars-jupyterlab-ds:$(TAG)
 
 ## start jupyterlab (fg)
 start:
