@@ -1,0 +1,71 @@
+{
+  "@jupyterlab/codemirror-extension:plugin": {
+    "defaultConfig": {
+      "autoClosingBrackets": true,
+      "codeFolding": true
+    }
+  },
+  "@jupyterlab/docmanager-extension:plugin": {
+    "autosave": true,
+    "autosaveInterval": 120,
+    "confirmClosingDocument": false,
+    "lastModifiedCheckMargin": 500,
+    "defaultViewers": {
+      "markdown": "Markdown Preview"
+    },
+    "renameUntitledFileOnSave": true,
+    "maxNumberRecents": 10
+  },
+  "@jupyter-lsp/jupyterlab-lsp:diagnostics": {
+    "defaultSeverity": "Warning",
+    "gutter": false,
+    "debounceDelay": 250,
+    "ignoreCodes": [],
+    "ignoreMessagesPatterns": [],
+    "ignoreSeverities": [
+      "Warning",
+      "Information",
+      "Hint"
+    ],
+    "disable": false
+  },
+  "@jupyterlab/notebook-extension:tracker": {
+    "accessKernelHistory": false,
+    "autoRenderMarkdownCells": false,
+    "autoStartDefaultKernel": true,
+    "codeCellConfig": {
+      "lineNumbers": false,
+      "lineWrap": false
+    },
+    "defaultCell": "code",
+    "documentWideUndoRedo": false,
+    "enableKernelInitNotification": false,
+    "inputHistoryScope": "global",
+    "kernelShutdown": false,
+    "kernelStatus": {
+      "showOnStatusBar": false,
+      "showProgress": true
+    },
+    "markdownCellConfig": {
+      "lineNumbers": false,
+      "matchBrackets": false
+    },
+    "maxNumberOutputs": 50,
+    "overscanCount": 1,
+    "rawCellConfig": {
+      "lineNumbers": false,
+      "matchBrackets": false
+    },
+    "recordTiming": true,
+    "renderingLayout": "default",
+    "scrollHeadingToTop": true,
+    "scrollPastEnd": true,
+    "showEditorForReadOnlyMarkdown": true,
+    "showHiddenCellsButton": true,
+    "showInputPlaceholder": true,
+    "sideBySideLeftMarginOverride": "10px",
+    "sideBySideOutputRatio": 1,
+    "sideBySideRightMarginOverride": "10px",
+    "windowingMode": "defer"
+  }
+}

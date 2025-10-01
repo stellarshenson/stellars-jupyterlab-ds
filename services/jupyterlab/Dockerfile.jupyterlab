@@ -117,7 +117,7 @@ COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
 COPY --chmod=644  ./conf/misc/welcome-template.html /welcome-template.html
 COPY --chmod=755  ./conf/utils /opt/utils
 COPY --chmod=644  ./conf/patches /tmp/patches
-COPY --chmod=644  ./conf/jupyter /opt/conda/share/jupyter
+COPY --chmod=644  ./conf/share/jupyter /opt/conda/share/jupyter
 
 ########################################################
 #  FIX PACKAGES AND REMOVE UNNECESSARY                 #
