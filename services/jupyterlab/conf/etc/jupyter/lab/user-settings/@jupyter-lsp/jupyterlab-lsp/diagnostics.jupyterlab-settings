@@ -1,0 +1,13 @@
+{
+    "defaultSeverity": "Warning",
+    "gutter": false,
+    "debounceDelay": 250,
+    "ignoreCodes": [],
+    "ignoreMessagesPatterns": [],
+    "ignoreSeverities": [
+        "Warning",
+        "Information",
+        "Hint"
+    ],
+    "disable": false
+}
