@@ -105,22 +105,51 @@ Then open https://localhost:8888/lab in your browser
 - **Named Volumes:** Persistent data for workspace, home directory, cache, and certificates
 
 ### JupyterLab Extensions
-- JupyterLab-Git extension
-- JupyterLab-LSP (Python) for enhanced autocompletion and code suggestions with documentation
-- Resource usage monitor
-- App Launcher for quick access to services
+- Conda environment and package management from within JupyterLab
+- Multiple kernel support for different environments
+- Git integration for version control operations
+- Language Server Protocol with intelligent autocompletion and documentation
+- Code formatting integration supporting multiple formatters
+- Real-time CPU and memory usage monitoring
+- Cell execution time tracking
+- Favorites sidebar for quick navigation to frequently used locations
+- Embedded web browser for viewing external content in iframes
+- Custom launcher buttons for integrated services
+- Archive management for compressing and extracting files
+- GitHub Copilot integration for AI-assisted coding
+- Jupytext support for version-controlling notebooks as plain Python files
+- Notebook export to multiple formats including HTML and PDF
 
 ### Integrated Services
-- **TensorBoard:** Monitoring ML/AI model training (port 6006, logs in `/tmp/tensorboard`)
-- **MLFlow:** Experiment tracking and model registry (port 5000)
-- **Glances:** System monitoring - CPU, memory, and GPU (port 61208)
+- **TensorBoard:** Visualization and monitoring of ML/AI model training metrics (port 6006, logs in `/tmp/tensorboard`)
+- **MLFlow:** Experiment tracking, model registry, and MLOps suite (port 5000)
+- **Glances:** Real-time system monitoring including CPU, memory, disk, network, and GPU metrics (port 61208)
 - **Optuna:** Hyperparameter optimization dashboard (port 8080, when running)
+- **Jupyter Server Proxy:** Advanced proxy for additional services when running in hub mode
 
 ### Conda Environments
-- `base` - general-purpose data science packages
-- `tensorflow` - TensorFlow with NVIDIA CUDA GPU support
-- `torch` - PyTorch with NVIDIA CUDA GPU support
-- `r_base` - R environment with JupyterLab kernel
+
+**Base Environment:**
+- Python 3.12 with comprehensive data science stack
+- Core libraries: NumPy, Pandas, Polars, Matplotlib, Scikit-learn, SciPy
+- MLOps tools: MLFlow for experiment tracking
+- Development tools: Black formatter, Make build tools, Pip-tools
+- Environment management: Python-dotenv for configuration
+- Data formats: Parquet-tools for columnar data inspection
+- GPU monitoring: nvtop for NVIDIA GPU status
+
+**TensorFlow Environment:**
+- TensorFlow 2.18+ with CUDA GPU acceleration support
+- TensorBoard for training visualization
+- Optimized for deep learning and neural network training
+
+**PyTorch Environment:**
+- PyTorch 2.4+ with GPU support
+- Prepared for YOLO and computer vision workloads
+
+**R Environment:**
+- R language kernel for statistical computing
+- Integrated with Jupyter for mixed-language workflows
 
 For a complete list of installed packages, refer to the [configuration files](https://github.com/stellarshenson/stellars-jupyterlab-ds/tree/main/services/jupyterlab/conf)
 
@@ -268,19 +297,40 @@ Configuration variables supported by the platform:
 
 
 ## Additional Platform Features
-- **JupyterLab 4+** with Git integration, LSP autocompletion, and resource monitoring
-- **Multiple Conda Environments:** Pre-configured environments for TensorFlow, PyTorch, R, and general data science
-- **Machine Learning Stack:** Keras, TensorFlow, Scikit-learn, SciPy, NumPy, XGBoost, LightGBM
-- **Data Processing:** Pandas, Polars, Dask for large-scale data manipulation
-- **Visualization:** Matplotlib, Seaborn, Plotly, Altair
-- **NVIDIA CUDA Support:** GPU-accelerated libraries (CuPy, cuDF, TensorFlow GPU, PyTorch GPU)
-- **Output Formats:** HTML and PDF (WebPDF) notebook export
-- **Memory Profiler:** Built-in resource usage monitoring
-- **Enhanced Terminal:** Includes `mc` (Midnight Commander) and standard Unix tools
-- **Themes:** IntelliJ dark theme with medium contrast
-- **Workspace Utilities:** Helper scripts for common development tasks (`workspace-utils.sh`)
-- **Automatic Updates:** Watchtower keeps containers up to date
-- **Security:** Self-signed TLS certificates for HTTPS access
+
+**Development Environment:**
+- JupyterLab 4+ with Git integration, intelligent autocompletion, and resource monitoring
+- Multiple pre-configured conda environments for TensorFlow, PyTorch, R, and general data science
+- Code formatting with Black and other formatters integrated into the IDE
+- Notebook diffing and merging tools for version control
+- Cookiecutter templates for standardized project structure
+- Enhanced terminal with Midnight Commander and standard Unix tools
+
+**Data Science Stack:**
+- Core libraries: NumPy, Pandas, Polars for high-performance data manipulation
+- Machine learning: Scikit-learn, MLFlow for experiment tracking
+- Visualization: Matplotlib for plotting and charting
+- Scientific computing: SciPy for advanced mathematical operations
+- Data formats: Parquet-tools for columnar data inspection
+
+**Deep Learning:**
+- TensorFlow 2.18+ with CUDA GPU acceleration
+- PyTorch 2.4+ with GPU support
+- TensorBoard for training visualization and metrics tracking
+
+**System Monitoring:**
+- Real-time GPU monitoring with nvtop and gpustat
+- Glances web interface for comprehensive system metrics
+- Built-in resource usage monitoring in JupyterLab
+- NVIDIA ML Python bindings for programmatic GPU access
+
+**User Experience:**
+- Custom IntelliJ-inspired dark themes (Darcula and Sublime variants)
+- Workspace utilities helper scripts for common tasks
+- Favorites sidebar for quick navigation
+- Cell execution time tracking
+- Automatic container updates via Watchtower
+- Self-signed TLS certificates for HTTPS access
 
 <!-- EOF -->
 
