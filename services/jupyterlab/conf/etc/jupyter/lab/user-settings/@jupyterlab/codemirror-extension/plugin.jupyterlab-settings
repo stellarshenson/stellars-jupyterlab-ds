@@ -1,0 +1,6 @@
+{
+    "defaultConfig": {
+        "autoClosingBrackets": true,
+        "codeFolding": true
+    }
+}
