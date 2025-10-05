@@ -45,7 +45,7 @@ dependencies:
     - notebook-intelligence # github copilot plugin
 
     ## themes
-    - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on original darcula
+    - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on intellij, fixed scrollbars
     - stellars-jupyterlab-darcula-theme # gray IntelliJ darcula theme based on original darcula
 
     ## other libraries
