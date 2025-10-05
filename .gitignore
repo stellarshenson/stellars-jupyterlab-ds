@@ -7,5 +7,6 @@
 *_certs.tar.gz # local certificates to upload into certs volume
 *_workspace.tar.gz # local workspace to upload into workspace volume
 local # local files, not to be moved to repo
+**/.ipynb_checkpoints
 
 # EOF
