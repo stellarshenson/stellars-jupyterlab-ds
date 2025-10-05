@@ -24,7 +24,7 @@ packages:
     - pip # pip python package manager
     - software-properties-common # for building from any sourcecode
     - sudo # superuser command executor
-    # - socat # port forwarding tool
+    - socat # port forwarding tool, useful for AWS session authentication
     # - sqlite3 # client to sqlite often used with ml projects
     - vim # text editor
     - zip # file zipper and unzipper
