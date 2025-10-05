@@ -17,14 +17,14 @@ packages:
     - less # interactive file reader
     - libgl1 # for torch / ultralytics / opencv-python to work properly
     # - man # man pages
-    - mandoc # for showing manpages
+    - mandoc # for showing manpages, required by aws autocompleter
     - mc # midnight commander
     - netcat-traditional # netcat network swiss army tool
     - patch # tool to allow applying of diff/patches
     - pip # pip python package manager
     - software-properties-common # for building from any sourcecode
     - sudo # superuser command executor
-    - socat # port forwarding tool
+    # - socat # port forwarding tool
     # - sqlite3 # client to sqlite often used with ml projects
     - vim # text editor
     - zip # file zipper and unzipper
