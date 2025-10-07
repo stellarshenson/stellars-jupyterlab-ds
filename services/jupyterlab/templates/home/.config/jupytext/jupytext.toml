@@ -1,0 +1,6 @@
+# Jupytext configuration template. Adjust values to match your workflow.
+
+# Automatically keep notebooks paired with Python percent scripts by default.
+notebook_extensions = "ipynb,py,md"
+
+
