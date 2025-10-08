@@ -42,6 +42,7 @@ dependencies:
     - jupyterlab_iframe # allows opening webpages in iframe
     - jupyter_app_launcher # allows adding custom launchers
     - jupyterlab_zip_extension # zip archive and unarchive
+    - jupyterlab_close_all_tabs_extension # extension to explicitly close open tabs
     - notebook-intelligence # github copilot plugin
 
     ## themes
