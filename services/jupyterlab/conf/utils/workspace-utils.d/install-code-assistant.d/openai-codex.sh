@@ -2,7 +2,7 @@
 ## Installs OpenAI Codex Code Assistant
 
 conda install -y --update-all -n base nodejs
-conda run -n base npm install npm install -g @openai/codex && npm -g update
+conda run -n base npm install -g @openai/codex && npm -g update
 
 clear
 echo -e "\033[32mOpenAI Codex Installation Successful\033[0m"
