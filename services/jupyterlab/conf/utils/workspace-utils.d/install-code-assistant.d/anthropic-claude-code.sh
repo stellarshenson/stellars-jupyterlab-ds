@@ -1,8 +1,8 @@
 #!/bin/bash
-## Installs Claude Code Assistant
+## Installs Anthropic Claude Code Assistant
 
 conda install -y --update-all -n base nodejs
-conda run -n base npm install npm install -g @anthropic-ai/claude-code && npm -g update
+conda run -n base npm install -g @anthropic-ai/claude-code && npm -g update
 
 clear
 echo -e "\033[32mClaude Code Installation Successful\033[0m"
