@@ -3,7 +3,9 @@
 
 set -e
 
-SCRIPTS_DIR="/opt/utils/workspace-utils.d/install-code-assistant.d"
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="$SCRIPT_DIR/install-code-assistant.d"
 
 # Function to extract description from script
 get_script_description() {
