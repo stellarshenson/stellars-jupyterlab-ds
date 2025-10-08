@@ -62,6 +62,8 @@ services:
     build:
       context: services/jupyterlab
       dockerfile: Dockerfile.jupyterlab
+      platforms:
+        - linux/amd64
     environment:
       - CONDA_DEFAULT_ENV=base
       - JUPYTERLAB_SERVER_IP=*
