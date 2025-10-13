@@ -43,6 +43,7 @@ dependencies:
     - jupyter_app_launcher # allows adding custom launchers
     - jupyterlab_zip_extension # zip archive and unarchive
     - jupyterlab_close_all_tabs_extension # extension to explicitly close open tabs
+    - jupyterlab_doc_reader_extension # extension for reading docx files (as pdfs)
     - notebook-intelligence # github copilot plugin
 
     ## themes
