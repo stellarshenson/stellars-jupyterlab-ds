@@ -41,6 +41,7 @@ Major release featuring platform upgrades, AI-assisted development tools, enhanc
 - Automated git operations (pull, commit, push for repos and submodules)
 - Cookiecutter project templates
 - CUDA testing utility
+- Code assistant installer - unified menu for Claude Code, Cursor, and OpenAI Codex
 
 #### Themes
 - Sublime theme - IntelliJ-inspired with fixed scrollbar rendering
