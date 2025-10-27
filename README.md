@@ -4,7 +4,7 @@
 
 **Miniforge 3 + JupyterLab 4 for Data Science + TensorFlow (with GPU support) + Torch (with GPU support)**
 
-This project provides a pre-packaged, pre-configured JupyterLab environment running on Miniconda with NVIDIA GPU support. It includes a curated set of data science packages, allowing you to start your data science projects with ease.
+This project provides a pre-configured JupyterLab environment running on Miniforge with NVIDIA GPU support. It includes a curated base environment with data science packages, plus on-demand installation of TensorFlow, PyTorch, R, and Rust environments, allowing you to start your data science projects with ease.
 
 All services run behind **Traefik** reverse proxy, enabling multiple environments without port collisions. Services are available via distinct URLs:
 
@@ -130,18 +130,21 @@ Then open https://localhost:8888/lab in your browser
 
 ### Conda Environments
 
-**Base Environment:**
+**Base Environment (Pre-installed):**
 - Python 3.12 with comprehensive data science stack
 - Core libraries: NumPy, Pandas, Polars, Matplotlib, Scikit-learn, SciPy
-- MLOps tools: MLFlow for experiment tracking
+- MLOps tools: MLFlow for experiment tracking, TensorBoard for training visualization
 - Development tools: Black formatter, Make build tools, Pip-tools
 - Environment management: Python-dotenv for configuration
 - Data formats: Parquet-tools for columnar data inspection
 - GPU monitoring: nvtop for NVIDIA GPU status
 
+**Additional Environments (On-Demand Installation):**
+
+Use `workspace-utils.sh` > "Install Conda Environments" to install additional environments:
+
 **TensorFlow Environment:**
 - TensorFlow 2.18+ with CUDA GPU acceleration support
-- TensorBoard for training visualization
 - Optimized for deep learning and neural network training
 
 **PyTorch Environment:**
@@ -151,6 +154,10 @@ Then open https://localhost:8888/lab in your browser
 **R Environment:**
 - R language kernel for statistical computing
 - Integrated with Jupyter for mixed-language workflows
+
+**Rust Environment:**
+- Rust compiler and toolchain
+- evcxr Jupyter kernel for running Rust code in notebooks
 
 For a complete list of installed packages, refer to the [configuration files](https://github.com/stellarshenson/stellars-jupyterlab-ds/tree/main/services/jupyterlab/conf)
 
@@ -301,7 +308,7 @@ Configuration variables supported by the platform:
 
 **Development Environment:**
 - JupyterLab 4+ with Git integration, intelligent autocompletion, and resource monitoring
-- Multiple pre-configured conda environments for TensorFlow, PyTorch, R, and general data science
+- On-demand conda environments for TensorFlow, PyTorch, R, Rust, and general data science
 - Code formatting with Black and other formatters integrated into the IDE
 - Notebook diffing and merging tools for version control
 - Cookiecutter templates for standardized project structure
