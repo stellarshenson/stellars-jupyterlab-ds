@@ -4,7 +4,7 @@
 ![Docker Pulls](https://img.shields.io/docker/pulls/stellars/stellars-jupyterlab-ds?style=flat-square)
 ![JL4 Ready](https://img.shields.io/badge/Jupyterlab%204-ready-blue)
 
-**Miniforge 3 + JupyterLab 4 for Data Science + TensorFlow (with GPU support) + Torch (with GPU support)**
+**Miniforge 3 + JupyterLab 4 for Data Science with On-Demand TensorFlow and PyTorch (GPU support)**
 
 This project provides a pre-configured JupyterLab environment running on Miniforge with NVIDIA GPU support. It includes a curated base environment with data science packages, plus on-demand installation of TensorFlow, PyTorch, R, and Rust environments, allowing you to start your data science projects with ease.
 
@@ -109,7 +109,7 @@ Then open https://localhost:8888/lab in your browser
 
 ### JupyterLab Extensions
 - Conda environment and package management from within JupyterLab
-- Multiple kernel support for different environments
+- Multiple kernel support for different environments (install additional environments via workspace-utils.sh)
 - Git integration for version control operations
 - Language Server Protocol with intelligent autocompletion and documentation
 - Code formatting integration supporting multiple formatters
@@ -186,7 +186,7 @@ To use this environment, Docker must be installed on your system. JupyterLab 4 i
 ```bash
 make pull   # Pull latest image from Docker Hub
 make start  # Start the platform
-make build  # Build locally (takes ~1.5 hours)
+make build  # Build locally (faster in v3.0 - base environment only)
 make clean  # Clean up containers and dangling images
 ```
 
@@ -217,7 +217,7 @@ scripts\start.bat       # Alternative location
 ```
 
 ### Configuration
-- Set `CONDA_DEFAULT_ENV` in `compose.yml` or in `~/.profile` to specify default conda environment
+- Set `CONDA_DEFAULT_ENV` in `compose.yml` or in `~/.profile` to specify default conda environment (only `base` pre-installed, install others via workspace-utils.sh)
 - Customize project name and token in `.env` file
 - Project name defaults to `stellars-jupyterlab-ds` and determines URL paths
 
@@ -323,10 +323,10 @@ Configuration variables supported by the platform:
 - Scientific computing: SciPy for advanced mathematical operations
 - Data formats: Parquet-tools for columnar data inspection
 
-**Deep Learning:**
-- TensorFlow 2.18+ with CUDA GPU acceleration
-- PyTorch 2.4+ with GPU support
-- TensorBoard for training visualization and metrics tracking
+**Deep Learning (On-Demand Installation):**
+- TensorFlow 2.18+ with CUDA GPU acceleration (install via workspace-utils.sh)
+- PyTorch 2.4+ with GPU support (install via workspace-utils.sh)
+- TensorBoard for training visualization and metrics tracking (pre-installed in base)
 
 **System Monitoring:**
 - Real-time GPU monitoring with nvtop and gpustat
