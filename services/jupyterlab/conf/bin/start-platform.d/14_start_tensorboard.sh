@@ -3,7 +3,7 @@
 # TensorBoard Launch Script
 #
 # This script initializes a TensorBoard instance using a specified or default log directory.
-# It executes TensorBoard within a Conda environment named 'tensorflow'.
+# It executes TensorBoard within a Conda environment named 'base'.
 #
 # USAGE:
 #   ./start_tensorboard.sh
@@ -14,7 +14,7 @@
 #
 # REQUIREMENTS:
 #   - Conda must be installed and available in PATH
-#   - A Conda environment named 'tensorflow' with TensorBoard installed
+#   - A Conda environment named 'base' with TensorBoard installed
 #
 # BEHAVIOR:
 #   - Creates the log directory if it does not exist
@@ -39,6 +39,6 @@ EOF
 )
 
 # use conda to execute command
-conda run -n tensorflow "$COMMAND" &
+conda run -n base "$COMMAND" &
 
 # EOF
