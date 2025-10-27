@@ -6,8 +6,8 @@
 .DEFAULT_GOAL := help
 .PHONY: help build push start clean
 
-# Get latest git tag
-TAG := $(shell git describe --tags --abbrev=0)
+# Get latest git tag by creation date
+TAG := $(shell git tag --sort=-creatordate | head -n 1)
 
 #################################################################################
 # COMMANDS                                                                      #
