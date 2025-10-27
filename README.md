@@ -1,4 +1,5 @@
 # JupyterLab for Data Science Platform
+![GitHub Actions](https://github.com/stellarshenson/stellars-jupyterlab-ds/actions/workflows/docker-build.yml/badge.svg)
 ![Docker Image](https://img.shields.io/docker/image-size/stellars/stellars-jupyterlab-ds/latest?style=flat-square)
 ![Docker Pulls](https://img.shields.io/docker/pulls/stellars/stellars-jupyterlab-ds?style=flat-square)
 ![JL4 Ready](https://img.shields.io/badge/Jupyterlab%204-ready-blue)
