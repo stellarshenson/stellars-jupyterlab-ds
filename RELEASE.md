@@ -1,5 +1,113 @@
 # Release Notes
 
+## Version 3.0_cuda-13.0.1_jl-4.4.10 - On-Demand Environment Installation
+
+**Release Date:** 2025-10-27
+**Docker Image:** `stellars/stellars-jupyterlab-ds:3.0_cuda-13.0.1_jl-4.4.10`
+
+### Overview
+
+Major version 3.0 release featuring architectural change to on-demand environment installation and JupyterLab 4.4.10 upgrade. Conda environments (tensorflow, torch, r_base, rust) are no longer pre-installed, transitioning to runtime installation via workspace utilities. This significantly reduces Docker image size and build time while providing greater flexibility for environment management.
+
+### Platform Updates
+
+- **JupyterLab:** 4.4.10 (upgraded from 4.4.9)
+- **CUDA:** 13.0.1 (maintained)
+- **Python:** 3.12 (maintained)
+
+### Breaking Changes
+
+- **Conda environments no longer pre-installed**: Previously, `tensorflow`, `torch`, and `r_base` environments were built into the Docker image. These are now installed on-demand by the user
+- **Smaller base image**: Docker image size reduced significantly as only the `base` environment is pre-installed
+- **Faster builds**: Docker build time reduced by removing multiple environment cloning and package installations
+
+### New Features
+
+#### On-Demand Environment Installation
+
+- Added `install-conda-env.sh` utility accessible via `workspace-utils.sh` menu
+- Environments available for installation:
+  - `tensorflow` - TensorFlow with CUDA support
+  - `torch` - PyTorch with CUDA support
+  - `r_base` - R with IRKernel for statistical computing
+  - `rust` - Rust with Jupyter kernel (evcxr)
+
+#### Installation Scripts
+
+Located in `conf/utils/workspace-utils.d/install-conda-env.d/`:
+- `tensorflow.sh` - Clones base environment and installs TensorFlow packages
+- `torch.sh` - Clones base environment and installs PyTorch packages
+- `r.sh` - Creates fresh R environment with IRKernel
+- `rust.sh` - Creates Rust environment with evcxr Jupyter kernel
+
+#### Rust Environment Support
+
+- New `environment_rust.yml` configuration file
+- Includes evcxr Jupyter kernel for running Rust code in notebooks
+- Rust compiler and toolchain installed via conda
+
+#### Enhanced CUDA Testing
+
+- `test-cuda.sh` now checks environment existence before running tests
+- Provides helpful installation instructions if environments not found
+- Graceful handling when tensorflow or torch environments are not installed
+
+### Migration Guide
+
+#### For New Installations
+
+1. Build and run the Docker container as usual
+2. Only `base` environment will be available initially
+3. Run `workspace-utils.sh` and select "Install Conda Environments"
+4. Choose which environments to install based on your needs
+
+#### For Existing Users
+
+If you rebuild your container:
+1. Your existing environments in the old image will not be available
+2. Use `workspace-utils.sh` > "Install Conda Environments" to reinstall needed environments
+3. Environment configurations remain unchanged - same packages will be installed
+4. Jupyter kernels will be registered automatically during installation
+
+### Benefits
+
+- **Reduced image size**: Smaller Docker images mean faster downloads and less storage usage
+- **Faster builds**: Removing environment installations from Dockerfile significantly reduces build time
+- **Flexibility**: Install only the environments you need
+- **Easier maintenance**: Environment definitions remain in separate YAML files for easy updates
+- **Resource efficiency**: Avoid installing unused frameworks
+
+### Technical Details
+
+#### Dockerfile Changes
+
+- Commented out environment cloning and installation steps (lines 369-400)
+- Commented out environment cleanup steps (lines 449-452)
+- Added `environment_rust.yml` to copied configuration files
+- Environment YAML files still copied to container root for runtime installation
+
+#### Environment Files
+
+All environment YAML files remain in `/` within the container:
+- `/environment_tensorflow.yml`
+- `/environment_torch.yml`
+- `/environment_r.yml`
+- `/environment_rust.yml` (new)
+
+#### User Documentation Updates
+
+- Updated `welcome-template.html` to reflect new installation workflow
+- Updated `welcome-message.txt` to mention "ai assistants and extra environments"
+- Clear instructions provided for environment installation via workspace-utils
+
+### Testing
+
+- Verified environment installation scripts work correctly
+- Confirmed CUDA testing gracefully handles missing environments
+- Validated Jupyter kernel registration after environment installation
+
+---
+
 ## Version 2.55_cuda-13.0.1_jl-4.4.9
 
 **Release Date:** 2025-10-05

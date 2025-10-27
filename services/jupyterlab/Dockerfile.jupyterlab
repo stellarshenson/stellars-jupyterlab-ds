@@ -109,6 +109,7 @@ COPY --chmod=644  ./conf/environment_base_jupyterlab.yml /environment_base_jupyt
 COPY --chmod=644  ./conf/environment_tensorflow.yml /environment_tensorflow.yml
 COPY --chmod=644  ./conf/environment_torch.yml /environment_torch.yml
 COPY --chmod=644  ./conf/environment_r.yml /environment_r.yml
+COPY --chmod=644  ./conf/environment_rust.yml /environment_rust.yml
 COPY --chmod=755  ./conf/bin/*.sh ./conf/bin/*.py /
 COPY --chmod=755  ./conf/bin/start-platform.d /start-platform.d
 COPY --chmod=644  ./conf/misc/motd-template.txt /
@@ -367,33 +368,37 @@ USER ${CONDA_USER}
 # conda install -y -c rapidsai -c conda-forge -c nvidia rapids cuda-version cupy cudf
 
 ## clone built base env to both tensorflow and torch envs
-RUN <<-EOF
-    echo "cloning ${CONDA_TENSORFLOW_ENV} and ${CONDA_TORCH_ENV} environments from ${CONDA_DEFAULT_ENV}"
-    ${CONDA_CMD} create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
-    ${CONDA_CMD} create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
-    ${CONDA_CMD} clean -a -y
-EOF
-
-## install R environment with R kernel
-RUN <<-EOF
-    echo "creating ${CONDA_R_ENV} with R kernel"
-    ${CONDA_CMD} create --name ${CONDA_R_ENV} 
-    ${CONDA_CMD} env update -v --name ${CONDA_R_ENV} --file=/environment_r.yml
-    ${CONDA_CMD} clean -a -y
-EOF
-
-## install tensorflow using pip to its dedicated environment
-RUN <<-EOF
-    echo "installing tensorflow environment"
-    ${CONDA_CMD} env update -v --name ${CONDA_TENSORFLOW_ENV} --file=/environment_tensorflow.yml 
-    ${CONDA_CMD} clean -a -y
-EOF
-## install torch to its dedicated environment
-RUN <<-EOF 
-    echo "installing torch environment"
-    ${CONDA_CMD} env update -v --name ${CONDA_TORCH_ENV} --file=/environment_torch.yml 
-    ${CONDA_CMD} clean -a -y
-EOF
+## COMMENTED OUT - use install-conda-environments.sh script to install on-demand
+#RUN <<-EOF
+#    echo "cloning ${CONDA_TENSORFLOW_ENV} and ${CONDA_TORCH_ENV} environments from ${CONDA_DEFAULT_ENV}"
+#    ${CONDA_CMD} create --name ${CONDA_TENSORFLOW_ENV} --clone ${CONDA_DEFAULT_ENV}
+#    ${CONDA_CMD} create --name ${CONDA_TORCH_ENV} --clone ${CONDA_DEFAULT_ENV}
+#    ${CONDA_CMD} clean -a -y
+#EOF
+#
+### install R environment with R kernel
+## COMMENTED OUT - use install-conda-environments.sh script to install on-demand
+#RUN <<-EOF
+#    echo "creating ${CONDA_R_ENV} with R kernel"
+#    ${CONDA_CMD} create --name ${CONDA_R_ENV}
+#    ${CONDA_CMD} env update -v --name ${CONDA_R_ENV} --file=/environment_r.yml
+#    ${CONDA_CMD} clean -a -y
+#EOF
+#
+### install tensorflow using pip to its dedicated environment
+## COMMENTED OUT - use install-conda-environments.sh script to install on-demand
+#RUN <<-EOF
+#    echo "installing tensorflow environment"
+#    ${CONDA_CMD} env update -v --name ${CONDA_TENSORFLOW_ENV} --file=/environment_tensorflow.yml
+#    ${CONDA_CMD} clean -a -y
+#EOF
+### install torch to its dedicated environment
+## COMMENTED OUT - use install-conda-environments.sh script to install on-demand
+#RUN <<-EOF
+#    echo "installing torch environment"
+#    ${CONDA_CMD} env update -v --name ${CONDA_TORCH_ENV} --file=/environment_torch.yml
+#    ${CONDA_CMD} clean -a -y
+#EOF
 
 ## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
@@ -442,9 +447,10 @@ EOF
 
 ## final round of updates to keep all up to date and final cleanup
 RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
-RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
-RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
-RUN CONDA_DEFAULT_ENV=${CONDA_R_ENV} conda clean -ltpy && pip cache purge
+## COMMENTED OUT - tensorflow, torch, r_base are now installed on-demand
+#RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
+#RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
+#RUN CONDA_DEFAULT_ENV=${CONDA_R_ENV} conda clean -ltpy && pip cache purge
 
 ## apt cleanup and remove prebuilt packages
 USER root
