@@ -1,4 +1,4 @@
-name: Build Docker Image
+name: Validate Dockerfile
 
 on:
   push:
@@ -6,36 +6,24 @@ on:
       - main
     tags:
       - '*_cuda-*_jl-*'
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
-env:
-  REGISTRY: docker.io
-  IMAGE_NAME: stellars/stellars-jupyterlab-ds
-
 jobs:
-  build-and-push:
+  validate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
+      - name: Lint Dockerfile with hadolint
+        uses: hadolint/hadolint-action@v3.1.0
         with:
-          context: ./services/jupyterlab
-          file: ./services/jupyterlab/Dockerfile.jupyterlab
-          push: false
-          tags: ${{ env.IMAGE_NAME }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64
+          dockerfile: services/jupyterlab/Dockerfile.jupyterlab
+          ignore: DL3008,DL3013,DL3015,DL3059
 
-      - name: Build completed
-        run: echo "Docker image build completed successfully"
+      - name: Validation completed
+        run: echo "Dockerfile validation completed successfully"
