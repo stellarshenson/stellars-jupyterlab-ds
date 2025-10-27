@@ -1,0 +1,10 @@
+# base environment for Rust
+
+name: rust
+channels:
+  - conda-forge # default repo for miniforge3
+
+dependencies:
+  - evcxr # rust kernel
+
+# EOF
