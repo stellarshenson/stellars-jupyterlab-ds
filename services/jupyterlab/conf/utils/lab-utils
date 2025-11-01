@@ -1,9 +1,9 @@
 #!/bin/bash
-# Workspace Script Runner
+# Lab Utils Script Runner
 
 set -e
 
-SCRIPTS_DIR="/opt/utils/workspace-utils.d"
+SCRIPTS_DIR="/opt/utils/lab-utils.d"
 
 # Function to extract description from script
 get_script_description() {
@@ -79,7 +79,7 @@ done
 
 # Show selection dialog
 TEMPFILE=$(mktemp)
-dialog --clear --title "Workspace Utils" \
+dialog --clear --title "Lab Utils" \
 	--menu "Select utility to execute:" \
 	20 120 10 \
 	"${MENU_OPTIONS[@]}" \

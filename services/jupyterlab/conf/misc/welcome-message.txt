@@ -12,7 +12,7 @@ Tensorboard monitoring logs located in [34m/tmp/tensorboard[0m
 Project dir: [34m/home/lab/workspace[0m (mount)
 Jupyterlab settings saved to [34m/home/lab/.jupyter[0m
 
-Use Workspace Utils: [36mworkspace-utils.sh[0m - utils, ai assistants and extra environments
+Use Lab Utils: [36mlab-utils[0m - utils, ai assistants and extra environments
 For more information visit: [34mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m
 
 To execute commands as root use: [36msudo[0m, password is: [36mpassword[0m unless changed
