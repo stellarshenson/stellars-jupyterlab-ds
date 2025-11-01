@@ -1,11 +1,11 @@
 #!/bin/bash
-## Installs Code Assistant (Codex, Cursor, Claude Code)
+## Installs AI Assistant (Codex, Cursor, Claude Code)
 
 set -e
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_DIR="$SCRIPT_DIR/install-code-assistant.d"
+SCRIPTS_DIR="$SCRIPT_DIR/install-ai-assistant.d"
 
 # Function to extract description from script
 get_script_description() {
@@ -81,8 +81,8 @@ done
 
 # Show selection dialog
 TEMPFILE=$(mktemp)
-dialog --clear --title "Install Code Assistant" \
-	--menu "Select code assistant to install:" \
+dialog --clear --title "Install AI Assistant" \
+	--menu "Select AI assistant to install:" \
 	20 120 10 \
 	"${MENU_OPTIONS[@]}" \
 	2>$TEMPFILE >/dev/tty || {
