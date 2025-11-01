@@ -18,3 +18,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 5. **Task - Rename workspace-utils to lab-utils**: Simplified utility naming convention for better clarity<br>
     **Result**: Renamed workspace-utils.sh to lab-utils (removed .sh extension), renamed workspace-utils.d folder to lab-utils.d. Updated SCRIPTS_DIR path in lab-utils script from /opt/utils/workspace-utils.d to /opt/utils/lab-utils.d. Changed dialog title from "Workspace Utils" to "Lab Utils". Updated all references in welcome-template.html (utilities section and conda environments section) and welcome-message.txt to use new naming
+
+6. **Task - Rename install-code-assistant to install-ai-assistant**: Aligned naming with AI terminology<br>
+    **Result**: Renamed install-code-assistant.sh to install-ai-assistant.sh, renamed install-code-assistant.d folder to install-ai-assistant.d. Updated SCRIPTS_DIR path in install-ai-assistant.sh from install-code-assistant.d to install-ai-assistant.d. Changed dialog title from "Install Code Assistant" to "Install AI Assistant" and menu text from "Select code assistant to install" to "Select AI assistant to install". Updated header comment from "Installs Code Assistant" to "Installs AI Assistant"
