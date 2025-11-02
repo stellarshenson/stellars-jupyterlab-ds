@@ -272,7 +272,7 @@ System implements number of helpful _Lab Utilities_ to support streamlined devel
 
 `lab-utils` script available in the user's workspace provides a convenient visual dialog for launching of the different utils along with a short description of what they are used for
 
-![workspace utils](./.resources/workspace-utils.png)
+![lab utils](./.resources/screenshot-lab-utils.png)
 
 ### Environment Variables
 
