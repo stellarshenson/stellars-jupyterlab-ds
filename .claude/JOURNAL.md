@@ -27,3 +27,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 8. **Task - Update documentation for lab-utils**: Completed documentation updates for lab-utils renaming and fixed startup script<br>
     **Result**: Fixed startup script 03_workspace_scripts.sh to create symlinks for all files in /opt/utils (not just .sh files), ensuring lab-utils without extension is properly linked. Updated README.md with 9 changes: replaced all workspace-utils.sh references with lab-utils, changed section header from "Workspace Utilities" to "Lab Utilities", updated script references in JupyterLab Extensions, Conda Environments, Configuration, Deep Learning, and User Experience sections. Added new screenshot-lab-utils.png showing the Lab Utils dialog interface and updated README to reference the new screenshot
+
+9. **Task - Group git utilities**: Organized git operations under unified menu structure<br>
+    **Result**: Created git-utils.sh menu script with dialog-based interface (title: "Git Utils", menu: "Select git utility to execute"). Created git-utils.d/ directory and moved 4 git scripts into it: git-commit-repos.sh, git-pull-repos.sh, git-pull-submodules.sh, git-push-repos.sh. Reduces main lab-utils menu from 11 items to 8 items, consistent with existing grouping patterns (install-ai-assistant, install-conda-env)
