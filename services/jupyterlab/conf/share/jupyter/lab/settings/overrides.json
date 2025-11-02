@@ -67,5 +67,16 @@
     "sideBySideOutputRatio": 1,
     "sideBySideRightMarginOverride": "10px",
     "windowingMode": "defer"
-  }
+  },
+  "jupyter_app_launcher": [
+    {
+      "title": "Lab Utils",
+      "icon": "ui-components:wrench",
+      "command": "terminal:create-new",
+      "args": {
+        "initialCommand": "lab-utils; echo '\\nPress Enter to close...'; read"
+      },
+      "category": "Utilities"
+    }
+  ]
 }

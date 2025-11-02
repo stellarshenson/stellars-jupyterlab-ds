@@ -30,3 +30,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 9. **Task - Group git utilities**: Organized git operations under unified menu structure<br>
     **Result**: Created git-utils.sh menu script with dialog-based interface (title: "Git Utils", menu: "Select git utility to execute"). Created git-utils.d/ directory and moved 4 git scripts into it: git-commit-repos.sh, git-pull-repos.sh, git-pull-submodules.sh, git-push-repos.sh. Reduces main lab-utils menu from 11 items to 8 items, consistent with existing grouping patterns (install-ai-assistant, install-conda-env)
+
+10. **Task - Add Lab Utils launcher tile**: Created JupyterLab launcher tile for quick access to lab utilities<br>
+    **Result**: Added jupyter_app_launcher configuration to overrides.json with Lab Utils tile. Tile uses wrench icon, opens terminal, automatically executes lab-utils, and prompts "Press Enter to close..." after completion. Placed in "Utilities" category in the JupyterLab launcher alongside Notebook, Console, and Terminal tiles
