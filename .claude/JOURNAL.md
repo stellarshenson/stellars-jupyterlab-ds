@@ -24,3 +24,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 7. **Task - Add JupyterLab Extensions**: Enhanced base environment with parquet file viewing capability<br>
     **Result**: Added jupyterlab_parquet_viewer_extension to environment_base_jupyterlab.yml (line 50) to enable viewing parquet files directly in JupyterLab interface
+
+8. **Task - Update documentation for lab-utils**: Completed documentation updates for lab-utils renaming and fixed startup script<br>
+    **Result**: Fixed startup script 03_workspace_scripts.sh to create symlinks for all files in /opt/utils (not just .sh files), ensuring lab-utils without extension is properly linked. Updated README.md with 9 changes: replaced all workspace-utils.sh references with lab-utils, changed section header from "Workspace Utilities" to "Lab Utilities", updated script references in JupyterLab Extensions, Conda Environments, Configuration, Deep Learning, and User Experience sections. Added new screenshot-lab-utils.png showing the Lab Utils dialog interface and updated README to reference the new screenshot
