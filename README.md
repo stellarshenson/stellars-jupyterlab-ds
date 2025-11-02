@@ -23,6 +23,7 @@ This platform integrates with **[stellars-jupyterhub-ds](https://github.com/stel
 
 
 ![JupyterLab](./.resources/jupyterlab.png)
+![lab utils](./.resources/screenshot-lab-utils.png)
 ![Docker Desktop](./.resources/docker-desktop.png)
 ![CUDA Test](./.resources/cuda-test.png)
 ![Multi User 1](./.resources/multiuser-shutdown.png)
@@ -271,8 +272,6 @@ All volumes are named and persist across container updates:
 System implements number of helpful _Lab Utilities_ to support streamlined development and to help with everyday tasks.
 
 `lab-utils` script available in the user's workspace provides a convenient visual dialog for launching of the different utils along with a short description of what they are used for
-
-![lab utils](./.resources/screenshot-lab-utils.png)
 
 ### Environment Variables
 
