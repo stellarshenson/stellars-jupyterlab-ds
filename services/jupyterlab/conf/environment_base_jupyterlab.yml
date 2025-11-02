@@ -48,6 +48,7 @@ dependencies:
     - jupyterlab_doc_reader_extension # extension for reading docx files (as pdfs)
     - jupyterlab_refresh_view_extension # extension to refresh MD and code when modified in the bg
     - jupyterlab_parquet_viewer_extension # extension for viewing parquet files
+    - jupyterlab_mmd_to_png_extension # extension to export mermaid diagrams to png
     - notebook-intelligence # github copilot plugin
 
     ## themes
