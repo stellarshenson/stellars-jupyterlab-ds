@@ -109,7 +109,7 @@ Then open https://localhost:8888/lab in your browser
 
 ### JupyterLab Extensions
 - Conda environment and package management from within JupyterLab
-- Multiple kernel support for different environments (install additional environments via workspace-utils.sh)
+- Multiple kernel support for different environments (install additional environments via lab-utils)
 - Git integration for version control operations
 - Language Server Protocol with intelligent autocompletion and documentation
 - Code formatting integration supporting multiple formatters
@@ -143,7 +143,7 @@ Then open https://localhost:8888/lab in your browser
 
 **Additional Environments (On-Demand Installation):**
 
-Use `workspace-utils.sh` > "Install Conda Environments" to install additional environments:
+Use `lab-utils` > "Install Conda Environments" to install additional environments:
 
 **TensorFlow Environment:**
 - TensorFlow 2.18+ with CUDA GPU acceleration support
@@ -217,7 +217,7 @@ scripts\start.bat       # Alternative location
 ```
 
 ### Configuration
-- Set `CONDA_DEFAULT_ENV` in `compose.yml` or in `~/.profile` to specify default conda environment (only `base` pre-installed, install others via workspace-utils.sh)
+- Set `CONDA_DEFAULT_ENV` in `compose.yml` or in `~/.profile` to specify default conda environment (only `base` pre-installed, install others via lab-utils)
 - Customize project name and token in `.env` file
 - Project name defaults to `stellars-jupyterlab-ds` and determines URL paths
 
@@ -266,11 +266,11 @@ All volumes are named and persist across container updates:
 └── extra/                   # Additional configurations (AWS, CVAT, etc.)
 ```
 
-## Workspace Utilities
+## Lab Utilities
 
-System implements number of helpful _Workspace Utilities_ to support streamlined development and to help with everyday tasks. 
+System implements number of helpful _Lab Utilities_ to support streamlined development and to help with everyday tasks.
 
-`workspace-utils.sh` script available in the user's workspace provides a convenient visual dialog for launching of the different utils along with a short description of what they are used for
+`lab-utils` script available in the user's workspace provides a convenient visual dialog for launching of the different utils along with a short description of what they are used for
 
 ![workspace utils](./.resources/workspace-utils.png)
 
@@ -324,8 +324,8 @@ Configuration variables supported by the platform:
 - Data formats: Parquet-tools for columnar data inspection
 
 **Deep Learning (On-Demand Installation):**
-- TensorFlow 2.18+ with CUDA GPU acceleration (install via workspace-utils.sh)
-- PyTorch 2.4+ with GPU support (install via workspace-utils.sh)
+- TensorFlow 2.18+ with CUDA GPU acceleration (install via lab-utils)
+- PyTorch 2.4+ with GPU support (install via lab-utils)
 - TensorBoard for training visualization and metrics tracking (pre-installed in base)
 
 **System Monitoring:**
@@ -336,7 +336,7 @@ Configuration variables supported by the platform:
 
 **User Experience:**
 - Custom IntelliJ-inspired dark themes (Darcula and Sublime variants)
-- Workspace utilities helper scripts for common tasks
+- Lab utilities helper scripts for common tasks
 - Favorites sidebar for quick navigation
 - Cell execution time tracking
 - Automatic container updates via Watchtower
