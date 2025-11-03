@@ -28,3 +28,6 @@ lab-utils
 echo ""
 echo "Press Enter to close..."
 read
+
+# Exit terminal session to prevent shell prompt
+exit
