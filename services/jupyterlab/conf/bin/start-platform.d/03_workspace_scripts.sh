@@ -8,8 +8,8 @@ CONDA_USER_WORKSPACE=${CONDA_USER_WORKSPACE:-/home/lab/workspace}
 
 echo "Adding useful scripts to the user workspace"
 for x in ${UTILS_PATH}/*; do
-    # Skip directories and README.md files
-    if [ -f "$x" ] && [ "$(basename "$x")" != "README.md" ]; then
+    # Skip directories, README.md, and launch-lab-utils.sh
+    if [ -f "$x" ] && [ "$(basename "$x")" != "README.md" ] && [ "$(basename "$x")" != "launch-lab-utils.sh" ]; then
         ln -s "$x" "${CONDA_USER_WORKSPACE}/$(basename "$x")" >/dev/null 2>&1
     fi
 done
