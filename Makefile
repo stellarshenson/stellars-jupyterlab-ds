@@ -6,8 +6,11 @@
 .DEFAULT_GOAL := help
 .PHONY: help build push start clean increment_version
 
-# Get version from project.json
-TAG := $(shell python3 -c "import json; print(json.load(open('project.json'))['version'])")
+# Include project configuration
+include project.env
+
+# Use VERSION from project.env as TAG
+TAG := $(VERSION)
 
 #################################################################################
 # COMMANDS                                                                      #

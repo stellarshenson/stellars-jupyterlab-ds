@@ -1,23 +1,39 @@
 #!/usr/bin/env python3
-import json
 import re
 import sys
 
 def increment_version():
     try:
-        with open('project.json', 'r') as f:
-            data = json.load(f)
+        # Read project.env
+        with open('project.env', 'r') as f:
+            lines = f.readlines()
 
-        version = data['version']
+        version = None
+        version_line_idx = None
+
+        # Find VERSION line
+        for idx, line in enumerate(lines):
+            if line.startswith('VERSION='):
+                version = line.split('=', 1)[1].strip()
+                version_line_idx = idx
+                break
+
+        if version is None:
+            print('Error: VERSION not found in project.env')
+            return 1
+
+        # Parse and increment version
         match = re.match(r'^(\d+\.\d+\.)(\d+)(_.*)', version)
 
         if match:
             new_version = match.group(1) + str(int(match.group(2)) + 1) + match.group(3)
-            data['version'] = new_version
 
-            with open('project.json', 'w') as f:
-                json.dump(data, f, indent=2)
-                f.write('\n')  # Add trailing newline
+            # Update the VERSION line
+            lines[version_line_idx] = f'VERSION={new_version}\n'
+
+            # Write back to project.env
+            with open('project.env', 'w') as f:
+                f.writelines(lines)
 
             print(f'Version updated: {version} -> {new_version}')
             return 0
