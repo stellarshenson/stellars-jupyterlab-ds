@@ -16,10 +16,19 @@ TAG := $(subst ",,$(VERSION))
 # COMMANDS                                                                      #
 #################################################################################
 
-## increment patch version in project.json
+## increment patch version in project.env
 increment_version:
 	@echo "Incrementing patch version..."
-	@./scripts/increment_version.py
+	@awk -F= '/^VERSION=/ { \
+		gsub(/"/, "", $$2); \
+		match($$2, /^([0-9]+\.[0-9]+\.)([0-9]+)(_.*$$)/, parts); \
+		new_patch = parts[2] + 1; \
+		new_version = parts[1] new_patch parts[3]; \
+		print "VERSION=\"" new_version "\""; \
+		print "Version updated: " $$2 " -> " new_version > "/dev/stderr"; \
+		next; \
+	} \
+	{ print }' project.env > project.env.tmp && mv project.env.tmp project.env
 
 ## build docker containers
 build: increment_version
