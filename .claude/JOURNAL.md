@@ -39,3 +39,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 12. **Task - Migrate version management system**: Converted project configuration from JSON to environment variable format<br>
     **Result**: Replaced project.json with project.env using standard environment variable syntax (KEY=VALUE). Updated Makefile to use include directive for sourcing variables instead of shell invocation with Python JSON parsing. Modified increment_version.py to parse and update .env format with line-based processing. Enables direct variable access in Makefile (TAG := $(VERSION)) following standard make practices for external configuration
+
+13. **Task - Refactor launcher wrapper script**: Renamed launch-lab-utils to standard shell script naming and excluded from workspace<br>
+    **Result**: Renamed launch-lab-utils to launch-lab-utils.sh following standard shell script conventions. Updated startup script 03_workspace_scripts.sh to exclude launch-lab-utils.sh from workspace symlinks. Modified overrides.json to reference full path /opt/utils/launch-lab-utils.sh. Wrapper script remains accessible only through JupyterLab launcher, keeping user workspace clean
