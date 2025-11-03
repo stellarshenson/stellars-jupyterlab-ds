@@ -1,10 +1,6 @@
 - title: Lab Utils
   description: Lab utilities menu for managing environments, git operations, and AI assistants
-  type: jupyterlab-commands
+  type: terminal
+  command: /opt/utils/launch-lab-utils.sh
   icon: ui-components:wrench
-  source:
-    - label: Lab Utils
-      id: 'terminal:create-new'
-      args:
-        initialCommand: /opt/utils/launch-lab-utils.sh
-  catalog: Utilities
+  catalog: Other
