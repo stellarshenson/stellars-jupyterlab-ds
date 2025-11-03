@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help build push start clean
+.PHONY: help build push start clean increment_version
 
 # Get latest git tag by creation date
 TAG := $(shell git tag --sort=-creatordate | head -n 1)
@@ -13,8 +13,13 @@ TAG := $(shell git tag --sort=-creatordate | head -n 1)
 # COMMANDS                                                                      #
 #################################################################################
 
+## increment patch version in project.json
+increment_version:
+	@echo "Incrementing patch version..."
+	@./scripts/increment_version.py
+
 ## build docker containers
-build:
+build: increment_version
 	@cd ./scripts && ./build.sh
 
 ## build docker containers and output logs
