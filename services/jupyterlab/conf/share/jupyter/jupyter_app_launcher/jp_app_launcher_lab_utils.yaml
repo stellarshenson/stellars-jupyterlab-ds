@@ -1,6 +1,6 @@
 - title: Lab Utils
   description: Lab utilities menu for managing environments, git operations, and AI assistants
   type: terminal
-  command: /opt/utils/launch-lab-utils.sh
+  source: '/opt/utils/launch-lab-utils.sh'
   icon: ui-components:wrench
   catalog: Other
