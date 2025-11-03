@@ -42,3 +42,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 13. **Task - Refactor launcher wrapper script**: Renamed launch-lab-utils to standard shell script naming and excluded from workspace<br>
     **Result**: Renamed launch-lab-utils to launch-lab-utils.sh following standard shell script conventions. Updated startup script 03_workspace_scripts.sh to exclude launch-lab-utils.sh from workspace symlinks. Modified overrides.json to reference full path /opt/utils/launch-lab-utils.sh. Wrapper script remains accessible only through JupyterLab launcher, keeping user workspace clean
+
+14. **Task - Replace parquet viewer extension**: Upgraded to tabular data viewer for broader format support<br>
+    **Result**: Replaced jupyterlab_parquet_viewer_extension with jupyterlab_tabular_data_viewer_extension in environment_base_jupyterlab.yml. New extension supports parquet, csv, tsv, and excel file formats providing unified viewer for tabular data
+
+15. **Task - Fix lab utils launcher configuration**: Corrected launcher tile configuration to use proper yaml format<br>
+    **Result**: Created jp_app_launcher_lab_utils.yaml in jupyter_app_launcher directory following jupyter_app_launcher extension's proper configuration format. Removed incorrect launcher configuration from overrides.json. Launcher tile now properly configured to appear in Utilities category with wrench icon, executing /opt/utils/launch-lab-utils.sh in terminal
