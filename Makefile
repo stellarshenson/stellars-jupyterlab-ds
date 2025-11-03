@@ -39,7 +39,9 @@ push: tag
 	docker push stellars/stellars-jupyterlab-ds:$(TAG)
 
 tag:
-	@echo "Using git tag: $(TAG)"
+	@echo "Creating git tag: $(TAG)"
+	git tag $(TAG)
+	@echo "Creating docker tag: $(TAG)"
 	docker tag stellars/stellars-jupyterlab-ds:latest stellars/stellars-jupyterlab-ds:$(TAG)
 
 ## start jupyterlab (fg)
