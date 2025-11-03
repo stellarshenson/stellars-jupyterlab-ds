@@ -74,7 +74,7 @@
       "icon": "ui-components:wrench",
       "command": "terminal:create-new",
       "args": {
-        "initialCommand": "launch-lab-utils"
+        "initialCommand": "/opt/utils/launch-lab-utils.sh"
       },
       "category": "Utilities"
     }
