@@ -27,7 +27,7 @@ lab-utils
 # Pause before exit with info about manual tab closure
 echo ""
 echo "Press Enter to close..."
-echo -e "\033[1;33m[INFO]\033[0m You will need to close this tab manually"
+echo -e "\033[1;33mYou will need to close this tab manually\033[0m"
 read
 
 # Exit terminal session to prevent shell prompt
