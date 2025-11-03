@@ -2,5 +2,5 @@
   description: Lab utilities menu for managing environments, git operations, and AI assistants
   type: terminal
   source: 'exec /opt/utils/launch-lab-utils.sh'
-  icon: /opt/conda/share/jupyter/jupyter_app_launcher/wrench.svg
+  icon: /opt/conda/share/jupyter/jupyter_app_launcher/lab-utils.svg
   catalog: Other

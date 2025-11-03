@@ -29,5 +29,8 @@ echo ""
 echo "Press Enter to close..."
 read
 
+# Inform user about manual tab closure
+echo -e "\n\033[1;33m[INFO]\033[0m You will need to close this tab manually"
+
 # Exit terminal session to prevent shell prompt
 exit
