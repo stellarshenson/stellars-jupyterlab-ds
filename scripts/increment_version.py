@@ -15,6 +15,8 @@ def increment_version():
         for idx, line in enumerate(lines):
             if line.startswith('VERSION='):
                 version = line.split('=', 1)[1].strip()
+                # Strip quotes if present
+                version = version.strip('"')
                 version_line_idx = idx
                 break
 
@@ -28,8 +30,8 @@ def increment_version():
         if match:
             new_version = match.group(1) + str(int(match.group(2)) + 1) + match.group(3)
 
-            # Update the VERSION line
-            lines[version_line_idx] = f'VERSION={new_version}\n'
+            # Update the VERSION line (keep quotes)
+            lines[version_line_idx] = f'VERSION="{new_version}"\n'
 
             # Write back to project.env
             with open('project.env', 'w') as f:

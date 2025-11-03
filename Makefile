@@ -9,8 +9,8 @@
 # Include project configuration
 include project.env
 
-# Use VERSION from project.env as TAG
-TAG := $(VERSION)
+# Use VERSION from project.env as TAG (strip quotes)
+TAG := $(subst ",,$(VERSION))
 
 #################################################################################
 # COMMANDS                                                                      #
