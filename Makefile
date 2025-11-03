@@ -6,8 +6,8 @@
 .DEFAULT_GOAL := help
 .PHONY: help build push start clean increment_version
 
-# Get latest git tag by creation date
-TAG := $(shell git tag --sort=-creatordate | head -n 1)
+# Get version from project.json
+TAG := $(shell python3 -c "import json; print(json.load(open('project.json'))['version'])")
 
 #################################################################################
 # COMMANDS                                                                      #
