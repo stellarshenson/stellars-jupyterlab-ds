@@ -39,10 +39,14 @@ push: tag
 	docker push stellars/stellars-jupyterlab-ds:$(TAG)
 
 tag:
-	@echo "Creating git tag: $(TAG)"
-	git tag $(TAG)
-	@echo "Creating docker tag: $(TAG)"
-	docker tag stellars/stellars-jupyterlab-ds:latest stellars/stellars-jupyterlab-ds:$(TAG)
+	@if git tag -l | grep -q "^$(TAG)$$"; then \
+		echo "Git tag $(TAG) already exists, skipping tagging"; \
+	else \
+		echo "Creating git tag: $(TAG)"; \
+		git tag $(TAG); \
+		echo "Creating docker tag: $(TAG)"; \
+		docker tag stellars/stellars-jupyterlab-ds:latest stellars/stellars-jupyterlab-ds:$(TAG); \
+	fi
 
 ## start jupyterlab (fg)
 start:
