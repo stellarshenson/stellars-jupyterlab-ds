@@ -423,7 +423,7 @@ EOF
 
 ## change persmissions of shared resources
 USER root
-RUN <<-EOF 
+RUN <<-EOF
     echo "changing permissions of files in the shared folder app extension"
     find ${JUPYTER_SHARE_PATH}/jupyter_app_launcher -type f -exec chmod a-x {} +
 EOF
