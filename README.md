@@ -132,7 +132,6 @@ graph TB
             VolHome[Home Directory<br/>User files & config]
             VolWorkspace[Workspace<br/>Projects & notebooks]
             VolCache[Cache<br/>Conda packages & MLflow]
-            VolCerts[Certificates<br/>SSL/TLS]
         end
 
         GPU[NVIDIA GPU<br/>Optional]
@@ -153,17 +152,61 @@ graph TB
     JLServer -.->|mounts| VolHome
     JLServer -.->|mounts| VolWorkspace
     JLServer -.->|mounts| VolCache
-    JLServer -.->|mounts| VolCerts
 
     JLServer -.->|optional| GPU
 
-    style External fill:#e0f2fe,stroke:#0284c7,stroke-width:3px
-    style Docker fill:#f3f4f6,stroke:#6b7280,stroke-width:3px
-    style JupyterLab fill:#d1fae5,stroke:#10b981,stroke-width:3px
-    style Services fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
-    style Volumes fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
-    style Traefik fill:#e9d5ff,stroke:#a855f7
-    style GPU fill:#fee2e2,stroke:#ef4444
+    style External stroke:#0284c7,stroke-width:3px
+    style Docker stroke:#6b7280,stroke-width:3px
+    style JupyterLab stroke:#10b981,stroke-width:3px
+    style Services stroke:#f59e0b,stroke-width:2px
+    style Volumes stroke:#3b82f6,stroke-width:2px
+```
+
+**Configuration & Scripts:**
+
+```mermaid
+graph LR
+    subgraph Deployment["Deployment Configuration"]
+        Compose[compose.yml<br/>compose-gpu.yml]
+        TraefikConf[traefik.yml]
+    end
+
+    subgraph Container["Container Configuration"]
+        JLabConfig[jupyter_lab_config.py<br/>ServerProxy routing]
+        EnvFiles[environment_*.yml<br/>Conda environments]
+        StartScripts[start-platform.d/*.sh<br/>Service launchers]
+    end
+
+    subgraph Services["Service Scripts"]
+        MLflowScript[13_start_mlflow.sh<br/>MLFLOW_SERVER_ALLOWED_HOSTS<br/>FORWARDED_ALLOW_IPS]
+        TBScript[14_start_tensorboard.sh]
+        GlancesScript[12_start_glances.sh]
+    end
+
+    subgraph Utils["Lab Utilities"]
+        LabUtils[lab-utils<br/>Main menu]
+        CondaEnv[install-conda-env.sh<br/>Environment installer]
+        GitUtils[git-utils.sh<br/>Git operations]
+        AIAssist[install-ai-assistant.sh<br/>AI tools]
+    end
+
+    Compose -->|configures| TraefikConf
+    Compose -->|launches| Container
+
+    JLabConfig -->|routes| Services
+    EnvFiles -->|used by| CondaEnv
+    StartScripts -->|includes| MLflowScript
+    StartScripts -->|includes| TBScript
+    StartScripts -->|includes| GlancesScript
+
+    LabUtils -->|launches| CondaEnv
+    LabUtils -->|launches| GitUtils
+    LabUtils -->|launches| AIAssist
+
+    style Deployment stroke:#a855f7,stroke-width:3px
+    style Container stroke:#10b981,stroke-width:3px
+    style Services stroke:#f59e0b,stroke-width:3px
+    style Utils stroke:#3b82f6,stroke-width:3px
 ```
 
 **Key Components:**
