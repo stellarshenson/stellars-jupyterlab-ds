@@ -38,6 +38,9 @@ MLFLOW_PORT=${MLFLOW_SERVER_PORT:-5000}
 MLFLOW_HOST=${MLFLOW_SERVER_HOST:-0.0.0.0}
 MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 
+# Configure Gunicorn to trust proxy headers and accept any hostname
+export GUNICORN_CMD_ARGS="--forwarded-allow-ips='*' --access-logfile -"
+
 # command to execute
 COMMAND=$(cat <<EOF
 echo "Launching MLFlow models artefacts and experiments management server"
@@ -46,7 +49,8 @@ mlflow server \
   --default-artifact-root $MLFLOW_ARTIFACT_ROOT \
   --workers $MLFLOW_WORKERS \
   --host $MLFLOW_HOST \
-  --port $MLFLOW_PORT
+  --port $MLFLOW_PORT \
+  --serve-artifacts
 EOF
 )
 
