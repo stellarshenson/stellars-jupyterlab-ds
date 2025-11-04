@@ -122,6 +122,7 @@
       <li><code>/home/lab</code> – persistent user home and settings</li>
       <li><code>/home/lab/.jupyter</code> – persistent Jupyterlab settings</li>
       <li><code>/home/lab/.local/start-platform.d</code> – custom startup scripts</li>
+      <li><code>/home/lab/.local/conda-env.d</code> – custom conda environment definitions</li>
       <li><code>/home/lab/.cache</code> – persistent cache storage (i.e. datasets)</li>
       <li><code>/home/lab/.cache/mlflow</code> – persistent MLFlow db and artefacts</li>
       <li><code>/tmp/tensorboard</code> – Tensorboard logs (temporary)</li>
@@ -151,6 +152,7 @@
       <li>Pre-installed: <code>base</code></li>
       <li>Install on-demand: <code>tensorflow</code>, <code>torch</code>, <code>r_base</code>, <code>rust</code></li>
       <li>Use <code>lab-utils</code> > install-conda-environments to install</li>
+      <li>Custom environments: drop <code>.yml</code> files in <code>~/.local/conda-env.d/</code> for auto-discovery</li>
       <li>Activate with: <code>conda activate &lt;env&gt;</code></li>
       <li>Kernels are added automatically when <code>ipykernel</code> package is installed</li>
       <li>env variable <code>CONDA_DEFAULT_ENV</code> - your default conda environment</li>
