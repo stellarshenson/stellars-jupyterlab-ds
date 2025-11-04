@@ -7,7 +7,13 @@ This directory contains conda environment definitions that are available for ins
 
 ## Usage
 
-Environment definitions placed in either directory will automatically appear in the "Install Conda Environment" menu accessible via Lab Utils. User environments are labeled as "(user)" to distinguish them from system environments.
+Environment definitions (both `.yml` and `.sh` files) placed in any of these directories will automatically appear in the "Install Conda Environment" menu accessible via Lab Utils:
+
+- **`/opt/utils/lab-utils.d/install-conda-env.d/`** - Built-in environment scripts
+- **`/opt/utils/conda-env.d/`** - System-wide environment definitions (YAML or shell scripts)
+- **`~/.local/conda-env.d/`** - User-specific environment definitions (YAML or shell scripts)
+
+User environments are labeled as "(user)" to distinguish them from system environments.
 
 ## Two Ways to Define Environments
 
@@ -163,11 +169,14 @@ echo ""
 ## Tips
 
 **For YAML files:**
+- Can be placed in any of the three directories
 - Use symlinks to reference environment files in your projects
 - Keep environments focused and minimal
 - Always include `ipykernel` for Jupyter support
 
 **For Shell scripts:**
+- Can be placed in any of the three directories
+- Must be executable: `chmod +x script.sh`
 - Follow the script template structure above
 - Include colored success announcements for consistency
 - Use `set -e` to exit on errors

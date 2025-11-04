@@ -41,28 +41,44 @@ get_items() {
         done
     fi
 
-    # 2. Find all .yml files in conda-env.d
+    # 2. Find all .yml and .sh files in conda-env.d
     if [[ -d "$CONDA_ENV_DIR" ]]; then
+        # 2a. YAML files
         for yml in "$CONDA_ENV_DIR"/*.yml; do
-            # Check if file exists and is not README.md
             if [[ -f "$yml" ]]; then
                 local basename_item=$(basename "$yml")
                 local description=$(get_file_description "$yml")
-                # Output format: fullpath|basename|description|type
                 echo "$yml|$basename_item|$description|env"
+            fi
+        done
+
+        # 2b. Shell scripts
+        for script in "$CONDA_ENV_DIR"/*.sh; do
+            if [[ -f "$script" && -x "$script" ]]; then
+                local basename_item=$(basename "$script")
+                local description=$(get_file_description "$script")
+                echo "$script|$basename_item|$description|script"
             fi
         done
     fi
 
-    # 3. Find all .yml files in user's local conda-env.d
+    # 3. Find all .yml and .sh files in user's local conda-env.d
     if [[ -d "$USER_CONDA_ENV_DIR" ]]; then
+        # 3a. YAML files
         for yml in "$USER_CONDA_ENV_DIR"/*.yml; do
-            # Check if file exists
             if [[ -f "$yml" ]]; then
                 local basename_item=$(basename "$yml")
                 local description=$(get_file_description "$yml")
-                # Output format: fullpath|basename|description|type
                 echo "$yml|$basename_item (user)|$description|env"
+            fi
+        done
+
+        # 3b. Shell scripts
+        for script in "$USER_CONDA_ENV_DIR"/*.sh; do
+            if [[ -f "$script" && -x "$script" ]]; then
+                local basename_item=$(basename "$script")
+                local description=$(get_file_description "$script")
+                echo "$script|$basename_item (user)|$description|script"
             fi
         done
     fi
