@@ -17,6 +17,11 @@ dependencies:
   ## environment monitoring
   - nvtop # nvidia gpu monitoring tool (must be available everywhere)
 
+  ## web scraping and automation
+  - beautifulsoup4 # HTML/XML parser for web scraping
+  - lxml # XML and HTML parser library
+  - requests # HTTP library for Python
+
   - pip:
 
     ## system monitoring
@@ -59,6 +64,14 @@ dependencies:
     - black # pragmatic code formatter
     - nbdime # tool for diffing and merging jupyter notebooks
     - cookiecutter # projects directory + resources template (ds projects)
+
+    ## web scraping and browser automation
+    - selenium # web browser automation and testing framework
+    - playwright # modern browser automation (chromium, firefox, webkit)
+    - scrapy # web scraping framework
+    - httpx # modern async HTTP client
+    - aiohttp # async HTTP client/server
+    - cloudscraper # bypass cloudflare and other anti-bot protections
 
     # EOF
 
