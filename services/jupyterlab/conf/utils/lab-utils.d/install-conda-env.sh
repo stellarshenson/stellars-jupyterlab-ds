@@ -125,6 +125,14 @@ IFS='|' read -r fullpath type <<< "${ITEM_MAP[$CHOICE]}"
 if [[ "$type" == "script" ]]; then
     echo "Executing: $fullpath"
     "$fullpath"
+
+    # Announce completion for script-based installation
+    clear
+    echo -e "\033[32mConda Environment Installation Successful\033[0m"
+    echo ""
+    echo -e "The environment has been installed via script: $CHOICE"
+    echo ""
+
 elif [[ "$type" == "env" ]]; then
     # Extract environment name from yml file
     ENV_NAME=$(grep "^name:" "$fullpath" | head -1 | sed 's/^name:[[:space:]]*//' || echo "")
@@ -146,8 +154,17 @@ elif [[ "$type" == "env" ]]; then
         conda env create -f "$fullpath"
     fi
 
+    # Announce completion for yml-based installation
+    clear
+    echo -e "\033[32mConda Environment Installation Successful\033[0m"
     echo ""
-    echo "Environment $ENV_NAME installed successfully!"
+    echo -e "Environment: \033[36m$ENV_NAME\033[0m"
+    echo ""
+    echo -e "Typical Usage:"
+    echo -e "1. Activate the environment: '\033[36mconda activate $ENV_NAME\033[0m'"
+    echo -e "2. The environment will be available as a Jupyter kernel (if ipykernel is installed)"
+    echo ""
+
 else
     echo "Error: Unknown item type: $type"
     exit 1
