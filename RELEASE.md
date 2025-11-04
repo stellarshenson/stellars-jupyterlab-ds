@@ -1,5 +1,229 @@
 # Release Notes
 
+## Version 3.1.10_cuda-13.0.1_jl-4.4.10 - User-Defined Conda Environments
+
+**Release Date:** 2025-11-04
+**Docker Image:** `stellars/stellars-jupyterlab-ds:3.1.10_cuda-13.0.1_jl-4.4.10`
+
+### Overview
+
+Version 3.1 introduces a powerful extensible conda environment management system that allows users to define custom environments by simply dropping YAML files or shell scripts into designated directories. This release transforms environment management from a fixed set of built-in options to a flexible, user-controlled system with comprehensive documentation and examples.
+
+### Platform Updates
+
+- **JupyterLab:** 4.4.10 (maintained)
+- **CUDA:** 13.0.1 (maintained)
+- **Python:** 3.12 (maintained)
+
+### Major Features
+
+#### User-Defined Conda Environments
+
+Users can now create custom conda environments by placing files in three discoverable locations:
+
+- **`/opt/utils/lab-utils.d/install-conda-env.d/`** - Built-in environment scripts (system-managed)
+- **`/opt/utils/conda-env.d/`** - System-wide environment definitions (YAML or shell scripts)
+- **`~/.local/conda-env.d/`** - User-specific environment definitions (YAML or shell scripts)
+
+**Supported formats:**
+- **`.yml` files** - Simple declarative conda environment definitions
+- **`.sh` scripts** - Complex multi-stage installations with custom logic
+
+All files are automatically discovered and appear in the "Install Conda Environment" menu with user environments labeled as "(user)".
+
+#### Pre-Defined Scraping Environment
+
+New declarative `scraping.yml` environment includes comprehensive web scraping and browser automation tools:
+
+**Browser Automation:**
+- selenium - Web browser automation framework
+- playwright - Modern browser automation (Chromium, Firefox, WebKit)
+- webdriver-manager - Automatic webdriver management
+- pyppeteer - Headless Chrome/Chromium automation
+
+**Web Scraping Frameworks:**
+- scrapy - Comprehensive web scraping framework
+- beautifulsoup4 - HTML/XML parser
+- lxml - XML and HTML parser library
+
+**HTTP Clients:**
+- httpx - Modern async HTTP client
+- aiohttp - Async HTTP client/server
+- cloudscraper - Bypass anti-bot protections
+- requests - HTTP library for Python
+
+**Parsing & Extraction:**
+- html2text - Convert HTML to markdown
+- extruct - Extract structured data from HTML
+- newspaper3k - Article scraping
+- trafilatura - Web scraping and text extraction
+
+**Utilities:**
+- fake-useragent - Random user agent generation
+- python-dotenv - Environment variable management
+
+#### Comprehensive Documentation
+
+Created detailed `README.md` in conda-env.d directories with:
+
+**YAML Examples:**
+- Basic format template with pip section
+- Data science environment (pandas, numpy, visualization)
+- NLP environment (transformers, spacy, nltk)
+
+**Shell Script Examples:**
+- Basic template with colored announcements
+- Multi-stage installation with custom CUDA packages
+- Post-installation configuration examples
+
+**Package Purpose Comments:**
+All examples include inline comments explaining each package's purpose for educational clarity.
+
+**Usage Guidelines:**
+- When to use YAML vs shell scripts
+- Tips for both approaches
+- Installation behavior details
+
+#### Enhanced User Experience
+
+**Colored Success Announcements:**
+- Consistent green "Conda Environment Installation Successful" message
+- Bold blue environment names for high visibility
+- Formatted usage instructions with cyan-colored commands
+- Matches AI assistant installation style
+
+**Lab Utils Launcher Improvements:**
+- Renamed launcher icon from `wrench.svg` to `lab-utils.svg`
+- Added magenta-colored tab closure notice
+- Improved terminal behavior with `exec` to prevent shell prompt return
+- Updated welcome-template.html with distinct code text colors (red in light/dark modes)
+
+**Automatic Directory Setup:**
+- New `05_user_directories.sh` startup script ensures `~/.local/conda-env.d/` exists
+- Automatically creates symlink to README.md from system directory
+- User-friendly environment discovery on first launch
+
+### Build System Enhancements
+
+#### Makefile Improvements
+
+**Git Tagging Integration:**
+- `make tag` now creates both git and docker tags
+- Skip-if-exists logic prevents duplicate tagging
+- Automatic git tag push with `make push`
+
+**Inline Version Increment:**
+- Replaced Python script with inline awk implementation
+- Simplified dependency chain
+- Direct .env file manipulation
+- Faster execution
+
+### Technical Details
+
+#### Environment Discovery Algorithm
+
+The `install-conda-env.sh` script scans all three locations for both `.yml` and `.sh` files:
+
+1. Extracts descriptions from `##` comment lines
+2. Validates shell scripts are executable
+3. Presents unified menu with clear type and source indicators
+4. Handles both script execution and YAML-based conda env create/update
+
+#### Installation Behavior
+
+**For YAML files:**
+- Extracts environment name from `name:` field
+- Creates if new: `conda env create -f <file>`
+- Updates if existing: `conda env update -n <name> -f <file>`
+- Colored success announcement with environment name
+
+**For Shell scripts:**
+- Direct execution with full control
+- Script handles its own conda commands and announcements
+- Supports complex multi-stage installations
+- Custom post-installation configuration
+
+### Migration Guide
+
+#### For Existing Users
+
+No breaking changes. This release is fully backward compatible with version 3.0.
+
+**To leverage new features:**
+
+1. Create `~/.local/conda-env.d/` if you want custom environments
+2. Drop `.yml` files for simple environments or `.sh` scripts for complex ones
+3. Make shell scripts executable: `chmod +x script.sh`
+4. Access via Lab Utils > Install Conda Environments
+
+#### Example: Creating Custom Environment
+
+**Simple YAML approach:**
+```yaml
+## My custom data analysis environment
+name: myanalysis
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - ipykernel
+  - pip:
+    - pandas
+    - plotly
+    - statsmodels
+```
+
+Save as `~/.local/conda-env.d/myanalysis.yml` and it appears in the menu automatically.
+
+### Benefits
+
+- **Extensibility**: No longer limited to built-in environments
+- **Flexibility**: Mix YAML and shell scripts based on complexity needs
+- **Shareability**: Use symlinks to reference project environment files
+- **Documentation**: Comprehensive examples for both approaches
+- **Consistency**: Standardized success announcements across all installations
+- **User Control**: Personal environments completely isolated from system definitions
+
+### Files Changed
+
+**New Files:**
+- `services/jupyterlab/conf/utils/conda-env.d/README.md` - Comprehensive documentation
+- `services/jupyterlab/conf/utils/conda-env.d/scraping.yml` - Web scraping environment
+- `services/jupyterlab/conf/bin/start-platform.d/05_user_directories.sh` - Auto-setup script
+- `services/jupyterlab/templates/home/.local/conda-env.d/README.md` - Symlink to global README
+
+**Modified Files:**
+- `services/jupyterlab/conf/utils/lab-utils.d/install-conda-env.sh` - Extended discovery
+- `services/jupyterlab/conf/utils/lab-utils.d/install-conda-env.d/*.sh` - Colored announcements
+- `services/jupyterlab/conf/misc/welcome-template.html` - Updated documentation
+- `services/jupyterlab/conf/share/jupyter/jupyter_app_launcher/lab-utils.svg` - Renamed icon
+- `Makefile` - Git tagging and inline version increment
+- `.claude/JOURNAL.md` - Session documentation
+
+### Renamed Files
+
+- `wrench.svg` → `lab-utils.svg` (launcher icon)
+- Removed `scripts/increment_version.py` (replaced with Makefile awk)
+
+### Testing
+
+- Verified YAML environment discovery and installation
+- Confirmed shell script discovery and execution
+- Validated colored announcements consistency
+- Tested symlink creation on startup
+- Verified README accessibility from user directory
+
+### Resources
+
+- **Documentation:** [README.md](./README.md)
+- **Docker Hub:** [stellars/stellars-jupyterlab-ds](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
+- **GitHub:** [stellarshenson/stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds)
+- **Author:** Konrad Jelen (Stellars Henson) - konrad.jelen+github@gmail.com
+- **LinkedIn:** [Konrad Jelen](https://www.linkedin.com/in/konradjelen/)
+
+---
+
 ## Version 3.0_cuda-13.0.1_jl-4.4.10 - On-Demand Environment Installation
 
 **Release Date:** 2025-10-27
