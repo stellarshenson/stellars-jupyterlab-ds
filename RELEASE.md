@@ -1,5 +1,155 @@
 # Release Notes
 
+## Version 3.1.19_cuda-13.0.1_jl-4.4.10 - MLflow DNS Rebinding Protection Fix
+
+**Release Date:** 2025-11-04
+**Docker Image:** `stellars/stellars-jupyterlab-ds:3.1.19_cuda-13.0.1_jl-4.4.10`
+
+### Overview
+
+Version 3.1.19 resolves a critical issue where MLflow tracking server rejected connections from external hosts with "Invalid Host header - possible DNS rebinding attack detected" error. This fix enables MLflow to properly accept requests forwarded through JupyterHub ServerProxy while maintaining security through the containerized architecture with Traefik and ServerProxy proxy layers.
+
+### Platform Updates
+
+- **JupyterLab:** 4.4.10 (maintained)
+- **CUDA:** 13.0.1 (maintained)
+- **Python:** 3.12 (maintained)
+- **MLflow:** 3.5.0+ (DNS rebinding protection support)
+
+### Bug Fixes
+
+#### MLflow External Access Issue
+
+**Problem:**
+MLflow 3.5.0+ introduced DNS rebinding protection that validates the Host header in incoming requests. When accessing MLflow from external hosts (outside localhost), the server rejected requests with error message: "Invalid Host header - possible DNS rebinding attack detected"
+
+**Root Cause:**
+- Traffic routing: Browser → Traefik → JupyterLab → ServerProxy → MLflow
+- ServerProxy preserves the Host header (external domain) when forwarding to MLflow
+- MLflow sees external domain in Host header but connection from 127.0.0.1
+- Default security settings triggered DNS rebinding protection
+
+**Solution:**
+Configured two environment variables in MLflow launch script to disable DNS rebinding checks in the containerized environment:
+
+- `MLFLOW_SERVER_ALLOWED_HOSTS='*'` - MLflow 3.5.0+ setting to allow all Host headers
+- `FORWARDED_ALLOW_IPS='*'` - Gunicorn setting to trust all proxy IP addresses for forwarded headers
+
+**Why This Is Safe:**
+- MLflow runs inside Docker container, completely isolated from external network
+- All external traffic must pass through: Traefik → JupyterLab → ServerProxy
+- MLflow only receives connections from localhost (ServerProxy)
+- Setting these to `*` is safe since MLflow is firewalled from direct external access
+
+### Technical Details
+
+#### Configuration Changes
+
+Modified `services/jupyterlab/conf/bin/start-platform.d/13_start_mlflow.sh`:
+
+**Environment Variables Added (lines 43-44):**
+```bash
+FORWARDED_ALLOW_IPS=${FORWARDED_ALLOW_IPS:-*}
+MLFLOW_SERVER_ALLOWED_HOSTS=${MLFLOW_SERVER_ALLOWED_HOSTS:-*}
+```
+
+**Export to MLflow Process (lines 48-49):**
+```bash
+export FORWARDED_ALLOW_IPS='$FORWARDED_ALLOW_IPS'
+export MLFLOW_SERVER_ALLOWED_HOSTS='$MLFLOW_SERVER_ALLOWED_HOSTS'
+```
+
+**Documentation Updated:**
+- Added `MLFLOW_SERVER_ALLOWED_HOSTS` to environment variables list
+- Added `FORWARDED_ALLOW_IPS` to environment variables list
+- Clarified default values and purpose
+
+#### Script Simplification
+
+Removed experimental configurations from previous troubleshooting attempts:
+- Cleaned up heredoc variable expansion
+- Removed wildcard-to-IP conversion logic
+- Simplified launch announcement
+- Maintained `MLFLOW_HOST` environment variable support
+
+### Architecture Context
+
+**MLflow Deployment Architecture:**
+```
+Browser (external host)
+    ↓ HTTPS
+Traefik Reverse Proxy (port 443)
+    ↓ HTTP (Host: external-domain.com)
+JupyterLab (port 8888)
+    ↓ HTTP (Host: external-domain.com preserved)
+ServerProxy (JupyterHub extension)
+    ↓ HTTP to localhost:5000 (Host: external-domain.com preserved)
+MLflow Tracking Server (Gunicorn/Flask)
+    ↓ validates Host header
+    ✓ Now accepts all hosts
+```
+
+### Files Changed
+
+**Modified Files:**
+- `services/jupyterlab/conf/bin/start-platform.d/13_start_mlflow.sh` - Added environment variables for DNS rebinding protection
+- `project.env` - Updated version and comment
+- `.claude/JOURNAL.md` - Session documentation
+
+### Testing
+
+**Verified:**
+- MLflow accessible from localhost - ✓
+- MLflow accessible from same Docker host - ✓
+- MLflow accessible from external hosts - ✓ (fixed)
+- Host header validation disabled - ✓
+- Gunicorn proxy trust configured - ✓
+- Environment variables properly exported - ✓
+
+**Environment Variables Can Be Overridden:**
+```bash
+# In compose.yml or Dockerfile
+MLFLOW_SERVER_ALLOWED_HOSTS=domain1.com,domain2.com  # Specific domains
+FORWARDED_ALLOW_IPS=172.0.0.0/8,10.0.0.0/8          # Specific networks
+```
+
+### Migration Guide
+
+#### For Existing Users
+
+**No action required** - this is a bug fix that enables previously broken functionality.
+
+If you were working around this issue by accessing MLflow only from localhost, you can now access it from external hosts as originally intended.
+
+#### For Security-Conscious Deployments
+
+If you prefer stricter Host header validation:
+
+1. Set `MLFLOW_SERVER_ALLOWED_HOSTS` to comma-separated list of allowed domains:
+   ```yaml
+   # In compose.yml
+   environment:
+     - MLFLOW_SERVER_ALLOWED_HOSTS=mlflow.example.com,localhost
+   ```
+
+2. Set `FORWARDED_ALLOW_IPS` to specific Docker network ranges:
+   ```yaml
+   # In compose.yml
+   environment:
+     - FORWARDED_ALLOW_IPS=127.0.0.1,::1,172.0.0.0/8
+   ```
+
+### Resources
+
+- **MLflow Documentation:** [Network Security](https://mlflow.org/docs/latest/self-hosting/security/network/)
+- **Gunicorn Documentation:** [Settings - forwarded-allow-ips](https://docs.gunicorn.org/en/stable/settings.html#forwarded-allow-ips)
+- **Docker Hub:** [stellars/stellars-jupyterlab-ds](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
+- **GitHub:** [stellarshenson/stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds)
+- **Author:** Konrad Jelen (Stellars Henson) - konrad.jelen+github@gmail.com
+- **LinkedIn:** [Konrad Jelen](https://www.linkedin.com/in/konradjelen/)
+
+---
+
 ## Version 3.1.10_cuda-13.0.1_jl-4.4.10 - User-Defined Conda Environments
 
 **Release Date:** 2025-11-04
