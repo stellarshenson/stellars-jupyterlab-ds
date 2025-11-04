@@ -1,0 +1,40 @@
+## Web scraping and browser automation environment
+name: scraping
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.12
+  - ipykernel # jupyter kernel support
+
+  ## web scraping and parsing
+  - beautifulsoup4 # HTML/XML parser for web scraping
+  - lxml # XML and HTML parser library
+  - requests # HTTP library for Python
+  - html5lib # HTML parser based on WHATWG HTML5 specification
+
+  - pip:
+    ## browser automation
+    - selenium # web browser automation and testing framework
+    - playwright # modern browser automation (chromium, firefox, webkit)
+    - webdriver-manager # automatic webdriver management for selenium
+
+    ## web scraping frameworks
+    - scrapy # comprehensive web scraping framework
+    - pyppeteer # headless chrome/chromium automation
+
+    ## HTTP clients
+    - httpx # modern async HTTP client
+    - aiohttp # async HTTP client/server
+    - cloudscraper # bypass cloudflare and other anti-bot protections
+
+    ## parsing and extraction
+    - html2text # convert HTML to markdown
+    - extruct # extract structured data from HTML
+    - newspaper3k # article scraping and curation
+    - trafilatura # web scraping and text extraction
+
+    ## utilities
+    - fake-useragent # generate random user agents
+    - python-dotenv # environment variable management
