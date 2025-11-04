@@ -38,12 +38,10 @@ MLFLOW_PORT=${MLFLOW_SERVER_PORT:-5000}
 MLFLOW_HOST=${MLFLOW_SERVER_HOST:-0.0.0.0}
 MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 
-# Configure Gunicorn to trust proxy headers and accept any hostname
-export GUNICORN_CMD_ARGS="--forwarded-allow-ips='*' --access-logfile -"
-
-# command to execute
+# command to execute with Gunicorn configuration
 COMMAND=$(cat <<EOF
 echo "Launching MLFlow models artefacts and experiments management server"
+export GUNICORN_CMD_ARGS="--forwarded-allow-ips='*' --access-logfile -"
 mlflow server \
   --backend-store-uri $MLFLOW_BACKEND_STORE_URI \
   --default-artifact-root $MLFLOW_ARTIFACT_ROOT \
@@ -54,8 +52,8 @@ mlflow server \
 EOF
 )
 
-# use conda to execute
-conda run -n base "$COMMAND" &
+# use conda to execute with environment variables passed through
+conda run -n base --no-capture-output bash -c "$COMMAND" &
 
 # EOF
 
