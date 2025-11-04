@@ -1,6 +1,5 @@
 # base environment update with Jupyterlab installation
 # this environment has also additional tools available
-# 2025-10-26 v1
 
 name: base
 channels:
