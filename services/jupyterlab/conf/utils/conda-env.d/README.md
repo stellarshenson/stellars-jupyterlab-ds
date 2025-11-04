@@ -25,9 +25,10 @@ channels:
 dependencies:
   - python=3.12
   - pip # package manager
-  - numpy
-  - pandas
   - ipykernel # for Jupyter kernel support
+  - pip:
+    - numpy
+    - pandas
 ```
 
 **Important**: Add a description comment starting with `##` at the top - this will be shown in the installation menu.
@@ -42,12 +43,13 @@ dependencies:
   - python=3.12
   - pip
   - ipykernel
-  - numpy
-  - pandas
-  - matplotlib
-  - seaborn
-  - scikit-learn
-  - jupyter
+  - pip:
+    - numpy
+    - pandas
+    - matplotlib
+    - seaborn
+    - scikit-learn
+    - jupyter
 ```
 
 **Example - NLP Environment:**
