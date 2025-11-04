@@ -38,16 +38,17 @@ MLFLOW_PORT=${MLFLOW_SERVER_PORT:-5000}
 MLFLOW_HOST=${MLFLOW_SERVER_HOST:-0.0.0.0}
 MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 
-# command to execute - using Flask dev server to avoid Gunicorn Host header restrictions
+# command to execute - using Gunicorn with proper proxy configuration
 COMMAND=$(cat <<EOF
 echo "Launching MLFlow models artefacts and experiments management server"
 mlflow server \
   --backend-store-uri $MLFLOW_BACKEND_STORE_URI \
   --default-artifact-root $MLFLOW_ARTIFACT_ROOT \
+  --workers $MLFLOW_WORKERS \
   --host $MLFLOW_HOST \
   --port $MLFLOW_PORT \
   --serve-artifacts \
-  --dev
+  --gunicorn-opts "--forwarded-allow-ips=* --access-logfile=-"
 EOF
 )
 
