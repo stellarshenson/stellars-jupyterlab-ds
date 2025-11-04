@@ -24,6 +24,7 @@ channels:
   - defaults
 dependencies:
   - python=3.12
+  - pip # package manager
   - numpy
   - pandas
   - ipykernel # for Jupyter kernel support
@@ -39,6 +40,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
+  - pip
   - ipykernel
   - numpy
   - pandas
@@ -56,6 +58,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12
+  - pip
   - ipykernel
   - pip:
     - transformers
