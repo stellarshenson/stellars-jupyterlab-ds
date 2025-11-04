@@ -104,9 +104,74 @@ Then open https://localhost:8888/lab in your browser
 ## Key Features
 
 ### Architecture
+
+The platform uses a containerized architecture with Traefik reverse proxy providing unified access to all services through a single HTTPS endpoint.
+
+```mermaid
+graph TB
+    subgraph External["External Access"]
+        Browser[Browser]
+    end
+
+    subgraph Docker["Docker Environment"]
+        Traefik[Traefik Reverse Proxy<br/>Port 443 HTTPS]
+
+        subgraph JupyterLab["JupyterLab Container"]
+            JLServer[JupyterLab Server<br/>Port 8888]
+            ServerProxy[JupyterHub ServerProxy]
+
+            subgraph Services["Integrated Services"]
+                MLflow[MLflow Tracking<br/>Port 5000]
+                TensorBoard[TensorBoard<br/>Port 6006]
+                Glances[Glances Monitor<br/>Port 61208]
+                Optuna[Optuna Dashboard<br/>Port 8080]
+            end
+        end
+
+        subgraph Volumes["Persistent Storage"]
+            VolHome[Home Directory<br/>User files & config]
+            VolWorkspace[Workspace<br/>Projects & notebooks]
+            VolCache[Cache<br/>Conda packages & MLflow]
+            VolCerts[Certificates<br/>SSL/TLS]
+        end
+
+        GPU[NVIDIA GPU<br/>Optional]
+    end
+
+    Browser -->|HTTPS| Traefik
+    Traefik -->|/jupyterlab| JLServer
+    Traefik -->|/mlflow| ServerProxy
+    Traefik -->|/tensorboard| ServerProxy
+    Traefik -->|/glances| ServerProxy
+    Traefik -->|/optuna| ServerProxy
+
+    ServerProxy --> MLflow
+    ServerProxy --> TensorBoard
+    ServerProxy --> Glances
+    ServerProxy --> Optuna
+
+    JLServer -.->|mounts| VolHome
+    JLServer -.->|mounts| VolWorkspace
+    JLServer -.->|mounts| VolCache
+    JLServer -.->|mounts| VolCerts
+
+    JLServer -.->|optional| GPU
+
+    style External fill:#e0f2fe,stroke:#0284c7,stroke-width:3px
+    style Docker fill:#f3f4f6,stroke:#6b7280,stroke-width:3px
+    style JupyterLab fill:#d1fae5,stroke:#10b981,stroke-width:3px
+    style Services fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style Volumes fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style Traefik fill:#e9d5ff,stroke:#a855f7
+    style GPU fill:#fee2e2,stroke:#ef4444
+```
+
+**Key Components:**
 - **Traefik Reverse Proxy:** All services run behind Traefik, enabling multiple environments without port conflicts
+- **JupyterHub ServerProxy:** Routes traffic from JupyterLab to integrated services (MLflow, TensorBoard, Glances)
 - **Watchtower:** Automatic container updates (runs daily at midnight)
 - **Named Volumes:** Persistent data for workspace, home directory, cache, and certificates
+- **GPU Support:** Optional NVIDIA GPU access for accelerated computing
 
 ### JupyterLab Extensions
 - Conda environment and package management from within JupyterLab
