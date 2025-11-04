@@ -130,7 +130,7 @@ if [[ "$type" == "script" ]]; then
     clear
     echo -e "\033[32mConda Environment Installation Successful\033[0m"
     echo ""
-    echo -e "The environment has been installed via script: $CHOICE"
+    echo -e "The environment has been installed via script: \033[1;36m$CHOICE\033[0m"
     echo ""
 
 elif [[ "$type" == "env" ]]; then
@@ -158,10 +158,10 @@ elif [[ "$type" == "env" ]]; then
     clear
     echo -e "\033[32mConda Environment Installation Successful\033[0m"
     echo ""
-    echo -e "Environment: \033[36m$ENV_NAME\033[0m"
+    echo -e "Environment: \033[1;36m$ENV_NAME\033[0m"
     echo ""
     echo -e "Typical Usage:"
-    echo -e "1. Activate the environment: '\033[36mconda activate $ENV_NAME\033[0m'"
+    echo -e "1. Activate the environment: '\033[1;36mconda activate $ENV_NAME\033[0m'"
     echo -e "2. The environment will be available as a Jupyter kernel (if ipykernel is installed)"
     echo ""
 
