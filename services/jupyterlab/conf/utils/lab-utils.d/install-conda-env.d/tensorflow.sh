@@ -23,10 +23,10 @@ ${CONDA_CMD} clean -a -y
 clear
 echo -e "\033[32mConda Environment Installation Successful\033[0m"
 echo ""
-echo -e "Environment: \033[1;36m$ENV_NAME\033[0m"
+echo -e "Environment: \033[1;34m$ENV_NAME\033[0m"
 echo ""
 echo -e "Typical Usage:"
-echo -e "1. Activate the environment: '\033[1;36mconda activate $ENV_NAME\033[0m'"
+echo -e "1. Activate the environment: '\033[1;34mconda activate $ENV_NAME\033[0m'"
 echo -e "2. The environment is available as a Jupyter kernel"
 echo ""
 
