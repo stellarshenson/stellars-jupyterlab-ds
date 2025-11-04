@@ -38,21 +38,20 @@ MLFLOW_PORT=${MLFLOW_SERVER_PORT:-5000}
 MLFLOW_HOST=${MLFLOW_SERVER_HOST:-0.0.0.0}
 MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 
-# command to execute with Gunicorn configuration
+# command to execute - using Flask dev server to avoid Gunicorn Host header restrictions
 COMMAND=$(cat <<EOF
 echo "Launching MLFlow models artefacts and experiments management server"
-export GUNICORN_CMD_ARGS="--forwarded-allow-ips='*' --access-logfile -"
 mlflow server \
   --backend-store-uri $MLFLOW_BACKEND_STORE_URI \
   --default-artifact-root $MLFLOW_ARTIFACT_ROOT \
-  --workers $MLFLOW_WORKERS \
   --host $MLFLOW_HOST \
   --port $MLFLOW_PORT \
-  --serve-artifacts
+  --serve-artifacts \
+  --dev
 EOF
 )
 
-# use conda to execute with environment variables passed through
+# use conda to execute
 conda run -n base --no-capture-output bash -c "$COMMAND" &
 
 # EOF
