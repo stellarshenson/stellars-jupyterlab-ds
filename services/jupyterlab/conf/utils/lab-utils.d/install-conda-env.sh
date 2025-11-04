@@ -125,13 +125,7 @@ IFS='|' read -r fullpath type <<< "${ITEM_MAP[$CHOICE]}"
 if [[ "$type" == "script" ]]; then
     echo "Executing: $fullpath"
     "$fullpath"
-
-    # Announce completion for script-based installation
-    clear
-    echo -e "\033[32mConda Environment Installation Successful\033[0m"
-    echo ""
-    echo -e "The environment has been installed via script: \033[1;34m$CHOICE\033[0m"
-    echo ""
+    # Script handles its own announcement with proper environment name
 
 elif [[ "$type" == "env" ]]; then
     # Extract environment name from yml file
