@@ -23,12 +23,12 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.12
+  - python=3.12 # python interpreter
   - pip # package manager
-  - ipykernel # for Jupyter kernel support
+  - ipykernel # jupyter kernel support
   - pip:
-    - numpy
-    - pandas
+    - numpy # numerical computing
+    - pandas # data manipulation and analysis
 ```
 
 **Important**: Add a description comment starting with `##` at the top - this will be shown in the installation menu.
@@ -40,16 +40,16 @@ name: datascience
 channels:
   - conda-forge
 dependencies:
-  - python=3.12
-  - pip
-  - ipykernel
+  - python=3.12 # python interpreter
+  - pip # package manager
+  - ipykernel # jupyter kernel support
   - pip:
-    - numpy
-    - pandas
-    - matplotlib
-    - seaborn
-    - scikit-learn
-    - jupyter
+    - numpy # numerical computing
+    - pandas # data manipulation and analysis
+    - matplotlib # plotting and visualization
+    - seaborn # statistical data visualization
+    - scikit-learn # machine learning library
+    - jupyter # notebook interface
 ```
 
 **Example - NLP Environment:**
@@ -59,14 +59,14 @@ name: nlp
 channels:
   - conda-forge
 dependencies:
-  - python=3.12
-  - pip
-  - ipykernel
+  - python=3.12 # python interpreter
+  - pip # package manager
+  - ipykernel # jupyter kernel support
   - pip:
-    - transformers
-    - spacy
-    - nltk
-    - sentence-transformers
+    - transformers # pre-trained language models
+    - spacy # NLP library for text processing
+    - nltk # natural language toolkit
+    - sentence-transformers # sentence embeddings
 ```
 
 ### 2. Shell Script (.sh)
