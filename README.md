@@ -165,48 +165,27 @@ graph TB
 **Configuration & Scripts:**
 
 ```mermaid
-graph LR
-    subgraph Deployment["Deployment Configuration"]
-        Compose[compose.yml<br/>compose-gpu.yml]
-        TraefikConf[traefik.yml]
-    end
+graph TB
+    Compose[compose.yml / compose-gpu.yml]
+    JLabConfig[jupyter_lab_config.py<br/>ServerProxy routing]
 
-    subgraph Container["Container Configuration"]
-        JLabConfig[jupyter_lab_config.py<br/>ServerProxy routing]
-        EnvFiles[environment_*.yml<br/>Conda environments]
-        StartScripts[start-platform.d/*.sh<br/>Service launchers]
-    end
-
-    subgraph Services["Service Scripts"]
+    subgraph Scripts["Startup Scripts"]
         MLflowScript[13_start_mlflow.sh<br/>MLFLOW_SERVER_ALLOWED_HOSTS<br/>FORWARDED_ALLOW_IPS]
         TBScript[14_start_tensorboard.sh]
         GlancesScript[12_start_glances.sh]
     end
 
-    subgraph Utils["Lab Utilities"]
-        LabUtils[lab-utils<br/>Main menu]
-        CondaEnv[install-conda-env.sh<br/>Environment installer]
-        GitUtils[git-utils.sh<br/>Git operations]
-        AIAssist[install-ai-assistant.sh<br/>AI tools]
+    subgraph Utils["Lab Utils Menu"]
+        CondaEnv[install-conda-env.sh]
+        GitUtils[git-utils.sh]
+        AIAssist[install-ai-assistant.sh]
     end
 
-    Compose -->|configures| TraefikConf
-    Compose -->|launches| Container
+    Compose --> JLabConfig
+    JLabConfig --> Scripts
 
-    JLabConfig -->|routes| Services
-    EnvFiles -->|used by| CondaEnv
-    StartScripts -->|includes| MLflowScript
-    StartScripts -->|includes| TBScript
-    StartScripts -->|includes| GlancesScript
-
-    LabUtils -->|launches| CondaEnv
-    LabUtils -->|launches| GitUtils
-    LabUtils -->|launches| AIAssist
-
-    style Deployment stroke:#a855f7,stroke-width:3px
-    style Container stroke:#10b981,stroke-width:3px
-    style Services stroke:#f59e0b,stroke-width:3px
-    style Utils stroke:#3b82f6,stroke-width:3px
+    style Scripts stroke:#f59e0b,stroke-width:2px
+    style Utils stroke:#3b82f6,stroke-width:2px
 ```
 
 **Key Components:**
