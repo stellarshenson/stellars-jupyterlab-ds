@@ -1,5 +1,100 @@
 # Release Notes
 
+## Version 3.2.2_cuda-13.0.1_jl-4.4.10 - JupyterHub Notification System Integration
+
+**Release Date:** 2025-11-04
+**Docker Image:** `stellars/stellars-jupyterlab-ds:3.2.2_cuda-13.0.1_jl-4.4.10`
+
+### Overview
+
+Version 3.2.2 integrates with the stellars-jupyterhub-ds notifications broadcast system, enabling hub-level notification delivery to all user JupyterLab sessions. This integration allows administrators and automated systems to send notifications that appear in the native JupyterLab notification center across all active user sessions.
+
+### Platform Updates
+
+- **JupyterLab:** 4.4.10 (maintained)
+- **CUDA:** 13.0.1 (maintained)
+- **Python:** 3.12 (maintained)
+
+### New Features
+
+#### JupyterHub Notification System Integration
+
+**Integration Component:**
+Added `jupyterlab_notifications_extension` to base environment, enabling REST API-based notification delivery from external systems.
+
+**Key Capabilities:**
+- **Hub-level broadcast** - Notifications sent from JupyterHub reach all active user sessions
+- **REST API endpoint** - External systems can POST notifications with token authentication
+- **5 notification types** - info, success, warning, error, in-progress with distinct visual styling
+- **Configurable auto-dismiss** - Set millisecond timeout or manual dismissal
+- **Command palette integration** - Manual notification sending via interactive dialog
+- **Action buttons** - Optional buttons for enhanced user interaction
+- **Programmatic API** - Extensions can send notifications programmatically
+
+**Use Cases:**
+- System-wide announcements to all users
+- Maintenance notifications
+- Job completion alerts from external systems
+- Integration with CI/CD pipelines
+- Custom workflow notifications
+
+**Integration Architecture:**
+
+The notification system integrates with stellars-jupyterhub-ds through:
+1. JupyterHub sends notifications to REST API endpoint
+2. Extension broadcasts to all connected JupyterLab sessions via 30-second polling
+3. Notifications appear in native JupyterLab notification center
+4. Users can dismiss or interact with notifications
+
+**Extension Repository:**
+[jupyterlab_notifications_extension](https://github.com/stellarshenson/jupyterlab_notifications_extension)
+
+### Files Changed
+
+**Modified Files:**
+- `services/jupyterlab/conf/environment_base_jupyterlab.yml` - Added jupyterlab_notifications_extension to pip dependencies
+- `project.env` - Updated version to 3.2.2 and version comment
+- `.claude/JOURNAL.md` - Session documentation
+
+### Migration Guide
+
+#### For Existing Users
+
+**No action required** - The extension is automatically installed when rebuilding the base environment.
+
+**To leverage notification system:**
+1. Rebuild Docker image to install extension
+2. Configure notification tokens (if using REST API)
+3. External systems can POST to `/jupyterlab_notifications/notify` endpoint
+4. See extension documentation for API details
+
+#### For JupyterHub Deployments
+
+This integration is designed to work seamlessly with [stellars-jupyterhub-ds](https://github.com/stellarshenson/stellars-jupyterhub-ds). The hub can broadcast notifications to all user sessions for:
+- System announcements
+- Scheduled maintenance alerts
+- Resource quota warnings
+- Custom administrative notifications
+
+### Testing
+
+**Verified:**
+- Extension installs correctly in base environment
+- Notification center accessible in JupyterLab UI
+- Command palette integration functional
+- REST API endpoint available (when configured)
+
+### Resources
+
+- **Extension Documentation:** [jupyterlab_notifications_extension](https://github.com/stellarshenson/jupyterlab_notifications_extension)
+- **JupyterHub Integration:** [stellars-jupyterhub-ds](https://github.com/stellarshenson/stellars-jupyterhub-ds)
+- **Docker Hub:** [stellars/stellars-jupyterlab-ds](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
+- **GitHub:** [stellarshenson/stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds)
+- **Author:** Konrad Jelen (Stellars Henson) - konrad.jelen+github@gmail.com
+- **LinkedIn:** [Konrad Jelen](https://www.linkedin.com/in/konradjelen/)
+
+---
+
 ## Version 3.1.19_cuda-13.0.1_jl-4.4.10 - MLflow DNS Rebinding Protection Fix
 
 **Release Date:** 2025-11-04
