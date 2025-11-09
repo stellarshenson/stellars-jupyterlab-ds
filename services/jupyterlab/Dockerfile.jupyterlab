@@ -1,6 +1,6 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
-ARG CUDA_VERSION=13.0.1
+ARG CUDA_VERSION=13.0.2
 FROM nvidia/cuda:${CUDA_VERSION}-cudnn-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
