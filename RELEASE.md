@@ -1,9 +1,9 @@
 # Release Notes
 
-## Version 3.2.2_cuda-13.0.1_jl-4.4.10 - JupyterHub Notification System Integration
+## Version 3.2.2_cuda-13.0.2_jl-4.4.10 - JupyterHub Notification System Integration
 
 **Release Date:** 2025-11-04
-**Docker Image:** `stellars/stellars-jupyterlab-ds:3.2.2_cuda-13.0.1_jl-4.4.10`
+**Docker Image:** `stellars/stellars-jupyterlab-ds:3.2.2_cuda-13.0.2_jl-4.4.10`
 
 ### Overview
 
@@ -12,7 +12,7 @@ Version 3.2.2 integrates with the stellars-jupyterhub-ds notifications broadcast
 ### Platform Updates
 
 - **JupyterLab:** 4.4.10 (maintained)
-- **CUDA:** 13.0.1 (maintained)
+- **CUDA:** 13.0.2 (upgraded from 13.0.1)
 - **Python:** 3.12 (maintained)
 
 ### New Features
