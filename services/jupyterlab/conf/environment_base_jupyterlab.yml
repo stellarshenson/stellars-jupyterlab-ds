@@ -48,7 +48,7 @@ dependencies:
     - jupyterlab_refresh_view_extension # extension to refresh MD and code when modified in the bg
     - jupyterlab_tabular_data_viewer_extension # extension for viewing parquet, csv, tsv, excel files
     - jupyterlab_mmd_to_png_extension # extension to export mermaid diagrams to png
-    - jupyterlab_notifications_extension # REST API for external notification delivery
+    - jupyterlab_notifications_extension # JH->JL notifications system integration
     - notebook-intelligence # github copilot plugin
 
     ## themes
