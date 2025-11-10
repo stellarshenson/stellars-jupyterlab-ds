@@ -29,77 +29,63 @@ This platform integrates with **[stellars-jupyterhub-ds](https://github.com/stel
 ![Multi User 1](./.resources/multiuser-shutdown.png)
 
 
-## Quickstart
+## Getting Started
 
-Preferred method for running the container is with **docker compose** or **make**
+The platform offers multiple deployment options depending on your needs. For production multi-user environments, JupyterHub integration provides the best experience with full user management, authentication, and resource allocation. Single-user deployments work well with the convenience scripts or docker compose.
 
-### Using Make
+### Recommended: JupyterHub Multi-User Deployment
 
+The [stellars-jupyterhub-ds](https://github.com/stellarshenson/stellars-jupyterhub-ds) project provides enterprise-grade multi-user JupyterLab deployment with user authentication, session management, and resource controls. This integration enables hub-level features like broadcast notifications, centralized user administration, and quota management. Each user gets an isolated JupyterLab environment with dedicated workspace and home directory.
+
+**Key benefits:**
+- User authentication and authorization
+- Per-user resource limits and quotas
+- Centralized administration and monitoring
+- Broadcast notification system
+- Seamless integration with corporate identity providers
+
+Visit the [stellars-jupyterhub-ds repository](https://github.com/stellarshenson/stellars-jupyterhub-ds) for deployment instructions and configuration details.
+
+### Quick Launch Scripts
+
+The simplest way to launch a single-user environment is using the included launcher scripts. These scripts automatically detect GPU availability and configure the appropriate docker compose settings.
+
+**Linux/macOS:**
 ```bash
-make pull   # Pull latest image from Docker Hub
-make start  # Start the platform
-make help   # Show all available commands
+./start.sh
 ```
 
+**Windows:**
+```cmd
+start.bat
+```
+
+The launcher detects NVIDIA GPU via `nvidia-smi` and automatically launches with GPU support when available. After starting, access JupyterLab at https://localhost/stellars-jupyterlab-ds/jupyterlab
+
 ### Docker Compose
+
+For manual control over the deployment configuration, use docker compose directly. This approach requires specifying GPU configuration explicitly when needed.
 
 **Without GPU:**
 ```bash
 docker compose up
 ```
 
-**With GPU (NVIDIA):**
+**With NVIDIA GPU:**
 ```bash
 docker compose -f compose.yml -f compose-gpu.yml up
 ```
 
-After starting, open https://localhost/stellars-jupyterlab-ds/jupyterlab in your browser
+Access the platform at https://localhost/stellars-jupyterlab-ds/jupyterlab once containers are running.
 
-### Multi User Deployment
+### Multi-User Standalone Scripts
 
-#### Jupyterhub
+For running multiple single-user instances without JupyterHub, launcher scripts in the `multi-user/` directory create isolated environments per user:
 
-[Stellars Jupyterhub DS](https://github.com/stellarshenson/stellars-jupyterhub-ds) - true multi user environment management
+- `start_lab_user.sh` - Launch new user environment
+- `stop_lab_user.sh` - Shutdown user environment
 
-Another **Jupyterhub** based project **https://github.com/stellarshenson/stellars-jupyterhub-ds** introduces true, configurable multi-user environmnet where users can be created, managed and authorised in a way that is both convenient for individual environments as well as with the corporate multi-user access policies. Please consult the project for details
-
-#### Standalone launcher
-
-Convenient launcher scripts for multi-user platform are available in the `multi-user/` directory:
-- `start_lab_user.sh` - script that launches new environment for a new user
-- `stop_lab_user.sh` - script that shuts user's environment down
-
-### Docker (Standalone)
-
-You can run the container without Traefik reverse proxy using plain Docker. Note that this approach bypasses the URL-based routing and exposes JupyterLab directly on port 8888.
-
-**Without GPU support:**
-```bash
-docker run -p 8888:8888 \
- -v stellars-jupyterlab-ds_home:/home \
- -v stellars-jupyterlab-ds_workspace:/home/lab/workspace \
- -v stellars-jupyterlab-ds_certs:/mnt/certs \
- -e JUPYTERLAB_BASE_URL=/lab \
- --name lab \
- --hostname lab \
- stellars/stellars-jupyterlab-ds:latest
-```
-
-**With GPU support (NVIDIA):**
-```bash
-docker run -p 8888:8888 \
- -v stellars-jupyterlab-ds_home:/home \
- -v stellars-jupyterlab-ds_workspace:/home/lab/workspace \
- -v stellars-jupyterlab-ds_certs:/mnt/certs \
- -e ENABLE_GPU_SUPPORT=1 \
- -e JUPYTERLAB_BASE_URL=/lab \
- --gpus all \
- --name lab-gpu \
- --hostname lab-gpu \
- stellars/stellars-jupyterlab-ds:latest
-```
-
-Then open https://localhost:8888/lab in your browser
+This approach provides basic multi-user support through container isolation without centralized authentication.
 
 ## Key Features
 
@@ -260,66 +246,63 @@ Entrepreneur, enterprise architect, and data science/machine learning practition
 
 ## Installation
 
-To use this environment, Docker must be installed on your system. JupyterLab 4 is provided as a Docker container, ensuring complete isolation from your system's software.
+Docker must be installed on your system to run this platform. JupyterLab 4 runs as a containerized application, ensuring complete isolation from your host system and consistent behavior across different environments.
 
-**Docker Hub Repository:** [Stellars JupyterLab DS](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
+**Docker Hub Repository:** [stellars/stellars-jupyterlab-ds](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
 
-### Required Software
-1. [Docker Desktop](https://www.docker.com/products/docker-desktop/) - includes `docker compose` command
-2. (Optional) GNU Make - for convenient command execution
+### Prerequisites
 
-### Quick Start Commands
+Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) which includes the `docker compose` command. For NVIDIA GPU support, install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) to enable GPU pass-through to containers.
 
-**Using Make (recommended):**
+### Deployment Options
+
+The platform supports several deployment patterns depending on your use case. For enterprise multi-user environments, JupyterHub integration provides authentication, resource management, and centralized administration. Single-user deployments work well with the quick launch scripts that handle GPU detection automatically.
+
+**Quick Launch (Recommended for single-user):**
+
+The launcher scripts detect NVIDIA GPU availability and configure docker compose appropriately:
+
 ```bash
-make pull   # Pull latest image from Docker Hub
-make start  # Start the platform
-make build  # Build locally (faster in v3.0 - base environment only)
-make clean  # Clean up containers and dangling images
+# Linux/macOS
+./start.sh
+
+# Windows
+start.bat
 ```
 
-**Using Docker Compose:**
+**Docker Compose (Manual configuration):**
+
+Pull the latest image and start with explicit GPU configuration:
+
 ```bash
 # Pull latest image
 docker compose pull
 
-# Start without GPU
+# Without GPU
 docker compose up
 
-# Start with GPU support
+# With NVIDIA GPU
 docker compose -f compose.yml -f compose-gpu.yml up
+```
 
-# Build locally (optional)
+**Build from source (Development):**
+
+For local modifications or development work, build the image locally. Note that building from source takes significantly longer than pulling pre-built images from Docker Hub.
+
+```bash
 docker compose build
 ```
 
-**Using convenience scripts:**
-```bash
-# Linux/Mac
-./start.sh              # Start without GPU
-./scripts/start.sh      # Alternative location
-
-# Windows
-start.bat               # Start without GPU
-scripts\start.bat       # Alternative location
-```
-
 ### Configuration
-- Set `CONDA_DEFAULT_ENV` in `compose.yml` or in `~/.profile` to specify default conda environment (only `base` pre-installed, install others via lab-utils)
-- Customize project name and token in `.env` file
-- Project name defaults to `stellars-jupyterlab-ds` and determines URL paths
 
-### Available Make Commands
-```bash
-make help           # Show all available commands
-make pull           # Pull latest image from Docker Hub
-make build          # Build container locally
-make build_verbose  # Build with detailed output
-make start          # Start the platform
-make push           # Push images to Docker Hub (requires authentication)
-make tag            # Tag image with git version
-make clean          # Remove containers and clean up unused resources
-``` 
+The `.env` file contains core configuration including project name and authentication tokens. The project name determines URL paths for all services - changing from the default `stellars-jupyterlab-ds` requires updating URLs accordingly.
+
+**Key configuration options:**
+- `COMPOSE_PROJECT_NAME` - Determines URL paths and container names
+- `JUPYTERLAB_SERVER_TOKEN` - Authentication token (empty means no password required)
+- `CONDA_DEFAULT_ENV` - Default conda environment (only base is pre-installed)
+
+Set `CONDA_DEFAULT_ENV` in `compose.yml` or `~/.profile` to specify which conda environment loads by default. Additional environments (tensorflow, torch, r_base, rust) install on-demand via lab-utils. 
 
 ## Default Settings
 - **Work Directory:** `~/workspace` (mounted as `vol_workspace`)
