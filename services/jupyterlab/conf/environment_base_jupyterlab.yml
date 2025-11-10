@@ -1,6 +1,7 @@
 # base environment update with Jupyterlab installation
 # this environment has also additional tools available
 
+
 name: base
 channels:
   - conda-forge # default repo for miniforge3
