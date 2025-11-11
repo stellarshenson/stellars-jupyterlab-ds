@@ -1,0 +1,85 @@
+graph TB
+    subgraph container["Container Startup"]
+        start["start-platform.sh<br/>Main Entrypoint"]
+        startup_scripts["start-platform.d/<br/>Startup Scripts"]
+
+        workspace_scripts["03_workspace_scripts.sh<br/>Symlink Utils"]
+        start_services["12_start_glances.sh<br/>13_start_mlflow.sh<br/>14_start_tensorboard.sh"]
+        user_scripts["58_start_lab_scripts.sh<br/>User Custom Startup"]
+    end
+
+    subgraph utils["Lab Utils System (/opt/utils)"]
+        lab_utils["lab-utils<br/>Main Menu<br/>(Dialog-based)"]
+        launch_wrapper["launch-lab-utils.sh<br/>JupyterLab Launcher Wrapper"]
+
+        subgraph peer_scripts["Peer Scripts (lab-utils.d/)"]
+            aws_profile["default-aws-profile.sh<br/>AWS Profile Selector"]
+            conda_env["default-conda-env.sh<br/>Conda Env Selector"]
+            new_project["new-project.sh<br/>Project Scaffolder"]
+            test_cuda["test-cuda.sh<br/>GPU Testing"]
+        end
+
+        subgraph git_menu["Git Utils (lab-utils.d/)"]
+            git_runner["git-utils.sh<br/>Git Operations Menu"]
+            git_scripts["git-utils.d/<br/>git-pull-repos.sh<br/>git-push-repos.sh<br/>git-commit-repos.sh<br/>git-pull-submodules.sh"]
+        end
+
+        subgraph conda_menu["Conda Env Install (lab-utils.d/)"]
+            conda_runner["install-conda-env.sh<br/>Environment Menu"]
+            conda_installers["install-conda-env.d/<br/>tensorflow.sh<br/>torch.sh<br/>r.sh<br/>rust.sh"]
+            conda_system["conda-env.d/<br/>System YAML files"]
+            conda_user["~/.local/conda-env.d/<br/>User YAML files"]
+        end
+
+        subgraph ai_menu["AI Assistant Install (lab-utils.d/)"]
+            ai_runner["install-ai-assistant.sh<br/>AI Assistant Menu"]
+            ai_installers["install-ai-assistant.d/<br/>anthropic-claude-code.sh<br/>anysphere-cursor.sh<br/>openai-codex.sh"]
+        end
+    end
+
+    subgraph user["User Workspace"]
+        workspace["~/workspace/<br/>Symlinked Scripts"]
+        launcher["JupyterLab Launcher<br/>Lab Utils Tile"]
+        user_startup["~/.local/start-platform.d/<br/>Custom Startup Scripts"]
+    end
+
+    start -->|"Execute numbered<br/>scripts in order"| startup_scripts
+    startup_scripts -->|"Start background<br/>services"| start_services
+    startup_scripts -->|"Create symlinks<br/>to workspace"| workspace_scripts
+    startup_scripts -->|"Execute if<br/>ENABLE_LOCAL_SCRIPTS=1"| user_scripts
+
+    workspace_scripts -->|"Symlink lab-utils<br/>and peer scripts"| workspace
+    user_scripts -->|"Run custom<br/>startup logic"| user_startup
+
+    launcher -->|"Execute with<br/>terminal init"| launch_wrapper
+    launch_wrapper -->|"Wait for terminal<br/>verify dimensions"| lab_utils
+    workspace -->|"Direct CLI<br/>execution"| lab_utils
+
+    lab_utils -->|"Show menu<br/>execute selection"| peer_scripts
+    lab_utils -->|"Show menu<br/>execute selection"| git_runner
+    lab_utils -->|"Show menu<br/>execute selection"| conda_runner
+    lab_utils -->|"Show menu<br/>execute selection"| ai_runner
+
+    git_runner -->|"Show submenu<br/>execute selection"| git_scripts
+
+    conda_runner -->|"Discover .sh<br/>files"| conda_installers
+    conda_runner -->|"Discover .yml<br/>files"| conda_system
+    conda_runner -->|"Discover .yml<br/>files"| conda_user
+    conda_runner -->|"Execute script or<br/>conda env create"| conda_installers
+
+    ai_runner -->|"Show submenu<br/>execute selection"| ai_installers
+
+    style container fill:none,stroke:#0284c7,stroke-width:2px
+    style utils fill:none,stroke:#10b981,stroke-width:2px
+    style user fill:none,stroke:#a855f7,stroke-width:2px
+    style peer_scripts fill:none,stroke:#6b7280,stroke-width:1px
+    style git_menu fill:none,stroke:#6b7280,stroke-width:1px
+    style conda_menu fill:none,stroke:#6b7280,stroke-width:1px
+    style ai_menu fill:none,stroke:#6b7280,stroke-width:1px
+
+    style start fill:none,stroke:#0284c7,stroke-width:2px
+    style lab_utils fill:none,stroke:#10b981,stroke-width:3px
+    style git_runner fill:none,stroke:#6b7280,stroke-width:2px
+    style conda_runner fill:none,stroke:#6b7280,stroke-width:2px
+    style ai_runner fill:none,stroke:#6b7280,stroke-width:2px
+    style launcher fill:none,stroke:#a855f7,stroke-width:2px
