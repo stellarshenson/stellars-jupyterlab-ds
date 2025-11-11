@@ -70,6 +70,9 @@ FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu24.04 AS target
 # File Author / Maintainer
 LABEL maintainer="Konrad Jelen <konrad.jelen@gmail.com>"
 
+# cachebust arg to force rebuild of target stage only (used by make rebuild)
+ARG CACHEBUST=1
+
 # copy build dir from builder
 ARG EXPORT_DIR=/opt/extra
 COPY --from=builder ${EXPORT_DIR} ${EXPORT_DIR}

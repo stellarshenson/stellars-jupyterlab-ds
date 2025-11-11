@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help build push start clean increment_version
+.PHONY: help build rebuild push start clean increment_version
 
 # Include project configuration
 include project.env
@@ -37,6 +37,17 @@ build: increment_version
 ## build docker containers and output logs
 build_verbose:
 	@cd ./scripts && ./build_verbose.sh
+
+## rebuild 'target' stage only (uses cached 'builder' stage)
+rebuild:
+	@echo "Rebuilding 'target' stage (builder stage uses cache if available)..."
+	@docker build \
+		--platform linux/amd64 \
+		--target target \
+		--build-arg CACHEBUST=$$(date +%s) \
+		--tag stellars/stellars-jupyterlab-ds:latest \
+		-f services/jupyterlab/Dockerfile.jupyterlab \
+		services/jupyterlab
 
 ## pull docker image from dockerhub
 pull:
