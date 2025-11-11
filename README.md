@@ -180,8 +180,8 @@ graph TB
         subgraph conda_menu["Conda Env Install (lab-utils.d/)"]
             conda_runner["install-conda-env.sh<br/>Environment Menu"]
             conda_installers["install-conda-env.d/<br/>tensorflow.sh<br/>torch.sh<br/>r.sh<br/>rust.sh"]
-            conda_system["conda-env.d/<br/>System YAML files"]
-            conda_user["~/.local/conda-env.d/<br/>User YAML files"]
+            conda_system["conda-env.d/<br/>System .yml/.sh files"]
+            conda_user["~/.local/conda-env.d/<br/>User .yml/.sh files"]
         end
 
         subgraph ai_menu["AI Assistant Install (lab-utils.d/)"]
@@ -216,9 +216,9 @@ graph TB
     git_runner -->|"Show submenu<br/>execute selection"| git_scripts
 
     conda_runner -->|"Discover .sh<br/>files"| conda_installers
-    conda_runner -->|"Discover .yml<br/>files"| conda_system
-    conda_runner -->|"Discover .yml<br/>files"| conda_user
-    conda_runner -->|"Execute script or<br/>conda env create"| conda_installers
+    conda_runner -->|"Discover .yml/.sh<br/>files"| conda_system
+    conda_runner -->|"Discover .yml/.sh<br/>files"| conda_user
+    conda_runner -->|"Execute script or<br/>conda env create/update"| conda_installers
 
     ai_runner -->|"Show submenu<br/>execute selection"| ai_installers
 
