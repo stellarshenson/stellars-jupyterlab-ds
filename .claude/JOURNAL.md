@@ -63,3 +63,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 20. **Task - Add rebuild target to Makefile**: Implemented target-stage-only rebuild with builder stage caching<br>
     **Result**: Added make rebuild target that rebuilds only the 'target' stage in Dockerfile.jupyterlab while preserving cached 'builder' stage. Implementation uses docker build with --target target flag and CACHEBUST build arg set to timestamp. Added ARG CACHEBUST=1 to Dockerfile at line 74 (after target stage FROM statement) to invalidate cache from that point forward. This enables fast iterative development when modifying target stage without rebuilding expensive builder stage (conda environment exports). Target accessible via make rebuild command
+
+21. **Task - Add Makefile syntax highlighting**: Enhanced JupyterLab with Makefile file type support<br>
+    **Result**: Added jupyterlab_makefile_file_type_extension to environment_base_jupyterlab.yml enabling syntax highlighting and proper file type recognition for Makefiles in JupyterLab interface. Extension provides editor support for make build system files commonly used in development workflows
+
+22. **Task - Enhance markdown rendering capabilities**: Added GitHub-style alerts and TOC navigation fix extensions<br>
+    **Result**: Added jupyterlab_github_markdown_alerts_extension enabling GitHub-style alert syntax (note, tip, important, warning, caution) in markdown documents for better documentation structure. Added jupyterlab_markdown_viewer_toc_fix resolving long-standing issue with table of contents and internal link navigation in markdown viewer. Both extensions improve markdown documentation experience in JupyterLab. Updated version to 3.2.11
