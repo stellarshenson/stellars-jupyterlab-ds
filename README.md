@@ -21,7 +21,6 @@ Note: URLs use the project name from `.env` file (`COMPOSE_PROJECT_NAME`). Defau
 
 This platform integrates with **[stellars-jupyterhub-ds](https://github.com/stellarshenson/stellars-jupyterhub-ds)** for true multi-user environment management with authentication and user administration
 
-
 ![JupyterLab](./.resources/jupyterlab.png)
 ![lab utils](./.resources/screenshot-lab-utils.png)
 ![Docker Desktop](./.resources/docker-desktop.png)
@@ -218,7 +217,6 @@ graph TB
     conda_runner -->|"Discover .sh<br/>files"| conda_installers
     conda_runner -->|"Discover .yml/.sh<br/>files"| conda_system
     conda_runner -->|"Discover .yml/.sh<br/>files"| conda_user
-    conda_runner -->|"Execute script or<br/>conda env create/update"| conda_installers
 
     ai_runner -->|"Show submenu<br/>execute selection"| ai_installers
 
