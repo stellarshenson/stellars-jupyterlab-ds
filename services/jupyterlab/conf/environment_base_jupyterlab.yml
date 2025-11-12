@@ -52,6 +52,7 @@ dependencies:
     - jupyterlab_makefile_file_type_extension # support for Makefiles in Jypyterlab
     - jupyterlab_github_markdown_alerts_extension # support for GitHub style alerts in markdowns
     - jupyterlab_markdown_viewer_toc_fix # fix to the issue with markdowns and TOC and internal links
+    - jupyterlab_markdown_switch_tab_scrolling_fix # fix scrolling position when switching markdown tabs
     - jupyterlab_markdown_insert_content_extension # extension to add content like TOC to markdowns
     - notebook-intelligence # github copilot plugin
 

@@ -99,10 +99,6 @@ EOF
 ARG JUPYTER_ETC_DIR=/opt/conda/etc/jupyter
 RUN mkdir -p ${JUPYTER_ETC_DIR}
 
-# create templates directory
-#ARG TEMPLATES_DIR=/opt/templates
-#RUN mkdir -p ${TEMPLATES_DIR}
-
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
 COPY --chmod=644  ./conf/etc/bash_completion.d/* /etc/bash_completion.d
@@ -164,8 +160,6 @@ ARG CONDA_USER_PASSWD=password
 ENV CONDA_USER_HOME=/home/${CONDA_USER}
 ENV CONDA_USER_CACHE=${CONDA_USER_HOME}/.cache
 ENV CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
-ARG CONDA_USER_HOME_TEMPLATE=${TEMPLATES_DIR}/template_home
-ARG CONDA_USER_WORKSPACE_TEMPLATE=${TEMPLATES_DIR}/template_workspace
 ARG CONDA_USER_SHARED=/mnt/shared
 ENV CONDA_RUN_DEBUG=0
 ENV PATH=${PATH}:${CONDA_HOME}/condabin
@@ -246,7 +240,6 @@ USER ${CONDA_USER}
 
 # make sure initial workspace has template files
 COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE}
-# COPY --chown=${CONDA_USER} ./templates/workspace ${CONDA_USER_WORKSPACE_TEMPLATE}
 COPY --chown=${CONDA_USER} ./templates/cache ${CONDA_USER_CACHE}
 COPY --chown=${CONDA_USER} ./templates/certs /mnt/certs
 COPY --chown=${CONDA_USER} ./templates/shared /mnt/shared
@@ -459,17 +452,6 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache 
 USER root
 RUN apt autoremove -y && apt purge 
 
-
-########################################################
-#  SAVE COPY OF USER HOME AS TEMPLATE                  #
-########################################################
-
-## now that user home is fully configured, copy to templates
-#RUN <<-EOF
-#    echo "saving pre-configured user home as template"
-#    cp -r ${CONDA_USER_HOME} ${CONDA_USER_HOME_TEMPLATE}
-#    chown -R ${CONDA_USER}:${JUPYTER_GROUP} ${CONDA_USER_HOME}
-#EOF
 
 ########################################################
 #  PREPARE DOCKER CONTAINER ENTRY POINT                #
