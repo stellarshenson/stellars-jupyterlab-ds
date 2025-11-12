@@ -149,6 +149,16 @@ graph TB
 
 **Lab Utils Architecture:**
 
+<!--
+This diagram shows the lab utilities system structure and hierarchy:
+- Container startup scripts and service initialization
+- Hierarchical menu system (lab-utils main menu with git-utils, install-conda-env, install-ai-assistant submenus)
+- Ability to install conda environments from pre-built scripts or YAML files (system and user directories)
+- Ability to install AI assistants (Claude Code, Cursor, Codex)
+- User startup scripts support for custom initialization logic
+- JupyterLab launcher integration and workspace symlinks for CLI access
+-->
+
 ```mermaid
 graph TB
     subgraph container["Container Startup"]
