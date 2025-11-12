@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux
 **/.ipynb_checkpoints
 **/.claude
+**/.claude/*
 
 # EOF
 *.bundle.*
