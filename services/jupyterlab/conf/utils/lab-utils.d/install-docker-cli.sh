@@ -128,9 +128,14 @@ completion_dir="/etc/bash_completion.d"
 if [[ -d "$completion_dir" ]]; then
     echo "Installing Docker bash completion..."
     completion_url="https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker"
-    if sudo curl -fsSL -o "${completion_dir}/docker" "$completion_url"; then
+    temp_completion=$(mktemp)
+    if curl -fsSL -o "$temp_completion" "$completion_url"; then
+        sudo cp "$temp_completion" "${completion_dir}/docker"
+        sudo chmod 644 "${completion_dir}/docker"
+        rm -f "$temp_completion"
         echo "Bash completion installed to ${completion_dir}/docker"
     else
+        rm -f "$temp_completion"
         echo "WARNING: Failed to install bash completion" >&2
     fi
 fi
