@@ -97,22 +97,22 @@ if ! sudo cp -r "$temp_extract/docker/"* "$DOCKER_INSTALL_DIR/"; then
     exit 1
 fi
 
-# Install plugins from /opt/extra/docker-cli-plugins if available
+# Create symlink from /opt/docker/cli-plugins to /opt/extra/docker-cli-plugins if available
 plugins_source="/opt/extra/docker-cli-plugins"
+plugins_dir="${DOCKER_INSTALL_DIR}/cli-plugins"
 if [[ -d "$plugins_source" ]] && [[ -n "$(ls -A $plugins_source 2>/dev/null)" ]]; then
-    echo "Installing Docker CLI plugins..."
-    plugins_dir="${DOCKER_INSTALL_DIR}/cli-plugins"
-    sudo mkdir -p "$plugins_dir"
-    if sudo cp -r "$plugins_source/"* "$plugins_dir/"; then
-        sudo chmod +x "$plugins_dir/"*
-        echo "Plugins installed to ${plugins_dir}"
-    else
-        echo "WARNING: Failed to copy plugins" >&2
+    echo "Setting up Docker CLI plugins..."
+    sudo mkdir -p "$(dirname $plugins_dir)"
+    if [[ -L "$plugins_dir" ]] || [[ -d "$plugins_dir" ]]; then
+        sudo rm -rf "$plugins_dir"
     fi
+    sudo ln -sf "$plugins_source" "$plugins_dir"
+    echo "Plugin directory linked to ${plugins_source}"
 fi
 
 # Copy plugins to user directory for Docker plugin discovery
 # Docker looks for plugins in ~/.docker/cli-plugins/ by default
+# Symlinks don't work with mounted home directories, so we copy instead
 user_plugin_dir="$HOME/.docker/cli-plugins"
 if [[ -d "${DOCKER_INSTALL_DIR}/cli-plugins" ]] && [[ -n "$(ls -A ${DOCKER_INSTALL_DIR}/cli-plugins 2>/dev/null)" ]]; then
     echo "Setting up user plugin directory..."
