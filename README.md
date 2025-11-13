@@ -3,6 +3,7 @@
 ![Docker Image](https://img.shields.io/docker/image-size/stellars/stellars-jupyterlab-ds/latest?style=flat-square)
 ![Docker Pulls](https://img.shields.io/docker/pulls/stellars/stellars-jupyterlab-ds?style=flat-square)
 ![JL4 Ready](https://img.shields.io/badge/Jupyterlab%204-ready-blue)
+[![Brought to you by Kolomolo](https://img.shields.io/badge/brought%20to%20you%20by-Kolomolo-orange?style=flat-square)](https://kolomolo.com)
 
 **Miniforge 3 + JupyterLab 4 for Data Science with On-Demand TensorFlow and PyTorch (GPU support)**
 
