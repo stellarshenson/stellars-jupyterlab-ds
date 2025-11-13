@@ -60,13 +60,22 @@ EOF
 # copy custom built packages to /opt/exports
 RUN cp llama*.whl ${EXPORT_DIR}
 
-## Build Docker MCP Gateway
+## Build Docker CLI plugins
 RUN <<-EOF
+    mkdir -p ${EXPORT_DIR}/docker-cli-plugins
+
+    # Build Docker MCP Gateway
     echo "building Docker MCP Gateway"
     git clone https://github.com/docker/mcp-gateway.git
     cd mcp-gateway
-    mkdir -p ${EXPORT_DIR}/docker-cli-plugins
     go build -o ${EXPORT_DIR}/docker-cli-plugins/docker-mcp
+    cd ..
+
+    # Build Docker Buildx
+    echo "building Docker Buildx"
+    git clone https://github.com/docker/buildx.git
+    cd buildx
+    go build -o ${EXPORT_DIR}/docker-cli-plugins/docker-buildx ./cmd/buildx
 EOF
 
 ##############################################################################################
