@@ -10,7 +10,8 @@ dependencies:
   - python=3.12 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
+  - go # go compiler for building mcp-gateway
 
-  
+
 # EOF
 
