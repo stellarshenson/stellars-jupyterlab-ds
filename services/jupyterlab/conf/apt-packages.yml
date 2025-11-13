@@ -6,7 +6,8 @@ packages:
     - bash-completion # completion for bash
     - curl # for downloading files
     - dialog # ncures shell GUI tool for workspace scripts
-    # - gcc # compiler, required for building some native packages 
+    - gawk # GNU awk for Makefile version management
+    # - gcc # compiler, required for building some native packages
     - git # git client
     - git-lfs # git plugin for large file storage
     # - gpg # for keys manipulation and adding repos to apt
