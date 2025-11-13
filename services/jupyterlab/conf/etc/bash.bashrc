@@ -31,6 +31,9 @@ export PATH="/opt/utils:$PATH"
 # include docker cli in PATH
 export PATH="/opt/docker:$PATH"
 
+# docker MCP gateway environment variable
+export DOCKER_MCP_IN_CONTAINER=1
+
 # show motd only for SHLVL less or equal 2
 if [[ "$SHLVL" -gt 2 ]]; then
     return
