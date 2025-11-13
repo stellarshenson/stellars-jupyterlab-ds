@@ -23,7 +23,7 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: services/jupyterlab/Dockerfile.jupyterlab
-          ignore: DL3008,DL3013,DL3015,DL3059,DL3027,DL4006,SC2006,SC1008,DL3046,SC2153,DL3001,SC2016,SC2002,DL3003
+          ignore: DL3008,DL3013,DL3015,DL3059,DL3027,DL4006,SC2006,SC1008,DL3046,SC2153,DL3001,SC2016,SC2002
 
       - name: Validation completed
         run: echo "Dockerfile validation completed successfully"
