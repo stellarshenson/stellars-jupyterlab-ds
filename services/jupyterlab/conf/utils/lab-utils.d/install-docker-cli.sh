@@ -123,6 +123,18 @@ if [[ -d "${DOCKER_INSTALL_DIR}/cli-plugins" ]]; then
     echo "User plugin directory linked to ${DOCKER_INSTALL_DIR}/cli-plugins"
 fi
 
+# Install bash completion
+completion_dir="/etc/bash_completion.d"
+if [[ -d "$completion_dir" ]]; then
+    echo "Installing Docker bash completion..."
+    completion_url="https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker"
+    if sudo curl -fsSL -o "${completion_dir}/docker" "$completion_url"; then
+        echo "Bash completion installed to ${completion_dir}/docker"
+    else
+        echo "WARNING: Failed to install bash completion" >&2
+    fi
+fi
+
 # Cleanup
 rm -rf "$temp_dir" "$temp_extract"
 
