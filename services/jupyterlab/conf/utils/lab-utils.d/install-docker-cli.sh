@@ -134,6 +134,7 @@ if [[ -d "$completion_dir" ]]; then
         sudo chmod 644 "${completion_dir}/docker"
         rm -f "$temp_completion"
         echo "Bash completion installed to ${completion_dir}/docker"
+        echo "Completion will be available in new shell sessions"
     else
         rm -f "$temp_completion"
         echo "WARNING: Failed to install bash completion" >&2
