@@ -28,6 +28,9 @@ ldconfig 2>/dev/null
 # include opt utils scripts in PATH
 export PATH="/opt/utils:$PATH"
 
+# include docker cli in PATH
+export PATH="/opt/docker:$PATH"
+
 # show motd only for SHLVL less or equal 2
 if [[ "$SHLVL" -gt 2 ]]; then
     return
