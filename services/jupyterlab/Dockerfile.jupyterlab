@@ -65,7 +65,8 @@ RUN <<-EOF
     echo "building Docker MCP Gateway"
     git clone https://github.com/docker/mcp-gateway.git
     cd mcp-gateway
-    go build -o ${EXPORT_DIR}/mcp-gateway
+    mkdir -p ${EXPORT_DIR}/docker-cli-plugins
+    go build -o ${EXPORT_DIR}/docker-cli-plugins/docker-mcp
 EOF
 
 ##############################################################################################
@@ -84,9 +85,6 @@ ARG CACHEBUST=1
 # copy build dir from builder
 ARG EXPORT_DIR=/opt/extra
 COPY --from=builder ${EXPORT_DIR} ${EXPORT_DIR}
-
-# install mcp-gateway binary to system path
-RUN cp ${EXPORT_DIR}/mcp-gateway /usr/local/bin/mcp-gateway && chmod +x /usr/local/bin/mcp-gateway
 
 # update sources list and increase timeouts
 COPY ./conf/apt /etc/apt
