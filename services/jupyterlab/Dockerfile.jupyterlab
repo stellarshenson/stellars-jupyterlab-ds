@@ -63,22 +63,20 @@ RUN cp llama*.whl ${EXPORT_DIR}
 ## Build Docker CLI plugins
 RUN mkdir -p ${EXPORT_DIR}/docker-cli-plugins
 
-RUN <<-EOF
-    set -e
-    echo "building Docker MCP Gateway"
-    git clone https://github.com/docker/mcp-gateway.git
-    cd mcp-gateway
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ${EXPORT_DIR}/docker-cli-plugins/docker-mcp ./cmd/docker-mcp
-EOF
+WORKDIR /opt/build
+RUN git clone https://github.com/docker/mcp-gateway.git
 
-RUN <<-EOF
-    set -e
-    echo "building Docker Buildx"
-    git clone https://github.com/docker/buildx.git
-    cd buildx
-    make build
+WORKDIR /opt/build/mcp-gateway
+RUN echo "building Docker MCP Gateway" && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ${EXPORT_DIR}/docker-cli-plugins/docker-mcp ./cmd/docker-mcp
+
+WORKDIR /opt/build
+RUN git clone https://github.com/docker/buildx.git
+
+WORKDIR /opt/build/buildx
+RUN echo "building Docker Buildx" && \
+    make build && \
     mv bin/build/docker-buildx ${EXPORT_DIR}/docker-cli-plugins/docker-buildx
-EOF
 
 ##############################################################################################
 ##############################################################################################
