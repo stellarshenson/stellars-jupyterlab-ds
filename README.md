@@ -1,9 +1,9 @@
 # JupyterLab for Data Science Platform
 ![GitHub Actions](https://github.com/stellarshenson/stellars-jupyterlab-ds/actions/workflows/docker-build.yml/badge.svg)
-![Docker Image](https://img.shields.io/docker/image-size/stellars/stellars-jupyterlab-ds/latest?style=flat-square)
-![Docker Pulls](https://img.shields.io/docker/pulls/stellars/stellars-jupyterlab-ds?style=flat-square)
-![JupyterLab 4](https://img.shields.io/badge/JupyterLab-4-orange?style=flat-square)
-[![Brought To You By KOLOMOLO](https://img.shields.io/badge/Brought%20To%20You%20By-KOLOMOLO-00ffff?style=flat-square)](https://kolomolo.com)
+![Docker Image](https://img.shields.io/docker/image-size/stellars/stellars-jupyterlab-ds/latest?style=flat)
+![Docker Pulls](https://img.shields.io/docker/pulls/stellars/stellars-jupyterlab-ds?style=flat)
+![JupyterLab 4](https://img.shields.io/badge/JupyterLab-%20%20%20%204%20%20%20%20-orange?style=flat)
+[![Brought To You By KOLOMOLO](https://img.shields.io/badge/Brought%20To%20You%20By-KOLOMOLO-00ffff?style=flat)](https://kolomolo.com)
 
 **Miniforge 3 + JupyterLab 4 for Data Science with On-Demand TensorFlow and PyTorch (GPU support)**
 
