@@ -168,9 +168,14 @@ main() {
         echo -e "2. Connect to remote Docker: '\033[36mexport DOCKER_HOST=tcp://hostname:2375\033[0m'"
         echo -e "3. Use Docker socket: '\033[36mexport DOCKER_HOST=unix:///var/run/docker.sock\033[0m'"
 
-        # Mention MCP plugin if installed
+        # Mention plugins if installed
+        local plugin_num=4
+        if [[ -f "$plugins_dir/docker-buildx" ]]; then
+            echo -e "${plugin_num}. Build multi-platform images: '\033[36mdocker buildx build\033[0m'"
+            plugin_num=$((plugin_num + 1))
+        fi
         if [[ -f "$plugins_dir/docker-mcp" ]]; then
-            echo -e "4. Use MCP plugin: '\033[36mdocker mcp <command>\033[0m'"
+            echo -e "${plugin_num}. Use MCP plugin: '\033[36mdocker mcp <command>\033[0m'"
         fi
 
         echo ""
