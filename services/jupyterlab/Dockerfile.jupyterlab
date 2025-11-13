@@ -62,16 +62,15 @@ RUN cp llama*.whl ${EXPORT_DIR}
 
 ## Build Docker CLI plugins
 RUN <<-EOF
+    set -e
     mkdir -p ${EXPORT_DIR}/docker-cli-plugins
 
-    # Build Docker MCP Gateway
     echo "building Docker MCP Gateway"
     git clone https://github.com/docker/mcp-gateway.git
     cd mcp-gateway
     go build -o ${EXPORT_DIR}/docker-cli-plugins/docker-mcp
     cd ..
 
-    # Build Docker Buildx
     echo "building Docker Buildx"
     git clone https://github.com/docker/buildx.git
     cd buildx
