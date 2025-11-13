@@ -68,8 +68,8 @@ RUN <<-EOF
     echo "building Docker MCP Gateway"
     git clone https://github.com/docker/mcp-gateway.git
     cd mcp-gateway
-    make docker-mcp
-    mv docker-mcp ${EXPORT_DIR}/docker-cli-plugins/
+    make build
+    mv dist/docker-mcp ${EXPORT_DIR}/docker-cli-plugins/
 EOF
 
 RUN <<-EOF
