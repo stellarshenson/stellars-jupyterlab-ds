@@ -454,6 +454,9 @@ Configuration variables supported by the platform:
 - On-demand conda environments for TensorFlow, PyTorch, R, Rust, and general data science
 - Docker CLI with MCP Gateway and Buildx plugins for AI-assisted container workflows
 - Code formatting with Black and other formatters integrated into the IDE
+
+> [!NOTE]
+> **Docker Socket Access**: To use Docker CLI, users need access to `/var/run/docker.sock`. In JupyterHub deployments, users must be added to the `docker-privileged` group by an administrator. For standalone deployments, mount the Docker socket with read-write permissions: `-v /var/run/docker.sock:/var/run/docker.sock`
 - Notebook diffing and merging tools for version control
 - Cookiecutter templates for standardized project structure
 - Enhanced terminal with Midnight Commander and standard Unix tools
