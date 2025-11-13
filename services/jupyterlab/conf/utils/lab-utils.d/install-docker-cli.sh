@@ -128,6 +128,20 @@ main() {
         exit 1
     fi
 
+    # Install Docker CLI plugins from /opt/extra/docker-cli-plugins if available
+    local plugins_source="/opt/extra/docker-cli-plugins"
+    if [[ -d "$plugins_source" ]] && [[ -n "$(ls -A $plugins_source 2>/dev/null)" ]]; then
+        echo "Installing Docker CLI plugins..."
+        local plugins_dir="${DOCKER_INSTALL_DIR}/cli-plugins"
+        sudo mkdir -p "$plugins_dir"
+        if ! sudo cp -r "$plugins_source/"* "$plugins_dir/"; then
+            echo "WARNING: Failed to copy Docker CLI plugins" >&2
+        else
+            sudo chmod +x "$plugins_dir/"*
+            echo "Docker CLI plugins installed to ${plugins_dir}"
+        fi
+    fi
+
     # Cleanup
     rm -rf "$temp_file" "$temp_extract"
 
@@ -141,11 +155,24 @@ main() {
         echo -e "Version: \033[1;34m$final_version\033[0m"
         echo -e "Source: \033[1;34m${download_url}\033[0m"
         echo -e "Installed to: \033[1;34m${DOCKER_INSTALL_DIR}\033[0m"
+
+        # Check for installed plugins
+        local plugins_dir="${DOCKER_INSTALL_DIR}/cli-plugins"
+        if [[ -d "$plugins_dir" ]] && [[ -n "$(ls -A $plugins_dir 2>/dev/null)" ]]; then
+            echo -e "Plugins: \033[1;34m$(ls $plugins_dir | tr '\n' ' ')\033[0m"
+        fi
+
         echo ""
         echo -e "Typical Usage:"
         echo -e "1. The '\033[36mdocker\033[0m' command is now available in your PATH"
         echo -e "2. Connect to remote Docker: '\033[36mexport DOCKER_HOST=tcp://hostname:2375\033[0m'"
         echo -e "3. Use Docker socket: '\033[36mexport DOCKER_HOST=unix:///var/run/docker.sock\033[0m'"
+
+        # Mention MCP plugin if installed
+        if [[ -f "$plugins_dir/docker-mcp" ]]; then
+            echo -e "4. Use MCP plugin: '\033[36mdocker mcp <command>\033[0m'"
+        fi
+
         echo ""
         echo -e "Note: Docker daemon is not installed - this is CLI only"
         echo -e ""
