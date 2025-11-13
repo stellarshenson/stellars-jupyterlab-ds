@@ -452,6 +452,7 @@ Configuration variables supported by the platform:
 **Development Environment:**
 - JupyterLab 4+ with Git integration, intelligent autocompletion, and resource monitoring
 - On-demand conda environments for TensorFlow, PyTorch, R, Rust, and general data science
+- Docker CLI with MCP Gateway and Buildx plugins for AI-assisted container workflows
 - Code formatting with Black and other formatters integrated into the IDE
 - Notebook diffing and merging tools for version control
 - Cookiecutter templates for standardized project structure
