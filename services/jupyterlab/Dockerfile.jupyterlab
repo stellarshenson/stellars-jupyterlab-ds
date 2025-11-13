@@ -77,7 +77,7 @@ RUN <<-EOF
     git clone https://github.com/docker/buildx.git
     cd buildx
     make build
-    mv bin/build/buildx ${EXPORT_DIR}/docker-cli-plugins/docker-buildx
+    mv bin/build/docker-buildx ${EXPORT_DIR}/docker-cli-plugins/docker-buildx
 EOF
 
 ##############################################################################################
