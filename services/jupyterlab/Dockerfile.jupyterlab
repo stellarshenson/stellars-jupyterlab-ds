@@ -68,8 +68,7 @@ RUN <<-EOF
     echo "building Docker MCP Gateway"
     git clone https://github.com/docker/mcp-gateway.git
     cd mcp-gateway
-    make build
-    mv dist/docker-mcp ${EXPORT_DIR}/docker-cli-plugins/
+    CGO_ENABLED=0 go build -trimpath -ldflags "-s -w" -o ${EXPORT_DIR}/docker-cli-plugins/docker-mcp ./cmd/docker-mcp
 EOF
 
 RUN <<-EOF
