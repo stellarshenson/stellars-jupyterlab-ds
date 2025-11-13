@@ -111,16 +111,15 @@ if [[ -d "$plugins_source" ]] && [[ -n "$(ls -A $plugins_source 2>/dev/null)" ]]
     fi
 fi
 
-# Create user plugin directory symlink for plugin discovery
+# Copy plugins to user directory for Docker plugin discovery
 # Docker looks for plugins in ~/.docker/cli-plugins/ by default
 user_plugin_dir="$HOME/.docker/cli-plugins"
-if [[ -d "${DOCKER_INSTALL_DIR}/cli-plugins" ]]; then
-    mkdir -p "$HOME/.docker"
-    if [[ -L "$user_plugin_dir" ]] || [[ -d "$user_plugin_dir" ]]; then
-        rm -rf "$user_plugin_dir"
-    fi
-    ln -sf "${DOCKER_INSTALL_DIR}/cli-plugins" "$user_plugin_dir"
-    echo "Plugin symlink created at ${user_plugin_dir}"
+if [[ -d "${DOCKER_INSTALL_DIR}/cli-plugins" ]] && [[ -n "$(ls -A ${DOCKER_INSTALL_DIR}/cli-plugins 2>/dev/null)" ]]; then
+    echo "Setting up user plugin directory..."
+    mkdir -p "$user_plugin_dir"
+    cp -f "${DOCKER_INSTALL_DIR}/cli-plugins/"* "$user_plugin_dir/"
+    chmod +x "$user_plugin_dir/"*
+    echo "Plugins copied to ${user_plugin_dir}"
 fi
 
 # Cleanup
