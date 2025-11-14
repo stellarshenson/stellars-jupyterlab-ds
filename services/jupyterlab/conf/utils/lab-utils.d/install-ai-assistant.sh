@@ -98,6 +98,16 @@ clear
 
 # Execute the selected script
 echo "Executing: ${SCRIPTS_DIR}/$CHOICE"
-"${SCRIPTS_DIR}/$CHOICE"
+echo ""
+
+if "${SCRIPTS_DIR}/$CHOICE"; then
+    exit 0
+else
+    exit_code=$?
+    echo ""
+    echo -e "\033[31mInstallation failed with exit code: $exit_code\033[0m"
+    echo "Please check the error messages above for details."
+    exit $exit_code
+fi
 
 # EOF

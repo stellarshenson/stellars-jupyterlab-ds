@@ -1,8 +1,25 @@
 #!/bin/bash
 ## Installs Anthropic Claude Code Assistant
 
-conda install -y --update-all -n base nodejs
-conda run -n base npm install -g @anthropic-ai/claude-code && npm -g update
+set -e
+
+# Trap errors and interruptions
+trap 'echo -e "\n\033[31mInstallation failed or was interrupted\033[0m"; exit 1' ERR INT TERM
+
+echo "Installing Node.js via conda..."
+if ! conda install -y --update-all -n base nodejs; then
+    echo -e "\033[31mError: Failed to install Node.js\033[0m"
+    exit 1
+fi
+
+echo "Installing Claude Code..."
+if ! conda run -n base npm install -g @anthropic-ai/claude-code; then
+    echo -e "\033[31mError: Failed to install Claude Code\033[0m"
+    exit 1
+fi
+
+echo "Updating npm packages..."
+conda run -n base npm -g update || echo "Warning: npm update encountered issues"
 
 clear
 echo -e "\033[32mClaude Code Installation Successful\033[0m"
