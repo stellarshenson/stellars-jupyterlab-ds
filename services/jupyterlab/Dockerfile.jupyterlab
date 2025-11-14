@@ -11,10 +11,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Fix deprecated apt-key warning by migrating CUDA key from legacy keyring to trusted.gpg.d
 RUN <<-EOF
-    if [ -f /etc/apt/trusted.gpg ]; then
+    if [ -f /etc/apt/trusted.gpg ] && [ -s /etc/apt/trusted.gpg ]; then
         echo "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d"
-        apt-key export 3BF863CC | gpg --dearmor -o /etc/apt/trusted.gpg.d/cuda-keyring.gpg
-        apt-key del 3BF863CC 2>/dev/null || true
+        # Copy the entire legacy keyring to new location
+        cp /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/cuda-keyring.gpg
+        echo "CUDA key migrated to /etc/apt/trusted.gpg.d/cuda-keyring.gpg"
+        # Clear the legacy keyring to prevent the warning
+        : > /etc/apt/trusted.gpg
     fi
 EOF
 
@@ -112,10 +115,13 @@ COPY ./conf/apt-packages.yml /apt-packages.yml
 # Fix deprecated apt-key warning by migrating CUDA key from legacy keyring to trusted.gpg.d
 ENV DEBIAN_FRONTEND=noninteractive
 RUN <<-EOF
-    if [ -f /etc/apt/trusted.gpg ]; then
+    if [ -f /etc/apt/trusted.gpg ] && [ -s /etc/apt/trusted.gpg ]; then
         echo "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d"
-        apt-key export 3BF863CC | gpg --dearmor -o /etc/apt/trusted.gpg.d/cuda-keyring.gpg
-        apt-key del 3BF863CC 2>/dev/null || true
+        # Copy the entire legacy keyring to new location temporarily
+        cp /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/cuda-keyring.gpg
+        echo "CUDA key migrated to /etc/apt/trusted.gpg.d/cuda-keyring.gpg"
+        # Clear the legacy keyring to prevent the warning
+        : > /etc/apt/trusted.gpg
     fi
 EOF
 
