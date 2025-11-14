@@ -7,10 +7,20 @@ FROM nvidia/cuda:${CUDA_VERSION}-cudnn-runtime-ubuntu24.04 AS builder
 ARG CUDA_TOOLKIT_VERSION=${CUDA_VERSION}
 
 # Install necessary packages for building
-ENV DEBIAN_FRONTEND=noninteractive 
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Fix deprecated apt-key warning by migrating CUDA key from legacy keyring to trusted.gpg.d
+RUN <<-EOF
+    if [ -f /etc/apt/trusted.gpg ]; then
+        echo "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d"
+        apt-key export 3BF863CC | gpg --dearmor -o /etc/apt/trusted.gpg.d/cuda-keyring.gpg
+        apt-key del 3BF863CC 2>/dev/null || true
+    fi
+EOF
+
 RUN <<-EOF
     echo "installing necessary OS packages"
-    apt-get update 
+    apt-get update
     apt-get install -y git build-essential curl \
 	cmake python3 python3-pip python3-dev
     rm -rf /var/lib/apt/lists/*
@@ -99,11 +109,20 @@ COPY --from=builder ${EXPORT_DIR} ${EXPORT_DIR}
 COPY ./conf/apt /etc/apt
 COPY ./conf/apt-packages.yml /apt-packages.yml
 
+# Fix deprecated apt-key warning by migrating CUDA key from legacy keyring to trusted.gpg.d
+ENV DEBIAN_FRONTEND=noninteractive
+RUN <<-EOF
+    if [ -f /etc/apt/trusted.gpg ]; then
+        echo "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d"
+        apt-key export 3BF863CC | gpg --dearmor -o /etc/apt/trusted.gpg.d/cuda-keyring.gpg
+        apt-key del 3BF863CC 2>/dev/null || true
+    fi
+EOF
+
 # install yaml parser repository and yq tool, in the parent system you need
 # RUN apt update && apt install -y software-properties-common
 # RUN add-apt-repository ppa:rmescandon/yq -y && apt update && apt install yq -y
 # and then copy /etc/apt/sources.list.d to docker image
-ENV DEBIAN_FRONTEND=noninteractive 
 RUN apt update && apt install yq -y 
 
 # install required packages, list will be taken from apt-packages.yml
