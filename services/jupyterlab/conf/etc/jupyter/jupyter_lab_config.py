@@ -12,6 +12,7 @@ c.ServerApp.root_dir = f"{HOME}/workspace"
 ## login shell allows to call .profile to set env name
 c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash", "--login"] }
 c.FileContentsManager.always_delete_dir = True
+c.FileContentsManager.delete_to_trash = True
 c.ContentsManager.allow_hidden = True
 
 ## ssl configuration to use https - only when not using traefik proxy
