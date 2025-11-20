@@ -27,6 +27,7 @@ packages:
     - sudo # superuser command executor
     - socat # port forwarding tool, useful for AWS session authentication
     # - sqlite3 # client to sqlite often used with ml projects
+    - trash-cli # interface to manage trash folder
     - tree # display directory structure in tree format
     - vim # text editor
     - zip # file zipper and unzipper
