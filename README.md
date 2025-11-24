@@ -197,7 +197,7 @@ graph TB
 
         subgraph ai_menu["AI Assistant Install (lab-utils.d/)"]
             ai_runner["install-ai-assistant.sh<br/>AI Assistant Menu"]
-            ai_installers["install-ai-assistant.d/<br/>anthropic-claude-code.sh<br/>anysphere-cursor.sh<br/>openai-codex.sh"]
+            ai_installers["install-ai-assistant.d/<br/>anthropic-claude-code.sh<br/>anysphere-cursor.sh<br/>google-gemini-cli.sh<br/>openai-codex.sh"]
         end
     end
 
@@ -323,6 +323,7 @@ Entrepreneur, enterprise architect, and data science/machine learning practition
 Docker must be installed on your system to run this platform. JupyterLab 4 runs as a containerized application, ensuring complete isolation from your host system and consistent behavior across different environments.
 
 **Docker Hub Repository:** [stellars/stellars-jupyterlab-ds](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
+**Current Version:** 3.3.32_cuda-13.0.2_jl-4.5.0
 
 ### Prerequisites
 

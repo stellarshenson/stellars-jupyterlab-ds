@@ -1,5 +1,167 @@
 # Release Notes
 
+## Version 3.3.32_cuda-13.0.2_jl-4.5.0 - JupyterLab 4.5.0 and Infrastructure Improvements
+
+**Release Date:** 2025-11-23
+**Docker Image:** `stellars/stellars-jupyterlab-ds:3.3.32_cuda-13.0.2_jl-4.5.0`
+
+### Overview
+
+Version 3.3.32 upgrades JupyterLab to 4.5.0 and includes critical infrastructure fixes for Docker CLI bash completion and CUDA repository configuration. The release also expands AI assistant support with Google Gemini CLI integration.
+
+### Platform Updates
+
+- **JupyterLab:** 4.5.0 (upgraded from 4.4.10)
+- **CUDA:** 13.0.2 (maintained)
+- **Python:** 3.12 (maintained)
+
+### New Features
+
+#### Google Gemini CLI Integration
+
+Added Google Gemini CLI to the AI assistant installation menu, providing access to Google's generative AI capabilities from the command line.
+
+**Installation:**
+- Available via `lab-utils` > "Install AI Assistants" > "Google Gemini CLI"
+- Installs `@google/generative-ai-cli` npm package
+- Provides command-line access to Gemini models
+
+**Usage:**
+- Set API key: `export GOOGLE_API_KEY='your-api-key'`
+- Run: `gemini` from any project directory
+- Get API key from: https://aistudio.google.com/app/apikey
+
+**Menu Options:**
+- Anthropic Claude Code
+- Anysphere Cursor
+- Google Gemini CLI
+- OpenAI Codex
+
+### Bug Fixes
+
+#### Docker CLI Bash Completion Directory
+
+**Problem:**
+Docker CLI bash completion was not working when installed via the `install-docker-cli.sh` script.
+
+**Root Cause:**
+The installation script was using `/usr/share/bash-completion/completions/` (modern standard location), but the project uses `/etc/bash_completion.d/` as its established convention for all completion files.
+
+**Solution:**
+Changed the completion directory in `install-docker-cli.sh` to `/etc/bash_completion.d/` to match the project's existing pattern (AWS completion already uses this location).
+
+**Files Changed:**
+- `services/jupyterlab/conf/utils/lab-utils.d/install-docker-cli.sh` (line 127)
+
+#### CUDA GPG Key Deprecation Warning
+
+**Problem:**
+Build process showed warning: "Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details"
+
+**Root Cause:**
+NVIDIA CUDA repository GPG key was stored in the deprecated `/etc/apt/trusted.gpg` file instead of the modern `/etc/apt/trusted.gpg.d/` directory.
+
+**Solution:**
+Added key migration step in both builder and target stages of Dockerfile:
+- Copy `/etc/apt/trusted.gpg` to `/etc/apt/trusted.gpg.d/cuda-keyring.gpg`
+- Truncate legacy keyring file to prevent warning
+- Migration happens before first apt operation in each stage
+
+**Why This Approach:**
+Initial attempt used `apt-key export` and `apt-key del` commands, but this removed the key before apt operations could use it, causing "NO_PUBKEY" errors. The copy-and-truncate approach preserves key functionality while eliminating the deprecation warning.
+
+**Files Changed:**
+- `services/jupyterlab/Dockerfile.jupyterlab` (lines 12-22, builder stage)
+- `services/jupyterlab/Dockerfile.jupyterlab` (lines 112-123, target stage)
+
+### Technical Details
+
+#### CUDA Key Migration Implementation
+
+**Builder Stage (lines 12-22):**
+```dockerfile
+RUN <<-EOF
+    if [ -f /etc/apt/trusted.gpg ] && [ -s /etc/apt/trusted.gpg ]; then
+        echo "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d"
+        cp /etc/apt/trusted.gpg /etc/apt/trusted.gpg.d/cuda-keyring.gpg
+        echo "CUDA key migrated to /etc/apt/trusted.gpg.d/cuda-keyring.gpg"
+        : > /etc/apt/trusted.gpg
+    fi
+EOF
+```
+
+**Target Stage (lines 112-123):**
+Same migration logic applied to ensure both stages have proper key configuration.
+
+**Verification:**
+Build logs show "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d" in both stages with no deprecation warnings during apt operations.
+
+#### Bash Completion Configuration
+
+**Project Convention:**
+All bash completion files are installed to `/etc/bash_completion.d/` and loaded via `/etc/profile.d/bash_completion.sh` at shell startup.
+
+**Existing Pattern:**
+- AWS CLI completion: `/etc/bash_completion.d/aws`
+- Docker completion (copied in Dockerfile): `/etc/bash_completion.d/docker`
+
+**Fixed Script:**
+```bash
+completion_dir="/etc/bash_completion.d"
+sudo cp "$temp_completion" "${completion_dir}/docker"
+sudo chmod 644 "${completion_dir}/docker"
+```
+
+### Files Changed
+
+**New Files:**
+- `services/jupyterlab/conf/utils/lab-utils.d/install-ai-assistant.d/google-gemini-cli.sh`
+
+**Modified Files:**
+- `services/jupyterlab/Dockerfile.jupyterlab` - CUDA GPG key migration in builder and target stages
+- `services/jupyterlab/conf/utils/lab-utils.d/install-docker-cli.sh` - Corrected bash completion directory
+- `project.env` - Updated version to 3.3.32 and version comment
+- `README.md` - Added current version badge and Google Gemini CLI to AI assistant list
+
+### Testing
+
+**Verified:**
+- JupyterLab 4.5.0 builds and runs correctly
+- Docker CLI bash completion installs to correct directory
+- CUDA GPG key migration works in both builder and target stages
+- No deprecation warnings during Docker build
+- Google Gemini CLI installation script is executable and discoverable
+- All AI assistant installers appear in menu
+
+**Build Status:**
+- Exit code: 0 (success)
+- Image size: 7.8GB
+- All components built successfully (llama-cpp-python with CUDA, Docker plugins, conda packages)
+
+### Migration Guide
+
+#### For Existing Users
+
+**No action required** - this release includes bug fixes and feature additions without breaking changes.
+
+**To leverage new features:**
+1. Rebuild Docker image to get JupyterLab 4.5.0 and infrastructure fixes
+2. Install Google Gemini CLI via `lab-utils` > "Install AI Assistants" if desired
+3. Docker CLI bash completion will work correctly in new containers
+
+**For Docker CLI users:**
+If you previously installed Docker CLI via `install-docker-cli.sh` and bash completion wasn't working, it will work correctly after rebuilding with this version.
+
+### Resources
+
+- **Documentation:** [README.md](./README.md)
+- **Docker Hub:** [stellars/stellars-jupyterlab-ds](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
+- **GitHub:** [stellarshenson/stellars-jupyterlab-ds](https://github.com/stellarshenson/stellars-jupyterlab-ds)
+- **Author:** Konrad Jelen (Stellars Henson) - konrad.jelen+github@gmail.com
+- **LinkedIn:** [Konrad Jelen](https://www.linkedin.com/in/konradjelen/)
+
+---
+
 ## Version 3.2.2_cuda-13.0.2_jl-4.4.10 - JupyterHub Notification System Integration
 
 **Release Date:** 2025-11-04
