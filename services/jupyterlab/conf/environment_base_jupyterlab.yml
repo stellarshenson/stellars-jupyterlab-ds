@@ -56,6 +56,7 @@ dependencies:
     - jupyterlab_markdown_viewer_toc_fix # fix to the issue with markdowns and TOC and internal links
     - jupyterlab_markdown_switch_tab_scrolling_fix # fix scrolling position when switching markdown tabs
     - jupyterlab_change_ui_font_size_fix # fix to file browser text misalignment when UI font change
+    - jupyterlab_jump_to_definition_fix # fix to the jump_to_definition command when code is different env
     - jupyterlab_markdown_insert_content_extension # extension to add content like TOC to markdowns
     - jupyterlab_vscode_icons_extension # vscode-icons based file icons for jupyterlabs
     - notebook-intelligence # github copilot plugin
