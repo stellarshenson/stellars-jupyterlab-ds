@@ -13,7 +13,7 @@ if ! conda install -y --update-all -n base nodejs; then
 fi
 
 echo "Installing Google Gemini CLI..."
-if ! conda run -n base npm install -g @google/generative-ai-cli; then
+if ! conda run -n base npm install -g @google/gemini-cli; then
     echo -e "\033[31mError: Failed to install Gemini CLI\033[0m"
     exit 1
 fi
