@@ -15,6 +15,7 @@ packages:
     - htop # colourful system resources monitor
     # - iputils-ping # simple ping utility
     # - iproute2 # additional networking tools
+    - jq # tool for querying jsons used often by ai assistants
     - less # interactive file reader
     - libgl1 # for torch / ultralytics / opencv-python to work properly
     # - man # man pages
