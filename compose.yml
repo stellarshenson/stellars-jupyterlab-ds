@@ -81,6 +81,7 @@ services:
       - ENABLE_SERVICE_GLANCES=1
       - ENABLE_SERVICE_TENSORBOARD=1
       - ENABLE_GPU_SUPPORT=0
+      - COOKIECUTTER_DATASCIENCE_TEMPLATE_URL=https://github.com/stellarshenson/cookiecutter-data-science.git
     volumes:
       - vol_home:/home                    # jupyterlab user directory persistence
       - vol_workspace:/home/lab/workspace # user projects workspace volume persistence

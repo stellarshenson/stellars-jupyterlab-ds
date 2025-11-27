@@ -547,6 +547,7 @@ ENV MLFLOW_TRACKING_URI=http://localhost:5000
 ENV MLFLOW_PORT=5000
 ENV MLFLOW_HOST=*
 ENV MLFLOW_WORKERS=1
+ENV COOKIECUTTER_DATASCIENCE_TEMPLATE_URL=https://github.com/stellarshenson/cookiecutter-data-science.git
 
 # local directory with user's own start scripts
 ENV LOCAL_SCRIPTS_DIR=${CONDA_USER_HOME}/.local/start-platform.d
