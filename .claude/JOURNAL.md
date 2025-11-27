@@ -90,3 +90,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 27. **Task - Add cookiecutter-data-science scaffolding**: Integrated ccds command for data science project creation<br>
     **Result**: Added cookiecutter-data-science package to environment_base_template.yml providing the ccds command for project scaffolding. Updated new-project.sh to use `ccds ${COOKIECUTTER_DATASCIENCE_TEMPLATE_URL} --checkout master` format. Added COOKIECUTTER_DATASCIENCE_TEMPLATE_URL environment variable to Dockerfile (default: https://github.com/stellarshenson/cookiecutter-data-science.git) and compose.yml, enabling users to override the template URL for custom project structures
+
+28. **Task - Fix uv and markdown export dependencies**: Added environment fix and system libraries for extensions<br>
+    **Result**: Added UV_LINK_MODE=copy environment variable to Dockerfile to fix uv package manager hardlink issues in containerized environments where cross-filesystem links fail. Added Pango and font libraries to apt-packages.yml (libpangoft2-1.0-0, libpango-1.0-0, fonts-noto-color-emoji) required for jupyterlab_export_markdown_extension to properly render and export markdown documents with emoji support

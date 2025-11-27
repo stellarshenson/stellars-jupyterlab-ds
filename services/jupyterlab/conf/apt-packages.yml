@@ -33,4 +33,9 @@ packages:
     - vim # text editor
     - zip # file zipper and unzipper
 
+    # libraries required for jupyterlab_export_markdown_extension
+    - libpangoft2-1.0-0
+    - libpango-1.0-0
+    - fonts-noto-color-emoji
+
 # EOF
