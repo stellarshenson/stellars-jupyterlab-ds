@@ -60,10 +60,14 @@ push: tag
 
 tag:
 	@if git tag -l | grep -q "^$(TAG)$$"; then \
-		echo "Git tag $(TAG) already exists, skipping tagging"; \
+		echo "Git tag $(TAG) already exists, skipping git tagging"; \
 	else \
 		echo "Creating git tag: $(TAG)"; \
 		git tag $(TAG); \
+	fi
+	@if docker image inspect stellars/stellars-jupyterlab-ds:$(TAG) >/dev/null 2>&1; then \
+		echo "Docker tag $(TAG) already exists"; \
+	else \
 		echo "Creating docker tag: $(TAG)"; \
 		docker tag stellars/stellars-jupyterlab-ds:latest stellars/stellars-jupyterlab-ds:$(TAG); \
 	fi
