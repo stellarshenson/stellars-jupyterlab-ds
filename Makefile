@@ -39,7 +39,7 @@ build_verbose:
 	@cd ./scripts && ./build_verbose.sh
 
 ## rebuild 'target' stage only (uses cached 'builder' stage)
-rebuild:
+rebuild: increment_version
 	@echo "Rebuilding 'target' stage (builder stage uses cache if available)..."
 	@docker build \
 		--platform linux/amd64 \
