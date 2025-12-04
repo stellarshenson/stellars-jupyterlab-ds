@@ -44,3 +44,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 31. **Task - Add Streamlit proxy configuration**: Enabled Streamlit application access through JupyterLab ServerProxy<br>
     **Result**: Added Streamlit ServerProxy configuration to jupyter_lab_config.py on port 8501 accessible via /streamlit path. Updated welcome-template.html to include Streamlit link in Optional Tools section with note indicating users must start the Streamlit server first. Enables seamless access to Streamlit data applications through JupyterLab's reverse proxy without exposing additional ports
+
+32. **Task - Fix make push and enhance markdown export**: Resolved Makefile tagging logic and added Cairo library<br>
+    **Result**: Fixed `make push` failure caused by flawed tag target logic - previously when git tag existed, docker tag creation was skipped causing push to fail. Separated git tag and docker tag checks to operate independently using `docker image inspect` to verify local docker tag existence. Added `increment_version` dependency to rebuild target for consistency with build target. Added libcairo2 to apt-packages.yml enabling SVG to PNG conversion in markdown export extension. Version bumped to 3.4.7
