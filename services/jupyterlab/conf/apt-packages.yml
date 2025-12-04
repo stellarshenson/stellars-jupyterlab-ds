@@ -36,6 +36,7 @@ packages:
     # libraries required for jupyterlab_export_markdown_extension
     - libpangoft2-1.0-0
     - libpango-1.0-0
+    - libcairo2 # for svg to png conversion
     - fonts-noto-color-emoji
 
 # EOF
