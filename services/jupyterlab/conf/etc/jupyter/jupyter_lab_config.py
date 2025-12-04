@@ -81,7 +81,15 @@ c.ServerProxy.servers = {
         "absolute_url": False,
         "port": 8080,
         "launcher_entry": {
-            "enabled": False    
+            "enabled": False
+        }
+    },
+    "streamlit": {
+        "command": [],
+        "absolute_url": False,
+        "port": 8501,
+        "launcher_entry": {
+            "enabled": False
         }
     },
 }
