@@ -15,6 +15,7 @@ dependencies:
 
     ## other libraries
     - cookiecutter-data-science # data science project scaffolding (ccds command)
+    - copier # another templating engine
     - make # build tools
     - matplotlib # plots library
     - mlflow # powerful mlops suite and experiment runner (library)
