@@ -12,7 +12,7 @@ echo "Creating conda environment: ${ENV_NAME}"
 # Create fresh environment and apply base packages first
 echo "Creating ${ENV_NAME} environment with base packages"
 ${CONDA_CMD} create --name ${ENV_NAME} -y
-${CONDA_CMD} env update -v --name ${ENV_NAME} --file=/environment_base_template.yml
+${CONDA_CMD} env update -v --name ${ENV_NAME} --file=/environment_base.yml
 ${CONDA_CMD} clean -a -y
 
 # Install torch packages
