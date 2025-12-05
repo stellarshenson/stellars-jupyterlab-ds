@@ -461,7 +461,7 @@ Configuration variables supported by the platform:
 > [!NOTE]
 > **Docker Socket Access**: To use Docker CLI, users need access to `/var/run/docker.sock`. In JupyterHub deployments, users must be added to the `docker-privileged` group by an administrator. For standalone deployments, mount the Docker socket with read-write permissions: `-v /var/run/docker.sock:/var/run/docker.sock`
 - Notebook diffing and merging tools for version control
-- Cookiecutter templates for standardized project structure
+- Project scaffolding via [cookiecutter-data-science](https://github.com/stellarshenson/cookiecutter-data-science) fork with copier support for standardized data science project structure
 - Enhanced terminal with Midnight Commander and standard Unix tools
 
 **Data Science Stack:**
