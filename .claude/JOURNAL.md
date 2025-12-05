@@ -53,3 +53,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 34. **Task - Add copier templating engine**: Extended project scaffolding capabilities<br>
     **Result**: Added copier package to environment_base.yml providing alternative templating engine alongside cookiecutter-data-science. Copier offers modern project templating with features like template updates, Jinja2 extensions, and multi-stage questionnaires. Version bumped to 3.4.9
+
+35. **Task - Add MkDocs ServerProxy configuration**: Enabled MkDocs documentation server access through JupyterLab<br>
+    **Result**: Added MkDocs ServerProxy configuration to jupyter_lab_config.py on port 8000 accessible via /mkdocs path. Updated welcome-template.html to include MkDocs link in Optional Tools section. Enables serving documentation sites via `mkdocs serve` through JupyterLab's reverse proxy
