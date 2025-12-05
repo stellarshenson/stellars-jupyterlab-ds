@@ -257,7 +257,7 @@ graph TB
 
 ### JupyterLab Extensions
 - Conda environment and package management from within JupyterLab
-- Multiple kernel support for different environments (install additional environments via lab-utils)
+- Advanced kernel management via [nb_venv_kernels](https://github.com/stellarshenson/nb_venv_kernels) - automatic discovery and registration of venv, uv, and conda environment kernels
 - Git integration for version control operations
 - Language Server Protocol with intelligent autocompletion and documentation
 - Code formatting integration supporting multiple formatters
