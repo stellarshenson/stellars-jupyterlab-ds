@@ -92,6 +92,14 @@ c.ServerProxy.servers = {
             "enabled": False
         }
     },
+    "mkdocs": {
+        "command": [],
+        "absolute_url": False,
+        "port": 8000,
+        "launcher_entry": {
+            "enabled": False
+        }
+    },
 }
 
 c.Application.logging_config = {
