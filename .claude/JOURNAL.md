@@ -56,3 +56,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 35. **Task - Add MkDocs ServerProxy configuration**: Enabled MkDocs documentation server access through JupyterLab<br>
     **Result**: Added MkDocs ServerProxy configuration to jupyter_lab_config.py on port 8000 accessible via /mkdocs path. Updated welcome-template.html to include MkDocs link in Optional Tools section. Enables serving documentation sites via `mkdocs serve` through JupyterLab's reverse proxy
+
+36. **Task - Document stellars integrations in README**: Added references to companion projects<br>
+    **Result**: Updated README.md to document integration with stellarshenson/cookiecutter-data-science fork (with copier support) for project scaffolding, and stellarshenson/nb_venv_kernels for advanced kernel management with automatic discovery of venv, uv, and conda environment kernels
