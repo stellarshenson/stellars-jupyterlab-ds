@@ -28,7 +28,7 @@ get_script_description() {
     echo "$description"
 }
 
-# Function to get executable scripts from a directory
+# Function to get executable scripts from a directory (top-level only)
 # Returns: script_name|description|source_dir
 get_scripts_from_dir() {
     local dir="$1"
@@ -48,26 +48,105 @@ get_scripts_from_dir() {
     done
 }
 
-# Function to get all scripts (global and local)
+# Function to get child scripts from a .d subdirectory
+# Returns: parent/child|description|source_dir
+get_child_scripts() {
+    local parent_name="$1"
+    local subdir="$2"
+    local source_label="$3"
+
+    if [[ ! -d "$subdir" ]]; then
+        return
+    fi
+
+    for script in "$subdir"/*.sh; do
+        if [[ -f "$script" && -x "$script" ]]; then
+            local basename_script=$(basename "$script")
+            local name_without_ext="${basename_script%.sh}"
+            local description=$(get_script_description "$script")
+            echo "${parent_name}/${name_without_ext}|${description}|${source_label}"
+        fi
+    done
+}
+
+# Function to get all scripts including nested ones from a directory
+# Returns: script_name|description|source_dir (with parent/child format for nested)
+get_all_scripts_from_dir() {
+    local dir="$1"
+    local source_label="$2"
+
+    if [[ ! -d "$dir" ]]; then
+        return
+    fi
+
+    for script in "$dir"/*.sh; do
+        if [[ -f "$script" && -x "$script" ]]; then
+            local basename_script=$(basename "$script")
+            local name_without_ext="${basename_script%.sh}"
+            local description=$(get_script_description "$script")
+            echo "${name_without_ext}|${description}|${source_label}|top"
+
+            # Check for corresponding .d subdirectory
+            local subdir="${dir}/${name_without_ext}.d"
+            if [[ -d "$subdir" ]]; then
+                for child_script in "$subdir"/*.sh; do
+                    if [[ -f "$child_script" && -x "$child_script" ]]; then
+                        local child_basename=$(basename "$child_script")
+                        local child_name="${child_basename%.sh}"
+                        local child_description=$(get_script_description "$child_script")
+                        echo "${name_without_ext}/${child_name}|${child_description}|${source_label}|child"
+                    fi
+                done
+            fi
+        fi
+    done
+}
+
+# Function to get all scripts (global and local) - top level only
 get_all_scripts() {
     get_scripts_from_dir "$GLOBAL_SCRIPTS_DIR" "global"
     get_scripts_from_dir "$LOCAL_SCRIPTS_DIR" "local:${LOCAL_SCRIPTS_DIR}"
 }
 
-# Function to find script path by name
+# Function to get all scripts including nested (global and local)
+get_all_scripts_hierarchical() {
+    get_all_scripts_from_dir "$GLOBAL_SCRIPTS_DIR" "global"
+    get_all_scripts_from_dir "$LOCAL_SCRIPTS_DIR" "local:${LOCAL_SCRIPTS_DIR}"
+}
+
+# Function to find script path by name (supports parent/child format)
 find_script() {
     local name="$1"
 
-    # Check global first
-    if [[ -x "${GLOBAL_SCRIPTS_DIR}/${name}.sh" ]]; then
-        echo "${GLOBAL_SCRIPTS_DIR}/${name}.sh"
-        return 0
-    fi
+    # Check if it's a nested path (contains /)
+    if [[ "$name" == */* ]]; then
+        local parent="${name%%/*}"
+        local child="${name#*/}"
 
-    # Check local
-    if [[ -x "${LOCAL_SCRIPTS_DIR}/${name}.sh" ]]; then
-        echo "${LOCAL_SCRIPTS_DIR}/${name}.sh"
-        return 0
+        # Check global first
+        if [[ -x "${GLOBAL_SCRIPTS_DIR}/${parent}.d/${child}.sh" ]]; then
+            echo "${GLOBAL_SCRIPTS_DIR}/${parent}.d/${child}.sh"
+            return 0
+        fi
+
+        # Check local
+        if [[ -x "${LOCAL_SCRIPTS_DIR}/${parent}.d/${child}.sh" ]]; then
+            echo "${LOCAL_SCRIPTS_DIR}/${parent}.d/${child}.sh"
+            return 0
+        fi
+    else
+        # Top-level script
+        # Check global first
+        if [[ -x "${GLOBAL_SCRIPTS_DIR}/${name}.sh" ]]; then
+            echo "${GLOBAL_SCRIPTS_DIR}/${name}.sh"
+            return 0
+        fi
+
+        # Check local
+        if [[ -x "${LOCAL_SCRIPTS_DIR}/${name}.sh" ]]; then
+            echo "${LOCAL_SCRIPTS_DIR}/${name}.sh"
+            return 0
+        fi
     fi
 
     return 1
@@ -85,6 +164,7 @@ show_help() {
     echo ""
     echo "Arguments:"
     echo "  SCRIPT_NAME    Execute the specified script directly"
+    echo "                 Use parent/child format for nested scripts"
     echo ""
     echo "When called without arguments, shows an interactive menu."
     echo ""
@@ -93,32 +173,39 @@ show_help() {
     echo "  Local:  ${LOCAL_SCRIPTS_DIR}"
     echo ""
     echo "Examples:"
-    echo "  lab-utils              # Show interactive menu"
-    echo "  lab-utils --list       # List all available scripts"
-    echo "  lab-utils test-cuda    # Run test-cuda script directly"
+    echo "  lab-utils                              # Show interactive menu"
+    echo "  lab-utils --list                       # List all available scripts"
+    echo "  lab-utils test-cuda                    # Run top-level script"
+    echo "  lab-utils git-utils/git-pull-repos    # Run nested script directly"
 }
 
-# Function to list scripts
+# Function to list scripts (hierarchical with indentation)
 list_scripts() {
     local global_scripts=()
     local local_scripts=()
 
-    # Collect scripts
-    while IFS='|' read -r name description source; do
+    # Collect scripts with hierarchy info
+    while IFS='|' read -r name description source level; do
         if [[ "$source" == "global" ]]; then
-            global_scripts+=("${name}|${description}")
+            global_scripts+=("${name}|${description}|${level}")
         else
-            local_scripts+=("${name}|${description}|${source}")
+            local_scripts+=("${name}|${description}|${source}|${level}")
         fi
-    done < <(get_all_scripts)
+    done < <(get_all_scripts_hierarchical)
 
     # Print global scripts
     if [[ ${#global_scripts[@]} -gt 0 ]]; then
         echo -e "${CYAN}Global scripts${NC} ${GRAY}(${GLOBAL_SCRIPTS_DIR})${NC}"
         echo ""
         for entry in "${global_scripts[@]}"; do
-            IFS='|' read -r name description <<< "$entry"
-            printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
+            IFS='|' read -r name description level <<< "$entry"
+            if [[ "$level" == "child" ]]; then
+                # Indented child script
+                printf "    ${GRAY}└─${NC} ${BLUE}%-23s${NC} %s\n" "$name" "$description"
+            else
+                # Top-level script
+                printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
+            fi
         done
         echo ""
     fi
@@ -128,8 +215,14 @@ list_scripts() {
         echo -e "${CYAN}Local scripts${NC} ${GRAY}(${LOCAL_SCRIPTS_DIR})${NC}"
         echo ""
         for entry in "${local_scripts[@]}"; do
-            IFS='|' read -r name description source <<< "$entry"
-            printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
+            IFS='|' read -r name description source level <<< "$entry"
+            if [[ "$level" == "child" ]]; then
+                # Indented child script
+                printf "    ${GRAY}└─${NC} ${BLUE}%-23s${NC} %s\n" "$name" "$description"
+            else
+                # Top-level script
+                printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
+            fi
         done
         echo ""
     elif [[ ! -d "$LOCAL_SCRIPTS_DIR" ]]; then
