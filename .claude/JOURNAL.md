@@ -62,3 +62,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 37. **Task - Enhance lab-utils with CLI mode**: Added command-line interface and bash autocompletion<br>
     **Result**: Rewrote lab-utils to support CLI arguments: `--help/-h` for usage info, `--list/-l` for listing scripts with descriptions (names in blue, grouped by global/local with source paths), and direct script execution via `lab-utils <script-name>`. Added support for local user scripts in `~/.local/lab-utils.d/`. Created lab-utils-completion bash script for autocompletion of commands and script names. Interactive dialog menu preserved when called without arguments. Version bumped to 3.4.11
+
+38. **Task - Add hierarchical script support to lab-utils**: Extended CLI with nested script listing and execution<br>
+    **Result**: Enhanced lab-utils to display child scripts (from `.d/` subdirectories) indented under their parent scripts in `--list` output using tree-like formatting (`└─`). Added support for `parent/child` path format to execute nested scripts directly (e.g., `lab-utils git-utils/git-pull-repos`). Updated bash completion to include all nested scripts in autocompletion suggestions. Child scripts discovered from corresponding `.d/` directories matching parent script names. Version bumped to 3.4.13
