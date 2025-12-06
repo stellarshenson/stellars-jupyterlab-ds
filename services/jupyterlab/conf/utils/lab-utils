@@ -159,12 +159,13 @@ show_help() {
     echo "Lab utilities runner - execute platform utilities and scripts"
     echo ""
     echo "Options:"
-    echo "  --help, -h     Show this help message"
-    echo "  --list, -l     List available scripts with descriptions"
+    echo "  --help, -h         Show this help message"
+    echo "  --list, -l         List available scripts with descriptions"
+    echo "  --create-local     Create local scripts directory with demo script"
     echo ""
     echo "Arguments:"
-    echo "  SCRIPT_NAME    Execute the specified script directly"
-    echo "                 Use parent/child format for nested scripts"
+    echo "  SCRIPT_NAME        Execute the specified script directly"
+    echo "                     Use parent/child format for nested scripts"
     echo ""
     echo "When called without arguments, shows an interactive menu."
     echo ""
@@ -175,8 +176,57 @@ show_help() {
     echo "Examples:"
     echo "  lab-utils                              # Show interactive menu"
     echo "  lab-utils --list                       # List all available scripts"
+    echo "  lab-utils --create-local               # Scaffold local scripts"
     echo "  lab-utils test-cuda                    # Run top-level script"
     echo "  lab-utils git-utils/git-pull-repos    # Run nested script directly"
+}
+
+# Function to create local scripts directory with demo script
+create_local_scripts() {
+    if [[ -d "$LOCAL_SCRIPTS_DIR" ]]; then
+        echo -e "${CYAN}Local scripts directory already exists:${NC} ${LOCAL_SCRIPTS_DIR}"
+        echo ""
+        echo "Use 'lab-utils --list' to see available scripts."
+        return 0
+    fi
+
+    echo -e "${CYAN}Creating local scripts directory...${NC}"
+    mkdir -p "$LOCAL_SCRIPTS_DIR"
+
+    # Create demo script
+    local demo_script="${LOCAL_SCRIPTS_DIR}/my-script.sh"
+    cat > "$demo_script" << 'DEMO_EOF'
+#!/bin/bash
+## My custom script - template for local utilities
+
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}Hello from your local script!${NC}"
+echo ""
+echo -e "${BLUE}This is a template script in your local lab-utils directory.${NC}"
+echo "Edit this file or create new .sh scripts in:"
+echo "  ${HOME}/.local/lab-utils.d/"
+echo ""
+echo "Tips:"
+echo "  - Add '## Description' as the second line for --list display"
+echo "  - Make scripts executable: chmod +x script.sh"
+echo "  - Create parent.d/ subdirectories for nested scripts"
+echo ""
+echo "Arguments received: $@"
+DEMO_EOF
+
+    chmod +x "$demo_script"
+
+    echo -e "${GREEN}Created local scripts directory:${NC} ${LOCAL_SCRIPTS_DIR}"
+    echo -e "${GREEN}Created demo script:${NC} ${demo_script}"
+    echo ""
+    echo "Next steps:"
+    echo "  1. Edit ${demo_script} for your needs"
+    echo "  2. Create additional .sh scripts in ${LOCAL_SCRIPTS_DIR}"
+    echo "  3. Run 'lab-utils --list' to see your scripts"
 }
 
 # Function to list scripts (hierarchical with indentation)
@@ -298,6 +348,9 @@ case "${1:-}" in
         ;;
     --list|-l)
         list_scripts
+        ;;
+    --create-local)
+        create_local_scripts
         ;;
     "")
         run_interactive_menu

@@ -10,7 +10,7 @@ _lab_utils_completions() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
     # Options
-    opts="--help -h --list -l"
+    opts="--help -h --list -l --create-local"
 
     # Script directories
     local global_dir="/opt/utils/lab-utils.d"
