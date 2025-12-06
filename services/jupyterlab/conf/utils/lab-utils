@@ -1,101 +1,226 @@
 #!/bin/bash
-# Lab Utils Script Runner
+## Lab utilities - run platform utilities and scripts
+# Lab Utils Script Runner with CLI support
 
 set -e
 
-SCRIPTS_DIR="/opt/utils/lab-utils.d"
+GLOBAL_SCRIPTS_DIR="/opt/utils/lab-utils.d"
+LOCAL_SCRIPTS_DIR="${HOME}/.local/lab-utils.d"
+
+# Colors
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+GRAY='\033[0;90m'
+NC='\033[0m' # No Color
 
 # Function to extract description from script
 get_script_description() {
     local script_file="$1"
     local description=""
-    
+
     # Look for line starting with ## and extract description
     description=$(grep "^##" "$script_file" 2>/dev/null | head -1 | sed 's/^##[[:space:]]*//' || echo "")
-    
+
     if [[ -z "$description" ]]; then
         description="No description available"
     fi
-    
+
     echo "$description"
 }
 
-# Function to get executable scripts with descriptions
-get_scripts() {
-    local scripts=()
-    local descriptions=()
-    
-    # Find all .sh files in the scripts directory
-    if [[ ! -d "$SCRIPTS_DIR" ]]; then
-        echo "Error: Scripts directory $SCRIPTS_DIR not found."
-        exit 1
+# Function to get executable scripts from a directory
+# Returns: script_name|description|source_dir
+get_scripts_from_dir() {
+    local dir="$1"
+    local source_label="$2"
+
+    if [[ ! -d "$dir" ]]; then
+        return
     fi
-    
-    for script in "$SCRIPTS_DIR"/*.sh; do
-        # Check if file exists and is executable
+
+    for script in "$dir"/*.sh; do
         if [[ -f "$script" && -x "$script" ]]; then
             local basename_script=$(basename "$script")
+            local name_without_ext="${basename_script%.sh}"
             local description=$(get_script_description "$script")
-            
-            scripts+=("$basename_script")
-            descriptions+=("$description")
+            echo "${name_without_ext}|${description}|${source_label}"
         fi
     done
-    
-    # Output in format: filename|description
-    for i in "${!scripts[@]}"; do
-        echo "${scripts[$i]}|${descriptions[$i]}"
+}
+
+# Function to get all scripts (global and local)
+get_all_scripts() {
+    get_scripts_from_dir "$GLOBAL_SCRIPTS_DIR" "global"
+    get_scripts_from_dir "$LOCAL_SCRIPTS_DIR" "local:${LOCAL_SCRIPTS_DIR}"
+}
+
+# Function to find script path by name
+find_script() {
+    local name="$1"
+
+    # Check global first
+    if [[ -x "${GLOBAL_SCRIPTS_DIR}/${name}.sh" ]]; then
+        echo "${GLOBAL_SCRIPTS_DIR}/${name}.sh"
+        return 0
+    fi
+
+    # Check local
+    if [[ -x "${LOCAL_SCRIPTS_DIR}/${name}.sh" ]]; then
+        echo "${LOCAL_SCRIPTS_DIR}/${name}.sh"
+        return 0
+    fi
+
+    return 1
+}
+
+# Function to show help
+show_help() {
+    echo "Usage: lab-utils [OPTIONS] [SCRIPT_NAME]"
+    echo ""
+    echo "Lab utilities runner - execute platform utilities and scripts"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h     Show this help message"
+    echo "  --list, -l     List available scripts with descriptions"
+    echo ""
+    echo "Arguments:"
+    echo "  SCRIPT_NAME    Execute the specified script directly"
+    echo ""
+    echo "When called without arguments, shows an interactive menu."
+    echo ""
+    echo "Script locations:"
+    echo "  Global: ${GLOBAL_SCRIPTS_DIR}"
+    echo "  Local:  ${LOCAL_SCRIPTS_DIR}"
+    echo ""
+    echo "Examples:"
+    echo "  lab-utils              # Show interactive menu"
+    echo "  lab-utils --list       # List all available scripts"
+    echo "  lab-utils test-cuda    # Run test-cuda script directly"
+}
+
+# Function to list scripts
+list_scripts() {
+    local global_scripts=()
+    local local_scripts=()
+
+    # Collect scripts
+    while IFS='|' read -r name description source; do
+        if [[ "$source" == "global" ]]; then
+            global_scripts+=("${name}|${description}")
+        else
+            local_scripts+=("${name}|${description}|${source}")
+        fi
+    done < <(get_all_scripts)
+
+    # Print global scripts
+    if [[ ${#global_scripts[@]} -gt 0 ]]; then
+        echo -e "${CYAN}Global scripts${NC} ${GRAY}(${GLOBAL_SCRIPTS_DIR})${NC}"
+        echo ""
+        for entry in "${global_scripts[@]}"; do
+            IFS='|' read -r name description <<< "$entry"
+            printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
+        done
+        echo ""
+    fi
+
+    # Print local scripts
+    if [[ ${#local_scripts[@]} -gt 0 ]]; then
+        echo -e "${CYAN}Local scripts${NC} ${GRAY}(${LOCAL_SCRIPTS_DIR})${NC}"
+        echo ""
+        for entry in "${local_scripts[@]}"; do
+            IFS='|' read -r name description source <<< "$entry"
+            printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
+        done
+        echo ""
+    elif [[ ! -d "$LOCAL_SCRIPTS_DIR" ]]; then
+        echo -e "${GRAY}No local scripts directory. Create ${LOCAL_SCRIPTS_DIR} to add custom scripts.${NC}"
+        echo ""
+    fi
+}
+
+# Function to run interactive menu
+run_interactive_menu() {
+    # Check if dialog is available
+    if ! command -v dialog &> /dev/null; then
+        echo "Error: dialog command not found. Install it with:"
+        echo "  Ubuntu/Debian: sudo apt install dialog"
+        echo "  CentOS/RHEL: sudo yum install dialog"
+        exit 1
+    fi
+
+    # Get available scripts
+    mapfile -t SCRIPT_DATA < <(get_all_scripts)
+
+    if [[ ${#SCRIPT_DATA[@]} -eq 0 ]]; then
+        dialog --title "Error" --msgbox "No executable .sh scripts found" 10 50
+        clear
+        echo "No scripts available for execution."
+        exit 1
+    fi
+
+    # Build menu options for dialog
+    MENU_OPTIONS=()
+
+    for entry in "${SCRIPT_DATA[@]}"; do
+        IFS='|' read -r name description source <<< "$entry"
+        if [[ "$source" == "global" ]]; then
+            MENU_OPTIONS+=("$name" "$description")
+        else
+            MENU_OPTIONS+=("$name" "[local] $description")
+        fi
     done
+
+    # Show selection dialog
+    TEMPFILE=$(mktemp)
+    dialog --clear --title "Lab Utils" \
+        --menu "Select utility to execute:" \
+        20 120 12 \
+        "${MENU_OPTIONS[@]}" \
+        2>$TEMPFILE >/dev/tty || {
+        clear
+        rm -f $TEMPFILE
+        exit 0
+    }
+
+    # save up response and clean up the screen
+    CHOICE=$(cat $TEMPFILE)
+    rm -f $TEMPFILE
+    clear
+
+    # Find and execute the selected script
+    SCRIPT_PATH=$(find_script "$CHOICE")
+    if [[ -n "$SCRIPT_PATH" ]]; then
+        echo "Executing: ${SCRIPT_PATH}"
+        "$SCRIPT_PATH"
+    else
+        echo "Error: Script '$CHOICE' not found"
+        exit 1
+    fi
 }
 
-# Check if dialog is available
-if ! command -v dialog &> /dev/null; then
-    echo "Error: dialog command not found. Install it with:"
-    echo "  Ubuntu/Debian: sudo apt install dialog"
-    echo "  CentOS/RHEL: sudo yum install dialog"
-    exit 1
-fi
-
-# Get available scripts
-mapfile -t SCRIPT_DATA < <(get_scripts)
-
-if [[ ${#SCRIPT_DATA[@]} -eq 0 ]]; then
-    dialog --title "Error" --msgbox "No executable .sh scripts found in $SCRIPTS_DIR" 10 50
-    clear
-    echo "No scripts available for execution."
-    exit 1
-fi
-
-# Build menu options for dialog
-MENU_OPTIONS=()
-
-for i in "${!SCRIPT_DATA[@]}"; do
-    # Split script name and description
-    IFS='|' read -r script_name description <<< "${SCRIPT_DATA[$i]}"
-    
-    # Use script name as key and description as value
-    MENU_OPTIONS+=("$script_name" "$description")
-done
-
-# Show selection dialog
-TEMPFILE=$(mktemp)
-dialog --clear --title "Lab Utils" \
-	--menu "Select utility to execute:" \
-	20 120 10 \
-	"${MENU_OPTIONS[@]}" \
-	2>$TEMPFILE >/dev/tty || {
-
-    clear
-    exit 0
-}
-
-# save up response and clean up the screen
-CHOICE=$(cat $TEMPFILE)
-rm $TEMPFILE
-clear
-
-# Execute the selected script
-echo "Executing: ${SCRIPTS_DIR}/$CHOICE"
-"${SCRIPTS_DIR}/$CHOICE"
+# Main logic
+case "${1:-}" in
+    --help|-h)
+        show_help
+        ;;
+    --list|-l)
+        list_scripts
+        ;;
+    "")
+        run_interactive_menu
+        ;;
+    *)
+        # Try to execute the specified script
+        SCRIPT_PATH=$(find_script "$1") || {
+            echo "Error: Script '$1' not found"
+            echo ""
+            echo "Use 'lab-utils --list' to see available scripts"
+            exit 1
+        }
+        echo "Executing: ${SCRIPT_PATH}"
+        shift
+        "$SCRIPT_PATH" "$@"
+        ;;
+esac
 
 # EOF
