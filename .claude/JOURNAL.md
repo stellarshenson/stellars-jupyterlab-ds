@@ -65,3 +65,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 38. **Task - Add hierarchical script support to lab-utils**: Extended CLI with nested script listing and execution<br>
     **Result**: Enhanced lab-utils to display child scripts (from `.d/` subdirectories) indented under their parent scripts in `--list` output using tree-like formatting (`└─`). Added support for `parent/child` path format to execute nested scripts directly (e.g., `lab-utils git-utils/git-pull-repos`). Updated bash completion to include all nested scripts in autocompletion suggestions. Child scripts discovered from corresponding `.d/` directories matching parent script names. Version bumped to 3.4.13
+
+39. **Task - Add local scripts scaffolding**: Added --create-local option to lab-utils<br>
+    **Result**: Added `--create-local` option that creates `~/.local/lab-utils.d/` directory with a demo script template (`my-script.sh`). Demo script includes colored output, instructions for creating local utilities, tips for description comments and nested script subdirectories. If directory already exists, displays informative message. Updated bash completion to include new option. Version bumped to 3.4.14
