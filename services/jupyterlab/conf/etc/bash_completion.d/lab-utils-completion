@@ -1,6 +1,7 @@
 #!/bin/bash
 # Bash completion for lab-utils
 # Provides autocompletion for lab-utils commands and available scripts
+# Supports both top-level and nested scripts (parent/child format)
 
 _lab_utils_completions() {
     local cur prev opts scripts
@@ -15,24 +16,37 @@ _lab_utils_completions() {
     local global_dir="/opt/utils/lab-utils.d"
     local local_dir="${HOME}/.local/lab-utils.d"
 
-    # Collect script names (without .sh extension)
+    # Collect script names (without .sh extension) including nested scripts
     scripts=""
-    if [[ -d "$global_dir" ]]; then
-        for script in "$global_dir"/*.sh; do
+
+    # Helper function to collect scripts from a directory
+    _collect_scripts() {
+        local dir="$1"
+        if [[ ! -d "$dir" ]]; then
+            return
+        fi
+
+        for script in "$dir"/*.sh; do
             if [[ -f "$script" && -x "$script" ]]; then
                 local name=$(basename "$script" .sh)
                 scripts="$scripts $name"
+
+                # Check for corresponding .d subdirectory with nested scripts
+                local subdir="${dir}/${name}.d"
+                if [[ -d "$subdir" ]]; then
+                    for child_script in "$subdir"/*.sh; do
+                        if [[ -f "$child_script" && -x "$child_script" ]]; then
+                            local child_name=$(basename "$child_script" .sh)
+                            scripts="$scripts ${name}/${child_name}"
+                        fi
+                    done
+                fi
             fi
         done
-    fi
-    if [[ -d "$local_dir" ]]; then
-        for script in "$local_dir"/*.sh; do
-            if [[ -f "$script" && -x "$script" ]]; then
-                local name=$(basename "$script" .sh)
-                scripts="$scripts $name"
-            fi
-        done
-    fi
+    }
+
+    _collect_scripts "$global_dir"
+    _collect_scripts "$local_dir"
 
     # First argument - complete with options and script names
     if [[ ${COMP_CWORD} -eq 1 ]]; then
