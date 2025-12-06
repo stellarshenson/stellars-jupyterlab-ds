@@ -1,0 +1,50 @@
+#!/bin/bash
+# Bash completion for lab-utils
+# Provides autocompletion for lab-utils commands and available scripts
+
+_lab_utils_completions() {
+    local cur prev opts scripts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    # Options
+    opts="--help -h --list -l"
+
+    # Script directories
+    local global_dir="/opt/utils/lab-utils.d"
+    local local_dir="${HOME}/.local/lab-utils.d"
+
+    # Collect script names (without .sh extension)
+    scripts=""
+    if [[ -d "$global_dir" ]]; then
+        for script in "$global_dir"/*.sh; do
+            if [[ -f "$script" && -x "$script" ]]; then
+                local name=$(basename "$script" .sh)
+                scripts="$scripts $name"
+            fi
+        done
+    fi
+    if [[ -d "$local_dir" ]]; then
+        for script in "$local_dir"/*.sh; do
+            if [[ -f "$script" && -x "$script" ]]; then
+                local name=$(basename "$script" .sh)
+                scripts="$scripts $name"
+            fi
+        done
+    fi
+
+    # First argument - complete with options and script names
+    if [[ ${COMP_CWORD} -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W "${opts} ${scripts}" -- "${cur}") )
+        return 0
+    fi
+
+    # For subsequent arguments, provide file completion
+    COMPREPLY=( $(compgen -f -- "${cur}") )
+    return 0
+}
+
+complete -F _lab_utils_completions lab-utils
+
+# EOF
