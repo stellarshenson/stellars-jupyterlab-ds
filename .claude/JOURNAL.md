@@ -59,3 +59,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 36. **Task - Document stellars integrations in README**: Added references to companion projects<br>
     **Result**: Updated README.md to document integration with stellarshenson/cookiecutter-data-science fork (with copier support) for project scaffolding, and stellarshenson/nb_venv_kernels for advanced kernel management with automatic discovery of venv, uv, and conda environment kernels
+
+37. **Task - Enhance lab-utils with CLI mode**: Added command-line interface and bash autocompletion<br>
+    **Result**: Rewrote lab-utils to support CLI arguments: `--help/-h` for usage info, `--list/-l` for listing scripts with descriptions (names in blue, grouped by global/local with source paths), and direct script execution via `lab-utils <script-name>`. Added support for local user scripts in `~/.local/lab-utils.d/`. Created lab-utils-completion bash script for autocompletion of commands and script names. Interactive dialog menu preserved when called without arguments. Version bumped to 3.4.11
