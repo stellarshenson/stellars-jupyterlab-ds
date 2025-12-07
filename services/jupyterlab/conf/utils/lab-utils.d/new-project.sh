@@ -1,7 +1,7 @@
 #!/bin/bash
 ## Scaffolds new data science project using Copier
 
-REPO_URL="https://github.com/stellarshenson/cookiecutter-data-science.git"
+REPO_URL="https://github.com/stellarshenson/copier-data-science.git"
 
 # Get latest tag from GitHub
 LATEST_TAG=$(git ls-remote --tags --sort=-v:refname "$REPO_URL" 2>/dev/null | head -n1 | sed 's/.*refs\/tags\///')
