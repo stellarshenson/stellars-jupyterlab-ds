@@ -10,7 +10,7 @@ LOCAL_SCRIPTS_DIR="${HOME}/.local/lab-utils.d"
 # Colors
 BLUE='\033[1;34m'
 CYAN='\033[0;36m'
-GRAY='\033[0;90m'
+GRAY='\033[0;00m'
 NC='\033[0m' # No Color
 
 # Function to extract description from script
