@@ -8,7 +8,7 @@ GLOBAL_SCRIPTS_DIR="/opt/utils/lab-utils.d"
 LOCAL_SCRIPTS_DIR="${HOME}/.local/lab-utils.d"
 
 # Colors
-BLUE='\033[0;34m'
+BLUE='\033[1;34m'
 CYAN='\033[0;36m'
 GRAY='\033[0;90m'
 NC='\033[0m' # No Color
