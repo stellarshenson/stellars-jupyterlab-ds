@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# load and export env variables
+set -a
+. /etc/default/platform.env
+set +a
+
+
 # run series of start scripts
 # (services will need to run in background)
 START_PLATFORM_DIR='/start-platform.d'
