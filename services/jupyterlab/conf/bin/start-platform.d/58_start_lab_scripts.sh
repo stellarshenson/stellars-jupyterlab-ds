@@ -17,7 +17,7 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
     echo "Executing user startup scripts from ${LOCAL_SCRIPTS_DIR}"
     for file in ${LOCAL_SCRIPTS_DIR}/*.sh; do
 	if [ -f "${file}" ] && [ -x "${file}" ]; then
-	    "${file}" 
+	    nohup "${file}" &
 	fi
     done
 fi
