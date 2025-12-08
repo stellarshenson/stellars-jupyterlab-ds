@@ -68,3 +68,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 39. **Task - Add local scripts scaffolding**: Added --create-local option to lab-utils<br>
     **Result**: Added `--create-local` option that creates `~/.local/lab-utils.d/` directory with a demo script template (`my-script.sh`). Demo script includes colored output, instructions for creating local utilities, tips for description comments and nested script subdirectories. If directory already exists, displays informative message. Updated bash completion to include new option. Version bumped to 3.4.14
+
+40. **Task - Improve user startup scripts execution**: Refactored user scripts to run as bundle with single log file<br>
+    **Result**: Modified 58_start_lab_scripts.sh to execute all user startup scripts from `~/.local/start-platform.d/` as a single nohup bundle instead of spawning individual nohup processes per script. Output consolidated to single log file `~/.local/start-platform.out` (outside the scripts directory). Each script execution logged with header separator, start/end timestamps for debugging. Scripts collected into array and executed sequentially in one background process. Version bumped to 3.4.25
