@@ -1,0 +1,9 @@
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
+
+# include opt utils scripts in PATH
+PATH="/opt/utils:$PATH"
+
+# include docker cli in PATH
+PATH="/opt/docker:$PATH"
+
+
