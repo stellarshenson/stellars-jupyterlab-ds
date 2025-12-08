@@ -144,6 +144,7 @@ RUN mkdir -p ${JUPYTER_ETC_DIR}
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
+COPY --chmod=644  ./conf/etc/environment /etc/environment
 COPY --chmod=644  ./conf/etc/bash_completion.d/* /etc/bash_completion.d
 COPY --chmod=644  ./conf/etc/jupyter/jupyter_lab_config.py ${JUPYTER_ETC_DIR}
 COPY --chmod=644  ./conf/environment_base.yml /environment_base.yml

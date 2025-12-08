@@ -25,12 +25,6 @@ alias ls="ls --color=auto"
 # Fix CUDA loading for running nvidia-smi
 ldconfig 2>/dev/null
 
-# include opt utils scripts in PATH
-export PATH="/opt/utils:$PATH"
-
-# include docker cli in PATH
-export PATH="/opt/docker:$PATH"
-
 # docker MCP gateway environment variable
 export DOCKER_MCP_IN_CONTAINER=1
 
