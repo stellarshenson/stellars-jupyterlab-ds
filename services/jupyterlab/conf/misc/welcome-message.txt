@@ -1,19 +1,19 @@
 [95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. This is your environment 
 designed for data science and machine learning / ai projects. [0m
 
-Running JupyterLab server on     [34mhttps://localhost/@LAB_NAME@[0m
-Connect VSCode to Jupyter on     [34mhttps://localhost/@LAB_NAME@/lab/tree[0m
-Running Tensorboard server on    [34mhttps://localhost/@LAB_NAME@/tensorboard[0m
-Running Glances System Monitor   [34mhttps://localhost/@LAB_NAME@/glances[0m  
-Running MLFlow on                [34mhttps://localhost/@LAB_NAME@/mlflow[0m  
-Optuna will be available on      [34mhttps://localhost/@LAB_NAME@/optuna[0m  
+Running JupyterLab server on     [94mhttps://localhost/@LAB_NAME@[0m
+Connect VSCode to Jupyter on     [94mhttps://localhost/@LAB_NAME@/lab/tree[0m
+Running Tensorboard server on    [94mhttps://localhost/@LAB_NAME@/tensorboard[0m
+Running Glances System Monitor   [94mhttps://localhost/@LAB_NAME@/glances[0m  
+Running MLFlow on                [94mhttps://localhost/@LAB_NAME@/mlflow[0m  
+Optuna will be available on      [94mhttps://localhost/@LAB_NAME@/optuna[0m  
 
-Tensorboard monitoring logs located in [34m/tmp/tensorboard[0m
-Project dir: [34m/home/lab/workspace[0m (mount)
-Jupyterlab settings saved to [34m/home/lab/.jupyter[0m
+Tensorboard monitoring logs located in [94m/tmp/tensorboard[0m
+Project dir: [94m/home/lab/workspace[0m (mount)
+Jupyterlab settings saved to [94m/home/lab/.jupyter[0m
 
 Use Lab Utils: [36mlab-utils[0m - utils, ai assistants and extra environments
-For more information visit: [34mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m
+For more information visit: [94mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m
 
 To execute commands as root use: [36msudo[0m, password is: [36mpassword[0m unless changed
 
