@@ -11,9 +11,14 @@ if [ -n "$LATEST_TAG" ]; then
     echo -e "\033[36mUsing template version: $LATEST_TAG\033[0m"
 fi
 
-# Ask for project name (magenta bold)
-echo -en "\033[1;35mEnter project name:\033[0m "
-read PROJECT_NAME
+# Check if project name provided as argument
+if [ -n "$1" ]; then
+    PROJECT_NAME="$1"
+else
+    # Ask for project name (magenta bold)
+    echo -en "\033[1;35mEnter project name:\033[0m "
+    read PROJECT_NAME
+fi
 
 if [ -z "$PROJECT_NAME" ]; then
     echo "Error: Project name cannot be empty"
