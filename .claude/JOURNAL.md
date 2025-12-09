@@ -71,3 +71,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 40. **Task - Improve user startup scripts execution**: Refactored user scripts to run as bundle with single log file<br>
     **Result**: Modified 58_start_lab_scripts.sh to execute all user startup scripts from `~/.local/start-platform.d/` as a single nohup bundle instead of spawning individual nohup processes per script. Output consolidated to single log file `~/.local/start-platform.out` (outside the scripts directory). Each script execution logged with header separator, start/end timestamps for debugging. Scripts collected into array and executed sequentially in one background process. Version bumped to 3.4.25
+
+41. **Task - Remove workspace script symlinks**: Simplified access to lab-utils via PATH<br>
+    **Result**: Removed 03_workspace_scripts.sh startup script that created symlinks in ~/workspace/ folder. Lab-utils and related scripts now accessible purely via PATH (/opt/utils added to PATH in bash configuration). Updated welcome message to inform users about `lab-utils` command availability. Cleaner workspace without utility symlinks cluttering the project folder
+
+42. **Task - Add optional project name argument to new-project.sh**: Enhanced project scaffolding CLI<br>
+    **Result**: Modified new-project.sh to accept optional project name as command-line argument. If provided, skips interactive prompt and uses argument directly. Usage: `new-project.sh` for interactive mode, `new-project.sh my-project` for direct creation. Enables scripted/automated project scaffolding workflows
