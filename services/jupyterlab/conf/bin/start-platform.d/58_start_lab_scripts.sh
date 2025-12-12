@@ -73,10 +73,10 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
             elapsed=0
 
             while [[ $elapsed -lt $max_wait ]]; do
-                # Check if jupyter-notify command exists and JupyterLab is responding
-                if command -v jupyter-notify &>/dev/null; then
+                # Check if jupyterlab-notify command exists and JupyterLab is responding
+                if command -v jupyterlab-notify &>/dev/null; then
                     # Try to send a test notification (silent, auto-close 0)
-                    if jupyter-notify -m "test" --auto-close 0 2>/dev/null; then
+                    if jupyterlab-notify -m "test" --auto-close 0 2>/dev/null; then
                         echo "JupyterLab is ready (waited ${elapsed}s)"
                         break
                     fi
@@ -90,14 +90,14 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
                 echo "Timeout waiting for JupyterLab - skipping notification"
             elif [[ ${#failed_scripts[@]} -eq 0 ]]; then
                 # All scripts succeeded
-                jupyter-notify \
+                jupyterlab-notify \
                     -m "All ${total_scripts} startup script(s) completed successfully" \
                     -t success \
                     --auto-close 8000
                 echo "Sent success notification"
             else
                 # Some scripts failed
-                jupyter-notify \
+                jupyterlab-notify \
                     -m "Startup scripts: ${#failed_scripts[@]} of ${total_scripts} failed (${failed_scripts[*]})" \
                     -t warning \
                     --no-auto-close \
