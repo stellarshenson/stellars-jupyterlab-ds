@@ -17,9 +17,9 @@ LOCAL_SCRIPTS_DIR="${LOCAL_SCRIPTS_DIR:-${HOME}/.local/start-platform.d}"
 LOCAL_SCRIPTS_LOG="${HOME}/.local/start-platform.out"
 
 if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
-    # collect executable scripts
+    # collect executable files (any extension, must be executable)
     scripts=()
-    for file in "${LOCAL_SCRIPTS_DIR}"/*.sh; do
+    for file in "${LOCAL_SCRIPTS_DIR}"/*; do
         if [[ -f "${file}" ]] && [[ -x "${file}" ]]; then
             scripts+=("${file}")
         fi
