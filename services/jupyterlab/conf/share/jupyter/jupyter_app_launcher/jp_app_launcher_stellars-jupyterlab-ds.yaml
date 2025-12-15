@@ -22,7 +22,7 @@
   type: jupyterlab-commands
   icon: /opt/conda/share/jupyter/jupyter_app_launcher/welcome.svg
   source:
-    - label: Welcome Page
+    - label: Lab Welcome Page
       id: 'iframe:open'
       args:
         path: local:///welcome.html
@@ -51,12 +51,12 @@
 # them as Jupyter kernels. Uses nb_venv_kernels extension.
 # Also accessible via: Kernel menu -> Scan for Python Environments
 # -----------------------------------------------------------------------------
-- title: Scan Kernels
+- title: Env Scan 
   description: Scan for virtual environments and register as Jupyter kernels
   type: jupyterlab-commands
   icon: /opt/conda/share/jupyter/jupyter_app_launcher/nb_venv_kernels_scan.svg
   source:
-    - label: Scan
+    - label: Lab Environments Scan
       id: 'nb_venv_kernels:scan'
       args: {}
   catalog: Other
