@@ -73,8 +73,8 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
             elapsed=0
 
             while [[ $elapsed -lt $max_wait ]]; do
-                # Check if JupyterLab server is responding
-                if curl -s -o /dev/null -w "%{http_code}" http://localhost:8888/lab 2>/dev/null | grep -q "200\|302"; then
+                # Check if any Jupyter server is running
+                if jupyter server list 2>/dev/null | grep -q "http"; then
                     echo "JupyterLab is ready (waited ${elapsed}s)"
                     break
                 fi
