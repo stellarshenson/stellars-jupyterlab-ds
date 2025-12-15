@@ -44,3 +44,17 @@
   source: 'exec /opt/utils/launch-lab-utils.sh'
   icon: /opt/conda/share/jupyter/jupyter_app_launcher/lab-utils.svg
   catalog: Other
+
+# -----------------------------------------------------------------------------
+# Scan Kernels Launcher
+# Scans workspace for virtual environments (venv, uv, conda) and registers
+# them as Jupyter kernels. Uses nb_venv_kernels extension.
+# Also accessible via: Kernel menu -> Scan for Python Environments
+# -----------------------------------------------------------------------------
+- title: Scan Kernels
+  description: Scan for virtual environments and register as Jupyter kernels
+  type: jupyterlab-commands
+  icon: /opt/conda/share/jupyter/jupyter_app_launcher/lab-utils.svg
+  source:
+    - id: 'nb_venv_kernels:scan'
+  catalog: Other
