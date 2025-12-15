@@ -50,12 +50,7 @@ echo "Installing Docker CLI..."
 if [[ -f "${DOCKER_INSTALL_DIR}/docker" ]]; then
     installed_version=$(${DOCKER_INSTALL_DIR}/docker --version 2>/dev/null | grep -oP 'version \K[0-9]+\.[0-9]+\.[0-9]+' || echo "unknown")
     echo "Docker CLI already installed: $installed_version"
-    read -p "Reinstall/upgrade? (y/N): " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Installation cancelled"
-        exit 0
-    fi
+    echo "Upgrading to latest version..."
 fi
 
 # Detect architecture and get latest version
