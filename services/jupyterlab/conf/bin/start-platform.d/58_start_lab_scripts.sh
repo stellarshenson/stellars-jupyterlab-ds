@@ -86,16 +86,16 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
             if [[ $elapsed -ge $max_wait ]]; then
                 echo "Timeout waiting for JupyterLab - skipping notification"
             elif [[ ${#failed_scripts[@]} -eq 0 ]]; then
-                # All scripts succeeded - show which ones
+                # All scripts succeeded
                 jupyterlab-notify \
-                    -m "Startup completed: ${succeeded_scripts[*]}" \
+                    -m "Startup: ${#succeeded_scripts[@]} script(s) completed" \
                     -t success \
                     --no-auto-close
                 echo "Sent success notification"
             else
-                # Some scripts failed - show which ones in the message
+                # Some scripts failed
                 jupyterlab-notify \
-                    -m "Startup failed: ${failed_scripts[*]} - check ~/.local/start-platform.out" \
+                    -m "Startup: ${#failed_scripts[@]}/${total_scripts} failed - check ~/.local/start-platform.out" \
                     -t warning \
                     --no-auto-close
                 echo "Sent warning notification"
