@@ -93,7 +93,7 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
                 jupyterlab-notify \
                     -m "All ${total_scripts} startup script(s) completed successfully" \
                     -t success \
-                    --auto-close 8000
+                    --no-auto-close
                 echo "Sent success notification"
             else
                 # Some scripts failed - show which ones in the message
