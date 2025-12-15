@@ -54,7 +54,11 @@
 - title: Scan Kernels
   description: Scan for virtual environments and register as Jupyter kernels
   type: jupyterlab-commands
-  icon: /opt/conda/share/jupyter/jupyter_app_launcher/lab-utils.svg
+  icon: /opt/conda/share/jupyter/jupyter_app_launcher/nb_venv_kernels_scan.svg
   source:
-    - id: 'nb_venv_kernels:scan'
+    - label: Scan
+      id: 'nb_venv_kernels:scan'
+      args: {}
   catalog: Other
+
+# EOF
