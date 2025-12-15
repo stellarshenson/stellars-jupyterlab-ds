@@ -73,13 +73,10 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
             elapsed=0
 
             while [[ $elapsed -lt $max_wait ]]; do
-                # Check if jupyterlab-notify command exists and JupyterLab is responding
-                if command -v jupyterlab-notify &>/dev/null; then
-                    # Try to send a test notification (silent, auto-close 0)
-                    if jupyterlab-notify -m "test" --auto-close 0 2>/dev/null; then
-                        echo "JupyterLab is ready (waited ${elapsed}s)"
-                        break
-                    fi
+                # Check if JupyterLab server is responding
+                if curl -s -o /dev/null -w "%{http_code}" http://localhost:8888/lab 2>/dev/null | grep -q "200\|302"; then
+                    echo "JupyterLab is ready (waited ${elapsed}s)"
+                    break
                 fi
                 sleep $wait_interval
                 elapsed=$((elapsed + wait_interval))
