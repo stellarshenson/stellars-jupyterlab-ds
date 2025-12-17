@@ -31,15 +31,15 @@ increment_version:
 	{ print }' project.env > project.env.tmp && mv project.env.tmp project.env
 
 ## build docker containers
-build: increment_version
+build: clean increment_version
 	@cd ./scripts && ./build.sh
 
 ## build docker containers and output logs
-build_verbose:
+build_verbose: clean increment_version
 	@cd ./scripts && ./build_verbose.sh
 
 ## rebuild 'target' stage only (uses cached 'builder' stage)
-rebuild: increment_version
+rebuild: clean increment_version
 	@echo "Rebuilding 'target' stage (builder stage uses cache if available)..."
 	@docker build \
 		--platform linux/amd64 \
@@ -82,6 +82,7 @@ clean:
 	@docker compose --env-file .env -f compose.yml down --remove-orphans
 	@yes | docker image prune
 	@yes | docker network prune
+	@echo ""
 
 
 ## prints the list of available commands

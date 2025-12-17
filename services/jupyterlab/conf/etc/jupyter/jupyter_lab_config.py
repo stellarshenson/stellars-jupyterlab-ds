@@ -20,8 +20,6 @@ c.ContentsManager.allow_hidden = True
 # c.ServerApp.keyfile = u'/mnt/certs/server.key'
 
 ## welcome pages and additional services
-c.JupyterLabIFrame.iframes = ['local:///welcome.html']
-c.JupyterLabIFrame.welcome = 'local:///welcome.html'
 c.JupyterLabIFrame.local_files = ['/welcome.html']
 c.JupyterLabIFrame.allow_any_local = False
 
