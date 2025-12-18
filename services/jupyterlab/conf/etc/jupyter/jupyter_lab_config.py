@@ -15,6 +15,14 @@ c.FileContentsManager.always_delete_dir = True
 c.FileContentsManager.delete_to_trash = True
 c.ContentsManager.allow_hidden = True
 
+# Jupytext creates AsyncJupytextContentsManager dynamically - target all classes
+c.AsyncJupytextContentsManager.delete_to_trash = True
+c.AsyncJupytextContentsManager.always_delete_dir = True
+c.AsyncLargeFileManager.delete_to_trash = True
+c.AsyncLargeFileManager.always_delete_dir = True
+c.AsyncFileContentsManager.delete_to_trash = True
+c.AsyncFileContentsManager.always_delete_dir = True
+
 ## ssl configuration to use https - only when not using traefik proxy
 # c.ServerApp.certfile = u'/mnt/certs/server.crt'
 # c.ServerApp.keyfile = u'/mnt/certs/server.key'
