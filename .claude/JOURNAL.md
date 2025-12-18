@@ -89,3 +89,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 46. **Task - Add Scan Kernels launcher tile**: Added JupyterLab launcher for kernel discovery<br>
     **Result**: Added "Scan Kernels" tile to jp_app_launcher_stellars-jupyterlab-ds.yaml using jupyterlab-commands type to execute `nb_venv_kernels:scan` JupyterLab command. Created custom nb_venv_kernels_scan.svg icon featuring search magnifier with kernel symbol. Scans workspace for virtual environments (venv, uv, conda) and registers them as Jupyter kernels with visual progress dialog and results summary. Also accessible via Kernel menu -> Scan for Python Environments
+
+47. **Task - Add Jupytext trash deletion config**: Extended contents manager trash settings for Jupytext<br>
+    **Result**: Added delete_to_trash and always_delete_dir configuration for AsyncJupytextContentsManager, AsyncLargeFileManager, and AsyncFileContentsManager in jupyter_lab_config.py. Jupytext dynamically creates AsyncJupytextContentsManager which inherits from async contents managers - targeting all async classes ensures consistent trash deletion behavior across all file operations regardless of which contents manager handles them
