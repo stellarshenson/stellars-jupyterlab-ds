@@ -6,6 +6,11 @@ set viminfo='1000,<10000,s1000  " increase memory to 1000 commands, 10k lines an
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
+
+" markdown plugin configuration
+let g:markdown_enable_spell_checking = 0
+let g:markdown_enable_input_abbreviations = 0
+
 " alternatively, pass a path where Vundle should install plugins
 "call vundle#begin('~/some/path/here')
 
@@ -33,6 +38,8 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'sainnhe/archived-colors'
 Plugin 'seesleestak/duo-mini'
+Plugin 'tpope/vim-commentary'
+Plugin 'gabrielelana/vim-markdown'
 " Plugin 'valloric/youcompleteme'
 
 " Highlight requirements.txt files
@@ -56,8 +63,15 @@ filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 "colorscheme duo-mini
 colorscheme distinguished 
+
+" highlight and unhighlight search
 set hlsearch
 nnoremap // :nohl<CR><C-L>
+
+" toggle comments in code
+nmap <C-_> gcc
+vmap <C-_> gc
+
 set tabstop=8
 set softtabstop=4
 set shiftwidth=4
