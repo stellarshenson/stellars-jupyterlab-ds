@@ -74,7 +74,7 @@ c.ServerProxy.servers = {
             "enabled": False    
         }
     },
-    "generic-callback": {
+    "callback": {
         "command": [],
         "absolute_url": False,
         "port": 8030,
@@ -82,7 +82,7 @@ c.ServerProxy.servers = {
             "enabled": False    
         }
     },
-    "generic-app": {
+    "app": {
         "command": [],
         "absolute_url": False,
         "port": 8080,
