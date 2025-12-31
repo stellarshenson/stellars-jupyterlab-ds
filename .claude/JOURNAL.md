@@ -98,3 +98,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 49. **Task - Add fish shell support**: Extended shell options with fish and optimized builder image<br>
     **Result**: Added fish shell to apt-packages.yml as modern extended shell option. Updated Dockerfile builder stage to use cuda-runtime instead of cudnn-runtime base image (reducing builder size). Extended conda initialization to include fish shell via `conda init fish` for conda environment activation in fish sessions
+
+50. **Task - Add fish conda init startup script**: Ensure fish shell conda initialization on startup<br>
+    **Result**: Created 06_fish_conda_init.sh startup script that checks if ~/.config/fish/config.fish contains conda initialization. If missing, automatically runs `conda init fish` to ensure conda environments work properly in fish shell sessions
