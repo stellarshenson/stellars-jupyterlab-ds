@@ -1,7 +1,7 @@
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
 ARG CUDA_VERSION=13.0.2
-FROM nvidia/cuda:${CUDA_VERSION}-cudnn-runtime-ubuntu24.04 AS builder
+FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu24.04 AS builder
 
 # cuda toolkit version - should be the same as torch
 ARG CUDA_TOOLKIT_VERSION=${CUDA_VERSION}
@@ -53,9 +53,14 @@ RUN <<-EOF
 EOF
 
 # enable special shell for conda
+# and update bash and other shells using conda init
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 SHELL ["/conda-run.sh"]
-RUN conda init
+RUN <<-EOF
+    echo "installing conda for bash and other shells"
+    conda init
+    conda init fish
+EOF
 
 # create work directory
 ARG BUILD_DIR=/opt/build
