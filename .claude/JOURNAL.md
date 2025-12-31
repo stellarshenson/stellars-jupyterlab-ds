@@ -92,3 +92,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 47. **Task - Add Jupytext trash deletion config**: Extended contents manager trash settings for Jupytext<br>
     **Result**: Added delete_to_trash and always_delete_dir configuration for AsyncJupytextContentsManager, AsyncLargeFileManager, and AsyncFileContentsManager in jupyter_lab_config.py. Jupytext dynamically creates AsyncJupytextContentsManager which inherits from async contents managers - targeting all async classes ensures consistent trash deletion behavior across all file operations regardless of which contents manager handles them
+
+48. **Task - Fix iframe extension and markdown syntax**: Resolved JavaScript issues and added markdown handling<br>
+    **Result**: Fixed JavaScript issues in the iframe extension for proper page loading. Added markdown syntax handling for improved document rendering. Updated local app URLs to use Jupyter proxy paths for seamless integration with JupyterLab's reverse proxy system
+
+49. **Task - Add fish shell support**: Extended shell options with fish and optimized builder image<br>
+    **Result**: Added fish shell to apt-packages.yml as modern extended shell option. Updated Dockerfile builder stage to use cuda-runtime instead of cudnn-runtime base image (reducing builder size). Extended conda initialization to include fish shell via `conda init fish` for conda environment activation in fish sessions
