@@ -116,10 +116,16 @@ if dialog --title "Confirm Selection" \
     # Update profile
     clear
     update_profile "$SELECTED_SHELL"
-    echo "Default JupyterLab terminal shell set to: $SELECTED_SHELL"
+
+    # Color codes
+    GREEN='\033[0;32m'
+    ORANGE='\033[0;33m'
+    NC='\033[0m' # No Color
+
+    echo -e "${GREEN}Default JupyterLab terminal shell set to: $SELECTED_SHELL${NC}"
     echo "Backup saved as: ${PROFILE_FILE}.backup"
     echo ""
-    echo "IMPORTANT: Restart JupyterLab for changes to take effect."
+    echo -e "${ORANGE}⚠️  IMPORTANT: Restart JupyterLab server for changes to take effect.${NC}"
 
 else
     clear
