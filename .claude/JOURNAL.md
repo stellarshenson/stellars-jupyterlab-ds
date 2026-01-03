@@ -119,3 +119,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 56. **Task - Set default kernel for new notebooks**: Configured conda-base-py as default kernel<br>
     **Result**: Added c.KernelSpecManager.default_kernel_name = 'conda-base-py' to jupyter_lab_config.py. New notebooks will now automatically use the conda base environment kernel instead of requiring manual kernel selection. Version bumped to 3.5.0
+
+57. **Task - Update startup notification and welcome page**: Minor UI improvements<br>
+    **Result**: Changed notification button label from "Acknowledged" to "Close" in both success and failure startup script notifications. Updated welcome-template.html to remove redundant startup scripts reference from Utilities section and clarified cache description to "local cache for datasets, packages, models, etc."
