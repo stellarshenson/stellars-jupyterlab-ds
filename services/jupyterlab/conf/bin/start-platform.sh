@@ -1,9 +1,16 @@
 #!/bin/bash
 
-# load and export env variables
+# load and export env variables from system config
 set -a
 . /etc/default/platform.env
 set +a
+
+# load and export env variables from user profile if exists
+if [[ -f "${HOME}/.profile" ]]; then
+    set -a
+    . "${HOME}/.profile"
+    set +a
+fi
 
 
 # run series of start scripts
@@ -18,12 +25,12 @@ done
 # if jupyterhub
 if [[ -n ${JUPYTERHUB_USER} ]]; then
     echo "Starting jupyterlab under jupyterhub"
-    jupyter-labhub "$@"
+    conda run --no-capture-output -n base jupyter-labhub "$@"
 
 # standalone jupyterlab
-else 
+else
     echo "Starting standalone jupyterlab server"
-    jupyter-lab \
+    conda run --no-capture-output -n base jupyter-lab \
 	--autoreload \
 	--ip=$JUPYTERLAB_SERVER_IP \
 	--IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
