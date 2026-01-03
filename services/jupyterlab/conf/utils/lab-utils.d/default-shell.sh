@@ -7,8 +7,6 @@ PROFILE_FILE="$HOME/.profile"
 AVAILABLE_SHELLS=()
 [[ -x /bin/bash ]] && AVAILABLE_SHELLS+=("bash" "/bin/bash")
 [[ -x /usr/bin/fish ]] && AVAILABLE_SHELLS+=("fish" "/usr/bin/fish")
-[[ -x /bin/zsh ]] && AVAILABLE_SHELLS+=("zsh" "/bin/zsh")
-[[ -x /bin/sh ]] && AVAILABLE_SHELLS+=("sh" "/bin/sh")
 
 # Function to get current default shell from /etc/passwd
 get_current_system_shell() {
