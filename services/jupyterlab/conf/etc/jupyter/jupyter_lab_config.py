@@ -10,7 +10,9 @@ c.ServerApp.root_dir = f"{HOME}/workspace"
 
 ## terminal should be started with login shell
 ## login shell allows to call .profile to set env name
-c.ServerApp.terminado_settings = { "shell_command": ["/bin/bash", "--login"] }
+## use JUPYTERLAB_TERMINAL_SHELL env var if set, otherwise default to /bin/bash
+TERMINAL_SHELL = os.environ.get("JUPYTERLAB_TERMINAL_SHELL", "/bin/bash")
+c.ServerApp.terminado_settings = { "shell_command": [TERMINAL_SHELL, "--login"] }
 c.FileContentsManager.always_delete_dir = True
 c.FileContentsManager.delete_to_trash = True
 c.ContentsManager.allow_hidden = True
