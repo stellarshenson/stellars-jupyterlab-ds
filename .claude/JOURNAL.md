@@ -116,3 +116,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 55. **Task - Add colored restart notification**: Enhanced default-shell.sh with visual feedback<br>
     **Result**: Added colored output to default-shell.sh using ANSI color codes - green for success message, orange for server restart warning with ⚠️ icon. Clearly alerts users that JupyterLab server restart is required for terminal shell changes to take effect
+
+56. **Task - Set default kernel for new notebooks**: Configured conda-base-py as default kernel<br>
+    **Result**: Added c.KernelSpecManager.default_kernel_name = 'conda-base-py' to jupyter_lab_config.py. New notebooks will now automatically use the conda base environment kernel instead of requiring manual kernel selection. Version bumped to 3.5.0
