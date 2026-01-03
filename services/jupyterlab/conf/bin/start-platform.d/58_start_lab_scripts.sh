@@ -91,7 +91,7 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
                     -m "Startup: ${#succeeded_scripts[@]} script(s) completed" \
                     -t success \
                     --auto-close 30000 \
-                    --action "Acknowledged"
+                    --action "Close"
                 echo "Sent success notification"
             else
                 # Some scripts failed
@@ -99,7 +99,7 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
                     -m "Startup: ${#failed_scripts[@]}/${total_scripts} failed - check ~/.local/start-platform.out" \
                     -t warning \
                     --no-auto-close \
-                    --action "Acknowledged"
+                    --action "Close"
                 echo "Sent warning notification"
             fi
 
