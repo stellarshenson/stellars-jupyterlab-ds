@@ -101,3 +101,18 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 50. **Task - Add fish conda init startup script**: Ensure fish shell conda initialization on startup<br>
     **Result**: Created 06_fish_conda_init.sh startup script that checks if ~/.config/fish/config.fish contains conda initialization. If missing, automatically runs `conda init fish` to ensure conda environments work properly in fish shell sessions
+
+51. **Task - Make default shell configurable**: Added DEFAULT_SHELL build arg to Dockerfile<br>
+    **Result**: Added ARG DEFAULT_SHELL=/bin/bash to Dockerfile (line 209) and updated useradd command to use ${DEFAULT_SHELL} instead of hardcoded /bin/bash. Allows building images with custom default shell via --build-arg DEFAULT_SHELL=/usr/bin/fish
+
+52. **Task - Load user profile and launch via conda**: Enhanced start-platform.sh environment loading<br>
+    **Result**: Modified start-platform.sh to load and export environment variables from ~/.profile (if exists) in addition to /etc/default/platform.env. Changed JupyterLab launch to use `conda run --no-capture-output -n base` for both jupyterhub (jupyter-labhub) and standalone (jupyter-lab) modes, ensuring proper conda environment activation
+
+53. **Task - Add configurable JupyterLab terminal shell**: Implemented JUPYTERLAB_TERMINAL_SHELL environment variable support<br>
+    **Result**: Added ENV JUPYTERLAB_TERMINAL_SHELL=${DEFAULT_SHELL} to Dockerfile (line 593). Updated jupyter_lab_config.py to read JUPYTERLAB_TERMINAL_SHELL env var and use it for terminal shell configuration (falls back to /bin/bash if not set). Created default-shell.sh lab-utils script for interactive shell selection (bash/fish), updating ~/.profile with JUPYTERLAB_TERMINAL_SHELL. Users can change default terminal shell via lab-utils menu or by setting env var in ~/.profile. Requires JupyterLab restart to take effect
+
+54. **Task - Organize default settings submenu**: Consolidated default configuration scripts under set-defaults<br>
+    **Result**: Created set-defaults.sh parent menu and set-defaults.d/ subdirectory. Moved default-aws-profile.sh, default-conda-env.sh, and default-shell.sh into set-defaults.d/. Users now access all default configuration options (AWS profile, conda environment, terminal shell) through single organized submenu in lab-utils
+
+55. **Task - Add colored restart notification**: Enhanced default-shell.sh with visual feedback<br>
+    **Result**: Added colored output to default-shell.sh using ANSI color codes - green for success message, orange for server restart warning with ⚠️ icon. Clearly alerts users that JupyterLab server restart is required for terminal shell changes to take effect
