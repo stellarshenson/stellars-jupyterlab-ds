@@ -1,5 +1,5 @@
 #!/bin/bash
-## Default Shell selector for user account and JupyterLab terminals
+## Default shell selector for JupyterLab terminals
 
 PROFILE_FILE="$HOME/.profile"
 
