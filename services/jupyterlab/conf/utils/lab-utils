@@ -6,6 +6,7 @@ Lab utilities runner with YAML-based menu configuration.
 Supports CLI options, direct script execution, and interactive Textual TUI.
 """
 
+import json
 import os
 import sys
 import subprocess
@@ -201,6 +202,7 @@ def show_help():
     print("Options:")
     print("  --help, -h         Show this help message")
     print("  --list, -l         List available scripts with descriptions")
+    print("  --json             List scripts in JSON format (machine-readable)")
     print("  --create-local     Create local scripts directory with demo script")
     print("")
     print("Arguments:")
@@ -216,37 +218,112 @@ def show_help():
     print("Examples:")
     print("  lab-utils                              # Show interactive menu")
     print("  lab-utils --list                       # List all available scripts")
+    print("  lab-utils --json                       # List scripts as JSON")
     print("  lab-utils --create-local               # Scaffold local scripts")
     print("  lab-utils test-cuda                    # Run top-level script")
     print("  lab-utils git-utils/git-pull-repos    # Run nested script directly")
 
 
 def list_scripts():
-    """List all available scripts with descriptions."""
+    """List all available scripts with descriptions in tree format."""
     global_scripts, local_scripts = get_all_scripts()
 
-    if global_scripts:
-        print(f"{CYAN}Global scripts{NC} {GRAY}({GLOBAL_SCRIPTS_DIR}){NC}")
-        print("")
-        for script in global_scripts:
-            if script["level"] == "child":
-                print(f"    {GRAY}└─{NC} {BLUE}{script['name']:<23}{NC} {script['description']}")
+    def print_tree(scripts: list, base_dir: Path, label: str):
+        """Print scripts in tree format."""
+        if not scripts:
+            return
+
+        print(f"{CYAN}{label}{NC} {GRAY}({base_dir}){NC}")
+        print(f"{GRAY}│{NC}")
+
+        # Process scripts with proper tree connectors
+        i = 0
+        while i < len(scripts):
+            script = scripts[i]
+            name = script["name"]
+
+            # Find remaining top-level items after this one
+            remaining_top = sum(1 for s in scripts[i+1:] if s["level"] == "top")
+
+            if script["level"] == "top":
+                # Collect children for this parent
+                children = []
+                j = i + 1
+                while j < len(scripts) and scripts[j]["level"] == "child":
+                    if scripts[j]["name"].startswith(name + "/"):
+                        children.append(scripts[j])
+                    j += 1
+
+                # Determine connector for parent
+                is_last_top = (remaining_top == 0 and len(children) == 0)
+                connector = "└──" if is_last_top else "├──"
+
+                if script["path"] is None:
+                    # Virtual parent (folder only)
+                    print(f"{GRAY}{connector}{NC} {CYAN}{name}/{NC} {GRAY}{script['description']}{NC}")
+                else:
+                    print(f"{GRAY}{connector}{NC} {BLUE}{name:<22}{NC} {script['description']}")
+
+                # Print children
+                for k, child in enumerate(children):
+                    is_last_child = (k == len(children) - 1)
+                    # Use │ prefix if more top-level items follow, else use space
+                    if remaining_top > 0 or not is_last_child:
+                        prefix = "│   " if remaining_top > 0 else "    "
+                    else:
+                        prefix = "    "
+                    child_connector = "└──" if is_last_child else "├──"
+                    child_name = child["name"].split("/")[-1]
+                    print(f"{GRAY}{prefix}{child_connector}{NC} {BLUE}{child_name:<18}{NC} {child['description']}")
+
+                i = j  # Skip past children we already printed
             else:
-                print(f"  {BLUE}{script['name']:<25}{NC} {script['description']}")
+                i += 1
+
         print("")
 
+    if global_scripts:
+        print_tree(global_scripts, GLOBAL_SCRIPTS_DIR, "Global scripts")
+
     if local_scripts:
-        print(f"{CYAN}Local scripts{NC} {GRAY}({LOCAL_SCRIPTS_DIR}){NC}")
-        print("")
-        for script in local_scripts:
-            if script["level"] == "child":
-                print(f"    {GRAY}└─{NC} {BLUE}{script['name']:<23}{NC} {script['description']}")
-            else:
-                print(f"  {BLUE}{script['name']:<25}{NC} {script['description']}")
-        print("")
+        print_tree(local_scripts, LOCAL_SCRIPTS_DIR, "Local scripts")
     elif not LOCAL_SCRIPTS_DIR.exists():
         print(f"{GRAY}No local scripts directory. Run --create-local to create one.{NC}")
         print("")
+
+
+def list_scripts_json():
+    """List all scripts in JSON format for machine readability."""
+    global_scripts, local_scripts = get_all_scripts()
+
+    output = {
+        "global": {
+            "path": str(GLOBAL_SCRIPTS_DIR),
+            "scripts": []
+        },
+        "local": {
+            "path": str(LOCAL_SCRIPTS_DIR),
+            "scripts": []
+        }
+    }
+
+    for script in global_scripts:
+        output["global"]["scripts"].append({
+            "name": script["name"],
+            "description": script["description"],
+            "level": script["level"],
+            "path": str(script["path"]) if script["path"] else None
+        })
+
+    for script in local_scripts:
+        output["local"]["scripts"].append({
+            "name": script["name"],
+            "description": script["description"],
+            "level": script["level"],
+            "path": str(script["path"]) if script["path"] else None
+        })
+
+    print(json.dumps(output, indent=2))
 
 
 def create_local_scripts():
@@ -550,6 +627,8 @@ def main():
         show_help()
     elif args[0] in ("--list", "-l"):
         list_scripts()
+    elif args[0] == "--json":
+        list_scripts_json()
     elif args[0] == "--create-local":
         create_local_scripts()
     elif args[0].startswith("-"):
