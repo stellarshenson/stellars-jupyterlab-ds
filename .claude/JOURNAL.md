@@ -164,3 +164,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 71. **Task - Reorganize lab-utils file structure**: Moved lib and renamed menu config for cleaner layout<br>
     **Result**: Moved `lab-utils.d/lib/` to `lab-utils.lib/` at same level as lab-utils script. Renamed `lab-utils.d/menu.yml` to `lab-utils.yml` in utils root. Updated `resolve_script_path()` to check `LIB_DIR` for library scripts. Simplified selector paths in YAML from `lib/set-profile-var` to `set-profile-var`. Updated Dockerfile chmod and .gitignore exception. Final structure: `lab-utils` (script), `lab-utils.yml` (config), `lab-utils.d/` (user scripts), `lab-utils.lib/` (library scripts)
+
+72. **Task - Fix lab-utils cursor and CLI script resolution**: Corrected menu cursor position and script path handling<br>
+    **Result**: Fixed cursor starting on 2nd item instead of 1st by changing `menu.highlighted = 2` to `1` (separator doesn't count in index). Enhanced `resolve_script_path()` to handle CLI-friendly formats: auto-adds `.sh` extension if missing, converts `parent/child` to `parent.d/child.sh` format. Now `lab-utils new-project` finds `new-project.sh` and `lab-utils install-ai-assistant/anthropic-claude-code` finds `install-ai-assistant.d/anthropic-claude-code.sh`
