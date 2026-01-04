@@ -568,6 +568,17 @@ ENV UV_LINK_MODE=copy
 # local directory with user's own start scripts
 ENV LOCAL_SCRIPTS_DIR=${CONDA_USER_HOME}/.local/start-platform.d
 
+## verify installed commands
+RUN echo "=== Verifying installed commands ===" && \
+    command -v lab-utils && \
+    command -v conda && \
+    command -v pip && \
+    command -v jupyter && \
+    command -v python && \
+    command -v fish && \
+    command -v bash && \
+    echo "=== All commands verified ==="
+
 ## setup entry point, workdir and startup command
 ## and set user to be conda user
 USER ${CONDA_USER}
