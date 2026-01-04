@@ -20,7 +20,7 @@ except ImportError:
 
 # Configuration
 SCRIPT_DIR = Path(__file__).parent.resolve()
-MENU_CONFIG = SCRIPT_DIR / "lab-utils-menu.yml"
+MENU_CONFIG = SCRIPT_DIR / "lab-utils.d" / "menu.yml"
 GLOBAL_SCRIPTS_DIR = SCRIPT_DIR / "lab-utils.d"
 LOCAL_SCRIPTS_DIR = Path.home() / ".local" / "lab-utils.d"
 
