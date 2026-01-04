@@ -152,3 +152,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 67. **Task - Fix Textual 7.0 API compatibility**: Resolved Separator import error in lab-utils TUI<br>
     **Result**: Fixed ImportError in Textual 7.0 where `Separator` class was removed from `textual.widgets.option_list`. Replaced `Separator()` with `None` which is the Textual 7.0 way to add separators to OptionList. Changed shebang from `#!/usr/bin/env python3` to `#!/opt/conda/bin/python3` to ensure conda Python is used directly
+
+68. **Task - Fix lab-utils tab completion pollution**: Moved menu config to prevent PATH completion interference<br>
+    **Result**: Moved `lab-utils-menu.yml` from `/opt/utils/` to `/opt/utils/lab-utils.d/menu.yml` to prevent it appearing in bash tab completion when typing `lab-<tab>`. Updated `MENU_CONFIG` path in lab-utils script. Added `chmod 644` in Dockerfile to ensure YAML file is not executable

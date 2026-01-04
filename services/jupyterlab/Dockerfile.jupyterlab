@@ -164,6 +164,7 @@ COPY --chmod=644  ./conf/misc/motd-template.txt /
 COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
 COPY --chmod=644  ./conf/misc/welcome-template.html /welcome-template.html
 COPY --chmod=755  ./conf/utils /opt/utils
+RUN chmod 644 /opt/utils/lab-utils.d/menu.yml
 COPY --chmod=644  ./conf/patches /tmp/patches
 COPY --chmod=644  ./conf/share/jupyter /opt/conda/share/jupyter
 
