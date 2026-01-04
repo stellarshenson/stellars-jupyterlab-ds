@@ -98,40 +98,28 @@ def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
     Resolve script path from id.
 
     Args:
-        script_id: Script identifier in format "name" or "parent/child"
+        script_id: Script path (relative to lab-utils.d/ or absolute)
         is_full_path: If True, treat script_id as absolute path
 
     Returns:
         Path to the script file, or None if not found
     """
-    # Handle full paths (from scan_dir dynamic items)
+    # Handle absolute paths
     if is_full_path or script_id.startswith("/") or script_id.startswith("~"):
         full_path = Path(os.path.expanduser(script_id))
         if full_path.exists() and full_path.is_file():
             return full_path
         return None
 
-    # Handle nested scripts: "parent/child" -> "parent.d/child.sh"
-    if "/" in script_id:
-        parts = script_id.split("/")
-        if len(parts) == 2:
-            parent, child = parts
-            # Check global
-            global_path = GLOBAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
-            if global_path.exists():
-                return global_path
-            # Check local
-            local_path = LOCAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
-            if local_path.exists():
-                return local_path
-    else:
-        # Simple name: "name" -> "name.sh"
-        global_path = GLOBAL_SCRIPTS_DIR / f"{script_id}.sh"
-        if global_path.exists():
-            return global_path
-        local_path = LOCAL_SCRIPTS_DIR / f"{script_id}.sh"
-        if local_path.exists():
-            return local_path
+    # Check global scripts directory
+    global_path = GLOBAL_SCRIPTS_DIR / script_id
+    if global_path.exists() and global_path.is_file():
+        return global_path
+
+    # Check local scripts directory
+    local_path = LOCAL_SCRIPTS_DIR / script_id
+    if local_path.exists() and local_path.is_file():
+        return local_path
 
     return None
 
@@ -586,17 +574,24 @@ def run_interactive_menu():
 
             # Handle command execution (id field)
             elif "id" in selected_item:
-                is_full_path = selected_item.get("_full_path", False)
-                script_id = selected_item["id"]
-                script_path = resolve_script_path(script_id, is_full_path)
+                item_type = selected_item.get("type", "script")
+                item_id = selected_item["id"]
 
-                if script_path is None:
-                    self.notify(f"Script not found: {script_id}", severity="error")
-                    return
+                if item_type == "command":
+                    # Direct shell command
+                    self.pending_command = (item_id, item_name, "command")
+                    self.exit()
+                else:
+                    # Script file
+                    is_full_path = selected_item.get("_full_path", False)
+                    script_path = resolve_script_path(item_id, is_full_path)
 
-                # Store command and exit to execute
-                self.pending_command = (str(script_path), item_name)
-                self.exit()
+                    if script_path is None:
+                        self.notify(f"Script not found: {item_id}", severity="error")
+                        return
+
+                    self.pending_command = (str(script_path), item_name, "script")
+                    self.exit()
 
         def action_go_back(self) -> None:
             """Handle back action."""
@@ -609,18 +604,23 @@ def run_interactive_menu():
 
     # Execute pending command after app exits
     if app.pending_command:
-        script_path, title = app.pending_command
+        cmd_or_path, title, cmd_type = app.pending_command
         print(f"\n{'=' * 60}")
         print(f"  {title}")
         print(f"{'=' * 60}\n")
 
-        result = subprocess.run([script_path])
+        if cmd_type == "command":
+            # Shell command
+            result = subprocess.run(cmd_or_path, shell=True)
+        else:
+            # Script file
+            result = subprocess.run([cmd_or_path])
 
         print(f"\n{'=' * 60}")
         if result.returncode == 0:
-            print("  Script completed successfully.")
+            print("  Completed successfully.")
         else:
-            print(f"  Script exited with code: {result.returncode}")
+            print(f"  Exited with code: {result.returncode}")
         print(f"{'=' * 60}")
 
         input("\nPress Enter to continue...")

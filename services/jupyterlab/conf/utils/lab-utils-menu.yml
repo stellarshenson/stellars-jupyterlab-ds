@@ -3,51 +3,36 @@
 # =============================================================================
 #
 # YAML-driven menu structure for lab-utils interactive interface.
-# This file defines the hierarchical menu displayed when running `lab-utils`
-# without arguments.
 #
 # MENU ITEM STRUCTURE:
 # --------------------
-# Each menu item has the following fields:
-#
-#   id          - Script identifier / path (used for execution and --json output)
-#                 Format: "parent/child" for nested scripts
-#                 Example: id: "git-utils/git-pull-repos"
-#
-#   name        - Human-readable display name shown in menu
-#                 Example: name: "Pull All Repos"
-#
+#   id          - Script path or command to execute
+#   name        - Human-readable display name
 #   description - Brief description of what the script does
-#                 Example: description: "Pull latest changes from all git repos"
+#   type        - Execution type (optional, default: script)
+#                 - script: execute a script file (id is path)
+#                 - command: execute a shell command (id is command string)
 #
-# MENU ITEM TYPES:
-# ----------------
-# Leaf nodes (commands):
-#   - id: "script-name"
-#     name: "Human Name"
-#     description: "What it does"
+# MENU TYPES:
+# -----------
+#   Script:     id + name + description [+ type: script]
+#   Command:    id + name + description + type: command
+#   Submenu:    name + submenu (list of items)
+#   Dynamic:    name + scan_dir (scans directory for scripts)
+#   Combined:   name + submenu + scan_dir (static + dynamic items)
 #
-# Branch nodes (submenus):
-#   - name: "Category Name"
-#     submenu:
-#       - id: "category/script"
-#         name: "Script Name"
-#         description: "What it does"
+# EXAMPLES:
+# ---------
+#   # Script (default)
+#   - id: "test-cuda.sh"
+#     name: "Test CUDA"
+#     description: "Run CUDA tests"
 #
-# Dynamic submenus (scan_dir):
-#   - name: "Local Scripts"
-#     scan_dir: "~/.local/lab-utils.d"
-#     # Scripts discovered at runtime, id/name/description extracted from files
-#
-# COMBINING STATIC AND DYNAMIC:
-# -----------------------------
-# Use 'submenu' with 'scan_dir' together:
-#   - name: "Install Conda Env"
-#     submenu:
-#       - id: "install-conda-env/tensorflow"
-#         name: "TensorFlow"
-#         description: "Install TensorFlow environment"
-#     scan_dir: "~/.local/conda-env.d"
+#   # Inline command
+#   - id: "nvidia-smi"
+#     name: "GPU Status"
+#     description: "Show GPU information"
+#     type: command
 #
 # =============================================================================
 
@@ -56,71 +41,71 @@ menu:
   items:
     - name: "Set Defaults"
       submenu:
-        - id: "set-defaults/default-shell"
+        - id: "set-defaults.d/default-shell.sh"
           name: "Default Shell"
           description: "Configure default terminal shell (bash/fish)"
-        - id: "set-defaults/default-conda-env"
+        - id: "set-defaults.d/default-conda-env.sh"
           name: "Default Conda Env"
           description: "Set default conda environment for notebooks"
-        - id: "set-defaults/default-aws-profile"
+        - id: "set-defaults.d/default-aws-profile.sh"
           name: "Default AWS Profile"
           description: "Configure default AWS CLI profile"
 
     - name: "Git Utils"
       submenu:
-        - id: "git-utils/git-pull-repos"
+        - id: "git-utils.d/git-pull-repos.sh"
           name: "Pull All Repos"
           description: "Pull latest changes from all git repositories"
-        - id: "git-utils/git-push-repos"
+        - id: "git-utils.d/git-push-repos.sh"
           name: "Push All Repos"
           description: "Push local commits to all git repositories"
-        - id: "git-utils/git-commit-repos"
+        - id: "git-utils.d/git-commit-repos.sh"
           name: "Commit All Repos"
           description: "Commit changes in all git repositories"
-        - id: "git-utils/git-pull-submodules"
+        - id: "git-utils.d/git-pull-submodules.sh"
           name: "Pull Submodules"
           description: "Update all git submodules recursively"
 
     - name: "Install Conda Env"
       submenu:
-        - id: "install-conda-env/tensorflow"
+        - id: "install-conda-env.d/tensorflow.sh"
           name: "TensorFlow"
           description: "Install TensorFlow deep learning environment"
-        - id: "install-conda-env/torch"
+        - id: "install-conda-env.d/torch.sh"
           name: "PyTorch"
           description: "Install PyTorch deep learning environment"
-        - id: "install-conda-env/r"
+        - id: "install-conda-env.d/r.sh"
           name: "R"
           description: "Install R statistical computing environment"
-        - id: "install-conda-env/rust"
+        - id: "install-conda-env.d/rust.sh"
           name: "Rust"
           description: "Install Rust programming environment"
       scan_dir: "~/.local/conda-env.d"
 
     - name: "Install AI Assistant"
       submenu:
-        - id: "install-ai-assistant/anthropic-claude-code"
+        - id: "install-ai-assistant.d/anthropic-claude-code.sh"
           name: "Anthropic Claude Code"
           description: "Install Claude Code AI assistant CLI"
-        - id: "install-ai-assistant/anysphere-cursor"
+        - id: "install-ai-assistant.d/anysphere-cursor.sh"
           name: "Anysphere Cursor"
           description: "Install Cursor AI-powered code editor"
-        - id: "install-ai-assistant/google-gemini-cli"
+        - id: "install-ai-assistant.d/google-gemini-cli.sh"
           name: "Google Gemini CLI"
           description: "Install Google Gemini AI assistant CLI"
-        - id: "install-ai-assistant/openai-codex"
+        - id: "install-ai-assistant.d/openai-codex.sh"
           name: "OpenAI Codex"
           description: "Install OpenAI Codex AI assistant"
 
-    - id: "install-docker-cli"
+    - id: "install-docker-cli.sh"
       name: "Install Docker CLI"
       description: "Install Docker CLI tools to /opt/docker"
 
-    - id: "new-project"
+    - id: "new-project.sh"
       name: "New Project"
       description: "Scaffold new data science project using Copier"
 
-    - id: "test-cuda"
+    - id: "test-cuda.sh"
       name: "Test CUDA"
       description: "Test CUDA GPU support with TensorFlow and PyTorch"
 
