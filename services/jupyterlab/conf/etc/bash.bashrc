@@ -63,8 +63,9 @@ ldconfig 2>/dev/null
 # Docker MCP gateway environment variable
 export DOCKER_MCP_IN_CONTAINER=1
 
-# Show welcome and MOTD only for top-level shells (SHLVL <= 2)
-if [[ "$SHLVL" -le 2 ]]; then
+# Show welcome and MOTD only for top-level shells (SHLVL <= 3)
+# Note: SHLVL is 3 when JupyterLab is launched via 'conda run' (adds extra shell level)
+if [[ "$SHLVL" -le 3 ]]; then
     # display welcome message (shown once a day)
     if [[ -f /welcome-message.sh ]]; then
         /welcome-message.sh
