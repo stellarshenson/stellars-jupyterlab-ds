@@ -16,7 +16,7 @@ _lab_utils_completions() {
     local global_dir="/opt/utils/lab-utils.d"
     local local_dir="${HOME}/.local/lab-utils.d"
 
-    # Collect script names (without .sh extension) including nested scripts
+    # Collect script names (without extension) including nested scripts
     scripts=""
 
     # Helper function to collect scripts from a directory
@@ -26,21 +26,28 @@ _lab_utils_completions() {
             return
         fi
 
-        for script in "$dir"/*.sh; do
-            if [[ -f "$script" && -x "$script" ]]; then
-                local name=$(basename "$script" .sh)
-                scripts="$scripts $name"
+        for script in "$dir"/*; do
+            # Skip if not a file or not executable
+            [[ ! -f "$script" || ! -x "$script" ]] && continue
 
-                # Check for corresponding .d subdirectory with nested scripts
-                local subdir="${dir}/${name}.d"
-                if [[ -d "$subdir" ]]; then
-                    for child_script in "$subdir"/*.sh; do
-                        if [[ -f "$child_script" && -x "$child_script" ]]; then
-                            local child_name=$(basename "$child_script" .sh)
-                            scripts="$scripts ${name}/${child_name}"
-                        fi
-                    done
-                fi
+            # Skip README files
+            local basename=$(basename "$script")
+            [[ "$basename" == "README"* ]] && continue
+
+            # Get name without extension
+            local name="${basename%.*}"
+            scripts="$scripts $name"
+
+            # Check for corresponding .d subdirectory with nested scripts
+            local subdir="${dir}/${name}.d"
+            if [[ -d "$subdir" ]]; then
+                for child_script in "$subdir"/*; do
+                    [[ ! -f "$child_script" || ! -x "$child_script" ]] && continue
+                    local child_basename=$(basename "$child_script")
+                    [[ "$child_basename" == "README"* ]] && continue
+                    local child_name="${child_basename%.*}"
+                    scripts="$scripts ${name}/${child_name}"
+                done
             fi
         done
     }

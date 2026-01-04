@@ -407,39 +407,77 @@ def execute_script(name: str, args: list = None):
 # Selector UI
 # =============================================================================
 
+def get_selector_current(selector_config: dict) -> str:
+    """
+    Get current value for a selector from literal, script, or command.
+
+    Returns current value string or empty string if not set.
+    """
+    # Literal current value
+    if "current" in selector_config:
+        return selector_config["current"]
+
+    # Current from script
+    if "current_script" in selector_config:
+        script_path = resolve_script_path(selector_config["current_script"])
+        if script_path:
+            result = subprocess.run([str(script_path)], capture_output=True, text=True)
+            if result.returncode == 0:
+                return result.stdout.strip()
+        return ""
+
+    # Current from command
+    if "current_cmd" in selector_config:
+        result = subprocess.run(selector_config["current_cmd"], shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+        return ""
+
+    return ""
+
+
 def get_selector_options(selector_config: dict) -> list:
     """
     Get options for a selector from inline list, script, or command.
 
     Returns list of dicts: [{"value": "x", "label": "X", "current": bool}, ...]
     """
+    options = []
+
     # Inline options
     if "options" in selector_config:
-        return selector_config["options"]
+        options = [dict(o) for o in selector_config["options"]]  # Copy to avoid mutation
 
     # Options from script
-    if "options_script" in selector_config:
+    elif "options_script" in selector_config:
         script_path = resolve_script_path(selector_config["options_script"])
         if script_path:
             result = subprocess.run([str(script_path)], capture_output=True, text=True)
             if result.returncode == 0:
                 try:
-                    return json.loads(result.stdout)
+                    options = json.loads(result.stdout)
                 except json.JSONDecodeError:
                     pass
-        return []
 
     # Options from command
-    if "options_cmd" in selector_config:
+    elif "options_cmd" in selector_config:
         result = subprocess.run(selector_config["options_cmd"], shell=True, capture_output=True, text=True)
         if result.returncode == 0:
             try:
-                return json.loads(result.stdout)
+                options = json.loads(result.stdout)
             except json.JSONDecodeError:
                 pass
-        return []
 
-    return []
+    # Mark current option if current value is configured separately
+    current_value = get_selector_current(selector_config)
+    if current_value and options:
+        for opt in options:
+            if opt.get("value") == current_value:
+                opt["current"] = True
+            elif "current" in opt and opt.get("value") != current_value:
+                opt["current"] = False
+
+    return options
 
 
 def apply_selector_choice(selector_config: dict, value: str) -> subprocess.CompletedProcess:
@@ -519,6 +557,10 @@ def run_selector(selector_config: dict, title: str):
                 menu.add_option(Option(label, id=opt["value"]))
             menu.add_option(None)
             menu.add_option(Option("Cancel", id="__cancel__"))
+
+            # Start cursor on first option
+            if options:
+                menu.highlighted = 0
 
         def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
             if event.option.id != "__cancel__":

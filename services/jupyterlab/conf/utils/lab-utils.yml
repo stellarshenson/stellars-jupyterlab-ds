@@ -71,6 +71,7 @@ menu:
             options:
               - {value: "/bin/bash", label: "Bash"}
               - {value: "/usr/bin/fish", label: "Fish"}
+            current_cmd: "grep -oP 'JUPYTERLAB_TERMINAL_SHELL=\"\\K[^\"]*' ~/.profile 2>/dev/null"
             apply_script: "set-profile-var"
             apply_args: "JUPYTERLAB_TERMINAL_SHELL"
 
@@ -78,6 +79,7 @@ menu:
           description: "Set default conda environment"
           selector:
             options_script: "conda-env-options"
+            current_cmd: "grep -oP 'CONDA_DEFAULT_ENV=\"\\K[^\"]*' ~/.profile 2>/dev/null"
             apply_script: "set-profile-var"
             apply_args: "CONDA_DEFAULT_ENV"
 
@@ -85,6 +87,7 @@ menu:
           description: "Configure default AWS CLI profile"
           selector:
             options_script: "aws-profile-options"
+            current_cmd: "grep -oP 'AWS_PROFILE=\"\\K[^\"]*' ~/.profile 2>/dev/null"
             apply_script: "set-profile-var"
             apply_args: "AWS_PROFILE"
 
