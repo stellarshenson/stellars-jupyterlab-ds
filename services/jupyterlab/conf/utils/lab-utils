@@ -59,7 +59,7 @@ def get_script_description(script_path: Path) -> str:
 
 def scan_directory_for_menu_items(scan_dir: str) -> list:
     """
-    Scan a directory for executable scripts and return menu items.
+    Scan a directory for executable files and return menu items.
 
     Args:
         scan_dir: Directory path (supports ~ for home expansion)
@@ -72,23 +72,21 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
     if not dir_path.exists() or not dir_path.is_dir():
         return []
 
-    items = []
-    for script in sorted(dir_path.glob("*.sh")):
-        if script.is_file() and os.access(script, os.X_OK):
-            description = get_script_description(script)
-            items.append({
-                "id": str(script),  # Full path for dynamic scripts
-                "name": script.stem,
-                "description": description,
-                "_full_path": True
-            })
+    # Files to exclude
+    excluded = {"README.md", "readme.md"}
 
-    for yml_file in sorted(dir_path.glob("*.yml")):
-        if yml_file.is_file():
-            description = get_script_description(yml_file)
+    items = []
+    for item in sorted(dir_path.iterdir()):
+        # Skip excluded files and non-files
+        if item.name in excluded or not item.is_file():
+            continue
+
+        # Only include executable files
+        if os.access(item, os.X_OK):
+            description = get_script_description(item)
             items.append({
-                "id": str(yml_file),
-                "name": yml_file.stem,
+                "id": str(item),  # Full path for dynamic scripts
+                "name": item.stem,
                 "description": description,
                 "_full_path": True
             })
@@ -106,12 +104,16 @@ def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
         is_full_path: If True, treat script_id as absolute path
 
     Returns:
-        Path to the script file, or None if not found
+        Path to the executable script file, or None if not found
     """
+    def is_valid_script(path: Path) -> bool:
+        """Check if path is an existing executable file."""
+        return path.exists() and path.is_file() and os.access(path, os.X_OK)
+
     # Handle absolute paths
     if is_full_path or script_id.startswith("/") or script_id.startswith("~"):
         full_path = Path(os.path.expanduser(script_id))
-        if full_path.exists() and full_path.is_file():
+        if is_valid_script(full_path):
             return full_path
         return None
 
@@ -123,17 +125,17 @@ def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
         paths_to_try.append(f"{script_id}.sh")
 
     # Handle parent/child format -> parent.d/child.sh
-    if "/" in script_id and not ".d/" in script_id:
+    if "/" in script_id and ".d/" not in script_id:
         parent, child = script_id.split("/", 1)
         paths_to_try.append(f"{parent}.d/{child}")
         if not child.endswith(".sh"):
             paths_to_try.append(f"{parent}.d/{child}.sh")
 
-    # Check each directory
+    # Check each directory for executable scripts
     for base_dir in [GLOBAL_SCRIPTS_DIR, LIB_DIR, LOCAL_SCRIPTS_DIR]:
         for path in paths_to_try:
             full_path = base_dir / path
-            if full_path.exists() and full_path.is_file():
+            if is_valid_script(full_path):
                 return full_path
 
     return None
