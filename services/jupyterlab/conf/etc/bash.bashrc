@@ -1,56 +1,87 @@
-# Copyright 2018 The TensorFlow Authors. All Rights Reserved.
+# System-wide .bashrc file for interactive bash(1) shells.
+# Based on Ubuntu 24.04 default with stellars-jupyterlab-ds customizations.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-# ==============================================================================
+# To enable the settings / commands in this file for login shells as well,
+# this file has to be sourced in /etc/profile.
 
-# Do not print anything if this is not being used interactively
+# If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-# Set up attractive prompt
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, overwrite the one in /etc/profile)
+# but only if not SUDOing and have SUDO_PS1 set; then assume smart user.
+if ! [ -n "${SUDO_USER}" -a -n "${SUDO_PS1}" ]; then
+  PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+
+# enable color support for ls and grep
 export TERM=xterm-256color
-alias grep="grep --color=auto"
-alias ls="ls --color=auto"
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+
+# enable bash completion in interactive shells
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
+# if the command-not-found package is installed, use it
+if [ -x /usr/lib/command-not-found -o -x /usr/share/command-not-found/command-not-found ]; then
+    function command_not_found_handle {
+        # check because c-n-f could've been removed in the meantime
+        if [ -x /usr/lib/command-not-found ]; then
+           /usr/lib/command-not-found -- "$1"
+           return $?
+        elif [ -x /usr/share/command-not-found/command-not-found ]; then
+           /usr/share/command-not-found/command-not-found -- "$1"
+           return $?
+        else
+           printf "%s: command not found\n" "$1" >&2
+           return 127
+        fi
+    }
+fi
+
+# ==============================================================================
+# Stellars JupyterLab DS customizations
+# ==============================================================================
 
 # Fix CUDA loading for running nvidia-smi
 ldconfig 2>/dev/null
 
-# docker MCP gateway environment variable
+# Docker MCP gateway environment variable
 export DOCKER_MCP_IN_CONTAINER=1
 
-# show motd only for SHLVL less or equal 2
-if [[ "$SHLVL" -gt 2 ]]; then
-    return
-fi
+# Show welcome and MOTD only for top-level shells (SHLVL <= 2)
+if [[ "$SHLVL" -le 2 ]]; then
+    # display welcome message (shown once a day)
+    if [[ -f /welcome-message.sh ]]; then
+        /welcome-message.sh
+    fi
 
-# display welcome message
-# it is displayed once a day and shows content of
-# /welcome-message.txt
-if [[ -f /welcome-message.sh ]]; then
-    /welcome-message.sh
-fi
+    # display message of the day
+    if [[ -f /etc/motd ]]; then
+        cat /etc/motd
+    fi
 
-# display message of the day
-if [[ -f /etc/motd ]]; then
-    cat /etc/motd
-fi
+    # display gpustat if GPU support enabled
+    if [[ "${ENABLE_GPU_SUPPORT}" = 1 ]] && [[ "${ENABLE_GPUSTAT}" = 1 ]]; then
+        /opt/conda/bin/gpustat --no-color --no-header --no-processes
+    fi
 
-# display gpustat
-if [[ "${ENABLE_GPU_SUPPORT}" = 1 ]] && [[ "${ENABLE_GPUSTAT}" = 1 ]]; then
-    /opt/conda/bin/gpustat --no-color --no-header --no-processes
+    # brief delay to prevent terminal init race conditions
+    sleep 0.3
 fi
-
-# sleep to prevent issues with motd line disappearing because if init delay
-sleep 0.3
 
 # EOF
