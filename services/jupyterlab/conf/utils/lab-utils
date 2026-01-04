@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/conda/bin/python3
 """
 YAML-driven Lab Utils
 
@@ -523,8 +523,7 @@ def run_interactive_menu():
             else:
                 menu.add_option(Option("✕ Exit", id="__exit__"))
 
-            # Visual separator (disabled option)
-            menu.add_option(Option("─" * 40, id="__sep__", disabled=True))
+            menu.add_option(None)
 
             # Add menu items with icons
             for i, item in enumerate(self.current_items):
