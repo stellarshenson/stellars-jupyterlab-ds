@@ -464,9 +464,10 @@ def run_interactive_menu():
         """
 
         BINDINGS = [
-            Binding("q", "quit", "Quit", show=True),
-            Binding("escape", "go_back", "Back", show=True),
+            Binding("escape", "quit", "Quit", show=True),
+            Binding("left", "go_back", "Back", show=True),
             Binding("backspace", "go_back", "Back", show=False),
+            Binding("right", "select_item", "Select", show=True),
         ]
 
         def __init__(self):
@@ -540,6 +541,10 @@ def run_interactive_menu():
                         display = f"● {name}"
                 menu.add_option(Option(display, id=str(i)))
 
+            # Start cursor on first menu item (skip Back/Exit and separator)
+            if self.current_items:
+                menu.highlighted = 2
+
         def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
             """Handle menu item selection."""
             option_id = event.option.id
@@ -597,6 +602,12 @@ def run_interactive_menu():
             """Handle back action."""
             if not self.pop_menu():
                 self.exit()
+
+        def action_select_item(self) -> None:
+            """Handle right arrow - select current item."""
+            menu = self.query_one("#menu", OptionList)
+            if menu.highlighted is not None:
+                menu.action_select()
 
     # Run the app
     app = LabUtilsApp()

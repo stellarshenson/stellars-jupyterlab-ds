@@ -155,3 +155,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 68. **Task - Fix lab-utils tab completion pollution**: Moved menu config to prevent PATH completion interference<br>
     **Result**: Moved `lab-utils-menu.yml` from `/opt/utils/` to `/opt/utils/lab-utils.d/menu.yml` to prevent it appearing in bash tab completion when typing `lab-<tab>`. Updated `MENU_CONFIG` path in lab-utils script. Added `chmod 644` in Dockerfile to ensure YAML file is not executable
+
+69. **Task - Improve lab-utils keyboard navigation**: Updated keybindings for intuitive navigation<br>
+    **Result**: Changed keyboard bindings: Escape now quits (was go back), Left arrow goes back, Right arrow selects/enters submenu, Backspace still goes back (hidden). Added `action_select_item()` method to handle right arrow selection. Cursor now starts on first menu item instead of Back/Exit option by setting `menu.highlighted = 2` after populating options
