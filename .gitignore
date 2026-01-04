@@ -5,7 +5,7 @@
 # EOF
 *.bundle.*
 lib/
-!**/lab-utils.d/lib/
+!**/lab-utils.lib/
 node_modules/
 *.log
 .eslintcache
