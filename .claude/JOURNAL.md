@@ -122,3 +122,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 57. **Task - Update startup notification and welcome page**: Minor UI improvements<br>
     **Result**: Changed notification button label from "Acknowledged" to "Close" in both success and failure startup script notifications. Updated welcome-template.html to remove redundant startup scripts reference from Utilities section and clarified cache description to "local cache for datasets, packages, models, etc."
+
+58. **Task - Implement YAML-driven menu system**: Added alternative YAML-based menu configuration for lab-utils<br>
+    **Result**: Researched terminal menu solutions (Task, Sunbeam, smenu, gum, fzf, pet) and documented findings in .claude/plan.md. Created lab-utils-menu.yml configuration file defining hierarchical menu structure with submenus for Set Defaults, Git Utils, Install Conda Env, Install AI Assistant, and standalone commands. Implemented lab-utils-yaml Python script that parses YAML config and renders menus using dialog with back navigation and command execution. Updated launch-lab-utils.sh to support LAB_UTILS_MODE=yaml environment variable for switching between legacy bash-based and new YAML-driven menu systems. Maintains backward compatibility with default legacy mode. Version bumped to 3.5.1
