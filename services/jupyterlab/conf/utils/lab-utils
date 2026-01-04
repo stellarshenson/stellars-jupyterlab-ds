@@ -22,8 +22,9 @@ except ImportError:
 
 # Configuration
 SCRIPT_DIR = Path(__file__).parent.resolve()
-MENU_CONFIG = SCRIPT_DIR / "lab-utils.d" / "menu.yml"
+MENU_CONFIG = SCRIPT_DIR / "lab-utils.yml"
 GLOBAL_SCRIPTS_DIR = SCRIPT_DIR / "lab-utils.d"
+LIB_DIR = SCRIPT_DIR / "lab-utils.lib"
 LOCAL_SCRIPTS_DIR = Path.home() / ".local" / "lab-utils.d"
 
 # Colors for terminal output (CLI mode)
@@ -100,7 +101,7 @@ def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
     Resolve script path from id.
 
     Args:
-        script_id: Script path (relative to lab-utils.d/ or absolute)
+        script_id: Script path (relative to lab-utils.d/, lab-utils.lib/, or absolute)
         is_full_path: If True, treat script_id as absolute path
 
     Returns:
@@ -117,6 +118,11 @@ def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
     global_path = GLOBAL_SCRIPTS_DIR / script_id
     if global_path.exists() and global_path.is_file():
         return global_path
+
+    # Check lib directory
+    lib_path = LIB_DIR / script_id
+    if lib_path.exists() and lib_path.is_file():
+        return lib_path
 
     # Check local scripts directory
     local_path = LOCAL_SCRIPTS_DIR / script_id

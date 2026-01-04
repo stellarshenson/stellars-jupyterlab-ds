@@ -71,21 +71,21 @@ menu:
             options:
               - {value: "/bin/bash", label: "Bash"}
               - {value: "/usr/bin/fish", label: "Fish"}
-            apply_script: "lib/set-profile-var"
+            apply_script: "set-profile-var"
             apply_args: "JUPYTERLAB_TERMINAL_SHELL"
 
         - name: "Default Conda Env"
           description: "Set default conda environment"
           selector:
-            options_script: "lib/conda-env-options"
-            apply_script: "lib/set-profile-var"
+            options_script: "conda-env-options"
+            apply_script: "set-profile-var"
             apply_args: "CONDA_DEFAULT_ENV"
 
         - name: "Default AWS Profile"
           description: "Configure default AWS CLI profile"
           selector:
-            options_script: "lib/aws-profile-options"
-            apply_script: "lib/set-profile-var"
+            options_script: "aws-profile-options"
+            apply_script: "set-profile-var"
             apply_args: "AWS_PROFILE"
 
     - name: "Git Utils"
