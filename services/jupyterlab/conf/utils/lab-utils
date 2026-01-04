@@ -395,7 +395,7 @@ def run_interactive_menu():
     try:
         from textual.app import App, ComposeResult
         from textual.widgets import Header, Footer, OptionList, Static
-        from textual.widgets.option_list import Option, Separator
+        from textual.widgets.option_list import Option
         from textual.binding import Binding
         from textual.containers import Container
     except ImportError:
@@ -523,7 +523,8 @@ def run_interactive_menu():
             else:
                 menu.add_option(Option("✕ Exit", id="__exit__"))
 
-            menu.add_option(Separator())
+            # Visual separator (disabled option)
+            menu.add_option(Option("─" * 40, id="__sep__", disabled=True))
 
             # Add menu items with icons
             for i, item in enumerate(self.current_items):
