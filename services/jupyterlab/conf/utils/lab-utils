@@ -8,6 +8,8 @@ Supports CLI options, direct script execution, and interactive Textual TUI.
 
 import json
 import os
+import re
+import shutil
 import sys
 import subprocess
 from pathlib import Path
@@ -387,6 +389,150 @@ def execute_script(name: str, args: list = None):
 
 
 # =============================================================================
+# Selector UI
+# =============================================================================
+
+def get_selector_options(selector_config: dict) -> list:
+    """
+    Get options for a selector from inline list, script, or command.
+
+    Returns list of dicts: [{"value": "x", "label": "X", "current": bool}, ...]
+    """
+    # Inline options
+    if "options" in selector_config:
+        return selector_config["options"]
+
+    # Options from script
+    if "options_script" in selector_config:
+        script_path = resolve_script_path(selector_config["options_script"])
+        if script_path:
+            result = subprocess.run([str(script_path)], capture_output=True, text=True)
+            if result.returncode == 0:
+                try:
+                    return json.loads(result.stdout)
+                except json.JSONDecodeError:
+                    pass
+        return []
+
+    # Options from command
+    if "options_cmd" in selector_config:
+        result = subprocess.run(selector_config["options_cmd"], shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            try:
+                return json.loads(result.stdout)
+            except json.JSONDecodeError:
+                pass
+        return []
+
+    return []
+
+
+def apply_selector_choice(selector_config: dict, value: str) -> subprocess.CompletedProcess:
+    """Apply the selected value using the configured apply action."""
+    args = selector_config.get("apply_args", "").split() if selector_config.get("apply_args") else []
+    args.append(value)
+
+    # Apply via script
+    if "apply_script" in selector_config:
+        script_path = resolve_script_path(selector_config["apply_script"])
+        if script_path:
+            return subprocess.run([str(script_path)] + args)
+        return subprocess.CompletedProcess(args=[], returncode=1)
+
+    # Apply via command
+    if "apply_cmd" in selector_config:
+        cmd = f"{selector_config['apply_cmd']} {' '.join(args)}"
+        return subprocess.run(cmd, shell=True)
+
+    return subprocess.CompletedProcess(args=[], returncode=1)
+
+
+def run_selector(selector_config: dict, title: str):
+    """Run the selector UI for choosing from options."""
+    try:
+        from textual.app import App, ComposeResult
+        from textual.widgets import Header, Footer, OptionList, Static
+        from textual.widgets.option_list import Option
+        from textual.binding import Binding
+        from textual.containers import Container
+    except ImportError:
+        print("Error: Textual not installed.", file=sys.stderr)
+        return
+
+    options = get_selector_options(selector_config)
+    if not options:
+        print(f"No options available for {title}")
+        input("\nPress Enter to continue...")
+        return
+
+    class SelectorApp(App):
+        """Selector TUI Application."""
+
+        TITLE = title
+        CSS = """
+        Screen { background: $surface; }
+        #info { dock: top; height: 3; padding: 1 2; background: $primary-darken-2; }
+        #menu-container { width: 100%; height: 100%; padding: 1 2; }
+        OptionList { width: 100%; height: 100%; border: round $primary; }
+        OptionList:focus { border: round $accent; }
+        """
+
+        BINDINGS = [
+            Binding("escape", "quit", "Cancel", show=True),
+            Binding("left", "quit", "Cancel", show=False),
+            Binding("right", "select_item", "Select", show=True),
+        ]
+
+        def __init__(self):
+            super().__init__()
+            self.selected = None
+
+        def compose(self) -> ComposeResult:
+            yield Header()
+            current = next((o.get("label", o["value"]) for o in options if o.get("current")), "Not set")
+            yield Static(f"Current: {current}", id="info")
+            with Container(id="menu-container"):
+                yield OptionList(id="menu")
+            yield Footer()
+
+        def on_mount(self) -> None:
+            menu = self.query_one("#menu", OptionList)
+            for opt in options:
+                label = opt.get("label", opt["value"])
+                if opt.get("current"):
+                    label += " [current]"
+                menu.add_option(Option(label, id=opt["value"]))
+            menu.add_option(None)
+            menu.add_option(Option("Cancel", id="__cancel__"))
+
+        def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+            if event.option.id != "__cancel__":
+                self.selected = event.option.id
+            self.exit()
+
+        def action_select_item(self) -> None:
+            menu = self.query_one("#menu", OptionList)
+            if menu.highlighted is not None:
+                menu.action_select()
+
+    app = SelectorApp()
+    app.run()
+
+    if app.selected:
+        print(f"\n{'=' * 60}")
+        print(f"  {title}")
+        print(f"{'=' * 60}\n")
+        result = apply_selector_choice(selector_config, app.selected)
+        print(f"\n{'=' * 60}")
+        if result.returncode == 0:
+            print("  Completed successfully.")
+        else:
+            print(f"  Exited with code: {result.returncode}")
+        print(f"{'=' * 60}")
+        input("\nPress Enter to continue...")
+
+
+# =============================================================================
 # Textual TUI Menu
 # =============================================================================
 
@@ -565,6 +711,12 @@ def run_interactive_menu():
 
             item_name = selected_item.get("name", "")
 
+            # Handle selector type (inline selection UI)
+            if "selector" in selected_item:
+                self.pending_command = (selected_item["selector"], item_name, "selector")
+                self.exit()
+                return
+
             # Handle submenu or scan_dir
             if "submenu" in selected_item or "scan_dir" in selected_item:
                 submenu_items = list(selected_item.get("submenu", []))
@@ -616,6 +768,13 @@ def run_interactive_menu():
     # Execute pending command after app exits
     if app.pending_command:
         cmd_or_path, title, cmd_type = app.pending_command
+
+        if cmd_type == "selector":
+            # Handle selector - show selection UI
+            run_selector(cmd_or_path, title)
+            run_interactive_menu()
+            return
+
         print(f"\n{'=' * 60}")
         print(f"  {title}")
         print(f"{'=' * 60}\n")

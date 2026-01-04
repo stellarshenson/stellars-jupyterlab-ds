@@ -1,0 +1,68 @@
+#!/opt/conda/bin/python3
+"""
+Return AWS profiles as JSON options for selector.
+
+Output format:
+[
+  {"value": "default", "label": "default", "current": true},
+  {"value": "production", "label": "production"}
+]
+"""
+
+import json
+import re
+from pathlib import Path
+
+AWS_CONFIG = Path.home() / ".aws" / "config"
+AWS_CREDENTIALS = Path.home() / ".aws" / "credentials"
+PROFILE_FILE = Path.home() / ".profile"
+
+
+def get_current_default() -> str:
+    """Get current AWS_PROFILE from ~/.profile."""
+    if not PROFILE_FILE.exists():
+        return ""
+    content = PROFILE_FILE.read_text()
+    match = re.search(r'AWS_PROFILE=["\'"]?([^"\'"\n]*)["\'"]?', content)
+    return match.group(1) if match else ""
+
+
+def get_aws_profiles() -> list:
+    """Get list of AWS profiles from config and credentials files."""
+    profiles = set()
+
+    # From config file: [profile name]
+    if AWS_CONFIG.exists():
+        content = AWS_CONFIG.read_text()
+        for match in re.finditer(r'\[profile\s+([^\]]+)\]', content):
+            profiles.add(match.group(1))
+
+    # From credentials file: [name]
+    if AWS_CREDENTIALS.exists():
+        content = AWS_CREDENTIALS.read_text()
+        for match in re.finditer(r'\[([^\]]+)\]', content):
+            profiles.add(match.group(1))
+
+    return sorted(profiles)
+
+
+def main():
+    current = get_current_default()
+    profiles = get_aws_profiles()
+
+    if not profiles:
+        print("[]")
+        return
+
+    options = []
+    for profile in profiles:
+        opt = {"value": profile, "label": profile}
+        if profile == current:
+            opt["current"] = True
+        options.append(opt)
+
+    print(json.dumps(options))
+
+
+if __name__ == "__main__":
+    main()

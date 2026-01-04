@@ -1,0 +1,67 @@
+#!/opt/conda/bin/python3
+"""
+Return conda environments as JSON options for selector.
+
+Output format:
+[
+  {"value": "base", "label": "base", "current": true},
+  {"value": "myenv", "label": "myenv"}
+]
+"""
+
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+CONDA_CMD = "/opt/conda/bin/conda"
+PROFILE_FILE = Path.home() / ".profile"
+
+
+def get_current_default() -> str:
+    """Get current CONDA_DEFAULT_ENV from ~/.profile."""
+    if not PROFILE_FILE.exists():
+        return ""
+    content = PROFILE_FILE.read_text()
+    match = re.search(r'CONDA_DEFAULT_ENV=["\'"]?([^"\'"\n]*)["\'"]?', content)
+    return match.group(1) if match else ""
+
+
+def get_conda_envs() -> list:
+    """Get list of conda environments."""
+    try:
+        result = subprocess.run(
+            [CONDA_CMD, "env", "list", "--json"],
+            capture_output=True,
+            text=True
+        )
+        data = json.loads(result.stdout)
+        envs = []
+        for path in data.get("envs", []):
+            name = os.path.basename(path)
+            if path == "/opt/conda":
+                name = "base"
+            envs.append(name)
+        return sorted(set(envs))
+    except Exception:
+        return []
+
+
+def main():
+    current = get_current_default()
+    envs = get_conda_envs()
+
+    options = []
+    for env in envs:
+        opt = {"value": env, "label": env}
+        if env == current:
+            opt["current"] = True
+        options.append(opt)
+
+    print(json.dumps(options))
+
+
+if __name__ == "__main__":
+    main()
