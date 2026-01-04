@@ -4,35 +4,43 @@
 #
 # YAML-driven menu structure for lab-utils interactive interface.
 #
-# MENU ITEM STRUCTURE:
-# --------------------
-#   id          - Script path or command to execute
-#   name        - Human-readable display name
-#   description - Brief description of what the script does
-#   type        - Execution type (optional, default: script)
-#                 - script: execute a script file (id is path)
-#                 - command: execute a shell command (id is command string)
+# ITEM TYPES (determined by 'type' field or structure):
+# -----------------------------------------------------
 #
-# MENU TYPES:
-# -----------
-#   Script:     id + name + description [+ type: script]
-#   Command:    id + name + description + type: command
-#   Submenu:    name + submenu (list of items)
-#   Dynamic:    name + scan_dir (scans directory for scripts)
-#   Combined:   name + submenu + scan_dir (static + dynamic items)
+#   type: script (default)
+#     Execute a script file. id is path relative to lab-utils.d/
+#     - id: "test-cuda.sh"
+#       name: "Test CUDA"
+#       description: "Run CUDA tests"
 #
-# EXAMPLES:
-# ---------
-#   # Script (default)
-#   - id: "test-cuda.sh"
-#     name: "Test CUDA"
-#     description: "Run CUDA tests"
+#   type: command
+#     Execute a shell command. id is the command string.
+#     - id: "nvidia-smi --query-gpu=name --format=csv"
+#       name: "GPU Status"
+#       description: "Show GPU information"
+#       type: command
 #
-#   # Inline command
-#   - id: "nvidia-smi"
-#     name: "GPU Status"
-#     description: "Show GPU information"
-#     type: command
+#   type: submenu (implicit when 'submenu' field present)
+#     Static list of child items.
+#     - name: "Git Utils"
+#       submenu:
+#         - id: "git-utils.d/git-pull-repos.sh"
+#           name: "Pull All Repos"
+#           description: "Pull from all repositories"
+#
+#   type: dynamic (implicit when 'scan_dir' field present)
+#     Scans directory at runtime for executable scripts.
+#     - name: "Local Scripts"
+#       scan_dir: "~/.local/lab-utils.d"
+#
+#   Combined (submenu + scan_dir)
+#     Static items plus dynamically discovered scripts.
+#     - name: "Install Conda Env"
+#       submenu:
+#         - id: "install-conda-env.d/tensorflow.sh"
+#           name: "TensorFlow"
+#           description: "Install TensorFlow"
+#       scan_dir: "~/.local/conda-env.d"
 #
 # =============================================================================
 
