@@ -62,7 +62,7 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
         scan_dir: Directory path (supports ~ for home expansion)
 
     Returns:
-        List of menu item dicts with 'name' and 'command' keys
+        List of menu item dicts with 'id', 'name', 'description' keys
     """
     dir_path = Path(os.path.expanduser(scan_dir))
 
@@ -74,8 +74,9 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
         if script.is_file() and os.access(script, os.X_OK):
             description = get_script_description(script)
             items.append({
-                "name": f"{script.stem} - {description}",
-                "command": str(script),
+                "id": str(script),  # Full path for dynamic scripts
+                "name": script.stem,
+                "description": description,
                 "_full_path": True
             })
 
@@ -83,43 +84,52 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
         if yml_file.is_file():
             description = get_script_description(yml_file)
             items.append({
-                "name": f"{yml_file.stem} - {description}",
-                "command": str(yml_file),
+                "id": str(yml_file),
+                "name": yml_file.stem,
+                "description": description,
                 "_full_path": True
             })
 
     return items
 
 
-def resolve_script_path(name: str, is_full_path: bool = False) -> Path:
-    """Resolve script path by name."""
-    if is_full_path or name.startswith("/") or name.startswith("~"):
-        full_path = Path(os.path.expanduser(name))
+def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
+    """
+    Resolve script path from id.
+
+    Args:
+        script_id: Script identifier in format "name" or "parent/child"
+        is_full_path: If True, treat script_id as absolute path
+
+    Returns:
+        Path to the script file, or None if not found
+    """
+    # Handle full paths (from scan_dir dynamic items)
+    if is_full_path or script_id.startswith("/") or script_id.startswith("~"):
+        full_path = Path(os.path.expanduser(script_id))
         if full_path.exists() and full_path.is_file():
             return full_path
         return None
 
-    if "/" in name:
-        global_path = GLOBAL_SCRIPTS_DIR / name
-        if global_path.exists() and global_path.is_file():
-            return global_path
-        local_path = LOCAL_SCRIPTS_DIR / name
-        if local_path.exists() and local_path.is_file():
-            return local_path
-        parts = name.split("/")
+    # Handle nested scripts: "parent/child" -> "parent.d/child.sh"
+    if "/" in script_id:
+        parts = script_id.split("/")
         if len(parts) == 2:
             parent, child = parts
-            global_nested = GLOBAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
-            if global_nested.exists():
-                return global_nested
-            local_nested = LOCAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
-            if local_nested.exists():
-                return local_nested
+            # Check global
+            global_path = GLOBAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
+            if global_path.exists():
+                return global_path
+            # Check local
+            local_path = LOCAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
+            if local_path.exists():
+                return local_path
     else:
-        global_path = GLOBAL_SCRIPTS_DIR / f"{name}.sh"
+        # Simple name: "name" -> "name.sh"
+        global_path = GLOBAL_SCRIPTS_DIR / f"{script_id}.sh"
         if global_path.exists():
             return global_path
-        local_path = LOCAL_SCRIPTS_DIR / f"{name}.sh"
+        local_path = LOCAL_SCRIPTS_DIR / f"{script_id}.sh"
         if local_path.exists():
             return local_path
 
@@ -530,13 +540,17 @@ def run_interactive_menu():
             # Add menu items with icons
             for i, item in enumerate(self.current_items):
                 name = item.get("name", f"Item {i}")
+                desc = item.get("description", "")
                 if "submenu" in item or "scan_dir" in item:
                     # Folder/submenu icon
-                    name = f"▶ {name}"
+                    display = f"▶ {name}"
                 else:
-                    # Script/command icon
-                    name = f"● {name}"
-                menu.add_option(Option(name, id=str(i)))
+                    # Script/command icon - show description if available
+                    if desc:
+                        display = f"● {name} - {desc}"
+                    else:
+                        display = f"● {name}"
+                menu.add_option(Option(display, id=str(i)))
 
         def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
             """Handle menu item selection."""
@@ -570,14 +584,14 @@ def run_interactive_menu():
                 else:
                     self.notify(f"No items found in {item_name}", severity="warning")
 
-            # Handle command execution
-            elif "command" in selected_item:
+            # Handle command execution (id field)
+            elif "id" in selected_item:
                 is_full_path = selected_item.get("_full_path", False)
-                command = selected_item["command"]
-                script_path = resolve_script_path(command, is_full_path)
+                script_id = selected_item["id"]
+                script_path = resolve_script_path(script_id, is_full_path)
 
                 if script_path is None:
-                    self.notify(f"Script not found: {command}", severity="error")
+                    self.notify(f"Script not found: {script_id}", severity="error")
                     return
 
                 # Store command and exit to execute

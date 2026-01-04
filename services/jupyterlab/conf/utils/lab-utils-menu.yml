@@ -6,46 +6,48 @@
 # This file defines the hierarchical menu displayed when running `lab-utils`
 # without arguments.
 #
+# MENU ITEM STRUCTURE:
+# --------------------
+# Each menu item has the following fields:
+#
+#   id          - Script identifier / path (used for execution and --json output)
+#                 Format: "parent/child" for nested scripts
+#                 Example: id: "git-utils/git-pull-repos"
+#
+#   name        - Human-readable display name shown in menu
+#                 Example: name: "Pull All Repos"
+#
+#   description - Brief description of what the script does
+#                 Example: description: "Pull latest changes from all git repos"
+#
 # MENU ITEM TYPES:
 # ----------------
-# Each menu item must have a 'name' and ONE of these properties:
+# Leaf nodes (commands):
+#   - id: "script-name"
+#     name: "Human Name"
+#     description: "What it does"
 #
-#   command     - Execute a script (leaf node)
-#                 Path relative to lab-utils.d/ directory
-#                 Example: command: "test-cuda.sh"
-#                 Example: command: "set-defaults.d/default-shell.sh"
+# Branch nodes (submenus):
+#   - name: "Category Name"
+#     submenu:
+#       - id: "category/script"
+#         name: "Script Name"
+#         description: "What it does"
 #
-#   submenu     - Static list of child items (branch node)
-#                 Example:
-#                   submenu:
-#                     - name: "Option 1"
-#                       command: "script1.sh"
-#                     - name: "Option 2"
-#                       command: "script2.sh"
-#
-#   scan_dir    - Dynamic submenu from directory scan (branch node)
-#                 Scans directory for executable .sh scripts at runtime
-#                 Supports ~ for home directory expansion
-#                 Scripts' descriptions extracted from '##' comment line
-#                 Example: scan_dir: "~/.local/lab-utils.d"
+# Dynamic submenus (scan_dir):
+#   - name: "Local Scripts"
+#     scan_dir: "~/.local/lab-utils.d"
+#     # Scripts discovered at runtime, id/name/description extracted from files
 #
 # COMBINING STATIC AND DYNAMIC:
 # -----------------------------
-# Use 'submenu' with 'scan_dir' together to have static items plus
-# dynamically discovered scripts appended:
-#
+# Use 'submenu' with 'scan_dir' together:
 #   - name: "Install Conda Env"
 #     submenu:
-#       - name: "TensorFlow"
-#         command: "install-conda-env.d/tensorflow.sh"
+#       - id: "install-conda-env/tensorflow"
+#         name: "TensorFlow"
+#         description: "Install TensorFlow environment"
 #     scan_dir: "~/.local/conda-env.d"
-#
-# CUSTOMIZATION:
-# --------------
-# - Edit this file to add/remove/reorder menu items
-# - Create scripts in lab-utils.d/ for new commands
-# - Use ~/.local/lab-utils.d/ for personal scripts (use scan_dir to include)
-# - Script descriptions shown in menus come from '## Description' line
 #
 # =============================================================================
 
@@ -54,55 +56,73 @@ menu:
   items:
     - name: "Set Defaults"
       submenu:
-        - name: "Default Shell"
-          command: "set-defaults.d/default-shell.sh"
-        - name: "Default Conda Env"
-          command: "set-defaults.d/default-conda-env.sh"
-        - name: "Default AWS Profile"
-          command: "set-defaults.d/default-aws-profile.sh"
+        - id: "set-defaults/default-shell"
+          name: "Default Shell"
+          description: "Configure default terminal shell (bash/fish)"
+        - id: "set-defaults/default-conda-env"
+          name: "Default Conda Env"
+          description: "Set default conda environment for notebooks"
+        - id: "set-defaults/default-aws-profile"
+          name: "Default AWS Profile"
+          description: "Configure default AWS CLI profile"
 
     - name: "Git Utils"
       submenu:
-        - name: "Pull All Repos"
-          command: "git-utils.d/git-pull-repos.sh"
-        - name: "Push All Repos"
-          command: "git-utils.d/git-push-repos.sh"
-        - name: "Commit All Repos"
-          command: "git-utils.d/git-commit-repos.sh"
-        - name: "Pull Submodules"
-          command: "git-utils.d/git-pull-submodules.sh"
+        - id: "git-utils/git-pull-repos"
+          name: "Pull All Repos"
+          description: "Pull latest changes from all git repositories"
+        - id: "git-utils/git-push-repos"
+          name: "Push All Repos"
+          description: "Push local commits to all git repositories"
+        - id: "git-utils/git-commit-repos"
+          name: "Commit All Repos"
+          description: "Commit changes in all git repositories"
+        - id: "git-utils/git-pull-submodules"
+          name: "Pull Submodules"
+          description: "Update all git submodules recursively"
 
     - name: "Install Conda Env"
       submenu:
-        - name: "TensorFlow"
-          command: "install-conda-env.d/tensorflow.sh"
-        - name: "PyTorch"
-          command: "install-conda-env.d/torch.sh"
-        - name: "R"
-          command: "install-conda-env.d/r.sh"
-        - name: "Rust"
-          command: "install-conda-env.d/rust.sh"
+        - id: "install-conda-env/tensorflow"
+          name: "TensorFlow"
+          description: "Install TensorFlow deep learning environment"
+        - id: "install-conda-env/torch"
+          name: "PyTorch"
+          description: "Install PyTorch deep learning environment"
+        - id: "install-conda-env/r"
+          name: "R"
+          description: "Install R statistical computing environment"
+        - id: "install-conda-env/rust"
+          name: "Rust"
+          description: "Install Rust programming environment"
       scan_dir: "~/.local/conda-env.d"
 
     - name: "Install AI Assistant"
       submenu:
-        - name: "Anthropic Claude Code"
-          command: "install-ai-assistant.d/anthropic-claude-code.sh"
-        - name: "Anysphere Cursor"
-          command: "install-ai-assistant.d/anysphere-cursor.sh"
-        - name: "Google Gemini CLI"
-          command: "install-ai-assistant.d/google-gemini-cli.sh"
-        - name: "OpenAI Codex"
-          command: "install-ai-assistant.d/openai-codex.sh"
+        - id: "install-ai-assistant/anthropic-claude-code"
+          name: "Anthropic Claude Code"
+          description: "Install Claude Code AI assistant CLI"
+        - id: "install-ai-assistant/anysphere-cursor"
+          name: "Anysphere Cursor"
+          description: "Install Cursor AI-powered code editor"
+        - id: "install-ai-assistant/google-gemini-cli"
+          name: "Google Gemini CLI"
+          description: "Install Google Gemini AI assistant CLI"
+        - id: "install-ai-assistant/openai-codex"
+          name: "OpenAI Codex"
+          description: "Install OpenAI Codex AI assistant"
 
-    - name: "Install Docker CLI"
-      command: "install-docker-cli.sh"
+    - id: "install-docker-cli"
+      name: "Install Docker CLI"
+      description: "Install Docker CLI tools to /opt/docker"
 
-    - name: "New Project"
-      command: "new-project.sh"
+    - id: "new-project"
+      name: "New Project"
+      description: "Scaffold new data science project using Copier"
 
-    - name: "Test CUDA"
-      command: "test-cuda.sh"
+    - id: "test-cuda"
+      name: "Test CUDA"
+      description: "Test CUDA GPU support with TensorFlow and PyTorch"
 
     - name: "Local Scripts"
       scan_dir: "~/.local/lab-utils.d"
