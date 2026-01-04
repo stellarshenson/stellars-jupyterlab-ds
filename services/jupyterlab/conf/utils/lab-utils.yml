@@ -43,19 +43,45 @@
 #       scan_dir: "~/.local/conda-env.d"
 #
 #   type: selector
-#     Shows selection UI with options from inline list or script.
+#     Shows selection UI for configuration options.
+#
+#     OPTIONS - where to get the list of choices:
+#       options:         Inline list of {value, label} dicts
+#       options_script:  Script returning JSON array of {value, label}
+#       options_cmd:     Shell command returning JSON array
+#
+#     CURRENT VALUE - how to detect currently selected option (marked in UI):
+#       current:         Literal value string
+#       current_script:  Script returning current value
+#       current_cmd:     Shell command returning current value
+#
+#     APPLY ACTION - what happens when user selects an option:
+#       apply_script:    Script to execute (from lab-utils.lib/)
+#       apply_cmd:       Shell command to execute
+#       apply_args:      Extra arguments prepended before selected value
+#
+#     EXECUTION: apply_script/apply_cmd is called with apply_args + selected value
+#       Example: apply_script="set-profile-var", apply_args="MY_VAR", value="/bin/bash"
+#       Executes: set-profile-var MY_VAR /bin/bash
+#                                 ^       ^
+#                            apply_args  selected value
+#
+#     Example with inline options:
 #     - name: "Default Shell"
 #       selector:
-#         options:  # inline options
+#         options:
 #           - {value: "/bin/bash", label: "Bash"}
 #           - {value: "/usr/bin/fish", label: "Fish"}
-#         apply_script: "lib/set-profile-var"
+#         current_cmd: "grep -oP 'MY_VAR=\"\\K[^\"]*' ~/.profile"
+#         apply_script: "set-profile-var"
 #         apply_args: "JUPYTERLAB_TERMINAL_SHELL"
 #
+#     Example with dynamic options:
 #     - name: "Default Conda Env"
 #       selector:
-#         options_script: "lib/conda-env-options"  # dynamic discovery
-#         apply_script: "lib/set-profile-var"
+#         options_script: "conda-env-options"
+#         current_cmd: "grep -oP 'CONDA_DEFAULT_ENV=\"\\K[^\"]*' ~/.profile"
+#         apply_script: "set-profile-var"
 #         apply_args: "CONDA_DEFAULT_ENV"
 #
 # =============================================================================
