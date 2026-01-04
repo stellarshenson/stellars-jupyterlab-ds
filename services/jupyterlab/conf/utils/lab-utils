@@ -102,6 +102,7 @@ def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
 
     Args:
         script_id: Script path (relative to lab-utils.d/, lab-utils.lib/, or absolute)
+                   Supports: "script", "script.sh", "parent/child", "parent.d/child.sh"
         is_full_path: If True, treat script_id as absolute path
 
     Returns:
@@ -114,20 +115,26 @@ def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
             return full_path
         return None
 
-    # Check global scripts directory
-    global_path = GLOBAL_SCRIPTS_DIR / script_id
-    if global_path.exists() and global_path.is_file():
-        return global_path
+    # Build list of paths to try
+    paths_to_try = [script_id]
 
-    # Check lib directory
-    lib_path = LIB_DIR / script_id
-    if lib_path.exists() and lib_path.is_file():
-        return lib_path
+    # Add .sh extension if not present
+    if not script_id.endswith(".sh"):
+        paths_to_try.append(f"{script_id}.sh")
 
-    # Check local scripts directory
-    local_path = LOCAL_SCRIPTS_DIR / script_id
-    if local_path.exists() and local_path.is_file():
-        return local_path
+    # Handle parent/child format -> parent.d/child.sh
+    if "/" in script_id and not ".d/" in script_id:
+        parent, child = script_id.split("/", 1)
+        paths_to_try.append(f"{parent}.d/{child}")
+        if not child.endswith(".sh"):
+            paths_to_try.append(f"{parent}.d/{child}.sh")
+
+    # Check each directory
+    for base_dir in [GLOBAL_SCRIPTS_DIR, LIB_DIR, LOCAL_SCRIPTS_DIR]:
+        for path in paths_to_try:
+            full_path = base_dir / path
+            if full_path.exists() and full_path.is_file():
+                return full_path
 
     return None
 
