@@ -5,7 +5,6 @@
 packages:
     - bash-completion # completion for bash
     - curl # for downloading files
-    - dialog # ncures shell GUI tool for workspace scripts
     - fish # modern extended shell
     - gawk # GNU awk for Makefile version management
     # - gcc # compiler, required for building some native packages

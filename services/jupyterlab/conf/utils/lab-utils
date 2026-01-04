@@ -3,13 +3,12 @@
 YAML-driven Lab Utils
 
 Lab utilities runner with YAML-based menu configuration.
-Supports CLI options, direct script execution, and interactive dialog menus.
+Supports CLI options, direct script execution, and interactive Textual TUI.
 """
 
 import os
 import sys
 import subprocess
-import argparse
 from pathlib import Path
 
 try:
@@ -24,10 +23,7 @@ MENU_CONFIG = SCRIPT_DIR / "lab-utils-menu.yml"
 GLOBAL_SCRIPTS_DIR = SCRIPT_DIR / "lab-utils.d"
 LOCAL_SCRIPTS_DIR = Path.home() / ".local" / "lab-utils.d"
 
-# Dialog settings
-DIALOG_BACKTITLE = "Stellars JupyterLab DS"
-
-# Colors for terminal output
+# Colors for terminal output (CLI mode)
 BLUE = '\033[1;34m'
 CYAN = '\033[0;36m'
 GRAY = '\033[0;90m'
@@ -67,7 +63,6 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
     Returns:
         List of menu item dicts with 'name' and 'command' keys
     """
-    # Expand ~ to home directory
     dir_path = Path(os.path.expanduser(scan_dir))
 
     if not dir_path.exists() or not dir_path.is_dir():
@@ -77,14 +72,12 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
     for script in sorted(dir_path.glob("*.sh")):
         if script.is_file() and os.access(script, os.X_OK):
             description = get_script_description(script)
-            # Use full path as command for scanned scripts
             items.append({
                 "name": f"{script.stem} - {description}",
-                "command": str(script),  # Full path for dynamic scripts
-                "_full_path": True  # Flag to indicate this is a full path
+                "command": str(script),
+                "_full_path": True
             })
 
-    # Also check for .yml files (conda env definitions)
     for yml_file in sorted(dir_path.glob("*.yml")):
         if yml_file.is_file():
             description = get_script_description(yml_file)
@@ -98,32 +91,20 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
 
 
 def resolve_script_path(name: str, is_full_path: bool = False) -> Path:
-    """
-    Resolve script path by name.
-    Supports both direct paths (from YAML) and name-based lookup.
-
-    Args:
-        name: Script name or path
-        is_full_path: If True, treat name as absolute path
-    """
-    # Handle full paths (from scan_dir dynamic items)
+    """Resolve script path by name."""
     if is_full_path or name.startswith("/") or name.startswith("~"):
         full_path = Path(os.path.expanduser(name))
         if full_path.exists() and full_path.is_file():
             return full_path
         return None
 
-    # If it looks like a path (contains /), try direct resolution
     if "/" in name:
-        # Check global first
         global_path = GLOBAL_SCRIPTS_DIR / name
         if global_path.exists() and global_path.is_file():
             return global_path
-        # Check local
         local_path = LOCAL_SCRIPTS_DIR / name
         if local_path.exists() and local_path.is_file():
             return local_path
-        # Try without assuming .d structure (parent/child -> parent.d/child.sh)
         parts = name.split("/")
         if len(parts) == 2:
             parent, child = parts
@@ -134,7 +115,6 @@ def resolve_script_path(name: str, is_full_path: bool = False) -> Path:
             if local_nested.exists():
                 return local_nested
     else:
-        # Simple name - add .sh extension
         global_path = GLOBAL_SCRIPTS_DIR / f"{name}.sh"
         if global_path.exists():
             return global_path
@@ -151,10 +131,8 @@ def get_all_scripts_from_dir(scripts_dir: Path, source_label: str) -> list:
     if not scripts_dir.exists():
         return scripts
 
-    # Track which .d directories we've already processed
     processed_subdirs = set()
 
-    # First pass: find top-level scripts and their .d subdirectories
     for script in sorted(scripts_dir.glob("*.sh")):
         if script.is_file() and os.access(script, os.X_OK):
             name = script.stem
@@ -167,7 +145,6 @@ def get_all_scripts_from_dir(scripts_dir: Path, source_label: str) -> list:
                 "path": script
             })
 
-            # Check for corresponding .d subdirectory
             subdir = scripts_dir / f"{name}.d"
             if subdir.is_dir():
                 processed_subdirs.add(subdir.name)
@@ -183,17 +160,15 @@ def get_all_scripts_from_dir(scripts_dir: Path, source_label: str) -> list:
                             "path": child_script
                         })
 
-    # Second pass: find orphan .d directories (no parent script)
     for subdir in sorted(scripts_dir.glob("*.d")):
         if subdir.is_dir() and subdir.name not in processed_subdirs:
-            parent_name = subdir.name[:-2]  # Remove .d suffix
-            # Add a virtual parent entry for the group
+            parent_name = subdir.name[:-2]
             scripts.append({
                 "name": parent_name,
                 "description": f"Scripts in {subdir.name}/",
                 "source": source_label,
                 "level": "top",
-                "path": None  # No actual script
+                "path": None
             })
             for child_script in sorted(subdir.glob("*.sh")):
                 if child_script.is_file() and os.access(child_script, os.X_OK):
@@ -336,179 +311,235 @@ def execute_script(name: str, args: list = None):
     sys.exit(result.returncode)
 
 
-def run_dialog_menu(title: str, items: list, is_submenu: bool = False) -> str:
-    """Display a dialog menu and return the selected item tag."""
-    menu_items = []
-
-    # Always show navigation option - Back in submenus, Exit at top level
-    if is_submenu:
-        menu_items.extend(["BACK", "<- Back"])
-    else:
-        menu_items.extend(["EXIT", "<- Exit"])
-
-    for i, item in enumerate(items, 1):
-        tag = str(i)
-        name = item.get("name", f"Item {i}")
-        if "submenu" in item or "scan_dir" in item:
-            name = f"{name} ->"
-        menu_items.extend([tag, name])
-
-    menu_height = min(len(items) + 1, 15)  # +1 for Back/Exit option
-
-    try:
-        result = subprocess.run(
-            [
-                "dialog",
-                "--backtitle", DIALOG_BACKTITLE,
-                "--title", title,
-                "--menu", "Select an option:",
-                "20", "70", str(menu_height)
-            ] + menu_items,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-
-        if result.returncode == 0:
-            return result.stderr.strip()
-        return None
-
-    except FileNotFoundError:
-        print("Error: dialog utility not found", file=sys.stderr)
-        sys.exit(1)
-
-
-def execute_menu_command(command: str, title: str, is_full_path: bool = False):
-    """Execute a script from menu selection."""
-    script_path = resolve_script_path(command, is_full_path)
-
-    if script_path is None:
-        subprocess.run([
-            "dialog",
-            "--backtitle", DIALOG_BACKTITLE,
-            "--title", "Error",
-            "--msgbox", f"Script not found: {command}",
-            "8", "50"
-        ])
-        return
-
-    subprocess.run(["clear"])
-    print(f"\n=== {title} ===\n")
-
-    try:
-        result = subprocess.run([str(script_path)])
-        exit_code = result.returncode
-    except Exception as e:
-        print(f"\nError executing script: {e}")
-        exit_code = 1
-
-    print(f"\n{'=' * 40}")
-    if exit_code == 0:
-        print("Script completed successfully.")
-    else:
-        print(f"Script exited with code: {exit_code}")
-
-    input("\nPress Enter to continue...")
-
-
-def build_menu_items(menu_config: dict) -> list:
-    """
-    Build menu items list, combining static items with dynamic scan_dir items.
-
-    Processes each item in the menu config:
-    - Items with only 'submenu' use static items
-    - Items with only 'scan_dir' get items from directory scan
-    - Items with both 'submenu' and 'scan_dir' combine static + dynamic items
-    """
-    items = list(menu_config.get("items", []))
-
-    # Process top-level scan_dir if present (for menus that are purely dynamic)
-    if "scan_dir" in menu_config and "items" not in menu_config:
-        return scan_directory_for_menu_items(menu_config["scan_dir"])
-
-    return items
-
-
-def navigate_menu(menu_config: dict, breadcrumb: list = None):
-    """Navigate through menus recursively."""
-    if breadcrumb is None:
-        breadcrumb = []
-
-    title = menu_config.get("title", "Menu")
-    items = build_menu_items(menu_config)
-    is_submenu = bool(breadcrumb)
-
-    if breadcrumb:
-        display_title = " > ".join(breadcrumb + [title])
-    else:
-        display_title = title
-
-    while True:
-        selection = run_dialog_menu(display_title, items, is_submenu=is_submenu)
-
-        if selection is None:
-            return
-
-        if selection in ("BACK", "EXIT"):
-            return
-
-        try:
-            index = int(selection) - 1
-            selected_item = items[index]
-        except (ValueError, IndexError):
-            continue
-
-        item_name = selected_item.get("name", "")
-
-        # Handle items with submenu and/or scan_dir
-        if "submenu" in selected_item or "scan_dir" in selected_item:
-            # Build submenu items: static submenu + dynamic scan_dir
-            submenu_items = list(selected_item.get("submenu", []))
-            if "scan_dir" in selected_item:
-                dynamic_items = scan_directory_for_menu_items(selected_item["scan_dir"])
-                submenu_items.extend(dynamic_items)
-
-            if submenu_items:
-                submenu_config = {
-                    "title": item_name,
-                    "items": submenu_items
-                }
-                navigate_menu(submenu_config, breadcrumb + [title])
-            else:
-                # Empty submenu - show message
-                subprocess.run([
-                    "dialog",
-                    "--backtitle", DIALOG_BACKTITLE,
-                    "--title", "Info",
-                    "--msgbox", f"No items found in {item_name}",
-                    "8", "50"
-                ])
-
-        elif "command" in selected_item:
-            is_full_path = selected_item.get("_full_path", False)
-            execute_menu_command(selected_item["command"], item_name, is_full_path)
-
+# =============================================================================
+# Textual TUI Menu
+# =============================================================================
 
 def run_interactive_menu():
-    """Run the interactive YAML-driven menu."""
-    # Check if dialog is available
-    if subprocess.run(["which", "dialog"], capture_output=True).returncode != 0:
-        print("Error: dialog command not found. Install it with:")
-        print("  Ubuntu/Debian: sudo apt install dialog")
-        print("  CentOS/RHEL: sudo yum install dialog")
+    """Run the interactive Textual TUI menu."""
+    try:
+        from textual.app import App, ComposeResult
+        from textual.widgets import Header, Footer, OptionList, Static
+        from textual.widgets.option_list import Option, Separator
+        from textual.binding import Binding
+        from textual.containers import Container
+    except ImportError:
+        print("Error: Textual not installed. Install with: pip install textual", file=sys.stderr)
         sys.exit(1)
 
     config = load_menu_config()
-    menu = config.get("menu", {})
+    root_menu = config.get("menu", {})
 
-    navigate_menu(menu)
+    class LabUtilsApp(App):
+        """Lab Utils TUI Application."""
 
-    subprocess.run(["clear"])
-    print("Lab Utils closed.")
+        TITLE = "Lab Utils"
+        SUB_TITLE = "Stellars JupyterLab DS"
+        CSS = """
+        Screen {
+            background: $surface;
+        }
+        Header {
+            dock: top;
+            background: $primary;
+            color: $text;
+        }
+        Footer {
+            dock: bottom;
+            background: $primary-darken-1;
+        }
+        #menu-container {
+            width: 100%;
+            height: 100%;
+            padding: 1 2;
+        }
+        OptionList {
+            width: 100%;
+            height: 100%;
+            border: round $primary;
+            background: $surface;
+            padding: 0 1;
+        }
+        OptionList:focus {
+            border: round $accent;
+        }
+        OptionList > .option-list--option-highlighted {
+            background: $accent;
+            color: $text;
+        }
+        OptionList > .option-list--option-hover {
+            background: $primary-lighten-2;
+        }
+        #breadcrumb {
+            dock: top;
+            height: 1;
+            padding: 0 2;
+            background: $primary-darken-2;
+            color: $text-muted;
+            text-style: italic;
+        }
+        #title-bar {
+            dock: top;
+            height: 3;
+            padding: 1 2;
+            background: $primary-darken-1;
+            text-align: center;
+            text-style: bold;
+        }
+        """
+
+        BINDINGS = [
+            Binding("q", "quit", "Quit", show=True),
+            Binding("escape", "go_back", "Back", show=True),
+            Binding("backspace", "go_back", "Back", show=False),
+        ]
+
+        def __init__(self):
+            super().__init__()
+            self.menu_stack = []  # Stack of (title, items) tuples
+            self.current_items = []
+            self.pending_command = None
+
+        def compose(self) -> ComposeResult:
+            yield Header()
+            yield Static("", id="breadcrumb")
+            with Container(id="menu-container"):
+                yield OptionList(id="menu")
+            yield Footer()
+
+        def on_mount(self) -> None:
+            """Initialize with root menu."""
+            self.push_menu(root_menu.get("title", "Lab Utils"), root_menu.get("items", []))
+
+        def push_menu(self, title: str, items: list) -> None:
+            """Push a new menu onto the stack."""
+            self.menu_stack.append((title, items))
+            self.current_items = items
+            self.refresh_menu()
+
+        def pop_menu(self) -> bool:
+            """Pop the current menu. Returns False if at root."""
+            if len(self.menu_stack) <= 1:
+                return False
+            self.menu_stack.pop()
+            title, items = self.menu_stack[-1]
+            self.current_items = items
+            self.refresh_menu()
+            return True
+
+        def get_breadcrumb(self) -> str:
+            """Build breadcrumb string from menu stack."""
+            if not self.menu_stack:
+                return ""
+            titles = [t for t, _ in self.menu_stack]
+            return " > ".join(titles)
+
+        def refresh_menu(self) -> None:
+            """Refresh the menu display."""
+            menu = self.query_one("#menu", OptionList)
+            breadcrumb = self.query_one("#breadcrumb", Static)
+
+            menu.clear_options()
+            breadcrumb.update(self.get_breadcrumb())
+
+            # Add navigation option
+            if len(self.menu_stack) > 1:
+                menu.add_option(Option("◀ Back", id="__back__"))
+            else:
+                menu.add_option(Option("✕ Exit", id="__exit__"))
+
+            menu.add_option(Separator())
+
+            # Add menu items with icons
+            for i, item in enumerate(self.current_items):
+                name = item.get("name", f"Item {i}")
+                if "submenu" in item or "scan_dir" in item:
+                    # Folder/submenu icon
+                    name = f"▶ {name}"
+                else:
+                    # Script/command icon
+                    name = f"● {name}"
+                menu.add_option(Option(name, id=str(i)))
+
+        def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+            """Handle menu item selection."""
+            option_id = event.option.id
+
+            if option_id == "__exit__":
+                self.exit()
+                return
+
+            if option_id == "__back__":
+                self.pop_menu()
+                return
+
+            try:
+                index = int(option_id)
+                selected_item = self.current_items[index]
+            except (ValueError, IndexError):
+                return
+
+            item_name = selected_item.get("name", "")
+
+            # Handle submenu or scan_dir
+            if "submenu" in selected_item or "scan_dir" in selected_item:
+                submenu_items = list(selected_item.get("submenu", []))
+                if "scan_dir" in selected_item:
+                    dynamic_items = scan_directory_for_menu_items(selected_item["scan_dir"])
+                    submenu_items.extend(dynamic_items)
+
+                if submenu_items:
+                    self.push_menu(item_name, submenu_items)
+                else:
+                    self.notify(f"No items found in {item_name}", severity="warning")
+
+            # Handle command execution
+            elif "command" in selected_item:
+                is_full_path = selected_item.get("_full_path", False)
+                command = selected_item["command"]
+                script_path = resolve_script_path(command, is_full_path)
+
+                if script_path is None:
+                    self.notify(f"Script not found: {command}", severity="error")
+                    return
+
+                # Store command and exit to execute
+                self.pending_command = (str(script_path), item_name)
+                self.exit()
+
+        def action_go_back(self) -> None:
+            """Handle back action."""
+            if not self.pop_menu():
+                self.exit()
+
+    # Run the app
+    app = LabUtilsApp()
+    app.run()
+
+    # Execute pending command after app exits
+    if app.pending_command:
+        script_path, title = app.pending_command
+        print(f"\n{'=' * 60}")
+        print(f"  {title}")
+        print(f"{'=' * 60}\n")
+
+        result = subprocess.run([script_path])
+
+        print(f"\n{'=' * 60}")
+        if result.returncode == 0:
+            print("  Script completed successfully.")
+        else:
+            print(f"  Script exited with code: {result.returncode}")
+        print(f"{'=' * 60}")
+
+        input("\nPress Enter to continue...")
+
+        # Re-run the menu
+        run_interactive_menu()
 
 
 def main():
     """Main entry point."""
-    # Parse arguments manually for flexibility
     args = sys.argv[1:]
 
     if not args:
@@ -526,7 +557,6 @@ def main():
         print("Use --help for usage information")
         sys.exit(1)
     else:
-        # Execute script directly
         execute_script(args[0], args[1:])
 
 
