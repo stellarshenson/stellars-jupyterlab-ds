@@ -1,0 +1,57 @@
+# Lab Utils Menu Configuration
+# YAML-driven menu structure for lab-utils
+# Each item can be either a command (leaf) or submenu (branch)
+
+menu:
+  title: "Lab Utils"
+  items:
+    - name: "Set Defaults"
+      submenu:
+        - name: "Default Shell"
+          command: "set-defaults.d/default-shell.sh"
+        - name: "Default Conda Env"
+          command: "set-defaults.d/default-conda-env.sh"
+        - name: "Default AWS Profile"
+          command: "set-defaults.d/default-aws-profile.sh"
+
+    - name: "Git Utils"
+      submenu:
+        - name: "Pull All Repos"
+          command: "git-utils.d/git-pull-repos.sh"
+        - name: "Push All Repos"
+          command: "git-utils.d/git-push-repos.sh"
+        - name: "Commit All Repos"
+          command: "git-utils.d/git-commit-repos.sh"
+        - name: "Pull Submodules"
+          command: "git-utils.d/git-pull-submodules.sh"
+
+    - name: "Install Conda Env"
+      submenu:
+        - name: "TensorFlow"
+          command: "install-conda-env.d/tensorflow.sh"
+        - name: "PyTorch"
+          command: "install-conda-env.d/torch.sh"
+        - name: "R"
+          command: "install-conda-env.d/r.sh"
+        - name: "Rust"
+          command: "install-conda-env.d/rust.sh"
+
+    - name: "Install AI Assistant"
+      submenu:
+        - name: "Anthropic Claude Code"
+          command: "install-ai-assistant.d/anthropic-claude-code.sh"
+        - name: "Anysphere Cursor"
+          command: "install-ai-assistant.d/anysphere-cursor.sh"
+        - name: "Google Gemini CLI"
+          command: "install-ai-assistant.d/google-gemini-cli.sh"
+        - name: "OpenAI Codex"
+          command: "install-ai-assistant.d/openai-codex.sh"
+
+    - name: "Install Docker CLI"
+      command: "install-docker-cli.sh"
+
+    - name: "New Project"
+      command: "new-project.sh"
+
+    - name: "Test CUDA"
+      command: "test-cuda.sh"
