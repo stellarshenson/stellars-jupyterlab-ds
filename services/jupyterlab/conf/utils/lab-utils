@@ -151,6 +151,10 @@ def get_all_scripts_from_dir(scripts_dir: Path, source_label: str) -> list:
     if not scripts_dir.exists():
         return scripts
 
+    # Track which .d directories we've already processed
+    processed_subdirs = set()
+
+    # First pass: find top-level scripts and their .d subdirectories
     for script in sorted(scripts_dir.glob("*.sh")):
         if script.is_file() and os.access(script, os.X_OK):
             name = script.stem
@@ -166,6 +170,7 @@ def get_all_scripts_from_dir(scripts_dir: Path, source_label: str) -> list:
             # Check for corresponding .d subdirectory
             subdir = scripts_dir / f"{name}.d"
             if subdir.is_dir():
+                processed_subdirs.add(subdir.name)
                 for child_script in sorted(subdir.glob("*.sh")):
                     if child_script.is_file() and os.access(child_script, os.X_OK):
                         child_name = child_script.stem
@@ -177,6 +182,30 @@ def get_all_scripts_from_dir(scripts_dir: Path, source_label: str) -> list:
                             "level": "child",
                             "path": child_script
                         })
+
+    # Second pass: find orphan .d directories (no parent script)
+    for subdir in sorted(scripts_dir.glob("*.d")):
+        if subdir.is_dir() and subdir.name not in processed_subdirs:
+            parent_name = subdir.name[:-2]  # Remove .d suffix
+            # Add a virtual parent entry for the group
+            scripts.append({
+                "name": parent_name,
+                "description": f"Scripts in {subdir.name}/",
+                "source": source_label,
+                "level": "top",
+                "path": None  # No actual script
+            })
+            for child_script in sorted(subdir.glob("*.sh")):
+                if child_script.is_file() and os.access(child_script, os.X_OK):
+                    child_name = child_script.stem
+                    child_description = get_script_description(child_script)
+                    scripts.append({
+                        "name": f"{parent_name}/{child_name}",
+                        "description": child_description,
+                        "source": source_label,
+                        "level": "child",
+                        "path": child_script
+                    })
 
     return scripts
 
@@ -320,7 +349,7 @@ def run_dialog_menu(title: str, items: list, is_submenu: bool = False) -> str:
     for i, item in enumerate(items, 1):
         tag = str(i)
         name = item.get("name", f"Item {i}")
-        if "submenu" in item:
+        if "submenu" in item or "scan_dir" in item:
             name = f"{name} ->"
         menu_items.extend([tag, name])
 
@@ -335,7 +364,7 @@ def run_dialog_menu(title: str, items: list, is_submenu: bool = False) -> str:
                 "--menu", "Select an option:",
                 "20", "70", str(menu_height)
             ] + menu_items,
-            capture_output=True,
+            stderr=subprocess.PIPE,
             text=True
         )
 
