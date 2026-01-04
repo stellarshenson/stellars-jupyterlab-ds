@@ -693,9 +693,9 @@ def run_interactive_menu():
                         display = f"● {name}"
                 menu.add_option(Option(display, id=str(i)))
 
-            # Start cursor on first menu item (skip Back/Exit and separator)
+            # Start cursor on first menu item (skip Back/Exit; separator doesn't count)
             if self.current_items:
-                menu.highlighted = 2
+                menu.highlighted = 1
 
         def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
             """Handle menu item selection."""
