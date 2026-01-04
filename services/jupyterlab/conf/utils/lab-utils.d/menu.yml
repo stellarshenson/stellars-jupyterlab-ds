@@ -42,6 +42,22 @@
 #           description: "Install TensorFlow"
 #       scan_dir: "~/.local/conda-env.d"
 #
+#   type: selector
+#     Shows selection UI with options from inline list or script.
+#     - name: "Default Shell"
+#       selector:
+#         options:  # inline options
+#           - {value: "/bin/bash", label: "Bash"}
+#           - {value: "/usr/bin/fish", label: "Fish"}
+#         apply_script: "lib/set-profile-var"
+#         apply_args: "JUPYTERLAB_TERMINAL_SHELL"
+#
+#     - name: "Default Conda Env"
+#       selector:
+#         options_script: "lib/conda-env-options"  # dynamic discovery
+#         apply_script: "lib/set-profile-var"
+#         apply_args: "CONDA_DEFAULT_ENV"
+#
 # =============================================================================
 
 menu:
@@ -49,15 +65,28 @@ menu:
   items:
     - name: "Set Defaults"
       submenu:
-        - id: "set-defaults.d/default-shell.sh"
-          name: "Default Shell"
-          description: "Configure default terminal shell (bash/fish)"
-        - id: "set-defaults.d/default-conda-env.sh"
-          name: "Default Conda Env"
-          description: "Set default conda environment for notebooks"
-        - id: "set-defaults.d/default-aws-profile.sh"
-          name: "Default AWS Profile"
+        - name: "Default Shell"
+          description: "Configure default terminal shell"
+          selector:
+            options:
+              - {value: "/bin/bash", label: "Bash"}
+              - {value: "/usr/bin/fish", label: "Fish"}
+            apply_script: "lib/set-profile-var"
+            apply_args: "JUPYTERLAB_TERMINAL_SHELL"
+
+        - name: "Default Conda Env"
+          description: "Set default conda environment"
+          selector:
+            options_script: "lib/conda-env-options"
+            apply_script: "lib/set-profile-var"
+            apply_args: "CONDA_DEFAULT_ENV"
+
+        - name: "Default AWS Profile"
           description: "Configure default AWS CLI profile"
+          selector:
+            options_script: "lib/aws-profile-options"
+            apply_script: "lib/set-profile-var"
+            apply_args: "AWS_PROFILE"
 
     - name: "Git Utils"
       submenu:
