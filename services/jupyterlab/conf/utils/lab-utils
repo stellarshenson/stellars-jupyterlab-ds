@@ -1,208 +1,218 @@
-#!/bin/bash
-## Lab utilities - run platform utilities and scripts
-# Lab Utils Script Runner with CLI support
+#!/usr/bin/env python3
+"""
+YAML-driven Lab Utils
 
-set -e
+Lab utilities runner with YAML-based menu configuration.
+Supports CLI options, direct script execution, and interactive dialog menus.
+"""
 
-GLOBAL_SCRIPTS_DIR="/opt/utils/lab-utils.d"
-LOCAL_SCRIPTS_DIR="${HOME}/.local/lab-utils.d"
+import os
+import sys
+import subprocess
+import argparse
+from pathlib import Path
 
-# Colors
-BLUE='\033[1;34m'
-CYAN='\033[0;36m'
-GRAY='\033[0;00m'
-NC='\033[0m' # No Color
+try:
+    import yaml
+except ImportError:
+    print("Error: PyYAML not installed. Install with: pip install pyyaml", file=sys.stderr)
+    sys.exit(1)
 
-# Function to extract description from script
-get_script_description() {
-    local script_file="$1"
-    local description=""
+# Configuration
+SCRIPT_DIR = Path(__file__).parent.resolve()
+MENU_CONFIG = SCRIPT_DIR / "lab-utils-menu.yml"
+GLOBAL_SCRIPTS_DIR = SCRIPT_DIR / "lab-utils.d"
+LOCAL_SCRIPTS_DIR = Path.home() / ".local" / "lab-utils.d"
 
-    # Look for line starting with ## and extract description
-    description=$(grep "^##" "$script_file" 2>/dev/null | head -1 | sed 's/^##[[:space:]]*//' || echo "")
+# Dialog settings
+DIALOG_BACKTITLE = "Stellars JupyterLab DS"
 
-    if [[ -z "$description" ]]; then
-        description="No description available"
-    fi
+# Colors for terminal output
+BLUE = '\033[1;34m'
+CYAN = '\033[0;36m'
+GRAY = '\033[0;90m'
+GREEN = '\033[0;32m'
+NC = '\033[0m'  # No Color
 
-    echo "$description"
-}
 
-# Function to get executable scripts from a directory (top-level only)
-# Returns: script_name|description|source_dir
-get_scripts_from_dir() {
-    local dir="$1"
-    local source_label="$2"
+def load_menu_config() -> dict:
+    """Load menu configuration from YAML file."""
+    if not MENU_CONFIG.exists():
+        print(f"Error: Menu configuration not found: {MENU_CONFIG}", file=sys.stderr)
+        sys.exit(1)
 
-    if [[ ! -d "$dir" ]]; then
-        return
-    fi
+    with open(MENU_CONFIG) as f:
+        return yaml.safe_load(f)
 
-    for script in "$dir"/*.sh; do
-        if [[ -f "$script" && -x "$script" ]]; then
-            local basename_script=$(basename "$script")
-            local name_without_ext="${basename_script%.sh}"
-            local description=$(get_script_description "$script")
-            echo "${name_without_ext}|${description}|${source_label}"
-        fi
-    done
-}
 
-# Function to get child scripts from a .d subdirectory
-# Returns: parent/child|description|source_dir
-get_child_scripts() {
-    local parent_name="$1"
-    local subdir="$2"
-    local source_label="$3"
+def get_script_description(script_path: Path) -> str:
+    """Extract description from script (line starting with ##)."""
+    try:
+        with open(script_path) as f:
+            for line in f:
+                if line.startswith("##"):
+                    return line[2:].strip()
+        return "No description available"
+    except Exception:
+        return "No description available"
 
-    if [[ ! -d "$subdir" ]]; then
-        return
-    fi
 
-    for script in "$subdir"/*.sh; do
-        if [[ -f "$script" && -x "$script" ]]; then
-            local basename_script=$(basename "$script")
-            local name_without_ext="${basename_script%.sh}"
-            local description=$(get_script_description "$script")
-            echo "${parent_name}/${name_without_ext}|${description}|${source_label}"
-        fi
-    done
-}
+def resolve_script_path(name: str) -> Path:
+    """
+    Resolve script path by name.
+    Supports both direct paths (from YAML) and name-based lookup.
+    """
+    # If it looks like a path (contains /), try direct resolution
+    if "/" in name:
+        # Check global first
+        global_path = GLOBAL_SCRIPTS_DIR / name
+        if global_path.exists() and global_path.is_file():
+            return global_path
+        # Check local
+        local_path = LOCAL_SCRIPTS_DIR / name
+        if local_path.exists() and local_path.is_file():
+            return local_path
+        # Try without assuming .d structure (parent/child -> parent.d/child.sh)
+        parts = name.split("/")
+        if len(parts) == 2:
+            parent, child = parts
+            global_nested = GLOBAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
+            if global_nested.exists():
+                return global_nested
+            local_nested = LOCAL_SCRIPTS_DIR / f"{parent}.d" / f"{child}.sh"
+            if local_nested.exists():
+                return local_nested
+    else:
+        # Simple name - add .sh extension
+        global_path = GLOBAL_SCRIPTS_DIR / f"{name}.sh"
+        if global_path.exists():
+            return global_path
+        local_path = LOCAL_SCRIPTS_DIR / f"{name}.sh"
+        if local_path.exists():
+            return local_path
 
-# Function to get all scripts including nested ones from a directory
-# Returns: script_name|description|source_dir (with parent/child format for nested)
-get_all_scripts_from_dir() {
-    local dir="$1"
-    local source_label="$2"
+    return None
 
-    if [[ ! -d "$dir" ]]; then
-        return
-    fi
 
-    for script in "$dir"/*.sh; do
-        if [[ -f "$script" && -x "$script" ]]; then
-            local basename_script=$(basename "$script")
-            local name_without_ext="${basename_script%.sh}"
-            local description=$(get_script_description "$script")
-            echo "${name_without_ext}|${description}|${source_label}|top"
+def get_all_scripts_from_dir(scripts_dir: Path, source_label: str) -> list:
+    """Get all scripts from a directory including nested ones."""
+    scripts = []
+    if not scripts_dir.exists():
+        return scripts
+
+    for script in sorted(scripts_dir.glob("*.sh")):
+        if script.is_file() and os.access(script, os.X_OK):
+            name = script.stem
+            description = get_script_description(script)
+            scripts.append({
+                "name": name,
+                "description": description,
+                "source": source_label,
+                "level": "top",
+                "path": script
+            })
 
             # Check for corresponding .d subdirectory
-            local subdir="${dir}/${name_without_ext}.d"
-            if [[ -d "$subdir" ]]; then
-                for child_script in "$subdir"/*.sh; do
-                    if [[ -f "$child_script" && -x "$child_script" ]]; then
-                        local child_basename=$(basename "$child_script")
-                        local child_name="${child_basename%.sh}"
-                        local child_description=$(get_script_description "$child_script")
-                        echo "${name_without_ext}/${child_name}|${child_description}|${source_label}|child"
-                    fi
-                done
-            fi
-        fi
-    done
-}
+            subdir = scripts_dir / f"{name}.d"
+            if subdir.is_dir():
+                for child_script in sorted(subdir.glob("*.sh")):
+                    if child_script.is_file() and os.access(child_script, os.X_OK):
+                        child_name = child_script.stem
+                        child_description = get_script_description(child_script)
+                        scripts.append({
+                            "name": f"{name}/{child_name}",
+                            "description": child_description,
+                            "source": source_label,
+                            "level": "child",
+                            "path": child_script
+                        })
 
-# Function to get all scripts (global and local) - top level only
-get_all_scripts() {
-    get_scripts_from_dir "$GLOBAL_SCRIPTS_DIR" "global"
-    get_scripts_from_dir "$LOCAL_SCRIPTS_DIR" "local:${LOCAL_SCRIPTS_DIR}"
-}
+    return scripts
 
-# Function to get all scripts including nested (global and local)
-get_all_scripts_hierarchical() {
-    get_all_scripts_from_dir "$GLOBAL_SCRIPTS_DIR" "global"
-    get_all_scripts_from_dir "$LOCAL_SCRIPTS_DIR" "local:${LOCAL_SCRIPTS_DIR}"
-}
 
-# Function to find script path by name (supports parent/child format)
-find_script() {
-    local name="$1"
+def get_all_scripts() -> tuple:
+    """Get all scripts from global and local directories."""
+    global_scripts = get_all_scripts_from_dir(GLOBAL_SCRIPTS_DIR, "global")
+    local_scripts = get_all_scripts_from_dir(LOCAL_SCRIPTS_DIR, "local")
+    return global_scripts, local_scripts
 
-    # Check if it's a nested path (contains /)
-    if [[ "$name" == */* ]]; then
-        local parent="${name%%/*}"
-        local child="${name#*/}"
 
-        # Check global first
-        if [[ -x "${GLOBAL_SCRIPTS_DIR}/${parent}.d/${child}.sh" ]]; then
-            echo "${GLOBAL_SCRIPTS_DIR}/${parent}.d/${child}.sh"
-            return 0
-        fi
+def show_help():
+    """Display help message."""
+    print("Usage: lab-utils [OPTIONS] [SCRIPT_NAME]")
+    print("")
+    print("Lab utilities runner - execute platform utilities and scripts")
+    print("")
+    print("Options:")
+    print("  --help, -h         Show this help message")
+    print("  --list, -l         List available scripts with descriptions")
+    print("  --create-local     Create local scripts directory with demo script")
+    print("")
+    print("Arguments:")
+    print("  SCRIPT_NAME        Execute the specified script directly")
+    print("                     Use parent/child format for nested scripts")
+    print("")
+    print("When called without arguments, shows an interactive menu.")
+    print("")
+    print("Script locations:")
+    print(f"  Global: {GLOBAL_SCRIPTS_DIR}")
+    print(f"  Local:  {LOCAL_SCRIPTS_DIR}")
+    print("")
+    print("Examples:")
+    print("  lab-utils                              # Show interactive menu")
+    print("  lab-utils --list                       # List all available scripts")
+    print("  lab-utils --create-local               # Scaffold local scripts")
+    print("  lab-utils test-cuda                    # Run top-level script")
+    print("  lab-utils git-utils/git-pull-repos    # Run nested script directly")
 
-        # Check local
-        if [[ -x "${LOCAL_SCRIPTS_DIR}/${parent}.d/${child}.sh" ]]; then
-            echo "${LOCAL_SCRIPTS_DIR}/${parent}.d/${child}.sh"
-            return 0
-        fi
-    else
-        # Top-level script
-        # Check global first
-        if [[ -x "${GLOBAL_SCRIPTS_DIR}/${name}.sh" ]]; then
-            echo "${GLOBAL_SCRIPTS_DIR}/${name}.sh"
-            return 0
-        fi
 
-        # Check local
-        if [[ -x "${LOCAL_SCRIPTS_DIR}/${name}.sh" ]]; then
-            echo "${LOCAL_SCRIPTS_DIR}/${name}.sh"
-            return 0
-        fi
-    fi
+def list_scripts():
+    """List all available scripts with descriptions."""
+    global_scripts, local_scripts = get_all_scripts()
 
-    return 1
-}
+    if global_scripts:
+        print(f"{CYAN}Global scripts{NC} {GRAY}({GLOBAL_SCRIPTS_DIR}){NC}")
+        print("")
+        for script in global_scripts:
+            if script["level"] == "child":
+                print(f"    {GRAY}└─{NC} {BLUE}{script['name']:<23}{NC} {script['description']}")
+            else:
+                print(f"  {BLUE}{script['name']:<25}{NC} {script['description']}")
+        print("")
 
-# Function to show help
-show_help() {
-    echo "Usage: lab-utils [OPTIONS] [SCRIPT_NAME]"
-    echo ""
-    echo "Lab utilities runner - execute platform utilities and scripts"
-    echo ""
-    echo "Options:"
-    echo "  --help, -h         Show this help message"
-    echo "  --list, -l         List available scripts with descriptions"
-    echo "  --create-local     Create local scripts directory with demo script"
-    echo ""
-    echo "Arguments:"
-    echo "  SCRIPT_NAME        Execute the specified script directly"
-    echo "                     Use parent/child format for nested scripts"
-    echo ""
-    echo "When called without arguments, shows an interactive menu."
-    echo ""
-    echo "Script locations:"
-    echo "  Global: ${GLOBAL_SCRIPTS_DIR}"
-    echo "  Local:  ${LOCAL_SCRIPTS_DIR}"
-    echo ""
-    echo "Examples:"
-    echo "  lab-utils                              # Show interactive menu"
-    echo "  lab-utils --list                       # List all available scripts"
-    echo "  lab-utils --create-local               # Scaffold local scripts"
-    echo "  lab-utils test-cuda                    # Run top-level script"
-    echo "  lab-utils git-utils/git-pull-repos    # Run nested script directly"
-}
+    if local_scripts:
+        print(f"{CYAN}Local scripts{NC} {GRAY}({LOCAL_SCRIPTS_DIR}){NC}")
+        print("")
+        for script in local_scripts:
+            if script["level"] == "child":
+                print(f"    {GRAY}└─{NC} {BLUE}{script['name']:<23}{NC} {script['description']}")
+            else:
+                print(f"  {BLUE}{script['name']:<25}{NC} {script['description']}")
+        print("")
+    elif not LOCAL_SCRIPTS_DIR.exists():
+        print(f"{GRAY}No local scripts directory. Run --create-local to create one.{NC}")
+        print("")
 
-# Function to create local scripts directory with demo script
-create_local_scripts() {
-    if [[ -d "$LOCAL_SCRIPTS_DIR" ]]; then
-        echo -e "${CYAN}Local scripts directory already exists:${NC} ${LOCAL_SCRIPTS_DIR}"
-        echo ""
-        echo "Use 'lab-utils --list' to see available scripts."
-        return 0
-    fi
 
-    echo -e "${CYAN}Creating local scripts directory...${NC}"
-    mkdir -p "$LOCAL_SCRIPTS_DIR"
+def create_local_scripts():
+    """Create local scripts directory with demo script."""
+    if LOCAL_SCRIPTS_DIR.exists():
+        print(f"{CYAN}Local scripts directory already exists:{NC} {LOCAL_SCRIPTS_DIR}")
+        print("")
+        print("Use 'lab-utils --list' to see available scripts.")
+        return
 
-    # Create demo script
-    local demo_script="${LOCAL_SCRIPTS_DIR}/my-script.sh"
-    cat > "$demo_script" << 'DEMO_EOF'
-#!/bin/bash
+    print(f"{CYAN}Creating local scripts directory...{NC}")
+    LOCAL_SCRIPTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    demo_script = LOCAL_SCRIPTS_DIR / "my-script.sh"
+    demo_content = '''#!/bin/bash
 ## My custom script - template for local utilities
 
 # Colors for output
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+GREEN='\\033[0;32m'
+BLUE='\\033[0;34m'
+NC='\\033[0m' # No Color
 
 echo -e "${GREEN}Hello from your local script!${NC}"
 echo ""
@@ -216,157 +226,189 @@ echo "  - Make scripts executable: chmod +x script.sh"
 echo "  - Create parent.d/ subdirectories for nested scripts"
 echo ""
 echo "Arguments received: $@"
-DEMO_EOF
+'''
 
-    chmod +x "$demo_script"
+    demo_script.write_text(demo_content)
+    demo_script.chmod(0o755)
 
-    echo -e "${GREEN}Created local scripts directory:${NC} ${LOCAL_SCRIPTS_DIR}"
-    echo -e "${GREEN}Created demo script:${NC} ${demo_script}"
-    echo ""
-    echo "Next steps:"
-    echo "  1. Edit ${demo_script} for your needs"
-    echo "  2. Create additional .sh scripts in ${LOCAL_SCRIPTS_DIR}"
-    echo "  3. Run 'lab-utils --list' to see your scripts"
-}
+    print(f"{GREEN}Created local scripts directory:{NC} {LOCAL_SCRIPTS_DIR}")
+    print(f"{GREEN}Created demo script:{NC} {demo_script}")
+    print("")
+    print("Next steps:")
+    print(f"  1. Edit {demo_script} for your needs")
+    print(f"  2. Create additional .sh scripts in {LOCAL_SCRIPTS_DIR}")
+    print("  3. Run 'lab-utils --list' to see your scripts")
 
-# Function to list scripts (hierarchical with indentation)
-list_scripts() {
-    local global_scripts=()
-    local local_scripts=()
 
-    # Collect scripts with hierarchy info
-    while IFS='|' read -r name description source level; do
-        if [[ "$source" == "global" ]]; then
-            global_scripts+=("${name}|${description}|${level}")
-        else
-            local_scripts+=("${name}|${description}|${source}|${level}")
-        fi
-    done < <(get_all_scripts_hierarchical)
+def execute_script(name: str, args: list = None):
+    """Execute a script by name with optional arguments."""
+    script_path = resolve_script_path(name)
 
-    # Print global scripts
-    if [[ ${#global_scripts[@]} -gt 0 ]]; then
-        echo -e "${CYAN}Global scripts${NC} ${GRAY}(${GLOBAL_SCRIPTS_DIR})${NC}"
-        echo ""
-        for entry in "${global_scripts[@]}"; do
-            IFS='|' read -r name description level <<< "$entry"
-            if [[ "$level" == "child" ]]; then
-                # Indented child script
-                printf "    ${GRAY}└─${NC} ${BLUE}%-23s${NC} %s\n" "$name" "$description"
-            else
-                # Top-level script
-                printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
-            fi
-        done
-        echo ""
-    fi
+    if script_path is None:
+        print(f"Error: Script '{name}' not found")
+        print("")
+        print("Use 'lab-utils --list' to see available scripts")
+        sys.exit(1)
 
-    # Print local scripts
-    if [[ ${#local_scripts[@]} -gt 0 ]]; then
-        echo -e "${CYAN}Local scripts${NC} ${GRAY}(${LOCAL_SCRIPTS_DIR})${NC}"
-        echo ""
-        for entry in "${local_scripts[@]}"; do
-            IFS='|' read -r name description source level <<< "$entry"
-            if [[ "$level" == "child" ]]; then
-                # Indented child script
-                printf "    ${GRAY}└─${NC} ${BLUE}%-23s${NC} %s\n" "$name" "$description"
-            else
-                # Top-level script
-                printf "  ${BLUE}%-25s${NC} %s\n" "$name" "$description"
-            fi
-        done
-        echo ""
-    elif [[ ! -d "$LOCAL_SCRIPTS_DIR" ]]; then
-        echo -e "${GRAY}No local scripts directory. Create ${LOCAL_SCRIPTS_DIR} to add custom scripts.${NC}"
-        echo ""
-    fi
-}
+    print(f"Executing: {script_path}")
+    cmd = [str(script_path)] + (args or [])
+    result = subprocess.run(cmd)
+    sys.exit(result.returncode)
 
-# Function to run interactive menu
-run_interactive_menu() {
+
+def run_dialog_menu(title: str, items: list, show_back: bool = False) -> str:
+    """Display a dialog menu and return the selected item tag."""
+    menu_items = []
+
+    if show_back:
+        menu_items.extend(["BACK", "<- Back"])
+
+    for i, item in enumerate(items, 1):
+        tag = str(i)
+        name = item.get("name", f"Item {i}")
+        if "submenu" in item:
+            name = f"{name} ->"
+        menu_items.extend([tag, name])
+
+    menu_height = min(len(items) + (1 if show_back else 0), 15)
+
+    try:
+        result = subprocess.run(
+            [
+                "dialog",
+                "--backtitle", DIALOG_BACKTITLE,
+                "--title", title,
+                "--menu", "Select an option:",
+                "20", "70", str(menu_height)
+            ] + menu_items,
+            capture_output=True,
+            text=True
+        )
+
+        if result.returncode == 0:
+            return result.stderr.strip()
+        return None
+
+    except FileNotFoundError:
+        print("Error: dialog utility not found", file=sys.stderr)
+        sys.exit(1)
+
+
+def execute_menu_command(command: str, title: str):
+    """Execute a script from menu selection."""
+    script_path = resolve_script_path(command)
+
+    if script_path is None:
+        subprocess.run([
+            "dialog",
+            "--backtitle", DIALOG_BACKTITLE,
+            "--title", "Error",
+            "--msgbox", f"Script not found: {command}",
+            "8", "50"
+        ])
+        return
+
+    subprocess.run(["clear"])
+    print(f"\n=== {title} ===\n")
+
+    try:
+        result = subprocess.run([str(script_path)])
+        exit_code = result.returncode
+    except Exception as e:
+        print(f"\nError executing script: {e}")
+        exit_code = 1
+
+    print(f"\n{'=' * 40}")
+    if exit_code == 0:
+        print("Script completed successfully.")
+    else:
+        print(f"Script exited with code: {exit_code}")
+
+    input("\nPress Enter to continue...")
+
+
+def navigate_menu(menu_config: dict, breadcrumb: list = None):
+    """Navigate through menus recursively."""
+    if breadcrumb is None:
+        breadcrumb = []
+
+    title = menu_config.get("title", "Menu")
+    items = menu_config.get("items", [])
+
+    if breadcrumb:
+        display_title = " > ".join(breadcrumb + [title])
+    else:
+        display_title = title
+
+    while True:
+        selection = run_dialog_menu(display_title, items, show_back=bool(breadcrumb))
+
+        if selection is None:
+            return
+
+        if selection == "BACK":
+            return
+
+        try:
+            index = int(selection) - 1
+            selected_item = items[index]
+        except (ValueError, IndexError):
+            continue
+
+        item_name = selected_item.get("name", "")
+
+        if "submenu" in selected_item:
+            submenu_config = {
+                "title": item_name,
+                "items": selected_item["submenu"]
+            }
+            navigate_menu(submenu_config, breadcrumb + [title])
+
+        elif "command" in selected_item:
+            execute_menu_command(selected_item["command"], item_name)
+
+
+def run_interactive_menu():
+    """Run the interactive YAML-driven menu."""
     # Check if dialog is available
-    if ! command -v dialog &> /dev/null; then
-        echo "Error: dialog command not found. Install it with:"
-        echo "  Ubuntu/Debian: sudo apt install dialog"
-        echo "  CentOS/RHEL: sudo yum install dialog"
-        exit 1
-    fi
+    if subprocess.run(["which", "dialog"], capture_output=True).returncode != 0:
+        print("Error: dialog command not found. Install it with:")
+        print("  Ubuntu/Debian: sudo apt install dialog")
+        print("  CentOS/RHEL: sudo yum install dialog")
+        sys.exit(1)
 
-    # Get available scripts
-    mapfile -t SCRIPT_DATA < <(get_all_scripts)
+    config = load_menu_config()
+    menu = config.get("menu", {})
 
-    if [[ ${#SCRIPT_DATA[@]} -eq 0 ]]; then
-        dialog --title "Error" --msgbox "No executable .sh scripts found" 10 50
-        clear
-        echo "No scripts available for execution."
-        exit 1
-    fi
+    navigate_menu(menu)
 
-    # Build menu options for dialog
-    MENU_OPTIONS=()
+    subprocess.run(["clear"])
+    print("Lab Utils closed.")
 
-    for entry in "${SCRIPT_DATA[@]}"; do
-        IFS='|' read -r name description source <<< "$entry"
-        if [[ "$source" == "global" ]]; then
-            MENU_OPTIONS+=("$name" "$description")
-        else
-            MENU_OPTIONS+=("$name" "[local] $description")
-        fi
-    done
 
-    # Show selection dialog
-    TEMPFILE=$(mktemp)
-    dialog --clear --title "Lab Utils" \
-        --menu "Select utility to execute:" \
-        20 120 12 \
-        "${MENU_OPTIONS[@]}" \
-        2>$TEMPFILE >/dev/tty || {
-        clear
-        rm -f $TEMPFILE
-        exit 0
-    }
+def main():
+    """Main entry point."""
+    # Parse arguments manually for flexibility
+    args = sys.argv[1:]
 
-    # save up response and clean up the screen
-    CHOICE=$(cat $TEMPFILE)
-    rm -f $TEMPFILE
-    clear
+    if not args:
+        run_interactive_menu()
+        return
 
-    # Find and execute the selected script
-    SCRIPT_PATH=$(find_script "$CHOICE")
-    if [[ -n "$SCRIPT_PATH" ]]; then
-        echo "Executing: ${SCRIPT_PATH}"
-        "$SCRIPT_PATH"
-    else
-        echo "Error: Script '$CHOICE' not found"
-        exit 1
-    fi
-}
+    if args[0] in ("--help", "-h"):
+        show_help()
+    elif args[0] in ("--list", "-l"):
+        list_scripts()
+    elif args[0] == "--create-local":
+        create_local_scripts()
+    elif args[0].startswith("-"):
+        print(f"Unknown option: {args[0]}")
+        print("Use --help for usage information")
+        sys.exit(1)
+    else:
+        # Execute script directly
+        execute_script(args[0], args[1:])
 
-# Main logic
-case "${1:-}" in
-    --help|-h)
-        show_help
-        ;;
-    --list|-l)
-        list_scripts
-        ;;
-    --create-local)
-        create_local_scripts
-        ;;
-    "")
-        run_interactive_menu
-        ;;
-    *)
-        # Try to execute the specified script
-        SCRIPT_PATH=$(find_script "$1") || {
-            echo "Error: Script '$1' not found"
-            echo ""
-            echo "Use 'lab-utils --list' to see available scripts"
-            exit 1
-        }
-        echo "Executing: ${SCRIPT_PATH}"
-        shift
-        "$SCRIPT_PATH" "$@"
-        ;;
-esac
 
-# EOF
+if __name__ == "__main__":
+    main()

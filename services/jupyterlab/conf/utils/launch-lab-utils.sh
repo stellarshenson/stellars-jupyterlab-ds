@@ -1,9 +1,6 @@
 #!/bin/bash
 # Wrapper to launch lab-utils with proper terminal initialization
 # This ensures the terminal has correct dimensions before running dialog-based interface
-#
-# Environment variables:
-#   LAB_UTILS_MODE - Set to "yaml" to use YAML-driven menu system (default: legacy)
 
 # Wait for terminal to initialize
 sleep 0.5
@@ -24,14 +21,8 @@ done
 # Clear screen for clean interface
 clear
 
-# Select menu system based on mode
-if [[ "${LAB_UTILS_MODE}" == "yaml" ]]; then
-    # Run YAML-driven menu system
-    lab-utils-yaml
-else
-    # Run legacy bash-based menu system
-    lab-utils
-fi
+# Run lab-utils (YAML-driven menu system)
+lab-utils
 
 # Pause before exit with info about manual tab closure
 echo ""
