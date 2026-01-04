@@ -57,11 +57,62 @@ def get_script_description(script_path: Path) -> str:
         return "No description available"
 
 
-def resolve_script_path(name: str) -> Path:
+def scan_directory_for_menu_items(scan_dir: str) -> list:
+    """
+    Scan a directory for executable scripts and return menu items.
+
+    Args:
+        scan_dir: Directory path (supports ~ for home expansion)
+
+    Returns:
+        List of menu item dicts with 'name' and 'command' keys
+    """
+    # Expand ~ to home directory
+    dir_path = Path(os.path.expanduser(scan_dir))
+
+    if not dir_path.exists() or not dir_path.is_dir():
+        return []
+
+    items = []
+    for script in sorted(dir_path.glob("*.sh")):
+        if script.is_file() and os.access(script, os.X_OK):
+            description = get_script_description(script)
+            # Use full path as command for scanned scripts
+            items.append({
+                "name": f"{script.stem} - {description}",
+                "command": str(script),  # Full path for dynamic scripts
+                "_full_path": True  # Flag to indicate this is a full path
+            })
+
+    # Also check for .yml files (conda env definitions)
+    for yml_file in sorted(dir_path.glob("*.yml")):
+        if yml_file.is_file():
+            description = get_script_description(yml_file)
+            items.append({
+                "name": f"{yml_file.stem} - {description}",
+                "command": str(yml_file),
+                "_full_path": True
+            })
+
+    return items
+
+
+def resolve_script_path(name: str, is_full_path: bool = False) -> Path:
     """
     Resolve script path by name.
     Supports both direct paths (from YAML) and name-based lookup.
+
+    Args:
+        name: Script name or path
+        is_full_path: If True, treat name as absolute path
     """
+    # Handle full paths (from scan_dir dynamic items)
+    if is_full_path or name.startswith("/") or name.startswith("~"):
+        full_path = Path(os.path.expanduser(name))
+        if full_path.exists() and full_path.is_file():
+            return full_path
+        return None
+
     # If it looks like a path (contains /), try direct resolution
     if "/" in name:
         # Check global first
@@ -297,9 +348,9 @@ def run_dialog_menu(title: str, items: list, is_submenu: bool = False) -> str:
         sys.exit(1)
 
 
-def execute_menu_command(command: str, title: str):
+def execute_menu_command(command: str, title: str, is_full_path: bool = False):
     """Execute a script from menu selection."""
-    script_path = resolve_script_path(command)
+    script_path = resolve_script_path(command, is_full_path)
 
     if script_path is None:
         subprocess.run([
@@ -330,13 +381,31 @@ def execute_menu_command(command: str, title: str):
     input("\nPress Enter to continue...")
 
 
+def build_menu_items(menu_config: dict) -> list:
+    """
+    Build menu items list, combining static items with dynamic scan_dir items.
+
+    Processes each item in the menu config:
+    - Items with only 'submenu' use static items
+    - Items with only 'scan_dir' get items from directory scan
+    - Items with both 'submenu' and 'scan_dir' combine static + dynamic items
+    """
+    items = list(menu_config.get("items", []))
+
+    # Process top-level scan_dir if present (for menus that are purely dynamic)
+    if "scan_dir" in menu_config and "items" not in menu_config:
+        return scan_directory_for_menu_items(menu_config["scan_dir"])
+
+    return items
+
+
 def navigate_menu(menu_config: dict, breadcrumb: list = None):
     """Navigate through menus recursively."""
     if breadcrumb is None:
         breadcrumb = []
 
     title = menu_config.get("title", "Menu")
-    items = menu_config.get("items", [])
+    items = build_menu_items(menu_config)
     is_submenu = bool(breadcrumb)
 
     if breadcrumb:
@@ -361,15 +430,33 @@ def navigate_menu(menu_config: dict, breadcrumb: list = None):
 
         item_name = selected_item.get("name", "")
 
-        if "submenu" in selected_item:
-            submenu_config = {
-                "title": item_name,
-                "items": selected_item["submenu"]
-            }
-            navigate_menu(submenu_config, breadcrumb + [title])
+        # Handle items with submenu and/or scan_dir
+        if "submenu" in selected_item or "scan_dir" in selected_item:
+            # Build submenu items: static submenu + dynamic scan_dir
+            submenu_items = list(selected_item.get("submenu", []))
+            if "scan_dir" in selected_item:
+                dynamic_items = scan_directory_for_menu_items(selected_item["scan_dir"])
+                submenu_items.extend(dynamic_items)
+
+            if submenu_items:
+                submenu_config = {
+                    "title": item_name,
+                    "items": submenu_items
+                }
+                navigate_menu(submenu_config, breadcrumb + [title])
+            else:
+                # Empty submenu - show message
+                subprocess.run([
+                    "dialog",
+                    "--backtitle", DIALOG_BACKTITLE,
+                    "--title", "Info",
+                    "--msgbox", f"No items found in {item_name}",
+                    "8", "50"
+                ])
 
         elif "command" in selected_item:
-            execute_menu_command(selected_item["command"], item_name)
+            is_full_path = selected_item.get("_full_path", False)
+            execute_menu_command(selected_item["command"], item_name, is_full_path)
 
 
 def run_interactive_menu():

@@ -1,6 +1,53 @@
+# =============================================================================
 # Lab Utils Menu Configuration
-# YAML-driven menu structure for lab-utils
-# Each item can be either a command (leaf) or submenu (branch)
+# =============================================================================
+#
+# YAML-driven menu structure for lab-utils interactive interface.
+# This file defines the hierarchical menu displayed when running `lab-utils`
+# without arguments.
+#
+# MENU ITEM TYPES:
+# ----------------
+# Each menu item must have a 'name' and ONE of these properties:
+#
+#   command     - Execute a script (leaf node)
+#                 Path relative to lab-utils.d/ directory
+#                 Example: command: "test-cuda.sh"
+#                 Example: command: "set-defaults.d/default-shell.sh"
+#
+#   submenu     - Static list of child items (branch node)
+#                 Example:
+#                   submenu:
+#                     - name: "Option 1"
+#                       command: "script1.sh"
+#                     - name: "Option 2"
+#                       command: "script2.sh"
+#
+#   scan_dir    - Dynamic submenu from directory scan (branch node)
+#                 Scans directory for executable .sh scripts at runtime
+#                 Supports ~ for home directory expansion
+#                 Scripts' descriptions extracted from '##' comment line
+#                 Example: scan_dir: "~/.local/lab-utils.d"
+#
+# COMBINING STATIC AND DYNAMIC:
+# -----------------------------
+# Use 'submenu' with 'scan_dir' together to have static items plus
+# dynamically discovered scripts appended:
+#
+#   - name: "Install Conda Env"
+#     submenu:
+#       - name: "TensorFlow"
+#         command: "install-conda-env.d/tensorflow.sh"
+#     scan_dir: "~/.local/conda-env.d"
+#
+# CUSTOMIZATION:
+# --------------
+# - Edit this file to add/remove/reorder menu items
+# - Create scripts in lab-utils.d/ for new commands
+# - Use ~/.local/lab-utils.d/ for personal scripts (use scan_dir to include)
+# - Script descriptions shown in menus come from '## Description' line
+#
+# =============================================================================
 
 menu:
   title: "Lab Utils"
@@ -35,6 +82,7 @@ menu:
           command: "install-conda-env.d/r.sh"
         - name: "Rust"
           command: "install-conda-env.d/rust.sh"
+      scan_dir: "~/.local/conda-env.d"
 
     - name: "Install AI Assistant"
       submenu:
@@ -55,3 +103,6 @@ menu:
 
     - name: "Test CUDA"
       command: "test-cuda.sh"
+
+    - name: "Local Scripts"
+      scan_dir: "~/.local/lab-utils.d"
