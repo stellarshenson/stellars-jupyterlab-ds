@@ -256,12 +256,15 @@ def execute_script(name: str, args: list = None):
     sys.exit(result.returncode)
 
 
-def run_dialog_menu(title: str, items: list, show_back: bool = False) -> str:
+def run_dialog_menu(title: str, items: list, is_submenu: bool = False) -> str:
     """Display a dialog menu and return the selected item tag."""
     menu_items = []
 
-    if show_back:
+    # Always show navigation option - Back in submenus, Exit at top level
+    if is_submenu:
         menu_items.extend(["BACK", "<- Back"])
+    else:
+        menu_items.extend(["EXIT", "<- Exit"])
 
     for i, item in enumerate(items, 1):
         tag = str(i)
@@ -270,7 +273,7 @@ def run_dialog_menu(title: str, items: list, show_back: bool = False) -> str:
             name = f"{name} ->"
         menu_items.extend([tag, name])
 
-    menu_height = min(len(items) + (1 if show_back else 0), 15)
+    menu_height = min(len(items) + 1, 15)  # +1 for Back/Exit option
 
     try:
         result = subprocess.run(
@@ -334,6 +337,7 @@ def navigate_menu(menu_config: dict, breadcrumb: list = None):
 
     title = menu_config.get("title", "Menu")
     items = menu_config.get("items", [])
+    is_submenu = bool(breadcrumb)
 
     if breadcrumb:
         display_title = " > ".join(breadcrumb + [title])
@@ -341,12 +345,12 @@ def navigate_menu(menu_config: dict, breadcrumb: list = None):
         display_title = title
 
     while True:
-        selection = run_dialog_menu(display_title, items, show_back=bool(breadcrumb))
+        selection = run_dialog_menu(display_title, items, is_submenu=is_submenu)
 
         if selection is None:
             return
 
-        if selection == "BACK":
+        if selection in ("BACK", "EXIT"):
             return
 
         try:
