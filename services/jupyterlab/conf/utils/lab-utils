@@ -9,9 +9,11 @@ Supports CLI options, direct script execution, and interactive Textual TUI.
 import json
 import os
 import re
+import select
 import shutil
 import sys
 import subprocess
+import termios
 from pathlib import Path
 
 try:
@@ -45,6 +47,15 @@ def load_menu_config() -> dict:
         return yaml.safe_load(f)
 
 
+def flush_input_buffer():
+    """Flush any pending input from stdin to prevent escape sequences in history."""
+    try:
+        if sys.stdin.isatty():
+            termios.tcflush(sys.stdin.fileno(), termios.TCIFLUSH)
+    except Exception:
+        pass  # Ignore errors on non-TTY or Windows
+
+
 def get_script_description(script_path: Path) -> str:
     """Extract description from script (line starting with ##)."""
     try:
@@ -59,13 +70,15 @@ def get_script_description(script_path: Path) -> str:
 
 def scan_directory_for_menu_items(scan_dir: str) -> list:
     """
-    Scan a directory for executable files and return menu items.
+    Scan a directory for executable files and YAML files, return menu items.
 
     Args:
         scan_dir: Directory path (supports ~ for home expansion)
 
     Returns:
-        List of menu item dicts with 'id', 'name', 'description' keys
+        List of menu item dicts with 'id', 'name', 'description', 'marker' keys
+        - .yml/.yaml files get marker: "conda"
+        - Executable scripts get marker: "custom"
     """
     dir_path = Path(os.path.expanduser(scan_dir))
 
@@ -81,13 +94,24 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
         if item.name in excluded or not item.is_file():
             continue
 
-        # Only include executable files
-        if os.access(item, os.X_OK):
+        # Check for conda environment YAML files
+        if item.suffix.lower() in {".yml", ".yaml"}:
+            items.append({
+                "id": str(item),  # Full path
+                "name": item.stem,
+                "description": "Conda environment file",
+                "marker": "conda",
+                "_full_path": True,
+                "_conda_env": True
+            })
+        # Check for executable scripts
+        elif os.access(item, os.X_OK):
             description = get_script_description(item)
             items.append({
                 "id": str(item),  # Full path for dynamic scripts
                 "name": item.stem,
                 "description": description,
+                "marker": "custom",
                 "_full_path": True
             })
 
@@ -578,6 +602,7 @@ def run_selector(selector_config: dict, title: str):
 
     app = SelectorApp()
     app.run()
+    flush_input_buffer()
 
     if app.selected:
         print(f"\n{'=' * 60}")
@@ -750,11 +775,13 @@ def run_interactive_menu():
                     else:
                         display = f"◆ {name} [not set]"
                 else:
-                    # Script/command icon - show description if available
+                    # Script/command icon - show marker and description if available
+                    marker = item.get("marker", "")
+                    marker_str = f"[{marker}] " if marker else ""
                     if desc:
-                        display = f"● {name} - {desc}"
+                        display = f"● {marker_str}{name} - {desc}"
                     else:
-                        display = f"● {name}"
+                        display = f"● {marker_str}{name}"
                 menu.add_option(Option(display, id=str(i)))
 
             # Start cursor on first menu item (skip Back/Exit; separator doesn't count)
@@ -804,7 +831,11 @@ def run_interactive_menu():
                 item_type = selected_item.get("type", "script")
                 item_id = selected_item["id"]
 
-                if item_type == "command":
+                # Handle conda environment YAML files
+                if selected_item.get("_conda_env"):
+                    self.pending_command = (item_id, item_name, "conda_env")
+                    self.exit()
+                elif item_type == "command":
                     # Direct shell command
                     self.pending_command = (item_id, item_name, "command")
                     self.exit()
@@ -834,6 +865,7 @@ def run_interactive_menu():
     # Run the app
     app = LabUtilsApp()
     app.run()
+    flush_input_buffer()
 
     # Execute pending command after app exits
     if app.pending_command:
@@ -849,7 +881,11 @@ def run_interactive_menu():
         print(f"  {title}")
         print(f"{'=' * 60}\n")
 
-        if cmd_type == "command":
+        if cmd_type == "conda_env":
+            # Conda environment YAML file
+            print(f"Installing conda environment from: {cmd_or_path}")
+            result = subprocess.run(["conda", "env", "create", "-f", cmd_or_path])
+        elif cmd_type == "command":
             # Shell command
             result = subprocess.run(cmd_or_path, shell=True)
         else:

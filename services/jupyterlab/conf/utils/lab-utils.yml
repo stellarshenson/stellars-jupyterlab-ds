@@ -46,8 +46,8 @@
 #     Shows selection UI for configuration options.
 #
 #     OPTIONS - where to get the list of choices:
-#       options:         Inline list of {value, label} dicts
-#       options_script:  Script returning JSON array of {value, label}
+#       options:         Inline list of value/label pairs
+#       options_script:  Script returning JSON array [{value, label}, ...]
 #       options_cmd:     Shell command returning JSON array
 #
 #     CURRENT VALUE - how to detect currently selected option (marked in UI):
@@ -70,8 +70,10 @@
 #     - name: "Default Shell"
 #       selector:
 #         options:
-#           - {value: "/bin/bash", label: "Bash"}
-#           - {value: "/usr/bin/fish", label: "Fish"}
+#           - value: "/bin/bash"
+#             label: "Bash"
+#           - value: "/usr/bin/fish"
+#             label: "Fish"
 #         current_cmd: "grep -oP 'MY_VAR=\"\\K[^\"]*' ~/.profile"
 #         apply_script: "set-profile-var"
 #         apply_args: "JUPYTERLAB_TERMINAL_SHELL"
@@ -95,8 +97,10 @@ menu:
           description: "Configure default terminal shell"
           selector:
             options:
-              - {value: "/bin/bash", label: "Bash"}
-              - {value: "/usr/bin/fish", label: "Fish"}
+              - value: "/bin/bash"
+                label: "Bash"
+              - value: "/usr/bin/fish"
+                label: "Fish"
             current_cmd: "grep -oP 'JUPYTERLAB_TERMINAL_SHELL=\"\\K[^\"]*' ~/.profile 2>/dev/null"
             apply_script: "set-profile-var"
             apply_args: "JUPYTERLAB_TERMINAL_SHELL"
@@ -132,21 +136,25 @@ menu:
           name: "Pull Submodules"
           description: "Update all git submodules recursively"
 
-    - name: "Install Conda Env"
+    - name: "Install Extra Environments"
       submenu:
         - id: "install-conda-env.d/tensorflow.sh"
           name: "TensorFlow"
           description: "Install TensorFlow deep learning environment"
+          marker: "conda"
         - id: "install-conda-env.d/torch.sh"
           name: "PyTorch"
           description: "Install PyTorch deep learning environment"
+          marker: "conda"
         - id: "install-conda-env.d/r.sh"
           name: "R"
           description: "Install R statistical computing environment"
+          marker: "conda"
         - id: "install-conda-env.d/rust.sh"
           name: "Rust"
           description: "Install Rust programming environment"
-      scan_dir: "~/.local/conda-env.d"
+          marker: "conda"
+      scan_dir: "~/.local/extra-env.d"
 
     - name: "Install AI Assistant"
       submenu:
