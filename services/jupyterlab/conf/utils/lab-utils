@@ -543,17 +543,21 @@ def run_selector(selector_config: dict, title: str):
         def compose(self) -> ComposeResult:
             yield Header()
             current = next((o.get("label", o["value"]) for o in options if o.get("current")), "Not set")
-            yield Static(f"Current: {current}", id="info")
+            # Get configurable header label (default: "Current")
+            header_label = selector_config.get("current_header", "Current")
+            yield Static(header_label + ": " + current, id="info")
             with Container(id="menu-container"):
                 yield OptionList(id="menu")
             yield Footer()
 
         def on_mount(self) -> None:
             menu = self.query_one("#menu", OptionList)
+            # Get configurable current item marker
+            current_marker = selector_config.get("current_marker", "(current)")
             for opt in options:
                 label = opt.get("label", opt["value"])
                 if opt.get("current"):
-                    label += " [current]"
+                    label += " " + current_marker
                 menu.add_option(Option(label, id=opt["value"]))
             menu.add_option(None)
             menu.add_option(Option("Cancel", id="__cancel__"))
@@ -736,6 +740,15 @@ def run_interactive_menu():
                 if "submenu" in item or "scan_dir" in item:
                     # Folder/submenu icon
                     display = f"▶ {name}"
+                elif "selector" in item:
+                    # Selector - show current value
+                    current = get_selector_current(item["selector"])
+                    opts = get_selector_options(item["selector"])
+                    current_label = next((o.get("label", o["value"]) for o in opts if o.get("value") == current), current)
+                    if current_label:
+                        display = f"◆ {name} [{current_label}]"
+                    else:
+                        display = f"◆ {name} [not set]"
                 else:
                     # Script/command icon - show description if available
                     if desc:
