@@ -1,6 +1,9 @@
 #!/bin/bash
 ## Scaffolds new data science project using Copier
 
+# Handle CTRL-C gracefully
+trap 'echo -e "\n\033[33mUser cancelled action.\033[0m"; exit 130' INT
+
 REPO_URL="https://github.com/stellarshenson/copier-data-science.git"
 
 # Get latest tag from GitHub
