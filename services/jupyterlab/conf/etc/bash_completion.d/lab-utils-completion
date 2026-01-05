@@ -10,13 +10,14 @@ _lab_utils_completions() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
     # Options
-    opts="--help -h --list -l --create-local"
+    opts="--help -h --list -l --json --create-local"
 
     # Script directories
     local global_dir="/opt/utils/lab-utils.d"
+    local lib_dir="/opt/utils/lab-utils.lib"
     local local_dir="${HOME}/.local/lab-utils.d"
 
-    # Collect script names (without extension) including nested scripts
+    # Collect script names
     scripts=""
 
     # Helper function to collect scripts from a directory
@@ -26,33 +27,31 @@ _lab_utils_completions() {
             return
         fi
 
+        # First, collect top-level executable scripts
         for script in "$dir"/*; do
-            # Skip if not a file or not executable
             [[ ! -f "$script" || ! -x "$script" ]] && continue
-
-            # Skip README files
             local basename=$(basename "$script")
-            [[ "$basename" == "README"* ]] && continue
-
-            # Get name without extension
+            [[ "$basename" == "README"* || "$basename" == "readme"* ]] && continue
             local name="${basename%.*}"
             scripts="$scripts $name"
+        done
 
-            # Check for corresponding .d subdirectory with nested scripts
-            local subdir="${dir}/${name}.d"
-            if [[ -d "$subdir" ]]; then
-                for child_script in "$subdir"/*; do
-                    [[ ! -f "$child_script" || ! -x "$child_script" ]] && continue
-                    local child_basename=$(basename "$child_script")
-                    [[ "$child_basename" == "README"* ]] && continue
-                    local child_name="${child_basename%.*}"
-                    scripts="$scripts ${name}/${child_name}"
-                done
-            fi
+        # Then, scan all .d subdirectories for nested scripts
+        for subdir in "$dir"/*.d; do
+            [[ ! -d "$subdir" ]] && continue
+            local parent_name=$(basename "$subdir" .d)
+            for child_script in "$subdir"/*; do
+                [[ ! -f "$child_script" || ! -x "$child_script" ]] && continue
+                local child_basename=$(basename "$child_script")
+                [[ "$child_basename" == "README"* || "$child_basename" == "readme"* ]] && continue
+                local child_name="${child_basename%.*}"
+                scripts="$scripts ${parent_name}/${child_name}"
+            done
         done
     }
 
     _collect_scripts "$global_dir"
+    _collect_scripts "$lib_dir"
     _collect_scripts "$local_dir"
 
     # First argument - complete with options and script names
@@ -67,5 +66,3 @@ _lab_utils_completions() {
 }
 
 complete -F _lab_utils_completions lab-utils
-
-# EOF
