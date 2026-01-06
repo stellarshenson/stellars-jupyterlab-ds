@@ -539,7 +539,10 @@ def run_selector(selector_config: dict, title: str):
     options = get_selector_options(selector_config)
     if not options:
         print(f"No options available for {title}")
-        input("\nPress Enter to continue...")
+        try:
+            input("\nPress Enter to continue...")
+        except KeyboardInterrupt:
+            print()
         return
 
     class SelectorApp(App):
@@ -608,14 +611,22 @@ def run_selector(selector_config: dict, title: str):
         print(f"\n{'=' * 60}")
         print(f"  {title}")
         print(f"{'=' * 60}\n")
-        result = apply_selector_choice(selector_config, app.selected)
-        print(f"\n{'=' * 60}")
-        if result.returncode == 0:
-            print("  Completed successfully.")
-        else:
-            print(f"  Exited with code: {result.returncode}")
-        print(f"{'=' * 60}")
-        input("\nPress Enter to continue...")
+        try:
+            result = apply_selector_choice(selector_config, app.selected)
+            print(f"\n{'=' * 60}")
+            if result.returncode == 0:
+                print("  Completed successfully.")
+            else:
+                print(f"  Exited with code: {result.returncode}")
+            print(f"{'=' * 60}")
+        except KeyboardInterrupt:
+            print(f"\n\n{'=' * 60}")
+            print("  \033[33mUser cancelled action.\033[0m")
+            print(f"{'=' * 60}")
+        try:
+            input("\nPress Enter to continue...")
+        except KeyboardInterrupt:
+            print()
 
 
 # =============================================================================
@@ -881,25 +892,33 @@ def run_interactive_menu():
         print(f"  {title}")
         print(f"{'=' * 60}\n")
 
-        if cmd_type == "conda_env":
-            # Conda environment YAML file
-            print(f"Installing conda environment from: {cmd_or_path}")
-            result = subprocess.run(["conda", "env", "create", "-f", cmd_or_path])
-        elif cmd_type == "command":
-            # Shell command
-            result = subprocess.run(cmd_or_path, shell=True)
-        else:
-            # Script file
-            result = subprocess.run([cmd_or_path])
+        try:
+            if cmd_type == "conda_env":
+                # Conda environment YAML file
+                print(f"Installing conda environment from: {cmd_or_path}")
+                result = subprocess.run(["conda", "env", "create", "-f", cmd_or_path])
+            elif cmd_type == "command":
+                # Shell command
+                result = subprocess.run(cmd_or_path, shell=True)
+            else:
+                # Script file
+                result = subprocess.run([cmd_or_path])
 
-        print(f"\n{'=' * 60}")
-        if result.returncode == 0:
-            print("  Completed successfully.")
-        else:
-            print(f"  Exited with code: {result.returncode}")
-        print(f"{'=' * 60}")
+            print(f"\n{'=' * 60}")
+            if result.returncode == 0:
+                print("  Completed successfully.")
+            else:
+                print(f"  Exited with code: {result.returncode}")
+            print(f"{'=' * 60}")
+        except KeyboardInterrupt:
+            print(f"\n\n{'=' * 60}")
+            print("  \033[33mUser cancelled action.\033[0m")
+            print(f"{'=' * 60}")
 
-        input("\nPress Enter to continue...")
+        try:
+            input("\nPress Enter to continue...")
+        except KeyboardInterrupt:
+            print()  # Clean newline
 
         # Re-run the menu
         run_interactive_menu()
