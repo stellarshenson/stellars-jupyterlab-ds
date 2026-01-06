@@ -12,6 +12,9 @@ include project.env
 # Use VERSION from project.env as TAG (strip quotes)
 TAG := $(subst ",,$(VERSION))
 
+# Build options (e.g., BUILD_OPTS='--no-cache')
+BUILD_OPTS ?=
+
 #################################################################################
 # COMMANDS                                                                      #
 #################################################################################
@@ -32,11 +35,11 @@ increment_version:
 
 ## build docker containers
 build: clean increment_version
-	@cd ./scripts && ./build.sh
+	@cd ./scripts && ./build.sh $(BUILD_OPTS)
 
 ## build docker containers and output logs
 build_verbose: clean increment_version
-	@cd ./scripts && ./build_verbose.sh
+	@cd ./scripts && ./build_verbose.sh $(BUILD_OPTS)
 
 ## rebuild 'target' stage only (uses cached 'builder' stage)
 rebuild: clean increment_version
@@ -45,6 +48,7 @@ rebuild: clean increment_version
 		--platform linux/amd64 \
 		--target target \
 		--build-arg CACHEBUST=$$(date +%s) \
+		$(BUILD_OPTS) \
 		--tag stellars/stellars-jupyterlab-ds:latest \
 		-f services/jupyterlab/Dockerfile.jupyterlab \
 		services/jupyterlab
