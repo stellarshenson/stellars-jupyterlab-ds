@@ -176,3 +176,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 75. **Task - Extra environments and YAML cleanup**: Renamed menu, added markers, fixed escape sequence issue<br>
     **Result**: Renamed "Install Conda Env" to "Install Extra Environments" with `~/.local/extra-env.d` scan directory. Updated `scan_directory_for_menu_items()` to detect `.yml/.yaml` files as conda environments and executable scripts as custom, adding `marker` field to items. Added marker display in menu: `● [conda] name` or `● [custom] name`. Added `_conda_env` flag for YAML files and execution handling via `conda env create -f`. Converted JSON-style `{value, label}` options to proper YAML format in both documentation and actual config. Added `flush_input_buffer()` using `termios.tcflush()` after Textual app exits to prevent escape sequences like `[A` from appearing in shell history
+
+76. **Task - Graceful CTRL-C in new-project**: Added interrupt handling to new-project.sh<br>
+    **Result**: Added `trap` for SIGINT in new-project.sh that displays "User cancelled action." in yellow and exits with code 130 instead of showing stack trace or error when user presses CTRL-C
