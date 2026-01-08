@@ -179,3 +179,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 76. **Task - Graceful CTRL-C handling**: Added interrupt handling to new-project.sh and lab-utils<br>
     **Result**: Added `trap` for SIGINT in new-project.sh that displays "User cancelled action." in yellow and exits with code 130. Extended lab-utils with try/except KeyboardInterrupt blocks around subprocess.run() calls and input() prompts to catch CTRL-C gracefully - shows "User cancelled action." message instead of Python traceback when user interrupts script execution or "Press Enter to continue" prompts
+
+77. **Task - Build options and conda base execution**: Added BUILD_OPTS and fixed startup scripts<br>
+    **Result**: Added `BUILD_OPTS` variable to Makefile for passing custom docker build options (e.g., `make build BUILD_OPTS='--no-cache'`). Updated build.sh and build_verbose.sh to pass through arguments via `$@`. Modified 58_start_lab_scripts.sh to execute user startup scripts within conda base environment using `conda run --no-capture-output -n base` to ensure conda packages are available and prevent urllib3/requests import errors
