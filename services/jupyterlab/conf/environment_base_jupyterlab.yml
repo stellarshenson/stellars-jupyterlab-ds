@@ -56,6 +56,11 @@ dependencies:
     - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on intellij, fixed scrollbars
     - stellars-jupyterlab-darcula-theme # gray IntelliJ darcula theme based on original darcula
 
+    ## widgets needed for interactive displays
+    - ipywidgets
+    - jupyterlab_widgets 
+    - widgetsnbextension
+
     ## other libraries
     - black # pragmatic code formatter
     - nbdime # tool for diffing and merging jupyter notebooks
