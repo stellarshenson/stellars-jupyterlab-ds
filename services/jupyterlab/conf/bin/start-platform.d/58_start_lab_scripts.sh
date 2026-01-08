@@ -35,13 +35,13 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
             succeeded_scripts=()
             total_scripts=$#
 
-            # Run each script and track results
+            # Run each script and track results (within conda base environment)
             for script in "$@"; do
                 script_name=$(basename "$script")
                 echo "=== Running: ${script} ==="
                 echo "Started: $(date)"
 
-                if "${script}"; then
+                if conda run --no-capture-output -n base "${script}"; then
                     echo "Status: SUCCESS"
                     succeeded_scripts+=("$script_name")
                 else
