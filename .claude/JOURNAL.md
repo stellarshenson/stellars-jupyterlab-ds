@@ -182,3 +182,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 77. **Task - Build options and conda base execution**: Added BUILD_OPTS and fixed startup scripts<br>
     **Result**: Added `BUILD_OPTS` variable to Makefile for passing custom docker build options (e.g., `make build BUILD_OPTS='--no-cache'`). Updated build.sh and build_verbose.sh to pass through arguments via `$@`. Modified 58_start_lab_scripts.sh to execute user startup scripts within conda base environment using `conda run --no-capture-output -n base` to ensure conda packages are available and prevent urllib3/requests import errors
+
+78. **Task - Fix libmamba solver library path**: Added LD_LIBRARY_PATH for conda libraries<br>
+    **Result**: Added `/opt/conda/lib` to LD_LIBRARY_PATH in `/etc/default/platform.env` to fix "libxml2.so.16: cannot open shared object file" error when using conda-libmamba-solver. This ensures conda's shared libraries are discoverable by the dynamic linker during conda operations
