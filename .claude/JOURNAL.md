@@ -185,3 +185,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 78. **Task - Fix libmamba solver library path**: Added LD_LIBRARY_PATH for conda libraries<br>
     **Result**: Added `/opt/conda/lib` to LD_LIBRARY_PATH in `/etc/default/platform.env` to fix "libxml2.so.16: cannot open shared object file" error when using conda-libmamba-solver. This ensures conda's shared libraries are discoverable by the dynamic linker during conda operations
+
+79. **Task - Add interactive display widgets**: Added ipywidgets dependencies to JupyterLab<br>
+    **Result**: Added ipywidgets, jupyterlab_widgets, and widgetsnbextension to environment_base_jupyterlab.yml enabling interactive widget displays in notebooks (sliders, buttons, progress bars, etc.)
