@@ -7,6 +7,7 @@ channels:
   - conda-forge # default repo for miniforge3
 
 dependencies:
+  - curl # needed by conda, returns errors if not installed because of libcurl
   - python=3.12 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
