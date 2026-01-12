@@ -8,6 +8,7 @@ channels:
 
 dependencies:
   - curl # needed by conda, returns errors if not installed because of libcurl
+  - htop # temporary - htop that works, apt version fails
   - python=3.12 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
