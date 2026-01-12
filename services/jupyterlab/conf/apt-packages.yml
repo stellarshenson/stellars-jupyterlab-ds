@@ -13,7 +13,7 @@ packages:
     # - gpg # for keys manipulation and adding repos to apt
     - gpw # generates unique identifiers
     - htop # colourful system resources monitor
-    # - iputils-ping # simple ping utility
+    - iputils-ping # simple ping utility
     # - iproute2 # additional networking tools
     - jq # tool for querying jsons used often by ai assistants
     - less # interactive file reader
