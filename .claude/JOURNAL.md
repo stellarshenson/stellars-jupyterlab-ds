@@ -188,3 +188,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 79. **Task - Add interactive display widgets**: Added ipywidgets dependencies to JupyterLab<br>
     **Result**: Added ipywidgets, jupyterlab_widgets, and widgetsnbextension to environment_base_jupyterlab.yml enabling interactive widget displays in notebooks (sliders, buttons, progress bars, etc.)
+
+80. **Task - Add /cleanup-tags command**: Created Claude Code command for Docker Hub tag cleanup<br>
+    **Result**: Added `.claude/commands/cleanup-tags.md` slash command for managing Docker Hub tags. Command lists current tags, prompts user for deletion criteria (version range, pattern), authenticates via Docker Desktop credential helper, and deletes selected tags via Docker Hub API. Cleaned up 76 old tags (versions 3.0.x through 3.4.x) from stellars/stellars-jupyterlab-ds repository, retaining only 3.5.x and latest
