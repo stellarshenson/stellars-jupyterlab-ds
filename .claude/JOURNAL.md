@@ -191,3 +191,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 80. **Task - Add /cleanup-tags command**: Created Claude Code command for Docker Hub tag cleanup<br>
     **Result**: Added `.claude/commands/cleanup-tags.md` slash command for managing Docker Hub tags. Command lists current tags, prompts user for deletion criteria (version range, pattern), authenticates via Docker Desktop credential helper, and deletes selected tags via Docker Hub API. Cleaned up 76 old tags (versions 3.0.x through 3.4.x) from stellars/stellars-jupyterlab-ds repository, retaining only 3.5.x and latest
+
+81. **Task - Fix gpustat execution and cleanup conda base**: Use conda run for gpustat, remove curl<br>
+    **Result**: Changed gpustat invocation in bash.bashrc and 06_fish_init.sh from direct binary path (`/opt/conda/bin/gpustat`) to `conda run --no-capture-output -n base gpustat` ensuring proper conda environment and library paths are available. Removed curl from environment_base.yml as system curl from apt-packages is sufficient

@@ -14,8 +14,6 @@ export CONDA_DEFAULT_ENV="base"
 # set default AWS profile
 export AWS_PROFILE="default"
 
-# aliases - dark midnight commander
-alias mc='mc -b'
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
