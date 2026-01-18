@@ -67,7 +67,7 @@ Running JupyterLab server on  \033[36mhttps://localhost/@LAB_NAME@\033[0m
 Connect VSCode to Jupyter on  \033[36mhttps://localhost/@LAB_NAME@/lab/tree\033[0m
 Running MLFlow server on      \033[36mhttps://localhost/@LAB_NAME@/mlflow\033[0m
 Running Tensorboard server on \033[36mhttps://localhost/@LAB_NAME@/tensorboard\033[0m
-Running Glances Web Monitor   \033[36mhttps://localhost/@LAB_NAME@/glances\033[0m
+Running Resources Monitor      \033[36mhttps://localhost/@LAB_NAME@/rmonitor\033[0m
 Using projects dir: \033[94m/home/lab/workspace\033[0m (mount)
 Using certs (ssl) dir: \033[94m/mnt/certs\033[0m (mount)
 Jupyterlab settings saved to: \033[94m/home/lab/.jupyter\033[0m

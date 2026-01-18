@@ -7,7 +7,7 @@
 #   Jupyter Lab      - https://localhost/<compose_name>/jupyterlab (running locally on port :8888)
 #   Tensorboard      - https://localhost/<compose_name>/tensorboard (running locally on port :6006)
 #   MLFlow           - https://localhost/<compose_name>/mlflow (running locally on port :5000) 
-#   Glances          - https://localhost/<compose_name>/glances (running locally on port :61208)
+#   Resources Monitor - https://localhost/<compose_name>/rmonitor (running locally on port :7681)
 #   Optuna           - https://localhost/<compose_name>/optuna (running locally on port :8080)
 #   Generic app      - https://localhost/<compose_name>/generic-app (running locally on port :8080)
 #   Generic callback - https://localhost/<compose_name>/generic-app (running locally on port :8030)
@@ -53,7 +53,7 @@ services:
     restart: unless-stopped
 
 
-  ## Run jupyterlab via traefic with glances, mlflow, optuna and tensorboard
+  ## Run jupyterlab via traefic with btop, mlflow, optuna and tensorboard
   ## Services are mapped to distinct URLs using traefic proxy
   jupyterlab:
     container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
@@ -78,7 +78,7 @@ services:
       - LAB_USER=${LAB_USER:-default}
       - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}
       - ENABLE_SERVICE_MLFLOW=1
-      - ENABLE_SERVICE_GLANCES=1
+      - ENABLE_SERVICE_RESOURCES_MONITOR=1
       - ENABLE_SERVICE_TENSORBOARD=1
       - ENABLE_GPU_SUPPORT=0
       - COOKIECUTTER_DATASCIENCE_TEMPLATE_URL=https://github.com/stellarshenson/cookiecutter-data-science.git

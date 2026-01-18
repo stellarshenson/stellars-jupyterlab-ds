@@ -4,6 +4,7 @@
 #
 packages:
     - bash-completion # completion for bash
+    - btop # resources monitor
     - curl # for downloading files
     - fish # modern extended shell
     - gawk # GNU awk for Makefile version management
@@ -12,7 +13,6 @@ packages:
     - git-lfs # git plugin for large file storage
     # - gpg # for keys manipulation and adding repos to apt
     - gpw # generates unique identifiers
-    - htop # colourful system resources monitor
     - iputils-ping # simple ping utility
     # - iproute2 # additional networking tools
     - jq # tool for querying jsons used often by ai assistants
@@ -30,6 +30,7 @@ packages:
     # - sqlite3 # client to sqlite often used with ml projects
     - trash-cli # interface to manage trash folder
     - tree # display directory structure in tree format
+    - ttyd # server for running terminal apps via web
     - vim # text editor
     - zip # file zipper and unzipper
 
