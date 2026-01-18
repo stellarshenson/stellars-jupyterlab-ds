@@ -209,3 +209,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 86. **Task - Update README and shell improvements**: Documentation and UX enhancements<br>
     **Result**: Updated README.md replacing all Glances references with Resources Monitor/btop, changed URLs from `/glances` to `/rmonitor`, updated mermaid diagrams with new service names and port 7681, updated env var to `ENABLE_SERVICE_RESOURCES_MONITOR`. Added browser title "Resources Monitor" to ttyd using `-t titleFixed=` flag. Added newline after gpustat output in both bash.bashrc and fish config for cleaner terminal display
+
+87. **Task - Add screen and session culling docs**: Terminal multiplexer and idle session management<br>
+    **Result**: Added `screen` terminal multiplexer to apt-packages.yml for persistent sessions. Added "Session Culling" section to README explaining that JupyterLab automatically terminates idle kernels and terminals to conserve resources, with usage example for `screen` to run long-running jobs and note that culling timeout is adjustable in JupyterLab Settings
