@@ -206,3 +206,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 85. **Note - ttyd process lifecycle**: ttyd spawns processes on client connect, not on startup<br>
     **Result**: Documented that ttyd starts btop process only when a browser client connects to `/rmonitor`, not when ttyd itself starts. Each browser connection spawns a new btop instance, and closing the tab terminates that instance. This is resource-efficient as btop only runs when actively viewed
+
+86. **Task - Update README and shell improvements**: Documentation and UX enhancements<br>
+    **Result**: Updated README.md replacing all Glances references with Resources Monitor/btop, changed URLs from `/glances` to `/rmonitor`, updated mermaid diagrams with new service names and port 7681, updated env var to `ENABLE_SERVICE_RESOURCES_MONITOR`. Added browser title "Resources Monitor" to ttyd using `-t titleFixed=` flag. Added newline after gpustat output in both bash.bashrc and fish config for cleaner terminal display

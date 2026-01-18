@@ -388,6 +388,19 @@ Set `CONDA_DEFAULT_ENV` in `compose.yml` or `~/.profile` to specify which conda 
 - **Default User:** `lab`
 - **Network:** `traefik-network` (bridge driver)
 
+### Session Culling
+JupyterLab has terminal and kernel culling enabled to conserve server resources. Idle kernels and terminal sessions are automatically terminated after a period of inactivity.
+
+**For long-running jobs:** Use `screen` terminal multiplexer to keep processes running independently of the terminal session:
+```bash
+screen -S myjob        # Start a new screen session
+python long_script.py  # Run your job
+# Press Ctrl+A, then D to detach
+screen -r myjob        # Reattach later
+```
+
+Culling timeout can be adjusted in JupyterLab Settings.
+
 ### Volume Persistence
 All volumes are named and persist across container updates:
 - `vol_workspace` - your projects and notebooks
