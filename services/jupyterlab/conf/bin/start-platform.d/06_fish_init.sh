@@ -48,6 +48,9 @@ end
 # Docker MCP gateway environment variable
 set -gx DOCKER_MCP_IN_CONTAINER 1
 
+# Include conda lib for libmamba solver (libxml2.so.16)
+set -gx LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"
+
 # Fix CUDA loading for running nvidia-smi
 ldconfig 2>/dev/null
 
