@@ -26,6 +26,6 @@ if [[ ${ENABLE_SERVICE_RESOURCES_MONITOR} != 1 ]]; then
 fi
 
 echo "Launching btop resources monitor via ttyd"
-ttyd -W -p 7681 btop --utf-force &
+ttyd -W -p 7681 -t titleFixed="Resources Monitor" btop --utf-force &
 
 # EOF
