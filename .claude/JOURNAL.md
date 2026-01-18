@@ -194,3 +194,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 81. **Task - Fix gpustat execution and cleanup conda base**: Use conda run for gpustat, remove curl<br>
     **Result**: Changed gpustat invocation in bash.bashrc and 06_fish_init.sh from direct binary path (`/opt/conda/bin/gpustat`) to `conda run --no-capture-output -n base gpustat` ensuring proper conda environment and library paths are available. Removed curl from environment_base.yml as system curl from apt-packages is sufficient
+
+82. **Task - Add stop.sh script**: Created docker compose stop script<br>
+    **Result**: Added stop.sh script matching start.sh pattern - runs `docker compose --env-file .env -f compose.yml down` to stop the JupyterLab container
+
+83. **Task - Replace Glances with btop resources monitor**: Switched to ttyd-based btop for system monitoring<br>
+    **Result**: Replaced Glances with btop served via ttyd web terminal. Renamed startup script to `12_start_resources_monitor.sh` using `ttyd -W -p 7681 btop`. Changed env variable to `ENABLE_SERVICE_RESOURCES_MONITOR` (program agnostic). Updated all references to use "Resources Monitor" name and `/rmonitor` URL path. Updated compose.yml, jupyter_lab_config.py proxy, welcome-template.html, welcome-message.txt, render-info.py, Dockerfile, and architecture diagram. Removed deprecated `multi-user/` folder as JupyterHub is now the primary multi-user deployment method

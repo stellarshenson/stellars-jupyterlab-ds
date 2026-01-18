@@ -22,8 +22,6 @@ dependencies:
     - uv # rust based uptrafast package manager and virtual environment system
 
     ## system monitoring
-    - glances[gpu] # system web monitoring tool
-    - nvidia-ml-py3 # needed by glances to monitor GPU
     - gpustat # gpu status reporting tool
     - tensorboard # tensorflow experiment tracking
 

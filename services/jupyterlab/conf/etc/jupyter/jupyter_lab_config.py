@@ -47,12 +47,12 @@ c.ServerApp.tornado_settings = {
 ## proxy config for selected services
 ## this is mandatory when using hub
 c.ServerProxy.servers = {
-    "glances": {
+    "rmonitor": {
         "command": [],
         "absolute_url": False,
-        "port": 61208,
+        "port": 7681,
         "launcher_entry": {
-            "enabled": False    
+            "enabled": False
         }
     },
     "mlflow": {
