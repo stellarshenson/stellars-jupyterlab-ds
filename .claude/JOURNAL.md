@@ -200,3 +200,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 83. **Task - Replace Glances with btop resources monitor**: Switched to ttyd-based btop for system monitoring<br>
     **Result**: Replaced Glances with btop served via ttyd web terminal. Renamed startup script to `12_start_resources_monitor.sh` using `ttyd -W -p 7681 btop`. Changed env variable to `ENABLE_SERVICE_RESOURCES_MONITOR` (program agnostic). Updated all references to use "Resources Monitor" name and `/rmonitor` URL path. Updated compose.yml, jupyter_lab_config.py proxy, welcome-template.html, welcome-message.txt, render-info.py, Dockerfile, and architecture diagram. Removed deprecated `multi-user/` folder as JupyterHub is now the primary multi-user deployment method
+
+84. **Task - Fix fish shell and btop rendering**: Added LD_LIBRARY_PATH and UTF-8 support<br>
+    **Result**: Added `LD_LIBRARY_PATH="/opt/conda/lib"` to fish config in `06_fish_init.sh` to fix libmamba solver error (libxml2.so.16) when activating conda environments in fish shell. Added `--utf-force` flag to btop command in `12_start_resources_monitor.sh` for proper UTF-8 character rendering via ttyd
+
+85. **Note - ttyd process lifecycle**: ttyd spawns processes on client connect, not on startup<br>
+    **Result**: Documented that ttyd starts btop process only when a browser client connects to `/rmonitor`, not when ttyd itself starts. Each browser connection spawns a new btop instance, and closing the tab terminates that instance. This is resource-efficient as btop only runs when actively viewed

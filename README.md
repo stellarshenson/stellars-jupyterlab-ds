@@ -15,7 +15,7 @@ All services run behind **Traefik** reverse proxy, enabling multiple environment
  - **JupyterLab:** [https://localhost/stellars-jupyterlab-ds/jupyterlab](https://localhost/stellars-jupyterlab-ds/jupyterlab)
  - **MLFlow:** [https://localhost/stellars-jupyterlab-ds/mlflow](https://localhost/stellars-jupyterlab-ds/mlflow)
  - **TensorBoard:** [https://localhost/stellars-jupyterlab-ds/tensorboard](https://localhost/stellars-jupyterlab-ds/tensorboard)
- - **Glances:** [https://localhost/stellars-jupyterlab-ds/glances](https://localhost/stellars-jupyterlab-ds/glances)
+ - **Resources Monitor:** [https://localhost/stellars-jupyterlab-ds/rmonitor](https://localhost/stellars-jupyterlab-ds/rmonitor)
  - **Optuna:** [https://localhost/stellars-jupyterlab-ds/optuna](https://localhost/stellars-jupyterlab-ds/optuna) (when running)
  - **Traefik Dashboard:** [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
 
@@ -110,7 +110,7 @@ graph TB
             subgraph Services["Integrated Services"]
                 MLflow[MLflow Tracking<br/>Port 5000]
                 TensorBoard[TensorBoard<br/>Port 6006]
-                Glances[Glances Monitor<br/>Port 61208]
+                ResourcesMonitor[Resources Monitor<br/>Port 7681]
                 Optuna[Optuna Dashboard<br/>Port 8080]
             end
         end
@@ -128,12 +128,12 @@ graph TB
     Traefik -->|/jupyterlab| JLServer
     Traefik -->|/mlflow| ServerProxy
     Traefik -->|/tensorboard| ServerProxy
-    Traefik -->|/glances| ServerProxy
+    Traefik -->|/rmonitor| ServerProxy
     Traefik -->|/optuna| ServerProxy
 
     ServerProxy --> MLflow
     ServerProxy --> TensorBoard
-    ServerProxy --> Glances
+    ServerProxy --> ResourcesMonitor
     ServerProxy --> Optuna
 
     JLServer -.->|mounts| VolHome
@@ -168,7 +168,7 @@ graph TB
         startup_scripts["start-platform.d/<br/>Startup Scripts"]
 
         workspace_scripts["03_workspace_scripts.sh<br/>Symlink Utils"]
-        start_services["12_start_glances.sh<br/>13_start_mlflow.sh<br/>14_start_tensorboard.sh"]
+        start_services["12_start_resources_monitor.sh<br/>13_start_mlflow.sh<br/>14_start_tensorboard.sh"]
         user_scripts["58_start_lab_scripts.sh<br/>User Custom Startup"]
     end
 
@@ -250,7 +250,7 @@ graph TB
 
 **Key Components:**
 - **Traefik Reverse Proxy:** All services run behind Traefik, enabling multiple environments without port conflicts
-- **JupyterHub ServerProxy:** Routes traffic from JupyterLab to integrated services (MLflow, TensorBoard, Glances)
+- **JupyterHub ServerProxy:** Routes traffic from JupyterLab to integrated services (MLflow, TensorBoard, Resources Monitor)
 - **Watchtower:** Automatic container updates (runs daily at midnight)
 - **Named Volumes:** Persistent data for workspace, home directory, cache, and certificates
 - **GPU Support:** Optional NVIDIA GPU access for accelerated computing
@@ -274,7 +274,7 @@ graph TB
 ### Integrated Services
 - **TensorBoard:** Visualization and monitoring of ML/AI model training metrics (port 6006, logs in `/tmp/tensorboard`)
 - **MLFlow:** Experiment tracking, model registry, and MLOps suite (port 5000)
-- **Glances:** Real-time system monitoring including CPU, memory, disk, network, and GPU metrics (port 61208)
+- **Resources Monitor (btop):** Real-time system monitoring including CPU, memory, disk, network, and process metrics via ttyd web terminal (port 7681)
 - **Optuna:** Hyperparameter optimization dashboard (port 8080, when running)
 - **Jupyter Server Proxy:** Advanced proxy for additional services when running in hub mode
 
@@ -437,7 +437,7 @@ Configuration variables supported by the platform:
 - `ENABLE_GPU_SUPPORT` - enable NVIDIA GPU support (default: `0`)
 - `ENABLE_GPUSTAT` - enable GPU monitoring
 - `ENABLE_SERVICE_MLFLOW` - enable MLFlow service (default: `1`)
-- `ENABLE_SERVICE_GLANCES` - enable Glances monitoring (default: `1`)
+- `ENABLE_SERVICE_RESOURCES_MONITOR` - enable Resources Monitor/btop (default: `1`)
 - `ENABLE_SERVICE_TENSORBOARD` - enable TensorBoard (default: `1`)
 - `ENABLE_LOCAL_SCRIPTS` - enable user-defined startup scripts
 
@@ -478,7 +478,7 @@ Configuration variables supported by the platform:
 
 **System Monitoring:**
 - Real-time GPU monitoring with nvtop and gpustat
-- Glances web interface for comprehensive system metrics
+- btop resources monitor web interface via ttyd
 - Built-in resource usage monitoring in JupyterLab
 - NVIDIA ML Python bindings for programmatic GPU access
 

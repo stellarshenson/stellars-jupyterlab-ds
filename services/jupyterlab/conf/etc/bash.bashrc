@@ -79,6 +79,7 @@ if [[ "$SHLVL" -le 3 ]]; then
     # display gpustat if GPU support enabled
     if [[ "${ENABLE_GPU_SUPPORT}" = 1 ]] && [[ "${ENABLE_GPUSTAT}" = 1 ]]; then
         conda run --no-capture-output -n base gpustat --no-color --no-header --no-processes
+        echo
     fi
 
     # brief delay to prevent terminal init race conditions
