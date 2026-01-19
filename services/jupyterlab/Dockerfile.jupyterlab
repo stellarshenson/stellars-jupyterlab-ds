@@ -1,3 +1,4 @@
+# check=skip=SecretsUsedInArgOrEnv
 ## this container will serve as a builder for some cuda-specific
 ## libraries like huggingface llama_cpp
 ARG CUDA_VERSION=13.0.2
