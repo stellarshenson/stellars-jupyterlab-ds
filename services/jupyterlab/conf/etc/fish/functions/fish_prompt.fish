@@ -17,8 +17,8 @@
 #        │                  │
 #        │                  └─ PWD segment (blue #2266AA)
 #        └─ Environment segment
-#           - Conda: yellow #FFD966
-#           - Venv:  white  #E8E8E8
+#           - Conda: yellow 
+#           - Venv:  white 
 #
 # RIGHT PROMPT (left-pointing chevrons ):
 #
@@ -26,15 +26,15 @@
 #   │  main !3 +1 ?2    │  127    │ │  8s     │
 #   └───────────────────┴─────────┘ └─────────┘
 #        │                   │           │
-#        │                   │           └─ Duration segment (yellow #FFB000)
+#        │                   │           └─ Duration segment (yellow)
 #        │                   │              Only shown when > 3 seconds
 #        │                   │
-#        │                   └─ Error segment (red #CC0000)
+#        │                   └─ Error segment (red)
 #        │                      Only shown when exit code != 0
 #        │
 #        └─ Git segment
-#           - Clean: green  #228B22
-#           - Dirty: orange #E87800
+#           - Clean: green  
+#           - Dirty: orange 
 #
 # Segment flow:
 #   - Left prompt:  [env][pwd] (connected, no gaps)
@@ -98,16 +98,16 @@ set -q stellars_prompt_pwd_bg || set -g stellars_prompt_pwd_bg 2266AA           
 set -q stellars_prompt_pwd_fg || set -g stellars_prompt_pwd_fg E0E0E0              # Light gray text
 
 # Git segment colors
-set -q stellars_prompt_git_bg_clean || set -g stellars_prompt_git_bg_clean 228B22  # Forest green
+set -q stellars_prompt_git_bg_clean || set -g stellars_prompt_git_bg_clean 229922  # Forest green
 set -q stellars_prompt_git_bg_dirty || set -g stellars_prompt_git_bg_dirty E87800  # Orange
 set -q stellars_prompt_git_fg || set -g stellars_prompt_git_fg 000000              # Black text
 
 # Error segment colors (shown when last command failed)
-set -q stellars_prompt_error_bg || set -g stellars_prompt_error_bg CC0000          # Red
+set -q stellars_prompt_error_bg || set -g stellars_prompt_error_bg DD0000          # Red
 set -q stellars_prompt_error_fg || set -g stellars_prompt_error_fg FFFFFF          # White text
 
 # Duration segment colors (shown when command exceeds threshold)
-set -q stellars_prompt_duration_bg || set -g stellars_prompt_duration_bg FFB000    # Yellow
+set -q stellars_prompt_duration_bg || set -g stellars_prompt_duration_bg FFC500    # Yellow
 set -q stellars_prompt_duration_fg || set -g stellars_prompt_duration_fg 000000    # Black text
 set -q stellars_prompt_duration_threshold || set -g stellars_prompt_duration_threshold 3000  # 3 seconds in ms
 

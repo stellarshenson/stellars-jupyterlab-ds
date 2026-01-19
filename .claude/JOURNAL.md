@@ -215,3 +215,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 88. **Task - Add stellars fish prompt**: Integrated powerline-style prompt for fish shell<br>
     **Result**: Created `fish_prompt.fish` in `/etc/fish/functions/` providing stellars-branded powerline prompt with conda/venv environment indicators (amber for conda, gray for venv), DIRTRIM-style abbreviated PWD, git branch on right side, and chevron separators. Modified `06_fish_init.sh` to source the prompt file when adding stellars customizations to user's fish config. Prompt only configured on first run when stellars marker is not present in config.fish
+
+89. **Task - Enhance fish prompt to tide-style**: Major rewrite resembling Tide prompt without dependencies<br>
+    **Result**: Completely rewrote `fish_prompt.fish` to provide comprehensive tide-like prompt with left and right segments. Left prompt shows environment (conda yellow, venv white) and PWD (blue) with right-pointing powerline chevrons. Right prompt shows git branch with status indicators (!N modified, +N staged, ?N untracked), error code segment (red, shown when non-zero), and command duration (yellow, shown when >3s) with left-pointing chevrons. Git segment color changes from green (clean) to orange (dirty). Added `LD_LIBRARY_PATH="/opt/conda/lib"` to bash.bashrc fixing libxml2.so.16 error for libmamba solver in bash shell
+
+90. **Task - Suppress Dockerfile secrets warnings**: Added BuildKit check skip directive<br>
+    **Result**: Added `# check=skip=SecretsUsedInArgOrEnv` at top of Dockerfile.jupyterlab to suppress warnings for CONDA_USER_PASSWD ARG and JUPYTERLAB_SERVER_TOKEN ENV which are intentional for this development container
