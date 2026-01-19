@@ -9,36 +9,108 @@
 # Visual Design
 # ============================================================================
 #
-# LEFT PROMPT (right-pointing chevrons ):
+# PROMPT LAYOUT
+# -------------
 #
-#   ┌─────────────┬───────────────────────┐
-#   │  env name   │  ~/path/to/dir        │
-#   └─────────────┴───────────────────────┘
-#        │                  │
-#        │                  └─ PWD segment (blue #2266AA)
-#        └─ Environment segment
-#           - Conda: yellow 
-#           - Venv:  white 
+#   LEFT                                                          RIGHT
+#   [env][pwd]                                     [git][error] [duration]
 #
-# RIGHT PROMPT (left-pointing chevrons ):
 #
-#   ┌───────────────────┬─────────┐ ┌─────────┐
-#   │  main !3 +1 ?2    │  127    │ │  8s     │
-#   └───────────────────┴─────────┘ └─────────┘
-#        │                   │           │
-#        │                   │           └─ Duration segment (yellow)
-#        │                   │              Only shown when > 3 seconds
-#        │                   │
-#        │                   └─ Error segment (red)
-#        │                      Only shown when exit code != 0
-#        │
-#        └─ Git segment
-#           - Clean: green  
-#           - Dirty: orange 
+# LEFT PROMPT STRUCTURE
+# ---------------------
 #
-# Segment flow:
-#   - Left prompt:  [env][pwd] (connected, no gaps)
-#   - Right prompt: [git][error] [duration] (git+error connected, space before duration)
+#   With environment:
+#   ┌────────────┐┌──────────────────┐
+#   │ env name   ││ ~/path/to/dir    │
+#   └────────────┘└──────────────────┘
+#
+#   Without environment:
+#   ┌──────────────────┐
+#   │ ~/path/to/dir    │
+#   └──────────────────┘
+#
+#   Chevron: U+E0B0  (right-pointing, cuts into next segment)
+#
+#
+# RIGHT PROMPT STRUCTURE
+# ----------------------
+#
+#   Pattern 1 - Git only:
+#   ┌─────────────────┐
+#   │ main !3 +1 ?2   │
+#   └─────────────────┘
+#
+#   Pattern 2 - Git + Error:
+#   ┌─────────────────┬───────┐
+#   │ main !3 +1 ?2   │ 127   │
+#   └─────────────────┴───────┘
+#                     ^ error cuts into git
+#
+#   Pattern 3 - Git + Duration:
+#   ┌─────────────────┐ ┌───────┐
+#   │ main !3 +1 ?2   │ │ 8s    │
+#   └─────────────────┘ └───────┘
+#                     ^ square butt, space, duration
+#
+#   Pattern 4 - Git + Error + Duration:
+#   ┌─────────────────┬───────┐ ┌───────┐
+#   │ main !3 +1 ?2   │ 127   │ │ 8s    │
+#   └─────────────────┴───────┘ └───────┘
+#                     ^       ^ square butt, space, duration
+#                     error cuts into git
+#
+#   Chevron: U+E0B2  (left-pointing, cuts into previous segment)
+#
+#
+# COLOR PALETTE
+# -------------
+#
+#   Segment              Background    Foreground    Notes
+#   ─────────────────────────────────────────────────────────────────
+#   Environment (conda)  #FFD966       #000000       Pale yellow, black text
+#   Environment (venv)   #E8E8E8       #000000       Pale white, black text
+#   PWD                  #2266AA       #E0E0E0       Blue, light gray text (bold)
+#   Git (clean)          #228B22       #000000       Forest green, black text
+#   Git (dirty)          #E87800       #000000       Orange, black text
+#   Error                #CC0000       #FFFFFF       Red, white text
+#   Duration             #FFB000       #000000       Amber yellow, black text
+#
+#
+# CHEVRON TRANSITIONS
+# -------------------
+#
+#   Left prompt (right-pointing ):
+#   - Chevron fg = previous segment bg
+#   - Chevron bg = next segment bg
+#   - Creates: previous segment "flows into" next
+#
+#   Right prompt (left-pointing ):
+#   - Chevron fg = current segment bg
+#   - Chevron bg = previous segment bg (or terminal default)
+#   - Creates: current segment "cuts into" previous
+#
+#   Connected segments: chevron drawn on previous bg with current fg
+#   Square butt: segment ends, reset to normal, space before next
+#
+#
+# TEXT STYLING
+# ------------
+#
+#   PWD text:       Bold (-o flag)
+#   All other text: Normal weight
+#   Padding:        Single space before and after text in each segment
+#
+#
+# POWERLINE GLYPHS
+# ----------------
+#
+#   Character    Unicode    Description
+#   ─────────────────────────────────────────
+#              U+E0B0     Right-pointing separator (left prompt)
+#              U+E0B2     Left-pointing separator (right prompt)
+#
+#   Requires: Powerline-compatible font (e.g., Nerd Fonts, Powerline patched)
+#
 #
 # ============================================================================
 # Features
@@ -78,7 +150,6 @@
 #   - Powerline-compatible font (for chevron characters)
 #
 # ============================================================================
-
 # ----------------------------------------------------------------------------
 # Configuration Variables
 # ----------------------------------------------------------------------------
@@ -313,7 +384,7 @@ function fish_prompt
     end
 
     # PWD segment
-    set prompt $prompt(set_color -b $stellars_prompt_pwd_bg)(set_color $stellars_prompt_pwd_fg)" $pwd_str "(set_color normal)(set_color $stellars_prompt_pwd_bg)$sep
+    set prompt $prompt(set_color -b $stellars_prompt_pwd_bg)(set_color -o $stellars_prompt_pwd_fg)" $pwd_str "(set_color normal)(set_color $stellars_prompt_pwd_bg)$sep
 
     # Reset colors and add trailing space
     set prompt $prompt(set_color normal)" "
@@ -329,11 +400,35 @@ end
 # Duration segment has single space before it.
 # All segments use powerline chevrons pointing left (ue0b2).
 #
+# fish_right_prompt - Right side of the prompt
+#
+# Displays: [git][error] [duration]
+#
+# Visual patterns:
+#   < git |                    - git only
+#   < git < error |            - git + error connected
+#   < git < < time |           - git, chevron-out, space, time
+#   < git < error < < time |   - git + error connected, chevron-out, space, time
+#
+# Legend: < = left chevron (cut-in), < at end = right chevron (cut-out), | = square end
+#
 function fish_right_prompt
     set -l git_info (__stellars_git_info)
-    set -l sep (printf '\ue0b2')
+    set -l sep_left (printf '\ue0b2')
     set -l result ''
     set -l last_bg ''
+    
+    # Pre-calculate what segments will be shown
+    set -l has_error 0
+    set -l has_duration 0
+    if test "$__stellars_last_status" -ne 0 2>/dev/null
+        set has_error 1
+    end
+    if test -n "$__stellars_last_duration"
+        if test $__stellars_last_duration -ge $stellars_prompt_duration_threshold
+            set has_duration 1
+        end
+    end
     
     # Git segment (first on right)
     if test -n "$git_info"
@@ -346,33 +441,34 @@ function fish_right_prompt
             set bg $stellars_prompt_git_bg_dirty
         end
         
-        set result $result(set_color $bg)$sep(set_color -b $bg)(set_color $stellars_prompt_git_fg)" $git_text "
+        # Left chevron (cut-in) + content
+        set result $result(set_color $bg)$sep_left(set_color -b $bg)(set_color $stellars_prompt_git_fg)" $git_text "
         set last_bg $bg
     end
     
-    # Error segment (if last command failed) - connected to git, no space
-    if test "$__stellars_last_status" -ne 0 2>/dev/null
+    # Error segment (if last command failed) - connected to git
+    if test $has_error -eq 1
+        # Left chevron cutting into previous segment
         if test -n "$last_bg"
-            set result $result(set_color -b $last_bg)(set_color $stellars_prompt_error_bg)$sep
+            set result $result(set_color -b $last_bg)(set_color $stellars_prompt_error_bg)$sep_left
         else
-            set result $result(set_color $stellars_prompt_error_bg)$sep
+            set result $result(set_color $stellars_prompt_error_bg)$sep_left
         end
         set result $result(set_color -b $stellars_prompt_error_bg)(set_color $stellars_prompt_error_fg)" $__stellars_last_status "
         set last_bg $stellars_prompt_error_bg
     end
     
-    # Duration segment (if command exceeded threshold) - space before
-    if test -n "$__stellars_last_duration"
-        if test $__stellars_last_duration -ge $stellars_prompt_duration_threshold
-            set -l duration_str (__stellars_duration)
-            if test -n "$duration_str"
-                # Add space before duration segment
-                if test -n "$last_bg"
-                    set result $result(set_color normal)" "
-                end
-                set result $result(set_color $stellars_prompt_duration_bg)$sep(set_color -b $stellars_prompt_duration_bg)(set_color $stellars_prompt_duration_fg)" $duration_str "
-                set last_bg $stellars_prompt_duration_bg
+    # Duration segment (if command exceeded threshold)
+    if test $has_duration -eq 1
+        set -l duration_str (__stellars_duration)
+        if test -n "$duration_str"
+            # Cutout: reset fg to terminal default (keeps segment bg), draw chevron
+            if test -n "$last_bg"
+                set result $result(set_color normal)" "
             end
+            # Left chevron (cut-in) + content
+            set result $result(set_color $stellars_prompt_duration_bg)$sep_left(set_color -b $stellars_prompt_duration_bg)(set_color $stellars_prompt_duration_fg)" $duration_str "
+            set last_bg $stellars_prompt_duration_bg
         end
     end
     
