@@ -4,6 +4,7 @@
 #
 # Initializes fish shell for Stellars JupyterLab DS:
 # - Conda initialization (if not already done)
+# - Stellars powerline-style prompt (conda/venv, PWD, git branch)
 # - Disables default fish greeting
 # - Adds welcome message, MOTD, and gpustat (like bash.bashrc)
 # - Sets up Docker MCP environment variable
@@ -39,6 +40,9 @@ cat >> "${FISH_CONFIG}" << 'FISH_CONFIG_EOF'
 
 # >>> stellars initialize >>>
 # Stellars JupyterLab DS customizations
+
+# Load stellars prompt (powerline-style with conda/venv, PWD, git branch)
+source /etc/fish/functions/fish_prompt.fish
 
 # Disable default fish greeting
 function fish_greeting

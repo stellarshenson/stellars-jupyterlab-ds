@@ -212,3 +212,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 87. **Task - Add screen and session culling docs**: Terminal multiplexer and idle session management<br>
     **Result**: Added `screen` terminal multiplexer to apt-packages.yml for persistent sessions. Added "Session Culling" section to README explaining that JupyterLab automatically terminates idle kernels and terminals to conserve resources, with usage example for `screen` to run long-running jobs and note that culling timeout is adjustable in JupyterLab Settings
+
+88. **Task - Add stellars fish prompt**: Integrated powerline-style prompt for fish shell<br>
+    **Result**: Created `fish_prompt.fish` in `/etc/fish/functions/` providing stellars-branded powerline prompt with conda/venv environment indicators (amber for conda, gray for venv), DIRTRIM-style abbreviated PWD, git branch on right side, and chevron separators. Modified `06_fish_init.sh` to source the prompt file when adding stellars customizations to user's fish config. Prompt only configured on first run when stellars marker is not present in config.fish
