@@ -359,6 +359,14 @@ function fish_prompt
     set -l sep (printf '\ue0b0')
     set -l prompt ''
 
+    # Add newline before prompt (visual separation between commands)
+    # Skip on first prompt of the session (MOTD/gpustat provides spacing)
+    if set -q __stellars_prompt_shown
+        set prompt $prompt\n
+    else
+        set -g __stellars_prompt_shown 1
+    end
+
     # Environment segment (conda or venv)
     if test -n "$env_info"
         set -l env_type (string split ':' -- $env_info)[1]
