@@ -75,9 +75,9 @@ c.ServerProxy.servers = {
         "port": 6006,
         "launcher_entry": {
             "enabled": True,
-            "category": "TensorBoard",
+            "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/tensorboard.svg",
-            "title": "Resource Monitor"
+            "title": "TensorBoard"
         }
     },
     "optuna": {
@@ -85,7 +85,10 @@ c.ServerProxy.servers = {
         "absolute_url": False,
         "port": 8080,
         "launcher_entry": {
-            "enabled": False    
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/optuna.svg",
+            "title": "Optuna"
         }
     },
     "callback": {
@@ -109,7 +112,10 @@ c.ServerProxy.servers = {
         "absolute_url": False,
         "port": 8501,
         "launcher_entry": {
-            "enabled": False
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/streamlit.svg",
+            "title": "Streamlit"
         }
     },
     "mkdocs": {
