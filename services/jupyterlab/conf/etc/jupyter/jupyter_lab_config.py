@@ -56,7 +56,7 @@ c.ServerProxy.servers = {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/rmonitor.svg",
-            "title": "Resources"
+            "title": "Monitoring"
         }
     },
     "mlflow": {
