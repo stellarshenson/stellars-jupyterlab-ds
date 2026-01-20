@@ -236,3 +236,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 95. **Task - Extend launcher tiles for Optuna and Streamlit**: Added remaining service launcher entries<br>
     **Result**: Enabled launcher tiles for Optuna (port 8080) and Streamlit (port 8501) with custom SVG icons. Fixed TensorBoard category from "TensorBoard" to "Services" and title from "Resource Monitor" to "TensorBoard". All proxy services now have consistent launcher entries under "Services" category. Version bumped to 3.5.53
+
+96. **Task - Fix proxy icons and add Shiny**: Fixed directory permissions and added Shiny service<br>
+    **Result**: Fixed Dockerfile COPY for share/jupyter - removed `--chmod=644` which made subdirectories non-traversable, added RUN command to set directories to 755 and files to 644. Added Shiny proxy configuration on port 3838 with launcher entry and custom SVG icon. Added Shiny to welcome-template.html Optional Tools section. Fixed Shiny port from 8501 (Streamlit conflict) to 3838

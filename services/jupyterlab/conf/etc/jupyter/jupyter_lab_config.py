@@ -118,6 +118,17 @@ c.ServerProxy.servers = {
             "title": "Streamlit"
         }
     },
+    "shiny": {
+        "command": [],
+        "absolute_url": False,
+        "port": 3838,
+        "launcher_entry": {
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/shiny.svg",
+            "title": "Shiny"
+        }
+    },
     "mkdocs": {
         "command": [],
         "absolute_url": False,

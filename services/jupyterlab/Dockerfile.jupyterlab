@@ -168,7 +168,14 @@ COPY --chmod=644  ./conf/misc/welcome-template.html /welcome-template.html
 COPY --chmod=755  ./conf/utils /opt/utils
 RUN chmod 644 /opt/utils/lab-utils.yml
 COPY --chmod=644  ./conf/patches /tmp/patches
-COPY --chmod=644  ./conf/share/jupyter /opt/conda/share/jupyter
+COPY              ./conf/share/jupyter /opt/conda/share/jupyter
+RUN <<-EOF
+    echo "Setting permissions for share/jupyter directory"
+    echo "  - directories: 755 (traversable)"
+    echo "  - files: 644 (not executable)"
+    find /opt/conda/share/jupyter -type d -exec chmod 755 {} \;
+    find /opt/conda/share/jupyter -type f -exec chmod 644 {} \;
+EOF
 
 ########################################################
 #  FIX PACKAGES AND REMOVE UNNECESSARY                 #
