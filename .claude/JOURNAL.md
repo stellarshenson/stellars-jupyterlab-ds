@@ -224,3 +224,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 91. **Task - Reorganize workspace template documentation**: Moved docs to subfolder and updated README<br>
     **Result**: Created `docs/` subfolder in workspace template. Moved and renamed documentation files: `readme-workspace-utils.md` -> `docs/lab-utils.md`, `readme-nbdime.md` -> `docs/nbdime.md`, `readme-conda.pdf` -> `docs/conda.pdf`. Completely rewrote lab-utils.md to reflect current Textual TUI-based system with YAML-driven menus, selectors, keyboard navigation, and CLI support. Updated nbdime.md with cleaner formatting. Created new `README.md` at workspace root as index linking to docs and providing quick start commands
+
+92. **Task - Convert conda PDF to markdown**: Replaced PDF cheatsheet with markdown version<br>
+    **Result**: Converted `docs/conda.pdf` to `docs/conda.md` with proper markdown tables covering quick start, channels/packages, environment management, importing/exporting environments, and additional hints. Removed PDF file. Updated workspace README.md to reference conda.md instead of conda.pdf
+
+93. **Task - Convert cleanup-tags command to skill**: Restructured as multi-file skill with progressive disclosure<br>
+    **Result**: Converted `.claude/commands/cleanup-tags.md` to `.claude/skills/cleanup-tags/` directory structure with three files: `SKILL.md` (main workflow and instructions), `AUTH.md` (Docker credential helper and JWT token exchange), `API.md` (Docker Hub API endpoints and response codes). Removed empty commands directory. Skills provide auto-discovery and better organization for complex multi-step workflows
