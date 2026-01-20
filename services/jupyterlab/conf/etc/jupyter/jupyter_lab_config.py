@@ -119,7 +119,8 @@ c.ServerProxy.servers = {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/streamlit.svg",
-            "title": "Streamlit"
+            "title": "Streamlit",
+            "new_browser_tab": False
         }
     },
     "shiny": {
@@ -130,7 +131,8 @@ c.ServerProxy.servers = {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/shiny.svg",
-            "title": "Shiny"
+            "title": "Shiny",
+            "new_browser_tab": False
         }
     },
     "mkdocs": {
