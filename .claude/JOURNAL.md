@@ -230,3 +230,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 93. **Task - Convert cleanup-tags command to skill**: Restructured as multi-file skill with progressive disclosure<br>
     **Result**: Converted `.claude/commands/cleanup-tags.md` to `.claude/skills/cleanup-tags/` directory structure with three files: `SKILL.md` (main workflow and instructions), `AUTH.md` (Docker credential helper and JWT token exchange), `API.md` (Docker Hub API endpoints and response codes). Removed empty commands directory. Skills provide auto-discovery and better organization for complex multi-step workflows
+
+94. **Task - Add launcher tiles for services**: Enabled JupyterLab launcher entries for proxy services<br>
+    **Result**: Enabled launcher tiles for Resource Monitor, MLFlow, and TensorBoard in jupyter_lab_config.py with custom SVG icons. Added icons to `conf/share/jupyter/jupyter_server_proxy/icons/` subfolder (mlflow.svg, rmonitor.svg, tensorboard.svg). Services appear in launcher under "Services" category. Disabled Jupytext auto-pairing formats in overrides.json to prevent automatic notebook format conversion. Version bumped to 3.5.52

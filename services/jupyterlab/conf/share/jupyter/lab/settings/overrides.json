@@ -67,5 +67,17 @@
     "sideBySideOutputRatio": 1,
     "sideBySideRightMarginOverride": "10px",
     "windowingMode": "defer"
+  },
+  "jupyterlab-jupytext:plugin": {
+    "auto:percent": false,
+    "auto:light": false,
+    "auto:hydrogen": false,
+    "auto:nomarker": false,
+    "md:myst": false,
+    "md": false,
+    "Rmd": false,
+    "qmd": false,
+    "NOTE": null,
+    "py:marimo": false
   }
 }
