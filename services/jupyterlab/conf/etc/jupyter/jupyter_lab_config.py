@@ -55,7 +55,8 @@ c.ServerProxy.servers = {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/rmonitor.svg",
-            "title": "Resource Monitor"
+            "title": "Resource Monitor",
+            "new_browser_tab": False
         }
     },
     "mlflow": {
@@ -66,7 +67,8 @@ c.ServerProxy.servers = {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/mlflow.svg",
-            "title": "MLFlow"
+            "title": "MLFlow",
+            "new_browser_tab": False
         }
     },
     "tensorboard": {
@@ -77,7 +79,8 @@ c.ServerProxy.servers = {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/tensorboard.svg",
-            "title": "TensorBoard"
+            "title": "TensorBoard",
+            "new_browser_tab": False
         }
     },
     "optuna": {
@@ -88,7 +91,8 @@ c.ServerProxy.servers = {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/optuna.svg",
-            "title": "Optuna"
+            "title": "Optuna",
+            "new_browser_tab": False
         }
     },
     "callback": {
