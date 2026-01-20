@@ -221,3 +221,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 90. **Task - Suppress Dockerfile secrets warnings**: Added BuildKit check skip directive<br>
     **Result**: Added `# check=skip=SecretsUsedInArgOrEnv` at top of Dockerfile.jupyterlab to suppress warnings for CONDA_USER_PASSWD ARG and JUPYTERLAB_SERVER_TOKEN ENV which are intentional for this development container
+
+91. **Task - Reorganize workspace template documentation**: Moved docs to subfolder and updated README<br>
+    **Result**: Created `docs/` subfolder in workspace template. Moved and renamed documentation files: `readme-workspace-utils.md` -> `docs/lab-utils.md`, `readme-nbdime.md` -> `docs/nbdime.md`, `readme-conda.pdf` -> `docs/conda.pdf`. Completely rewrote lab-utils.md to reflect current Textual TUI-based system with YAML-driven menus, selectors, keyboard navigation, and CLI support. Updated nbdime.md with cleaner formatting. Created new `README.md` at workspace root as index linking to docs and providing quick start commands
