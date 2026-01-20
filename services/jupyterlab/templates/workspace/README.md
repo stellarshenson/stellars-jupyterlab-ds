@@ -14,7 +14,7 @@ Reference guides are available in the `docs/` folder:
 
 - **[lab-utils.md](docs/lab-utils.md)** - Interactive utility framework for workspace management
 - **[nbdime.md](docs/nbdime.md)** - Notebook diffing and merging with git
-- **[conda.pdf](docs/conda.pdf)** - Conda package manager cheat sheet
+- **[conda.md](docs/conda.md)** - Conda package manager cheat sheet
 
 ## Quick Commands
 
