@@ -240,5 +240,5 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 96. **Task - Fix proxy icons and add Shiny**: Fixed directory permissions and added Shiny service<br>
     **Result**: Fixed Dockerfile COPY for share/jupyter - removed `--chmod=644` which made subdirectories non-traversable, added RUN command to set directories to 755 and files to 644. Added Shiny proxy configuration on port 3838 with launcher entry and custom SVG icon. Added Shiny to welcome-template.html Optional Tools section. Fixed Shiny port from 8501 (Streamlit conflict) to 3838
 
-97. **Task - Open proxy services as JupyterLab tabs**: Configured iframe embedding for services<br>
-    **Result**: Added `"new_browser_tab": False` to launcher entries for Resource Monitor, MLFlow, TensorBoard, and Optuna - these services now open as tabs within JupyterLab instead of new browser windows. Streamlit and Shiny excluded (remain as new browser tabs) due to potential iframe compatibility issues
+97. **Task - Open proxy services as JupyterLab tabs**: Configured iframe embedding for all services<br>
+    **Result**: Added `"new_browser_tab": False` to all launcher entries (Resource Monitor, MLFlow, TensorBoard, Optuna, Streamlit, Shiny) - services now open as iframe tabs within JupyterLab instead of new browser windows
