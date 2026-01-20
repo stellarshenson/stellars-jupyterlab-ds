@@ -233,3 +233,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 94. **Task - Add launcher tiles for services**: Enabled JupyterLab launcher entries for proxy services<br>
     **Result**: Enabled launcher tiles for Resource Monitor, MLFlow, and TensorBoard in jupyter_lab_config.py with custom SVG icons. Added icons to `conf/share/jupyter/jupyter_server_proxy/icons/` subfolder (mlflow.svg, rmonitor.svg, tensorboard.svg). Services appear in launcher under "Services" category. Disabled Jupytext auto-pairing formats in overrides.json to prevent automatic notebook format conversion. Version bumped to 3.5.52
+
+95. **Task - Extend launcher tiles for Optuna and Streamlit**: Added remaining service launcher entries<br>
+    **Result**: Enabled launcher tiles for Optuna (port 8080) and Streamlit (port 8501) with custom SVG icons. Fixed TensorBoard category from "TensorBoard" to "Services" and title from "Resource Monitor" to "TensorBoard". All proxy services now have consistent launcher entries under "Services" category. Version bumped to 3.5.53
