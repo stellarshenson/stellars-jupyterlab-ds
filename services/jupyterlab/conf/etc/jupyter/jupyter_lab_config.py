@@ -52,7 +52,10 @@ c.ServerProxy.servers = {
         "absolute_url": False,
         "port": 7681,
         "launcher_entry": {
-            "enabled": False
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/rmonitor.svg",
+            "title": "Resource Monitor"
         }
     },
     "mlflow": {
@@ -60,7 +63,10 @@ c.ServerProxy.servers = {
         "absolute_url": False,
         "port": 5000,
         "launcher_entry": {
-            "enabled": False    
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/mlflow.svg",
+            "title": "MLFlow"
         }
     },
     "tensorboard": {
@@ -68,7 +74,10 @@ c.ServerProxy.servers = {
         "absolute_url": False,
         "port": 6006,
         "launcher_entry": {
-            "enabled": False    
+            "enabled": True,
+            "category": "TensorBoard",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/tensorboard.svg",
+            "title": "Resource Monitor"
         }
     },
     "optuna": {
