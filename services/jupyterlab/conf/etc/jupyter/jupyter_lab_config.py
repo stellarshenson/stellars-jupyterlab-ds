@@ -51,48 +51,48 @@ c.ServerProxy.servers = {
         "command": [],
         "absolute_url": False,
         "port": 7681,
+        "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/rmonitor.svg",
-            "title": "Resource Monitor",
-            "new_browser_tab": False
+            "title": "Resources"
         }
     },
     "mlflow": {
         "command": [],
         "absolute_url": False,
         "port": 5000,
+        "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/mlflow.svg",
-            "title": "MLFlow",
-            "new_browser_tab": False
+            "title": "MLFlow"
         }
     },
     "tensorboard": {
         "command": [],
         "absolute_url": False,
         "port": 6006,
+        "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/tensorboard.svg",
-            "title": "TensorBoard",
-            "new_browser_tab": False
+            "title": "TensorBoard"
         }
     },
     "optuna": {
         "command": [],
         "absolute_url": False,
         "port": 8080,
+        "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/optuna.svg",
-            "title": "Optuna",
-            "new_browser_tab": False
+            "title": "Optuna"
         }
     },
     "callback": {
@@ -115,24 +115,24 @@ c.ServerProxy.servers = {
         "command": [],
         "absolute_url": False,
         "port": 8501,
+        "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/streamlit.svg",
-            "title": "Streamlit",
-            "new_browser_tab": False
+            "title": "Streamlit"
         }
     },
     "shiny": {
         "command": [],
         "absolute_url": False,
         "port": 3838,
+        "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/shiny.svg",
-            "title": "Shiny",
-            "new_browser_tab": False
+            "title": "Shiny"
         }
     },
     "mkdocs": {
