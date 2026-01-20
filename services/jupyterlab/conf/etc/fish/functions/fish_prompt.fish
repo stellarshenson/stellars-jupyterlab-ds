@@ -341,12 +341,11 @@ end
 # Displays: [environment][pwd]
 #
 # Structure:
-#   1. Newline (between consecutive prompts, not on first prompt)
-#   2. Environment segment (if conda or venv active)
+#   1. Environment segment (if conda or venv active)
 #      - Yellow background for conda
 #      - Pale white background for venv
-#   3. PWD segment (blue background)
-#   4. Trailing space for command input
+#   2. PWD segment (blue background)
+#   3. Trailing space for command input
 #
 # Also captures $status and $CMD_DURATION for use by fish_right_prompt.
 #
@@ -354,19 +353,11 @@ function fish_prompt
     # Capture status immediately (before any commands run)
     set -g __stellars_last_status $status
     set -g __stellars_last_duration $CMD_DURATION
-    
+
     set -l env_info (__stellars_env)
     set -l pwd_str (__stellars_pwd)
     set -l sep (printf '\ue0b0')
     set -l prompt ''
-
-    # Add newline before prompt (visual separation between commands)
-    # Skip on first prompt of the session
-    if set -q __stellars_prompt_shown
-        set prompt $prompt\n
-    else
-        set -g __stellars_prompt_shown 1
-    end
 
     # Environment segment (conda or venv)
     if test -n "$env_info"
@@ -395,22 +386,13 @@ end
 #
 # Displays: [git][error] [duration]
 #
-# Order: git status first, then error (if any), then duration (if threshold exceeded).
-# Git and error segments are connected (no gap).
-# Duration segment has single space before it.
-# All segments use powerline chevrons pointing left (ue0b2).
-#
-# fish_right_prompt - Right side of the prompt
-#
-# Displays: [git][error] [duration]
-#
 # Visual patterns:
 #   < git |                    - git only
 #   < git < error |            - git + error connected
 #   < git < < time |           - git, chevron-out, space, time
 #   < git < error < < time |   - git + error connected, chevron-out, space, time
 #
-# Legend: < = left chevron (cut-in), < at end = right chevron (cut-out), | = square end
+# Legend: < = left chevron (cut-in), | = square end
 #
 function fish_right_prompt
     set -l git_info (__stellars_git_info)
@@ -462,7 +444,7 @@ function fish_right_prompt
     if test $has_duration -eq 1
         set -l duration_str (__stellars_duration)
         if test -n "$duration_str"
-            # Cutout: reset fg to terminal default (keeps segment bg), draw chevron
+            # Square butt + space before duration
             if test -n "$last_bg"
                 set result $result(set_color normal)" "
             end
