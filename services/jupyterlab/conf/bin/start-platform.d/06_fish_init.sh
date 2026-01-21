@@ -17,13 +17,7 @@ STELLARS_MARKER="# >>> stellars initialize >>>"
 # Ensure fish config directory exists
 mkdir -p "${FISH_CONFIG_DIR}"
 
-# Cleanup: Remove old LD_LIBRARY_PATH settings that pollute system library path
-# (was added in earlier versions but caused curl and other tools to break)
-if [[ -f "${FISH_CONFIG}" ]] && grep -q "LD_LIBRARY_PATH.*conda/lib" "${FISH_CONFIG}"; then
-    echo "Removing old LD_LIBRARY_PATH settings from fish config..."
-    sed -i '/# Include conda lib for libmamba solver/d' "${FISH_CONFIG}"
-    sed -i '/set -gx LD_LIBRARY_PATH.*conda\/lib/d' "${FISH_CONFIG}"
-fi
+# Note: LD_LIBRARY_PATH cleanup is handled by 03_cleanup_ld_library_path.sh
 
 # Initialize conda for fish if not already done
 if [[ -f "${FISH_CONFIG}" ]]; then
