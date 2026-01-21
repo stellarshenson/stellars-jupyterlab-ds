@@ -242,3 +242,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 97. **Task - Open proxy services as JupyterLab tabs**: Configured iframe embedding for all services<br>
     **Result**: Added `"new_browser_tab": False` to all launcher entries (Resource Monitor, MLFlow, TensorBoard, Optuna, Streamlit, Shiny) - services now open as iframe tabs within JupyterLab instead of new browser windows
+
+98. **Task - Fix libxml2 globally and enhance icons**: Global LD_LIBRARY_PATH fix and icon improvements<br>
+    **Result**: Added `/opt/conda/lib` to LD_LIBRARY_PATH in Dockerfile ENV (line 474) to fix libxml2.so.16 error globally for all processes including startup scripts and `conda run` subprocesses. Split rmonitor.svg compound path into separate colorable elements (arc segments for gauge zones, needle, ring) enabling multi-color performance gauge. Simplified optuna.svg from 62k-token traced image to clean vector with transparent ring cutout and real text. Updated version to 3.6.x with VERSION_COMMENT describing resource culling, services launcher tiles, and fish interactive shell

@@ -470,7 +470,8 @@ USER ${CONDA_USER}
 ## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
 ## path can be obtained by using >> python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
 ENV CUDNN_PATH=/opt/conda/lib/python3.1/site-packages/nvidia/cudnn
-ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
+## Include /opt/conda/lib for libmamba-solver (libxml2.so.16) - must be set globally
+ENV LD_LIBRARY_PATH=/opt/conda/lib:${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 
 
 ########################################################
