@@ -250,4 +250,10 @@ This journal tracks substantive work on documents, diagrams, and documentation c
     **Result**: Added `jupyter_launcher_sections/` directory with `services.yml` and `services.svg` to define "Services" launcher category with custom icon. Removed obsolete `services-category.svg`. Updated `nb_venv_kernels_scan.svg` icon. Launcher sections extension enables category-level icons that jupyter-server-proxy alone cannot provide
 
 100. **Task - Targeted LD_LIBRARY_PATH for conda commands**: Prefix conda run with library path<br>
-    **Result**: Instead of global LD_LIBRARY_PATH (which broke curl and other system tools), added targeted `LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH` prefix to specific `conda run` commands in start-platform.sh (jupyter-labhub and jupyter-lab), bash.bashrc (gpustat), and fish init script (gpustat). This fixes libxml2.so.16 warning only for conda commands without polluting library path for system tools
+    **Result**: Instead of global LD_LIBRARY_PATH (which broke curl and other system tools), added targeted `LD_LIBRARY_PATH` prefix to specific `conda run` commands in start-platform.sh (jupyter-labhub and jupyter-lab), bash.bashrc (gpustat), and fish init script (gpustat). This fixes libxml2.so.16 warning only for conda commands without polluting library path for system tools
+
+101. **Task - Add LD_LIBRARY_PATH cleanup script**: Created startup cleanup for polluted user configs<br>
+    **Result**: Created `03_cleanup_ld_library_path.sh` startup script that removes old LD_LIBRARY_PATH pollution from user config files (~/.bashrc, ~/.bash_profile, ~/.profile, ~/.config/fish/config.fish). Runs early in startup sequence to fix existing users who had previous polluted configs from earlier versions
+
+102. **Task - Change LD_LIBRARY_PATH from prepend to append**: System libraries searched first<br>
+    **Result**: Changed `LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH` (prepend) to `LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib` (append) in start-platform.sh, bash.bashrc, and fish init. System libraries now searched before conda libraries, fixing curl "no version information available" warning while conda can still find libxml2.so.16 as fallback
