@@ -25,12 +25,12 @@ done
 # if jupyterhub
 if [[ -n ${JUPYTERHUB_USER} ]]; then
     echo "Starting jupyterlab under jupyterhub"
-    LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH conda run --no-capture-output -n base jupyter-labhub "$@"
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib conda run --no-capture-output -n base jupyter-labhub "$@"
 
 # standalone jupyterlab
 else
     echo "Starting standalone jupyterlab server"
-    LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH conda run --no-capture-output -n base jupyter-lab \
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib conda run --no-capture-output -n base jupyter-lab \
 	--autoreload \
 	--ip=$JUPYTERLAB_SERVER_IP \
 	--IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
