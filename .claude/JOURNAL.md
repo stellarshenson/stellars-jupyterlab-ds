@@ -257,3 +257,9 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 102. **Task - Change LD_LIBRARY_PATH from prepend to append**: System libraries searched first<br>
     **Result**: Changed `LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH` (prepend) to `LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib` (append) in start-platform.sh, bash.bashrc, and fish init. System libraries now searched before conda libraries, fixing curl "no version information available" warning while conda can still find libxml2.so.16 as fallback
+
+103. **Task - Add --no-version-increment build option**: Skip auto version bump during builds<br>
+    **Result**: Added `BUILD_OPTS="--no-version-increment"` support to Makefile. Uses `$(findstring)` to detect flag and `$(filter-out)` to remove it before passing to docker. New `maybe_increment_version` target conditionally runs version increment. Applies to build, build_verbose, and rebuild targets
+
+104. **Task - Switch Claude Code to native installer**: Replaced npm with curl installer<br>
+    **Result**: Updated anthropic-claude-code.sh to use native installer (`curl -fsSL https://claude.ai/install.sh | bash`) instead of npm. Removed Node.js/npm dependency, simplified installation significantly
