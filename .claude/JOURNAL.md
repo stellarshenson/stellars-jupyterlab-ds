@@ -245,3 +245,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 98. **Task - Fix libxml2 globally and enhance icons**: Global LD_LIBRARY_PATH fix and icon improvements<br>
     **Result**: Added `/opt/conda/lib` to LD_LIBRARY_PATH in Dockerfile ENV (line 474) to fix libxml2.so.16 error globally for all processes including startup scripts and `conda run` subprocesses. Split rmonitor.svg compound path into separate colorable elements (arc segments for gauge zones, needle, ring) enabling multi-color performance gauge. Simplified optuna.svg from 62k-token traced image to clean vector with transparent ring cutout and real text. Updated version to 3.6.x with VERSION_COMMENT describing resource culling, services launcher tiles, and fish interactive shell
+
+99. **Task - Add Services launcher section with icon**: Configured custom launcher category icon<br>
+    **Result**: Added `jupyter_launcher_sections/` directory with `services.yml` and `services.svg` to define "Services" launcher category with custom icon. Removed obsolete `services-category.svg`. Updated `nb_venv_kernels_scan.svg` icon. Launcher sections extension enables category-level icons that jupyter-server-proxy alone cannot provide

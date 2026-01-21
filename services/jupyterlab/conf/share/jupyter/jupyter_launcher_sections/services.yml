@@ -1,0 +1,3 @@
+- section: "Services"
+  icon: "services.svg"
+  tooltip: "Supporting services for data science and environment management"
