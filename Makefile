@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help build rebuild push start clean increment_version
+.PHONY: help build rebuild push start clean increment_version maybe_increment_version
 
 # Include project configuration
 include project.env
@@ -12,8 +12,22 @@ include project.env
 # Use VERSION from project.env as TAG (strip quotes)
 TAG := $(subst ",,$(VERSION))
 
-# Build options (e.g., BUILD_OPTS='--no-cache')
+# Build options (e.g., BUILD_OPTS='--no-cache' or BUILD_OPTS='--no-version-increment')
 BUILD_OPTS ?=
+
+# Check if --no-version-increment is in BUILD_OPTS
+NO_VERSION_INCREMENT := $(findstring --no-version-increment,$(BUILD_OPTS))
+
+# Filter out --no-version-increment from opts passed to docker
+DOCKER_BUILD_OPTS := $(filter-out --no-version-increment,$(BUILD_OPTS))
+
+# Conditional version increment target
+maybe_increment_version:
+ifeq ($(NO_VERSION_INCREMENT),)
+	@$(MAKE) increment_version
+else
+	@echo "Skipping version increment (--no-version-increment)"
+endif
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -34,21 +48,21 @@ increment_version:
 	{ print }' project.env > project.env.tmp && mv project.env.tmp project.env
 
 ## build docker containers
-build: clean increment_version
-	@cd ./scripts && ./build.sh $(BUILD_OPTS)
+build: clean maybe_increment_version
+	@cd ./scripts && ./build.sh $(DOCKER_BUILD_OPTS)
 
 ## build docker containers and output logs
-build_verbose: clean increment_version
-	@cd ./scripts && ./build_verbose.sh $(BUILD_OPTS)
+build_verbose: clean maybe_increment_version
+	@cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
 
 ## rebuild 'target' stage only (uses cached 'builder' stage)
-rebuild: clean increment_version
+rebuild: clean maybe_increment_version
 	@echo "Rebuilding 'target' stage (builder stage uses cache if available)..."
 	@docker build \
 		--platform linux/amd64 \
 		--target target \
 		--build-arg CACHEBUST=$$(date +%s) \
-		$(BUILD_OPTS) \
+		$(DOCKER_BUILD_OPTS) \
 		--tag stellars/stellars-jupyterlab-ds:latest \
 		-f services/jupyterlab/Dockerfile.jupyterlab \
 		services/jupyterlab
