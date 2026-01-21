@@ -10,6 +10,9 @@ dependencies:
   - python=3.12 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
+  
+  # binary utilities that conflict with the main OS
+  - curl
 
   - pip:
 
