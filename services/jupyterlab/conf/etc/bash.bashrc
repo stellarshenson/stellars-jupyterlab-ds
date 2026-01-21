@@ -60,9 +60,6 @@ fi
 # Fix CUDA loading for running nvidia-smi
 ldconfig 2>/dev/null
 
-# Include conda lib for libmamba solver (libxml2.so.16)
-export LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
-
 # Docker MCP gateway environment variable
 export DOCKER_MCP_IN_CONTAINER=1
 
