@@ -249,5 +249,5 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 99. **Task - Add Services launcher section with icon**: Configured custom launcher category icon<br>
     **Result**: Added `jupyter_launcher_sections/` directory with `services.yml` and `services.svg` to define "Services" launcher category with custom icon. Removed obsolete `services-category.svg`. Updated `nb_venv_kernels_scan.svg` icon. Launcher sections extension enables category-level icons that jupyter-server-proxy alone cannot provide
 
-100. **Task - Revert LD_LIBRARY_PATH pollution**: Removed /opt/conda/lib from global library path<br>
-    **Result**: Reverted LD_LIBRARY_PATH changes from Dockerfile, bash.bashrc, and fish init script. Adding `/opt/conda/lib` globally caused system tools (curl, etc.) to load conda libraries instead of system ones, breaking functionality. The libxml2.so.16 warning is non-fatal - conda falls back to classic solver. Updated rmonitor.svg and optuna.svg icons with improved coloring
+100. **Task - Targeted LD_LIBRARY_PATH for conda commands**: Prefix conda run with library path<br>
+    **Result**: Instead of global LD_LIBRARY_PATH (which broke curl and other system tools), added targeted `LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH` prefix to specific `conda run` commands in start-platform.sh (jupyter-labhub and jupyter-lab), bash.bashrc (gpustat), and fish init script (gpustat). This fixes libxml2.so.16 warning only for conda commands without polluting library path for system tools
