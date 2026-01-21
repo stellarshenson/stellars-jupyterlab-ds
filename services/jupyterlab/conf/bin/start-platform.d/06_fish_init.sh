@@ -17,22 +17,6 @@ STELLARS_MARKER="# >>> stellars initialize >>>"
 # Ensure fish config directory exists
 mkdir -p "${FISH_CONFIG_DIR}"
 
-# Add LD_LIBRARY_PATH at top of config.fish (before conda init) to fix libmamba solver
-if [[ -f "${FISH_CONFIG}" ]]; then
-    if ! grep -q "LD_LIBRARY_PATH.*conda/lib" "${FISH_CONFIG}"; then
-        echo "Adding LD_LIBRARY_PATH to fish config (before conda init)..."
-        # Prepend to config.fish so it runs before conda init
-        { echo '# Include conda lib for libmamba solver (must be before conda init)'
-          echo 'set -gx LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"'
-          cat "${FISH_CONFIG}"
-        } > /tmp/fish_config_tmp && mv /tmp/fish_config_tmp "${FISH_CONFIG}"
-    fi
-else
-    # Create new config.fish with LD_LIBRARY_PATH
-    echo '# Include conda lib for libmamba solver (must be before conda init)' > "${FISH_CONFIG}"
-    echo 'set -gx LD_LIBRARY_PATH "/opt/conda/lib:$LD_LIBRARY_PATH"' >> "${FISH_CONFIG}"
-fi
-
 # Initialize conda for fish if not already done
 if [[ -f "${FISH_CONFIG}" ]]; then
     if ! grep -q "conda initialize" "${FISH_CONFIG}"; then
