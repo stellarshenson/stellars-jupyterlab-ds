@@ -70,7 +70,7 @@ if test "$SHLVL" -le 3
 
     # Display gpustat if GPU support enabled
     if test "$ENABLE_GPU_SUPPORT" = 1; and test "$ENABLE_GPUSTAT" = 1
-        conda run --no-capture-output -n base gpustat --no-color --no-header --no-processes
+        env LD_LIBRARY_PATH=/opt/conda/lib:$LD_LIBRARY_PATH conda run --no-capture-output -n base gpustat --no-color --no-header --no-processes
         echo
     end
 
