@@ -68,3 +68,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 105. **Task - Add Claude statusline config**: Install powerline prompt on Claude setup<br>
     **Result**: Renamed `statusline-command.sh` to `claude-statusline-config.sh` in lab-utils.lib/. Updated anthropic-claude-code.sh to copy statusline config to `~/.claude/statusline-command.sh` during installation if user doesn't have one. Created README.md for lab-utils.lib/ documenting all library scripts (aws-profile-options, claude-statusline-config.sh, conda-env-options, set-profile-var)
+
+106. **Task - Add Chainlit proxy service**: Configured jupyter-server-proxy for Chainlit<br>
+    **Result**: Added chainlit proxy on port :8000 with `absolute_url: True` (required for Chainlit to work behind jupyter proxy). Created chainlit.svg icon for launcher tile. Added Chainlit to welcome-template.html Optional Tools section
