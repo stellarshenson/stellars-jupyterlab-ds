@@ -89,7 +89,7 @@ c.ServerProxy.servers = {
         "port": 8000,
         "new_browser_tab": False,
         "launcher_entry": {
-            "enabled": True,
+            "enabled": False, # disabled, because it is problematic
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/chainlit.svg",
             "title": "Chainlit"
