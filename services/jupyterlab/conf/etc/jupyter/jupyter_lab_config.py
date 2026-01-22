@@ -85,7 +85,7 @@ c.ServerProxy.servers = {
     },
     "chainlit": {
         "command": [],
-        "absolute_url": False,
+        "absolute_url": True,
         "port": 8000,
         "new_browser_tab": False,
         "launcher_entry": {
@@ -94,6 +94,7 @@ c.ServerProxy.servers = {
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/chainlit.svg",
             "title": "Chainlit"
         }
+    },
     "optuna": {
         "command": [],
         "absolute_url": False,
