@@ -65,3 +65,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 104. **Task - Switch Claude Code to native installer**: Replaced npm with curl installer<br>
     **Result**: Updated anthropic-claude-code.sh to use native installer (`curl -fsSL https://claude.ai/install.sh | bash`) instead of npm. Removed Node.js/npm dependency, simplified installation significantly
+
+105. **Task - Add Claude statusline config**: Install powerline prompt on Claude setup<br>
+    **Result**: Renamed `statusline-command.sh` to `claude-statusline-config.sh` in lab-utils.lib/. Updated anthropic-claude-code.sh to copy statusline config to `~/.claude/statusline-command.sh` during installation if user doesn't have one. Created README.md for lab-utils.lib/ documenting all library scripts (aws-profile-options, claude-statusline-config.sh, conda-env-options, set-profile-var)

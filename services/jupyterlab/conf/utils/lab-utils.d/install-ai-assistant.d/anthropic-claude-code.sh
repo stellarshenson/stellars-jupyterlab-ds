@@ -12,6 +12,19 @@ if ! curl -fsSL https://claude.ai/install.sh | bash; then
     exit 1
 fi
 
+# Install statusline config if user doesn't have one
+STATUSLINE_SRC="/opt/utils/lab-utils.lib/claude-statusline-config.sh"
+CLAUDE_DIR="$HOME/.claude"
+STATUSLINE_DEST="$CLAUDE_DIR/statusline-command.sh"
+
+if [[ -f "$STATUSLINE_SRC" ]] && [[ ! -f "$STATUSLINE_DEST" ]]; then
+    echo "Installing Claude statusline config..."
+    mkdir -p "$CLAUDE_DIR"
+    cp "$STATUSLINE_SRC" "$STATUSLINE_DEST"
+    chmod +x "$STATUSLINE_DEST"
+    echo -e "\033[32mStatusline config installed to $STATUSLINE_DEST\033[0m"
+fi
+
 clear
 echo -e "\033[32mClaude Code Installation Successful\033[0m"
 echo ""
