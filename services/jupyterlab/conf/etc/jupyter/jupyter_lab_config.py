@@ -83,6 +83,17 @@ c.ServerProxy.servers = {
             "title": "TensorBoard"
         }
     },
+    "chainlit": {
+        "command": [],
+        "absolute_url": False,
+        "port": 8000,
+        "new_browser_tab": False,
+        "launcher_entry": {
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/chainlit.svg",
+            "title": "Chainlit"
+        }
     "optuna": {
         "command": [],
         "absolute_url": False,
