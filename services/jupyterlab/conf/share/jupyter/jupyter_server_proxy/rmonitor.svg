@@ -27,14 +27,14 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="14.975309"
-     inkscape:cx="40.499999"
-     inkscape:cy="40.633552"
+     inkscape:cx="40.466611"
+     inkscape:cy="40.600164"
      inkscape:window-width="2560"
      inkscape:window-height="1494"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="A" />
+     inkscape:current-layer="svg2" />
   <use
      xlink:href="#A"
      x="0.5"
@@ -55,31 +55,31 @@
          fill="#8b5cf6"
          d="m 24.193,43.502 -10.336,1.091 c 0.992,5.587 3.752,10.882 8.194,14.971 l 6.533,-8.07 a 16.3,16.3 0 0 1 -4.39,-7.992"
          id="arc-low"
-         style="fill:#a39ab8;fill-opacity:1" />
+         style="fill:#28629f;fill-opacity:1" />
       <!-- Left: good zone - green -->
       <path
          fill="#10b981"
          d="M 26.33,31.157 18.253,24.619 C 14.8,29.56 13.234,35.32 13.467,40.99 l 10.327,-1.086 c 0,-3.024 0.834,-6.061 2.536,-8.747"
          id="arc-good"
-         style="fill:#26a378;fill-opacity:1" />
+         style="fill:#2985af;fill-opacity:1" />
       <!-- Top-left: normal zone - teal -->
       <path
          fill="#06b6d4"
          d="M 36.565,23.93 35.477,13.594 A 26.64,26.64 0 0 0 20.52,21.791 l 8.07,6.534 c 2.248,-2.254 5.029,-3.731 7.975,-4.395"
          id="arc-normal"
-         style="fill:#3d8e9d;fill-opacity:1" />
+         style="fill:#479cb9;fill-opacity:1" />
       <!-- Top-right: warning zone - amber -->
       <path
          fill="#f59e0b"
          d="m 48.92,26.047 6.54,-8.078 C 50.516,14.519 44.751,12.961 39.079,13.198 l 1.086,10.325 a 16.33,16.33 0 0 1 8.755,2.525"
          id="arc-warning"
-         style="fill:#cc9434;fill-opacity:1" />
+         style="fill:#94c5e4;fill-opacity:1" />
       <!-- Right: critical zone - red -->
       <path
          fill="#ef4444"
          d="m 58.287,20.235 -6.534,8.072 c 1.613,1.604 2.815,3.485 3.623,5.499 h 10.84 A 26.6,26.6 0 0 0 58.288,20.235 Z"
          id="arc-critical"
-         style="fill:#c46f6f;fill-opacity:1" />
+         style="fill:#bcd4e3;fill-opacity:1" />
       <!-- Needle/pointer - dark gray -->
       <path
          fill="#374151"
