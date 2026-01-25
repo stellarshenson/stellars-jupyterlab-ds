@@ -55,7 +55,7 @@ c.ServerProxy.servers = {
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
-            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/rmonitor.svg",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/rmonitor.svg",
             "title": "Resources"
         }
     },
@@ -67,7 +67,7 @@ c.ServerProxy.servers = {
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
-            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/mlflow.svg",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/mlflow.svg",
             "title": "MLFlow"
         }
     },
@@ -79,7 +79,7 @@ c.ServerProxy.servers = {
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
-            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/tensorboard.svg",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/tensorboard.svg",
             "title": "TensorBoard"
         }
     },
@@ -91,7 +91,7 @@ c.ServerProxy.servers = {
         "launcher_entry": {
             "enabled": False, # disabled, because it is problematic
             "category": "Services",
-            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/chainlit.svg",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/chainlit.svg",
             "title": "Chainlit"
         }
     },
@@ -103,7 +103,7 @@ c.ServerProxy.servers = {
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
-            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/optuna.svg",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/optuna.svg",
             "title": "Optuna"
         }
     },
@@ -131,7 +131,7 @@ c.ServerProxy.servers = {
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
-            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/streamlit.svg",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/streamlit.svg",
             "title": "Streamlit"
         }
     },
@@ -143,8 +143,20 @@ c.ServerProxy.servers = {
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
-            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/icons/shiny.svg",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/shiny.svg",
             "title": "Shiny"
+        }
+    },
+    "gradio": {
+        "command": [],
+        "absolute_url": False,
+        "port": 7860,
+        "new_browser_tab": False,
+        "launcher_entry": {
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/gradio.svg",
+            "title": "Gradio"
         }
     },
     "mkdocs": {
