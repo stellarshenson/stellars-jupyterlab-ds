@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="800"
+   height="800"
+   viewBox="0 0 21.621622 21.621622"
+   fill="none"
+   version="1.1"
+   id="svg3"
+   sodipodi:docname="proxy.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.5025"
+     inkscape:cx="400"
+     inkscape:cy="400"
+     inkscape:window-width="2560"
+     inkscape:window-height="1494"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3" />
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient5"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#236394;stop-opacity:1;"
+         offset="0.35543278"
+         id="stop5" />
+      <stop
+         style="stop-color:#93bade;stop-opacity:1;"
+         offset="1"
+         id="stop6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#39566d;stop-opacity:1;"
+         offset="0.36095765"
+         id="stop3" />
+      <stop
+         style="stop-color:#a5b8cb;stop-opacity:1;"
+         offset="0.6721915"
+         id="stop4" />
+    </linearGradient>
+    <clipPath
+       id="bottomClip">
+      <rect
+         x="0"
+         y="0"
+         width="20"
+         height="17"
+         id="rect1" />
+    </clipPath>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3"
+       id="linearGradient4"
+       x1="10.139619"
+       y1="19.498787"
+       x2="9.8603811"
+       y2="3.5012178"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0.82872295,2.1608598)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5"
+       id="linearGradient6"
+       x1="9.7208033"
+       y1="18.494682"
+       x2="10.279195"
+       y2="2.5044272"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0.82872295,2.1608598)" />
+  </defs>
+  <!-- Subtle background circle - clipped at bottom -->
+  <circle
+     cx="10"
+     cy="10"
+     r="9"
+     fill="#2f7dbc"
+     fill-opacity="0.06"
+     clip-path="url(#bottomClip)"
+     id="circle1"
+     style="fill:#2f7dbc;fill-opacity:0.183168"
+     transform="translate(0.82872295,2.1608598)" />
+  <!-- Main arrow pointing down into layers -->
+  <path
+     d="m 11.182723,4.8068598 a 0.5,0.5 0 0 0 -0.708,0 l -3,3 a 0.5,0.5 0 0 0 0,0.7080001 l 1,1 a 0.5,0.5 0 0 0 0.708,0 l 0.6460001,-0.647 V 16.660859 H 3.828723 a 1,1 0 0 0 -1,1 v 2 a 1,1 0 0 0 1,1 h 14 a 1,1 0 0 0 1,-1 v -2 a 1,1 0 0 0 -1,-1 h -6 V 8.8678599 l 0.646,0.647 a 0.5,0.5 0 0 0 0.708,0 l 1,-1 a 0.5,0.5 0 0 0 0,-0.7080001 z"
+     fill="#2a7ab8"
+     id="path1"
+     style="fill:url(#linearGradient6)" />
+  <!-- Highlight on arrow stem -->
+  <rect
+     x="10.428723"
+     y="9.1608591"
+     width="0.80000001"
+     height="5"
+     fill="#4db8e8"
+     fill-opacity="0.4"
+     rx="0.2"
+     id="rect2" />
+  <!-- Side layer extensions -->
+  <path
+     d="m 3.828723,11.660859 a 1,1 0 0 0 -1,1 v 2 a 1,1 0 0 0 1,1 h 4.5 a 0.5,0.5 0 0 0 0,-1 h -4.5 v -2 h 4.5 a 0.5,0.5 0 0 0 0,-1 z m 9.5,0 a 0.5,0.5 0 0 0 0,1 h 4.5 v 2 h -4.5 a 0.5,0.5 0 0 0 0,1 h 4.5 a 1,1 0 0 0 1,-1 v -2 a 1,1 0 0 0 -1,-1 z"
+     fill="#718ba0"
+     id="path2"
+     style="fill:url(#linearGradient4)" />
+  <!-- Subtle inner edge highlights on bottom layer -->
+  <rect
+     x="3.8287232"
+     y="16.76086"
+     width="14"
+     height="0.40000001"
+     fill="#ffffff"
+     fill-opacity="0.15"
+     rx="0.1"
+     id="rect3" />
+  <!-- Thin outline stroke -->
+  <path
+     d="m 11.182723,4.8068598 a 0.5,0.5 0 0 0 -0.708,0 l -3,3 a 0.5,0.5 0 0 0 0,0.7080001 l 1,1 a 0.5,0.5 0 0 0 0.708,0 l 0.6460001,-0.647 V 16.660859 H 3.828723 a 1,1 0 0 0 -1,1 v 2 a 1,1 0 0 0 1,1 h 14 a 1,1 0 0 0 1,-1 v -2 a 1,1 0 0 0 -1,-1 h -6 V 8.8678599 l 0.646,0.647 a 0.5,0.5 0 0 0 0.708,0 l 1,-1 a 0.5,0.5 0 0 0 0,-0.7080001 z"
+     fill="none"
+     stroke="#1a5a8a"
+     stroke-width="0.2"
+     stroke-opacity="0.4"
+     id="path3" />
+</svg>
