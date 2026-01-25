@@ -28,7 +28,7 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="14.975309"
      inkscape:cx="40.466611"
-     inkscape:cy="40.600164"
+     inkscape:cy="40.633552"
      inkscape:window-width="2560"
      inkscape:window-height="1494"
      inkscape:window-x="-11"
@@ -79,13 +79,13 @@
          fill="#ef4444"
          d="m 58.287,20.235 -6.534,8.072 c 1.613,1.604 2.815,3.485 3.623,5.499 h 10.84 A 26.6,26.6 0 0 0 58.288,20.235 Z"
          id="arc-critical"
-         style="fill:#bcd4e3;fill-opacity:1" />
+         style="fill:#b0cedf;fill-opacity:1" />
       <!-- Needle/pointer - dark gray -->
       <path
          fill="#374151"
          d="m 70.817,39.965 c -0.01,-1.885 -1.533,-3.394 -3.41,-3.394 l -0.006,-0.008 -0.994,0.008 H 55.712 43.55 c -0.014,-0.013 -0.019,0.011 -0.03,0 -0.912,-0.904 -2.102,-1.301 -3.291,-1.301 a 4.67,4.67 0 0 0 -3.326,1.386 c -1.818,1.832 -1.806,4.792 0.029,6.61 a 4.65,4.65 0 0 0 3.283,1.352 c 1.101,0 2.197,-0.477 3.076,-1.246 h 24.136 a 3.4,3.4 0 0 0 3.389,-3.398 h 0.003 z"
          id="needle"
-         style="fill:#008080" />
+         style="fill:#2b70a6;fill-opacity:1" />
       <!-- Outer ring and inner circle - blue -->
       <path
          fill="#0072c6"
