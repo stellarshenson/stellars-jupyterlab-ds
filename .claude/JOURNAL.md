@@ -71,3 +71,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 106. **Task - Add Chainlit proxy service**: Configured jupyter-server-proxy for Chainlit<br>
     **Result**: Added chainlit proxy on port :8000 with `absolute_url: True` (required for Chainlit to work behind jupyter proxy). Created chainlit.svg icon for launcher tile. Added Chainlit to welcome-template.html Optional Tools section
+
+107. **Task - Reorganize proxy icons and add Gradio**: Flattened icon directory structure<br>
+    **Result**: Moved all proxy service icons from `jupyter_server_proxy/icons/` subfolder to `jupyter_server_proxy/` root. Added gradio.svg for Gradio proxy service. Updated icon paths in jupyter_lab_config.py
