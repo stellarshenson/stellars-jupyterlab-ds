@@ -1,0 +1,29 @@
+# =============================================================================
+# JupyterLab App Launcher Configuration - stellars-jupyterlab-ds
+# =============================================================================
+# This file defines custom launcher tiles that appear in the JupyterLab
+# launcher interface. Each entry creates a clickable tile with an icon.
+#
+# Launcher types:
+#   - jupyterlab-commands: Executes JupyterLab commands (e.g., open iframe)
+#
+# Icons are SVG files located in /opt/conda/share/jupyter/jupyter_app_launcher/
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Arbitrary Service Launcher
+# Opens dialog to launch service using Jupyterlab Proxy
+# Service could run on any internal port
+# -----------------------------------------------------------------------------
+- title: Proxy
+  description: Launch Arbitrary Service via Proxy
+  type: jupyterlab-commands
+  icon: /opt/conda/share/jupyter/jupyter_app_launcher/proxy.svg
+  source:
+    - label: Arbitrary Service
+      id: 'proxy-launcher:open'
+      args: {}
+  catalog: Services
+
+
+# EOF
