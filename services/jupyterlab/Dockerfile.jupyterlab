@@ -291,6 +291,7 @@ RUN <<-EOF
     echo "installing VIM plugins"
     git clone https://github.com/VundleVim/Vundle.vim.git ${CONDA_USER_HOME}/.vim/bundle/Vundle.vim
     vim -E -S ${CONDA_USER_HOME}/.vimrc -c "PluginInstall" -c "UnicodeDownload!" -c "qall" || echo ok
+    ${CONDA_USER_HOME}/.vim/shallow-bundles.sh
 EOF
 
 ########################################################
