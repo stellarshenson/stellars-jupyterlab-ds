@@ -82,4 +82,4 @@ This journal tracks substantive work on documents, diagrams, and documentation c
     **Result**: Added short descriptive comments before each menu section explaining purpose: Set Defaults, Git Utils, Install Extra Environments, Install AI Assistant, Install Docker CLI, New Project, Test CUDA, Local Scripts
 
 110. **Task - Add OpenCode AI assistant**: New AI coding assistant option<br>
-    **Result**: Created `opencode-ai.sh` installer script using native curl installer from opencode.ai. Added to lab-utils.yml menu under Install AI Assistant. OpenCode is open source with 80k+ GitHub stars, supports 75+ LLM providers
+    **Result**: Created `opencode-ai.sh` installer script using native curl installer from opencode.ai. Added to lab-utils.yml menu under Install AI Assistant. Script symlinks `~/.opencode/opencode` to `~/.local/bin/opencode` for PATH access
