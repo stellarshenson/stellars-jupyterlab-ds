@@ -57,15 +57,6 @@
          offset="0.6721915"
          id="stop4" />
     </linearGradient>
-    <clipPath
-       id="bottomClip">
-      <rect
-         x="0"
-         y="0"
-         width="20"
-         height="17"
-         id="rect1" />
-    </clipPath>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3"
@@ -87,27 +78,16 @@
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(0.82872295,2.1608598)" />
   </defs>
-  <!-- Subtle background circle - clipped at bottom -->
-  <circle
-     cx="10"
-     cy="10"
-     r="9"
-     fill="#2f7dbc"
-     fill-opacity="0.06"
-     clip-path="url(#bottomClip)"
-     id="circle1"
-     style="fill:#2f7dbc;fill-opacity:0.183168"
-     transform="translate(0.82872295,2.1608598)" />
   <!-- Main arrow pointing down into layers -->
   <path
-     d="m 11.182723,4.8068598 a 0.5,0.5 0 0 0 -0.708,0 l -3,3 a 0.5,0.5 0 0 0 0,0.7080001 l 1,1 a 0.5,0.5 0 0 0 0.708,0 l 0.6460001,-0.647 V 16.660859 H 3.828723 a 1,1 0 0 0 -1,1 v 2 a 1,1 0 0 0 1,1 h 14 a 1,1 0 0 0 1,-1 v -2 a 1,1 0 0 0 -1,-1 h -6 V 8.8678599 l 0.646,0.647 a 0.5,0.5 0 0 0 0.708,0 l 1,-1 a 0.5,0.5 0 0 0 0,-0.7080001 z"
+     d="M 10.828723,4.5 L 6.328723,9.5 L 9.328723,9.5 V 16.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 h 14 a 0.3,0.3 0 0 0 0.3,-0.3 v -2.4 a 0.3,0.3 0 0 0 -0.3,-0.3 H 12.328723 V 9.5 L 15.328723,9.5 Z"
      fill="#2a7ab8"
      id="path1"
      style="fill:url(#linearGradient6)" />
   <!-- Highlight on arrow stem -->
   <rect
      x="10.428723"
-     y="9.1608591"
+     y="9.6"
      width="0.80000001"
      height="5"
      fill="#4db8e8"
@@ -116,7 +96,7 @@
      id="rect2" />
   <!-- Side layer extensions -->
   <path
-     d="m 3.828723,11.660859 a 1,1 0 0 0 -1,1 v 2 a 1,1 0 0 0 1,1 h 4.5 a 0.5,0.5 0 0 0 0,-1 h -4.5 v -2 h 4.5 a 0.5,0.5 0 0 0 0,-1 z m 9.5,0 a 0.5,0.5 0 0 0 0,1 h 4.5 v 2 h -4.5 a 0.5,0.5 0 0 0 0,1 h 4.5 a 1,1 0 0 0 1,-1 v -2 a 1,1 0 0 0 -1,-1 z"
+     d="M 8.828723,11.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 H 8.828723 Z M 12.828723,11.660859 H 17.828723 a 0.3,0.3 0 0 1 0.3,0.3 v 2.4 a 0.3,0.3 0 0 1 -0.3,0.3 H 12.828723 Z"
      fill="#718ba0"
      id="path2"
      style="fill:url(#linearGradient4)" />
@@ -132,7 +112,7 @@
      id="rect3" />
   <!-- Thin outline stroke -->
   <path
-     d="m 11.182723,4.8068598 a 0.5,0.5 0 0 0 -0.708,0 l -3,3 a 0.5,0.5 0 0 0 0,0.7080001 l 1,1 a 0.5,0.5 0 0 0 0.708,0 l 0.6460001,-0.647 V 16.660859 H 3.828723 a 1,1 0 0 0 -1,1 v 2 a 1,1 0 0 0 1,1 h 14 a 1,1 0 0 0 1,-1 v -2 a 1,1 0 0 0 -1,-1 h -6 V 8.8678599 l 0.646,0.647 a 0.5,0.5 0 0 0 0.708,0 l 1,-1 a 0.5,0.5 0 0 0 0,-0.7080001 z"
+     d="M 10.828723,4.5 L 6.328723,9.5 L 9.328723,9.5 V 16.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 h 14 a 0.3,0.3 0 0 0 0.3,-0.3 v -2.4 a 0.3,0.3 0 0 0 -0.3,-0.3 H 12.328723 V 9.5 L 15.328723,9.5 Z"
      fill="none"
      stroke="#1a5a8a"
      stroke-width="0.2"
