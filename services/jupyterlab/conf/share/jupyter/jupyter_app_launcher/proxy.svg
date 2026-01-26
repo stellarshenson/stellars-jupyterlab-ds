@@ -30,7 +30,8 @@
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg3" />
+     inkscape:current-layer="svg3"
+     showguides="false" />
   <defs
      id="defs1">
     <linearGradient
@@ -87,29 +88,57 @@
   <!-- Highlight on arrow stem -->
   <rect
      x="10.428723"
-     y="9.6"
-     width="0.80000001"
-     height="5"
+     y="8.5387058"
+     width="0.92591643"
+     height="2.175878"
      fill="#4db8e8"
      fill-opacity="0.4"
      rx="0.2"
      id="rect2" />
+  <rect
+     x="10.360481"
+     y="11.73589"
+     width="0.92591643"
+     height="2.175878"
+     fill="#4db8e8"
+     fill-opacity="0.4"
+     rx="0.2"
+     id="rect2-4" />
+  <rect
+     x="10.351622"
+     y="14.860819"
+     width="0.92591643"
+     height="2.175878"
+     fill="#4db8e8"
+     fill-opacity="0.4"
+     rx="0.2"
+     id="rect2-4-2" />
   <!-- Side layer extensions -->
   <path
-     d="M 8.828723,11.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 H 8.828723 Z M 12.828723,11.660859 H 17.828723 a 0.3,0.3 0 0 1 0.3,0.3 v 2.4 a 0.3,0.3 0 0 1 -0.3,0.3 H 12.828723 Z"
+     d="M 8.5584527,11.660859 H 3.828723 c -0.1656854,0 -0.3,0.134315 -0.3,0.3 v 2.4 c 0,0.165685 0.1343146,0.3 0.3,0.3 h 4.7297297 z m 4.5405403,0 h 4.72973 c 0.165685,0 0.3,0.134315 0.3,0.3 v 2.4 c 0,0.165685 -0.134315,0.3 -0.3,0.3 h -4.72973 z"
      fill="#718ba0"
      id="path2"
-     style="fill:url(#linearGradient4)" />
+     style="fill:url(#linearGradient4)"
+     sodipodi:nodetypes="csssscccsssscc" />
   <!-- Subtle inner edge highlights on bottom layer -->
   <rect
      x="3.8287232"
      y="16.76086"
-     width="14"
-     height="0.40000001"
+     width="5.4556823"
+     height="0.6338442"
      fill="#ffffff"
      fill-opacity="0.15"
      rx="0.1"
      id="rect3" />
+  <rect
+     x="12.444799"
+     y="16.792734"
+     width="5.4556823"
+     height="0.6338442"
+     fill="#ffffff"
+     fill-opacity="0.15"
+     rx="0.1"
+     id="rect3-5" />
   <!-- Thin outline stroke -->
   <path
      d="M 10.828723,4.5 L 6.328723,9.5 L 9.328723,9.5 V 16.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 h 14 a 0.3,0.3 0 0 0 0.3,-0.3 v -2.4 a 0.3,0.3 0 0 0 -0.3,-0.3 H 12.328723 V 9.5 L 15.328723,9.5 Z"
