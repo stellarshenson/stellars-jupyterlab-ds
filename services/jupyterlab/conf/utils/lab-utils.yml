@@ -159,12 +159,15 @@ menu:
           marker: "conda"
       scan_dir: "~/.local/extra-env.d"
 
-    # Install AI coding assistants (Claude Code, Cursor, Gemini, Codex)
+    # Install AI coding assistants (Claude Code, OpenCode, Cursor, Gemini, Codex)
     - name: "Install AI Assistant"
       submenu:
         - id: "install-ai-assistant.d/anthropic-claude-code.sh"
           name: "Anthropic Claude Code"
           description: "Install Claude Code AI assistant CLI"
+        - id: "install-ai-assistant.d/opencode-ai.sh"
+          name: "OpenCode"
+          description: "Install OpenCode open source AI assistant CLI"
         - id: "install-ai-assistant.d/anysphere-cursor.sh"
           name: "Anysphere Cursor"
           description: "Install Cursor AI-powered code editor"
