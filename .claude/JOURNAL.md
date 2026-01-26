@@ -76,4 +76,7 @@ This journal tracks substantive work on documents, diagrams, and documentation c
     **Result**: Moved all proxy service icons from `jupyter_server_proxy/icons/` subfolder to `jupyter_server_proxy/` root. Added gradio.svg for Gradio proxy service. Updated icon paths in jupyter_lab_config.py
 
 108. **Task - Add Vundle shallow clone script**: Reduce vim bundle disk space<br>
-    **Result**: Created `templates/home/.vim/shallow-bundles.sh` that converts Vundle-cloned repos to shallow clones (depth=1) after PluginInstall. Script iterates through `~/.vim/bundle/*/`, captures remote URL, removes full clone, and replaces with `git clone --depth 1`. Updated Dockerfile to run script after vim plugin installation
+    **Result**: Created `templates/home/.vim/shallow-bundles.sh` that converts Vundle-cloned repos to shallow clones (depth=1) after PluginInstall. Script iterates through `~/.vim/bundle/*/`, captures remote URL, removes full clone, and replaces with `git clone --depth 1`. Updated Dockerfile to run script with `bash` prefix to avoid permission issues
+
+109. **Task - Document lab-utils menu items**: Added comments to lab-utils.yml<br>
+    **Result**: Added short descriptive comments before each menu section explaining purpose: Set Defaults, Git Utils, Install Extra Environments, Install AI Assistant, Install Docker CLI, New Project, Test CUDA, Local Scripts

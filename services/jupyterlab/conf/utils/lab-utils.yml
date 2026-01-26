@@ -91,6 +91,7 @@
 menu:
   title: "Lab Utils"
   items:
+    # Configure default shell, conda environment, and AWS profile
     - name: "Set Defaults"
       submenu:
         - name: "Default Shell"
@@ -121,6 +122,7 @@ menu:
             apply_script: "set-profile-var"
             apply_args: "AWS_PROFILE"
 
+    # Batch git operations across all workspace repositories
     - name: "Git Utils"
       submenu:
         - id: "git-utils.d/git-pull-repos.sh"
@@ -136,6 +138,7 @@ menu:
           name: "Pull Submodules"
           description: "Update all git submodules recursively"
 
+    # Install additional conda environments (TensorFlow, PyTorch, R, Rust)
     - name: "Install Extra Environments"
       submenu:
         - id: "install-conda-env.d/tensorflow.sh"
@@ -156,6 +159,7 @@ menu:
           marker: "conda"
       scan_dir: "~/.local/extra-env.d"
 
+    # Install AI coding assistants (Claude Code, Cursor, Gemini, Codex)
     - name: "Install AI Assistant"
       submenu:
         - id: "install-ai-assistant.d/anthropic-claude-code.sh"
@@ -171,17 +175,21 @@ menu:
           name: "OpenAI Codex"
           description: "Install OpenAI Codex AI assistant"
 
+    # Install Docker CLI and plugins to /opt/docker
     - id: "install-docker-cli.sh"
       name: "Install Docker CLI"
       description: "Install Docker CLI tools to /opt/docker"
 
+    # Create new project from Copier template
     - id: "new-project.sh"
       name: "New Project"
       description: "Scaffold new data science project using Copier"
 
+    # Verify GPU and CUDA configuration
     - id: "test-cuda.sh"
       name: "Test CUDA"
       description: "Test CUDA GPU support with TensorFlow and PyTorch"
 
+    # User-defined scripts from ~/.local/lab-utils.d/
     - name: "Local Scripts"
       scan_dir: "~/.local/lab-utils.d"
