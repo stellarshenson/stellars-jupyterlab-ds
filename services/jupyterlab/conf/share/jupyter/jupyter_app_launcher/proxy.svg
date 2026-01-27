@@ -6,85 +6,12 @@
    fill="none"
    version="1.1"
    id="svg3"
-   sodipodi:docname="proxy.svg"
-   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview3"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.5025"
-     inkscape:cx="400"
-     inkscape:cy="400"
-     inkscape:window-width="2560"
-     inkscape:window-height="1494"
-     inkscape:window-x="-11"
-     inkscape:window-y="-11"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg3"
-     showguides="false" />
-  <defs
-     id="defs1">
-    <linearGradient
-       id="linearGradient5"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#236394;stop-opacity:1;"
-         offset="0.35543278"
-         id="stop5" />
-      <stop
-         style="stop-color:#93bade;stop-opacity:1;"
-         offset="1"
-         id="stop6" />
-    </linearGradient>
-    <linearGradient
-       id="linearGradient3"
-       inkscape:collect="always">
-      <stop
-         style="stop-color:#39566d;stop-opacity:1;"
-         offset="0.36095765"
-         id="stop3" />
-      <stop
-         style="stop-color:#a5b8cb;stop-opacity:1;"
-         offset="0.6721915"
-         id="stop4" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3"
-       id="linearGradient4"
-       x1="10.139619"
-       y1="19.498787"
-       x2="9.8603811"
-       y2="3.5012178"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0.82872295,2.1608598)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient5"
-       id="linearGradient6"
-       x1="9.7208033"
-       y1="18.494682"
-       x2="10.279195"
-       y2="2.5044272"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0.82872295,2.1608598)" />
-  </defs>
+   xmlns="http://www.w3.org/2000/svg">
   <!-- Main arrow pointing down into layers -->
   <path
      d="M 10.828723,4.5 L 6.328723,9.5 L 9.328723,9.5 V 16.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 h 14 a 0.3,0.3 0 0 0 0.3,-0.3 v -2.4 a 0.3,0.3 0 0 0 -0.3,-0.3 H 12.328723 V 9.5 L 15.328723,9.5 Z"
-     fill="#2a7ab8"
-     id="path1"
-     style="fill:url(#linearGradient6)" />
+     fill="#3a8ac2"
+     id="path1" />
   <!-- Highlight on arrow stem -->
   <rect
      x="10.428723"
@@ -116,10 +43,8 @@
   <!-- Side layer extensions -->
   <path
      d="M 8.5584527,11.660859 H 3.828723 c -0.1656854,0 -0.3,0.134315 -0.3,0.3 v 2.4 c 0,0.165685 0.1343146,0.3 0.3,0.3 h 4.7297297 z m 4.5405403,0 h 4.72973 c 0.165685,0 0.3,0.134315 0.3,0.3 v 2.4 c 0,0.165685 -0.134315,0.3 -0.3,0.3 h -4.72973 z"
-     fill="#718ba0"
-     id="path2"
-     style="fill:url(#linearGradient4)"
-     sodipodi:nodetypes="csssscccsssscc" />
+     fill="#5a7a8f"
+     id="path2" />
   <!-- Subtle inner edge highlights on bottom layer -->
   <rect
      x="3.8287232"
