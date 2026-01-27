@@ -13,10 +13,10 @@ if ! curl -fsSL https://opencode.ai/install | bash; then
 fi
 
 # Symlink to ~/.local/bin for PATH access
-if [[ -f "$HOME/.opencode/opencode" ]]; then
+if [[ -f "$HOME/.opencode/bin/opencode" ]]; then
     mkdir -p "$HOME/.local/bin"
     rm -f "$HOME/.local/bin/opencode"
-    ln -s "$HOME/.opencode/opencode" "$HOME/.local/bin/opencode"
+    ln -s "$HOME/.opencode/bin/opencode" "$HOME/.local/bin/opencode"
     echo "Symlinked to ~/.local/bin/opencode"
 fi
 

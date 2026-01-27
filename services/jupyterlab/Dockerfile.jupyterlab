@@ -167,17 +167,9 @@ COPY --chmod=644  ./conf/misc/welcome-message.txt /welcome-message.txt
 COPY --chmod=644  ./conf/misc/welcome-template.html /welcome-template.html
 COPY --chmod=755  ./conf/utils /opt/utils
 COPY --chmod=644  ./conf/patches /tmp/patches
-COPY --chmod=644  ./conf/share/jupyter /opt/conda/share/jupyter
+COPY ./conf/share/jupyter /opt/conda/share/jupyter
 
-## copied files need their permissions to be fixed
-RUN <<-EOF
-    echo "Setting permissions for share/jupyter directory"
-    echo "  - directories: 755 (traversable)"
-    echo "  - files: 644 (not executable)"
-    chmod 644 /opt/utils/lab-utils.yml
-    find /opt/conda/share/jupyter -type d -exec chmod 755 {} \;
-    find /opt/conda/share/jupyter -type f -exec chmod 644 {} \;
-EOF
+RUN chmod 644 /opt/utils/lab-utils.yml
 
 ########################################################
 #  FIX PACKAGES AND REMOVE UNNECESSARY                 #
@@ -355,12 +347,12 @@ ENV CONDA_DEFAULT_ENV=base
 ## alternative is 'conda config --set auto_activate_base false'
 ENV CONDA_AUTO_ACTIVATE_BASE=false
 
-## change ownership of conda folder to conda user
+## change ownership of conda folder to jupyter group, remove 'others' access
 RUN <<-EOF
     echo "creating $CONDA_HOME directory"
     mkdir -p /opt/conda
     chown -R :${JUPYTER_GROUP} ${CONDA_HOME}
-    chmod -R 770 ${CONDA_HOME}
+    chmod -R o-rwx,g=u ${CONDA_HOME}
 EOF
 
 ## create empty logfile with permissions for jupyterlab to write

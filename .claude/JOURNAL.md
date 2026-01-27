@@ -82,7 +82,10 @@ This journal tracks substantive work on documents, diagrams, and documentation c
     **Result**: Added short descriptive comments before each menu section explaining purpose: Set Defaults, Git Utils, Install Extra Environments, Install AI Assistant, Install Docker CLI, New Project, Test CUDA, Local Scripts
 
 110. **Task - Add OpenCode AI assistant**: New AI coding assistant option<br>
-    **Result**: Created `opencode-ai.sh` installer script using native curl installer from opencode.ai. Added to lab-utils.yml menu under Install AI Assistant. Script symlinks `~/.opencode/opencode` to `~/.local/bin/opencode` for PATH access
+    **Result**: Created `opencode-ai.sh` installer script using native curl installer from opencode.ai. Added to lab-utils.yml menu under Install AI Assistant. Script symlinks `~/.opencode/bin/opencode` to `~/.local/bin/opencode` for PATH access
 
 111. **Task - Fix Jupytext 1.19.1 icon regression**: Restored JupyterLab file icons<br>
     **Result**: Jupytext 1.19.1 introduced breaking change causing standard JupyterLab icons to disappear, replaced by bland gray icons. Fixed via hotfix in stellars-jupyterlab-extensions package, icons now display correctly
+
+112. **Task - Fix share/jupyter file permissions**: SVG icons no longer executable<br>
+    **Result**: Fixed `chmod -R 770 ${CONDA_HOME}` making all files executable including SVG icons. Changed to `chmod -R o-rwx,g=u` which removes others access and copies owner permissions to group, preserving original execute bits on files that need them
