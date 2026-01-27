@@ -6,7 +6,32 @@
    fill="none"
    version="1.1"
    id="svg3"
-   xmlns="http://www.w3.org/2000/svg">
+   sodipodi:docname="proxy.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.5025"
+     inkscape:cx="400"
+     inkscape:cy="400"
+     inkscape:window-width="2560"
+     inkscape:window-height="1494"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3" />
   <!-- Main arrow pointing down into layers -->
   <path
      d="M 10.828723,4.5 L 6.328723,9.5 L 9.328723,9.5 V 16.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 h 14 a 0.3,0.3 0 0 0 0.3,-0.3 v -2.4 a 0.3,0.3 0 0 0 -0.3,-0.3 H 12.328723 V 9.5 L 15.328723,9.5 Z"
@@ -14,37 +39,41 @@
      id="path1" />
   <!-- Highlight on arrow stem -->
   <rect
-     x="10.428723"
-     y="8.5387058"
+     x="10.356771"
+     y="11.362828"
      width="0.92591643"
-     height="2.175878"
+     height="0.98866755"
      fill="#4db8e8"
      fill-opacity="0.4"
      rx="0.2"
-     id="rect2" />
+     id="rect2"
+     style="fill:#e2f2fb;fill-opacity:0.4;stroke-width:0.674074" />
   <rect
      x="10.360481"
-     y="11.73589"
+     y="12.905113"
      width="0.92591643"
-     height="2.175878"
+     height="1.0066556"
      fill="#4db8e8"
      fill-opacity="0.4"
      rx="0.2"
-     id="rect2-4" />
+     id="rect2-4"
+     style="fill:#e2f2fb;fill-opacity:0.4;stroke-width:0.680179" />
   <rect
      x="10.351622"
-     y="14.860819"
+     y="14.447093"
      width="0.92591643"
-     height="2.175878"
+     height="0.97067952"
      fill="#4db8e8"
      fill-opacity="0.4"
      rx="0.2"
-     id="rect2-4-2" />
+     id="rect2-4-2"
+     style="fill:#e2f2fb;fill-opacity:0.4;stroke-width:0.667914" />
   <!-- Side layer extensions -->
   <path
-     d="M 8.5584527,11.660859 H 3.828723 c -0.1656854,0 -0.3,0.134315 -0.3,0.3 v 2.4 c 0,0.165685 0.1343146,0.3 0.3,0.3 h 4.7297297 z m 4.5405403,0 h 4.72973 c 0.165685,0 0.3,0.134315 0.3,0.3 v 2.4 c 0,0.165685 -0.134315,0.3 -0.3,0.3 h -4.72973 z"
+     d="M 8.3962905,11.660859 H 3.828723 c -0.1656854,0 -0.3,0.134315 -0.3,0.3 v 2.4 c 0,0.165685 0.1343146,0.3 0.3,0.3 h 4.5675675 z m 4.8648645,0 h 4.567568 c 0.165685,0 0.3,0.134315 0.3,0.3 v 2.4 c 0,0.165685 -0.134315,0.3 -0.3,0.3 h -4.567568 z"
      fill="#5a7a8f"
-     id="path2" />
+     id="path2"
+     sodipodi:nodetypes="csssscccsssscc" />
   <!-- Subtle inner edge highlights on bottom layer -->
   <rect
      x="3.8287232"
@@ -54,7 +83,28 @@
      fill="#ffffff"
      fill-opacity="0.15"
      rx="0.1"
-     id="rect3" />
+     id="rect3"
+     style="fill:#ffffff;fill-opacity:0.42772278" />
+  <rect
+     x="3.7669203"
+     y="11.817557"
+     width="4.3224359"
+     height="0.56189203"
+     fill="#ffffff"
+     fill-opacity="0.15"
+     rx="0.1"
+     id="rect3-8"
+     style="fill:#ffffff;fill-opacity:0.427723" />
+  <rect
+     x="13.409903"
+     y="11.81324"
+     width="4.3224359"
+     height="0.56189203"
+     fill="#ffffff"
+     fill-opacity="0.15"
+     rx="0.1"
+     id="rect3-8-5"
+     style="fill:#ffffff;fill-opacity:0.427723" />
   <rect
      x="12.444799"
      y="16.792734"
@@ -63,7 +113,8 @@
      fill="#ffffff"
      fill-opacity="0.15"
      rx="0.1"
-     id="rect3-5" />
+     id="rect3-5"
+     style="fill:#ffffff;fill-opacity:0.42772278" />
   <!-- Thin outline stroke -->
   <path
      d="M 10.828723,4.5 L 6.328723,9.5 L 9.328723,9.5 V 16.660859 H 3.828723 a 0.3,0.3 0 0 0 -0.3,0.3 v 2.4 a 0.3,0.3 0 0 0 0.3,0.3 h 14 a 0.3,0.3 0 0 0 0.3,-0.3 v -2.4 a 0.3,0.3 0 0 0 -0.3,-0.3 H 12.328723 V 9.5 L 15.328723,9.5 Z"
