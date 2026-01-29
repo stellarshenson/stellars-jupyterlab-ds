@@ -39,7 +39,31 @@ get_pwd() {
 
 get_env() {
     if [ -n "$VIRTUAL_ENV" ]; then
-        echo "venv:$(basename "$(dirname "$VIRTUAL_ENV")")"
+        # Cache file for venv name lookups (persistent across invocations)
+        local cache_file="/tmp/.claude_venv_cache"
+        local venv_name=""
+
+        # Check cache - format: "path|name"
+        if [ -f "$cache_file" ]; then
+            local cached_path cached_name
+            IFS='|' read -r cached_path cached_name < "$cache_file"
+            if [ "$cached_path" = "$VIRTUAL_ENV" ]; then
+                echo "venv:$cached_name"
+                return
+            fi
+        fi
+
+        # Look up friendly name from nb_venv_kernels
+        local venv_path="${VIRTUAL_ENV#/home/lab/workspace/}"
+        venv_name=$(nb_venv_kernels list --json 2>/dev/null | jq -r --arg path "$venv_path" '.environments[] | select(.path == $path) | .name' 2>/dev/null)
+
+        # Fallback: use parent directory of .venv
+        [ -z "$venv_name" ] && venv_name=$(basename "$(dirname "$VIRTUAL_ENV")")
+
+        # Cache the result
+        echo "${VIRTUAL_ENV}|${venv_name}" > "$cache_file"
+
+        echo "venv:$venv_name"
     elif [ -n "$CONDA_DEFAULT_ENV" ]; then
         echo "conda:$CONDA_DEFAULT_ENV"
     fi

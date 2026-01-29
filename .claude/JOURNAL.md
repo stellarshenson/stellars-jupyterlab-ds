@@ -89,3 +89,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 112. **Task - Fix share/jupyter file permissions**: SVG icons no longer executable<br>
     **Result**: Fixed `chmod -R 770 ${CONDA_HOME}` making all files executable including SVG icons. Changed to `chmod -R o-rwx,g=u` which removes others access and copies owner permissions to group, preserving original execute bits on files that need them
+
+113. **Task - Rename Claude statusline file**: Consistent naming convention<br>
+    **Result**: Renamed `claude-statusline-config.sh` to `claude-statusline-command.sh` in lab-utils.lib/. Updated references in README.md and anthropic-claude-code.sh installer

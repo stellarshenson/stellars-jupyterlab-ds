@@ -13,7 +13,7 @@ if ! curl -fsSL https://claude.ai/install.sh | bash; then
 fi
 
 # Install statusline config if user doesn't have one
-STATUSLINE_SRC="/opt/utils/lab-utils.lib/claude-statusline-config.sh"
+STATUSLINE_SRC="/opt/utils/lab-utils.lib/claude-statusline-command.sh"
 CLAUDE_DIR="$HOME/.claude"
 STATUSLINE_DEST="$CLAUDE_DIR/statusline-command.sh"
 
