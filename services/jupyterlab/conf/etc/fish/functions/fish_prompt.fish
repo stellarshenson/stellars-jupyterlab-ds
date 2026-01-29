@@ -216,23 +216,46 @@ end
 #
 # For virtual environments, attempts to resolve friendly name via nb_venv_kernels.
 # Falls back to parent directory name if nb_venv_kernels unavailable or env not found.
+# Caches resolved venv names for session duration to avoid repeated nb_venv_kernels calls.
 #
 # Returns: "conda:base", "venv:myproject", etc. Empty if no env active.
 #
 function __stellars_env
+    # Suppress standard venv prompt modifier
+    set -gx VIRTUAL_ENV_DISABLE_PROMPT 1
+
     if set -q VIRTUAL_ENV
+        # Check cache first - keyed by VIRTUAL_ENV path
+        if set -q __stellars_venv_cache_path
+            if test "$__stellars_venv_cache_path" = "$VIRTUAL_ENV"
+                echo "venv:$__stellars_venv_cache_name"
+                return
+            end
+        end
+
         # Look up friendly name from nb_venv_kernels using JSON output
         set -l venv_path (string replace "/home/lab/workspace/" "" -- $VIRTUAL_ENV)
         set -l venv_name (nb_venv_kernels list --json 2>/dev/null | jq -r --arg path "$venv_path" '.environments[] | select(.path == $path) | .name' 2>/dev/null)
-        
+
         # Fallback: use parent directory of .venv
         if test -z "$venv_name"
             set venv_name (basename (dirname $VIRTUAL_ENV))
         end
-        
+
+        # Cache the result
+        set -g __stellars_venv_cache_path $VIRTUAL_ENV
+        set -g __stellars_venv_cache_name $venv_name
+
         echo "venv:$venv_name"
     else if set -q CONDA_DEFAULT_ENV
+        # Clear venv cache when not in venv
+        set -e __stellars_venv_cache_path
+        set -e __stellars_venv_cache_name
         echo "conda:$CONDA_DEFAULT_ENV"
+    else
+        # Clear venv cache when no env active
+        set -e __stellars_venv_cache_path
+        set -e __stellars_venv_cache_name
     end
 end
 
