@@ -12,17 +12,22 @@ if ! curl -fsSL https://claude.ai/install.sh | bash; then
     exit 1
 fi
 
-# Install statusline config if user doesn't have one
-STATUSLINE_SRC="/opt/utils/lab-utils.lib/claude-statusline-command.sh"
+# Install default config files if user doesn't have them
+CLAUDE_SRC="/opt/utils/lab-utils.lib/claude"
 CLAUDE_DIR="$HOME/.claude"
-STATUSLINE_DEST="$CLAUDE_DIR/statusline-command.sh"
+mkdir -p "$CLAUDE_DIR"
 
-if [[ -f "$STATUSLINE_SRC" ]] && [[ ! -f "$STATUSLINE_DEST" ]]; then
-    echo "Installing Claude statusline config..."
-    mkdir -p "$CLAUDE_DIR"
-    cp "$STATUSLINE_SRC" "$STATUSLINE_DEST"
-    chmod +x "$STATUSLINE_DEST"
-    echo -e "\033[32mStatusline config installed to $STATUSLINE_DEST\033[0m"
+# Copy settings.json if not present
+if [[ -f "$CLAUDE_SRC/settings.json" ]] && [[ ! -f "$CLAUDE_DIR/settings.json" ]]; then
+    cp "$CLAUDE_SRC/settings.json" "$CLAUDE_DIR/settings.json"
+    echo "Installed default settings.json"
+fi
+
+# Copy statusline-command.sh if not present
+if [[ -f "$CLAUDE_SRC/statusline-command.sh" ]] && [[ ! -f "$CLAUDE_DIR/statusline-command.sh" ]]; then
+    cp "$CLAUDE_SRC/statusline-command.sh" "$CLAUDE_DIR/statusline-command.sh"
+    chmod +x "$CLAUDE_DIR/statusline-command.sh"
+    echo "Installed statusline-command.sh"
 fi
 
 clear
