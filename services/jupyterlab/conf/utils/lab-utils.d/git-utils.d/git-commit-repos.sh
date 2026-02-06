@@ -20,29 +20,27 @@ OK_LOG="nothing to commit, working tree clean"
 # list repos, but exclude @archive and tutorials
 REPOS=$(find . -name '.git' -type d -printf "%p\n" | grep -v 'tutorials' | grep -v '@archive')
 
-# execute git pull
+# execute git commit only on repos with changes
 declare -i COUNTER=1
 for r in $REPOS;
 do
-    # run git command
     cd $CURRENT_DIR
-    echo "[$COUNTER] executing commit for $r"
-    cd $(realpath $r)
-    cd ..
-    git commit -a 2>&1 | tee $LOGFILE
-    GIT_EXITCODE=$?
+    cd $(realpath $r)/..
+    REPO_NAME=$(basename $(pwd))
 
-    # check logs and exit codes
-    cat $LOGFILE | grep $OK_LOG > /dev/null
-    LOGCHECK_EXITCODE=$?
-    if [[ "$LOGCHECK_EXITCODE" == 0 && "$GIT_EXITCODE" == 0 ]]; then
-	echo -e "$GRN""OK""$NC"
-    fi
-    if [[ "$LOGCHECK_EXITCODE" != 0 && "$GIT_EXITCODE" == 0 ]]; then
-	echo -e "$YEL""VERIFY""$NC"
-    fi
-    if [[ "$GIT_EXITCODE" != 0 ]]; then
-	echo -e "$RED""ERROR""$NC"
+    # check if repo has uncommitted changes
+    if git diff --quiet && git diff --cached --quiet; then
+	echo -e "[$COUNTER] $REPO_NAME - $GRN""clean""$NC"
+    else
+	echo "[$COUNTER] $REPO_NAME - committing changes..."
+	git commit -a 2>&1 | tee $LOGFILE
+	GIT_EXITCODE=$?
+
+	if [[ "$GIT_EXITCODE" == 0 ]]; then
+	    echo -e "$YEL""COMMITTED""$NC"
+	else
+	    echo -e "$RED""ERROR""$NC"
+	fi
     fi
 
     # update counter
