@@ -95,3 +95,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 114. **Task - Move Claude config to dedicated folder**: Organized config files<br>
     **Result**: Created `lab-utils.lib/claude/` folder containing `settings.json` and `statusline-command.sh`. Updated installer to copy both files to `~/.claude/` only if they don't exist. Removed standalone statusline file from lab-utils.lib root
+
+115. **Task - Skip clean repos in git commit**: Only commit repos with changes<br>
+    **Result**: Updated `git-commit-repos.sh` to check `git diff --quiet && git diff --cached --quiet` before committing. Clean repos show green "clean" message and are skipped, only repos with staged or unstaged changes run `git commit -a`
