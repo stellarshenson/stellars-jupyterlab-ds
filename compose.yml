@@ -14,7 +14,6 @@
 #
 #   Example project .env file content:
 #   COMPOSE_PROJECT_NAME=my-lab-platform
-#   LAB_USER=jack_daniels
 #   JUPYTERLAB_SERVER_TOKEN=my_secret_token123
 #   ENABLE_GPU_SUPPORT=1
 #   ENABLE_SERVICE_MLFLOW=1
@@ -65,23 +64,21 @@ services:
       platforms:
         - linux/amd64
     environment:
-      - CONDA_DEFAULT_ENV=base
-      - JUPYTERLAB_SERVER_IP=*
-      - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # if token not provided - no passwor required
-      - JUPYTERLAB_BASE_URL=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab
-      - TF_CPP_MIN_LOG_LEVEL=3 # tensorflow logs ERR only
-      - TENSORBOARD_LOGDIR=/tmp/tensorboard
-      - MLFLOW_TRACKING_URI=http://localhost:5000
-      - MLFLOW_PORT=5000
-      - MLFLOW_HOST=*
-      - MLFLOW_WORKERS=1
-      - LAB_USER=${LAB_USER:-default}
-      - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}
-      - ENABLE_SERVICE_MLFLOW=1
-      - ENABLE_SERVICE_RESOURCES_MONITOR=1
-      - ENABLE_SERVICE_TENSORBOARD=1
-      - ENABLE_GPU_SUPPORT=0
-      - COOKIECUTTER_DATASCIENCE_TEMPLATE_URL=https://github.com/stellarshenson/cookiecutter-data-science.git
+      - CONDA_DEFAULT_ENV=base                        # default conda environment activated on login
+      - JUPYTERLAB_SERVER_IP=*                           # listen on all interfaces
+      - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # auth token, empty = no password required
+      - JUPYTERLAB_BASE_URL=/${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}/jupyterlab # URL prefix for reverse proxy
+      - TF_CPP_MIN_LOG_LEVEL=3                           # tensorflow logs ERR only
+      - TENSORBOARD_LOGDIR=/tmp/tensorboard              # directory for tensorboard log files
+      - MLFLOW_TRACKING_URI=http://localhost:5000         # MLFlow server connection URI
+      - MLFLOW_PORT=5000                                 # MLFlow server port
+      - MLFLOW_HOST=*                                    # MLFlow listen on all interfaces
+      - MLFLOW_WORKERS=1                                 # MLFlow worker processes
+      - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds} # used in welcome messages and service URLs
+      - ENABLE_SERVICE_MLFLOW=1                          # start MLFlow tracking server
+      - ENABLE_SERVICE_RESOURCES_MONITOR=1               # start btop resources monitor
+      - ENABLE_SERVICE_TENSORBOARD=1                     # start TensorBoard server
+      - ENABLE_GPU_SUPPORT=0                             # enable NVIDIA GPU passthrough
     volumes:
       - vol_home:/home                    # jupyterlab user directory persistence
       - vol_workspace:/home/lab/workspace # user projects workspace volume persistence

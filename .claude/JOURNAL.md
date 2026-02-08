@@ -98,3 +98,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 115. **Task - Skip clean repos in git commit**: Only commit repos with changes<br>
     **Result**: Updated `git-commit-repos.sh` to check `git diff --quiet && git diff --cached --quiet` before committing. Clean repos show green "clean" message and are skipped, only repos with staged or unstaged changes run `git commit -a`
+
+116. **Task - Clean up unused env vars**: Removed dead config from compose and Dockerfile<br>
+    **Result**: Removed unused `LAB_USER` env var from compose.yml (comment and env) and README.md. Removed unused `COOKIECUTTER_DATASCIENCE_TEMPLATE_URL` from Dockerfile and compose.yml (leftover from cookiecutter migration to Copier). Added inline annotations to all remaining compose.yml environment variables
