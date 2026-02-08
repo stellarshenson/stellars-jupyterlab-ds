@@ -437,7 +437,6 @@ Configuration variables supported by the platform:
 
 **Core Configuration:**
 - `COMPOSE_PROJECT_NAME` - project name (used for container names, volumes, and URL paths)
-- `LAB_USER` - username identifier (default: `default`)
 - `LAB_NAME` - lab instance name (defaults to `COMPOSE_PROJECT_NAME`)
 
 **JupyterLab Settings:**
