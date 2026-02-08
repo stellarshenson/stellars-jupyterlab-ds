@@ -79,6 +79,7 @@ services:
       - ENABLE_SERVICE_RESOURCES_MONITOR=1               # start btop resources monitor
       - ENABLE_SERVICE_TENSORBOARD=1                     # start TensorBoard server
       - ENABLE_GPU_SUPPORT=0                             # enable NVIDIA GPU passthrough
+      #- JUPYTERLAB_AUX_SCRIPTS_PATH=/mnt/shared/start-platform.d # aux startup scripts (e.g. hackathon setup)
     volumes:
       - vol_home:/home                    # jupyterlab user directory persistence
       - vol_workspace:/home/lab/workspace # user projects workspace volume persistence
