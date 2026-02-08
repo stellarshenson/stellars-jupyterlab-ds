@@ -101,3 +101,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 116. **Task - Clean up unused env vars**: Removed dead config from compose and Dockerfile<br>
     **Result**: Removed unused `LAB_USER` env var from compose.yml (comment and env) and README.md. Removed unused `COOKIECUTTER_DATASCIENCE_TEMPLATE_URL` from Dockerfile and compose.yml (leftover from cookiecutter migration to Copier). Added inline annotations to all remaining compose.yml environment variables
+
+117. **Task - Add auxiliary startup scripts**: Admin-managed campaign scripts<br>
+    **Result**: Created `57_aux_scripts.sh` that runs scripts from `JUPYTERLAB_AUX_SCRIPTS_PATH` (e.g. `/mnt/shared/start-platform.d`) in foreground before user scripts. Enables admins to provision campaign-specific setup like AWS keys, repo credentials, or hackathon config via shared volume. Renamed `58_start_lab_scripts.sh` to `58_user_scripts.sh`. Added commented example in compose.yml and documented in README

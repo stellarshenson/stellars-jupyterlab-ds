@@ -452,6 +452,7 @@ Configuration variables supported by the platform:
 - `ENABLE_SERVICE_RESOURCES_MONITOR` - enable Resources Monitor/btop (default: `1`)
 - `ENABLE_SERVICE_TENSORBOARD` - enable TensorBoard (default: `1`)
 - `ENABLE_LOCAL_SCRIPTS` - enable user-defined startup scripts
+- `JUPYTERLAB_AUX_SCRIPTS_PATH` - path to auxiliary startup scripts (e.g. `/mnt/shared/start-platform.d` for admin-managed setup like AWS keys, repo credentials, hackathon config)
 
 **Service Configuration:**
 - `TF_CPP_MIN_LOG_LEVEL` - TensorFlow logging level (default: `3` for errors only)
