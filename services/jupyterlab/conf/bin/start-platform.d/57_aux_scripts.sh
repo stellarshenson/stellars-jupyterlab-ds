@@ -13,8 +13,8 @@ if [[ -z "${JUPYTERLAB_AUX_SCRIPTS_PATH}" ]]; then
     exit 0
 fi
 
+# silently skip if path doesn't exist (e.g. shared volume not mounted)
 if [[ ! -d "${JUPYTERLAB_AUX_SCRIPTS_PATH}" ]]; then
-    echo "JUPYTERLAB_AUX_SCRIPTS_PATH=${JUPYTERLAB_AUX_SCRIPTS_PATH} does not exist, skipping"
     exit 0
 fi
 
