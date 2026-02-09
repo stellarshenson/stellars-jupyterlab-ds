@@ -10,6 +10,7 @@ dependencies:
   - python=3.12 # make sure we have correct python version
   - pip # package manager
   - pip-tools # other packaging tools
+  - setuptools=80.9 # FIX (2026-02-09): nb_conda requires pkg_resources, removed in setuptools 82
   
   # binary utilities that conflict with the main OS
   - curl

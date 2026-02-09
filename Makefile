@@ -42,7 +42,8 @@ increment_version:
 		new_patch = parts[2] + 1; \
 		new_version = parts[1] new_patch parts[3]; \
 		print "VERSION=\"" new_version "\""; \
-		print "Version updated: " $$2 " -> " new_version > "/dev/stderr"; \
+		print "Current Version: " $$2 > "/dev/stderr"; \
+		print "New Version: " new_version > "/dev/stderr"; \
 		next; \
 	} \
 	{ print }' project.env > project.env.tmp && mv project.env.tmp project.env
