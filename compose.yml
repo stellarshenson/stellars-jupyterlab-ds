@@ -61,6 +61,7 @@ services:
     build:
       context: services/jupyterlab
       dockerfile: Dockerfile.jupyterlab
+      network: host # BuildKit DNS workaround for WSL2
       platforms:
         - linux/amd64
     environment:

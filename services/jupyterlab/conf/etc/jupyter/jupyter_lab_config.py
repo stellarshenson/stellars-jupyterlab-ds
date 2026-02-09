@@ -32,6 +32,10 @@ c.KernelSpecManager.default_kernel_name = 'conda-base-py'
 # c.ServerApp.certfile = u'/mnt/certs/server.crt'
 # c.ServerApp.keyfile = u'/mnt/certs/server.key'
 
+# Custom main logo extension configuration
+c.CustomMainLogo.logo_uri = os.environ.get("JUPYTERLAB_MAIN_ICON_URI", "")
+
+
 ## welcome pages and additional services
 c.JupyterLabIFrame.local_files = ['/welcome.html']
 c.JupyterLabIFrame.allow_any_local = False
