@@ -60,6 +60,7 @@ build_verbose: clean maybe_increment_version
 rebuild: clean maybe_increment_version
 	@echo "Rebuilding 'target' stage (builder stage uses cache if available)..."
 	@docker build \
+		--network=host \
 		--platform linux/amd64 \
 		--target target \
 		--build-arg CACHEBUST=$$(date +%s) \
