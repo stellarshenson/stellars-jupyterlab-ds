@@ -32,8 +32,9 @@ c.KernelSpecManager.default_kernel_name = 'conda-base-py'
 # c.ServerApp.certfile = u'/mnt/certs/server.crt'
 # c.ServerApp.keyfile = u'/mnt/certs/server.key'
 
+## Brandong config 
 # Custom main logo extension configuration
-c.CustomMainLogo.logo_uri = os.environ.get("JUPYTERLAB_MAIN_ICON_URI", "")
+c.Branding.logo_uri = os.environ.get("JUPYTERLAB_MAIN_ICON_URI", "")
 
 
 ## welcome pages and additional services
