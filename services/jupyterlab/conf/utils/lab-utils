@@ -38,13 +38,71 @@ NC = '\033[0m'  # No Color
 
 
 def load_menu_config() -> dict:
-    """Load menu configuration from YAML file."""
+    """Load menu configuration from YAML file.
+
+    If JUPYTERLAB_AUX_MENU_PATH is set, scans the directory and injects
+    an "Auxiliary Menu" submenu into root menu (before Local Scripts).
+    Executable scripts become direct menu items, YAML files become submenus.
+    """
     if not MENU_CONFIG.exists():
         print(f"Error: Menu configuration not found: {MENU_CONFIG}", file=sys.stderr)
         sys.exit(1)
 
     with open(MENU_CONFIG) as f:
-        return yaml.safe_load(f)
+        config = yaml.safe_load(f)
+
+    # Inject auxiliary menu from environment variable
+    aux_menu_path = os.environ.get("JUPYTERLAB_AUX_MENU_PATH", "")
+    if aux_menu_path:
+        aux_dir = Path(os.path.expanduser(aux_menu_path))
+        if aux_dir.is_dir():
+            aux_children = []
+            excluded = {"README.md", "readme.md"}
+
+            for entry in sorted(aux_dir.iterdir()):
+                if entry.name in excluded or not entry.is_file():
+                    continue
+
+                # YAML files become submenus loaded via menu_file
+                if entry.suffix.lower() in {".yml", ".yaml"}:
+                    # Peek for name field, fall back to filename stem
+                    submenu_name = entry.stem
+                    try:
+                        with open(entry) as f:
+                            data = yaml.safe_load(f)
+                        if isinstance(data, dict) and data.get("name"):
+                            submenu_name = data["name"]
+                    except Exception:
+                        pass
+                    aux_children.append({
+                        "name": submenu_name,
+                        "menu_file": str(entry),
+                    })
+                # Executable scripts become direct menu items
+                elif os.access(entry, os.X_OK):
+                    description = get_script_description(entry)
+                    aux_children.append({
+                        "id": str(entry),
+                        "name": entry.stem,
+                        "description": description,
+                        "marker": "aux",
+                        "_full_path": True,
+                    })
+
+            if aux_children:
+                aux_item = {
+                    "name": "Auxiliary Menu",
+                    "description": "Admin-provisioned tools from shared volume",
+                    "submenu": aux_children,
+                }
+                items = config.get("menu", {}).get("items", [])
+                # Insert before last item (Local Scripts) if present
+                if items:
+                    items.insert(-1, aux_item)
+                else:
+                    items.append(aux_item)
+
+    return config
 
 
 def flush_input_buffer():
@@ -116,6 +174,52 @@ def scan_directory_for_menu_items(scan_dir: str) -> list:
             })
 
     return items
+
+
+def load_menu_file_items(menu_file_path: str) -> list:
+    """
+    Load menu items from an external YAML file.
+
+    Args:
+        menu_file_path: Path to YAML file (supports ~ and env vars)
+
+    Returns:
+        List of menu item dicts. Returns [] if file doesn't exist.
+
+    Supported YAML formats:
+        Form 1 - dict with items key:
+            items:
+              - id: "script.sh"
+                name: "My Script"
+
+        Form 2 - bare list:
+            - id: "script.sh"
+              name: "My Script"
+    """
+    path = Path(os.path.expandvars(os.path.expanduser(menu_file_path)))
+
+    if not path.exists() or not path.is_file():
+        return []
+
+    try:
+        with open(path) as f:
+            data = yaml.safe_load(f)
+    except Exception:
+        return []
+
+    if data is None:
+        return []
+
+    # Form 1: dict with items key
+    if isinstance(data, dict) and "items" in data:
+        items = data["items"]
+        return items if isinstance(items, list) else []
+
+    # Form 2: bare list
+    if isinstance(data, list):
+        return data
+
+    return []
 
 
 def resolve_script_path(script_id: str, is_full_path: bool = False) -> Path:
@@ -773,7 +877,7 @@ def run_interactive_menu():
             for i, item in enumerate(self.current_items):
                 name = item.get("name", f"Item {i}")
                 desc = item.get("description", "")
-                if "submenu" in item or "scan_dir" in item:
+                if "submenu" in item or "scan_dir" in item or "menu_file" in item:
                     # Folder/submenu icon
                     display = f"▶ {name}"
                 elif "selector" in item:
@@ -825,9 +929,12 @@ def run_interactive_menu():
                 self.exit()
                 return
 
-            # Handle submenu or scan_dir
-            if "submenu" in selected_item or "scan_dir" in selected_item:
+            # Handle submenu, menu_file, or scan_dir
+            if "submenu" in selected_item or "scan_dir" in selected_item or "menu_file" in selected_item:
                 submenu_items = list(selected_item.get("submenu", []))
+                if "menu_file" in selected_item:
+                    file_items = load_menu_file_items(selected_item["menu_file"])
+                    submenu_items.extend(file_items)
                 if "scan_dir" in selected_item:
                     dynamic_items = scan_directory_for_menu_items(selected_item["scan_dir"])
                     submenu_items.extend(dynamic_items)
