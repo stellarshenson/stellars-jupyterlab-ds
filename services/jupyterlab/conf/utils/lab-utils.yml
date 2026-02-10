@@ -33,13 +33,31 @@
 #     - name: "Local Scripts"
 #       scan_dir: "~/.local/lab-utils.d"
 #
-#   Combined (submenu + scan_dir)
-#     Static items plus dynamically discovered scripts.
+#   type: menu_file (implicit when 'menu_file' field present)
+#     Loads submenu items from an external YAML file at runtime.
+#     File format - dict with items key (optional name for submenu title):
+#       name: "Campaign Tools"
+#       items:
+#         - id: "script.sh"
+#           name: "My Script"
+#           description: "Does something"
+#     File format - bare list:
+#       - id: "script.sh"
+#         name: "My Script"
+#     The 'name' field is used as submenu title when loaded from
+#     JUPYTERLAB_AUX_MENU_PATH; falls back to filename stem.
+#     Graceful: returns empty if file doesn't exist.
+#     - name: "Campaign Tools"
+#       menu_file: "/mnt/shared/campaign-menu.yml"
+#
+#   Combined (submenu + menu_file + scan_dir)
+#     Static items, then file-loaded items, then directory-scanned items.
 #     - name: "Install Conda Env"
 #       submenu:
 #         - id: "install-conda-env.d/tensorflow.sh"
 #           name: "TensorFlow"
 #           description: "Install TensorFlow"
+#       menu_file: "~/.local/extra-env-menu.yml"
 #       scan_dir: "~/.local/conda-env.d"
 #
 #   type: selector
@@ -85,6 +103,36 @@
 #         current_cmd: "grep -oP 'CONDA_DEFAULT_ENV=\"\\K[^\"]*' ~/.profile"
 #         apply_script: "set-profile-var"
 #         apply_args: "CONDA_DEFAULT_ENV"
+#
+# AUXILIARY MENU (JUPYTERLAB_AUX_MENU_PATH):
+# -------------------------------------------
+#
+#   When the JUPYTERLAB_AUX_MENU_PATH env var is set, lab-utils scans
+#   the directory and injects an "Auxiliary Menu" submenu before
+#   "Local Scripts". Useful for admin-provisioned tools via shared volume.
+#
+#   Directory contents are handled by file type:
+#     - Executable scripts -> direct menu items (marker: "aux")
+#     - YAML files (.yml/.yaml) -> submenus loaded via menu_file
+#
+#   YAML files can provide their own submenu name via a top-level
+#   'name' field; otherwise the filename stem is used.
+#
+#   Example directory layout:
+#     /mnt/shared/lab-utils.d/
+#       setup-aws.sh             # executable -> menu item "setup-aws"
+#       hackathon-tools.yml      # YAML -> submenu
+#
+#   Example YAML file (hackathon-tools.yml):
+#     name: "Hackathon Tools"
+#     items:
+#       - id: "echo 'team setup complete'"
+#         name: "Team Setup"
+#         description: "Configure team environment"
+#         type: command
+#       - id: "/mnt/shared/scripts/submit.sh"
+#         name: "Submit Solution"
+#         description: "Package and submit hackathon solution"
 #
 # =============================================================================
 
