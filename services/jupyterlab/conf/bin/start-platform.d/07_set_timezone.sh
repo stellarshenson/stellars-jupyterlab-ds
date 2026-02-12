@@ -18,8 +18,8 @@ if [[ ! -f "${ZONEINFO}" ]]; then
     exit 0
 fi
 
-ln -sf "${ZONEINFO}" /etc/localtime
-echo "${JUPYTERLAB_TIMEZONE}" > /etc/timezone
+sudo ln -sf "${ZONEINFO}" /etc/localtime
+echo "${JUPYTERLAB_TIMEZONE}" | sudo tee /etc/timezone > /dev/null
 echo "Timezone set to ${JUPYTERLAB_TIMEZONE}"
 
 # EOF
