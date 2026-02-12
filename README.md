@@ -444,6 +444,7 @@ Configuration variables supported by the platform:
 - `JUPYTERLAB_SERVER_IP` - IP address for JupyterLab (default: `*` for all interfaces)
 - `JUPYTERLAB_SERVER_TOKEN` - access token (empty = no password required)
 - `JUPYTERLAB_BASE_URL` - base URL path (default: `/${COMPOSE_PROJECT_NAME}/jupyterlab`)
+- `JUPYTERLAB_TIMEZONE` - container timezone in IANA format (e.g. `Europe/Warsaw`); empty = UTC
 
 **Service Toggles:**
 - `ENABLE_GPU_SUPPORT` - enable NVIDIA GPU support (default: `0`)

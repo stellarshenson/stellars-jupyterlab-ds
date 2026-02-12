@@ -564,6 +564,7 @@ ENV TERM=xterm-256color
 ENV JUPYTERLAB_SERVER_IP="*"
 ENV JUPYTERLAB_SERVER_TOKEN=""
 ENV JUPYTERLAB_BASE_URL="/lab"
+ENV JUPYTERLAB_TIMEZONE=""
 
 ## default values for GPU support envs
 # ENABLE_GPU_SUPPORT controls nvidia support of the system
