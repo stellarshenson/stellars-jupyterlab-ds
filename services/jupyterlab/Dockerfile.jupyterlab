@@ -380,8 +380,8 @@ EOF
 ## FIX (2026-02-09): conda clean -a in conda 26.x removes conda-meta/history, breaking 'conda run -n base'
 ## preserve history file before clean and restore it after
 RUN <<-EOF
-    set -e
     echo "installing ${CONDA_DEFAULT_ENV} env with python version from env file"
+    set -e
     if [ "${CONDA_DEFAULT_ENV}" != "base" ]; then
 	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
 	cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
@@ -422,6 +422,7 @@ EOF
 ## final update of the entire conda base environment
 ## FIX (2026-02-09): conda update --all also removes conda-meta/history
 RUN <<-EOF
+    echo "updating entire conda base environment"
     set -e
     cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
     CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV}" conda update -y -c conda-forge --all
@@ -489,8 +490,8 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 ## and not to clone it to other environments
 USER ${CONDA_USER}
 RUN <<-EOF
-    set -e
     echo "installing Jupyterlab in ${CONDA_DEFAULT_ENV} env"
+    set -e
     ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} --file=/environment_base_jupyterlab.yml
     cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
     ${CONDA_CMD} clean -a -y
