@@ -61,9 +61,11 @@ dependencies:
     - widgetsnbextension
 
     ## other libraries
-    - black # pragmatic code formatter
     - nbdime # tool for diffing and merging jupyter notebooks
     - cookiecutter # projects directory + resources template (ds projects)
+
+    ## pins to fix version issues
+    - chardet<6.0 
 
     # EOF
 
