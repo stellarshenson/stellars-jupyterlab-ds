@@ -35,6 +35,9 @@ if [[ ${ENABLE_SERVICE_MLFLOW} != 1 ]]; then
     exit 0
 fi
 
+# ensure log file exists
+touch /var/log/mlflow.log 2>/dev/null || true
+
 # configure MLflow environment
 MLFLOW_DATA=${MLFLOW_DATA:-$HOME/.cache/mlflow} && mkdir -p ${MLFLOW_DATA}
 MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI:-sqlite:///${MLFLOW_DATA}/mlflow.sqlite3}
