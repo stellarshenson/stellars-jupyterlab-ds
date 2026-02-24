@@ -119,3 +119,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 122. **Task - Reorder echo before set -e in Dockerfile**: Descriptive build step names in build log<br>
     **Result**: Three RUN heredoc blocks in `Dockerfile.jupyterlab` showed `(set -e...)` in the build log instead of descriptive step names because `set -e` preceded the echo statement. Moved echo before `set -e` in the conda env install block (line 382) and JupyterLab install block (line 491), and added missing `echo "updating entire conda base environment"` to the conda update block (line 424). Build log now shows descriptive names for all steps
+
+123. **Task - Make /var/log group-writable**: Allow jupyter group to create log files<br>
+    **Result**: Added `chmod 775 /var/log` and `chgrp ${JUPYTER_GROUP} /var/log` to the log directory setup block in `Dockerfile.jupyterlab` (line 361-362). Jupyter group members can now create new log files in `/var/log`, not just write to the pre-created `jupyterlab.log`

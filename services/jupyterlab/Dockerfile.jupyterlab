@@ -358,6 +358,8 @@ EOF
 ARG JUPYTER_LOG=/var/log/jupyterlab.log
 RUN <<-EOF
     echo "creating jupyter logs directory accessible to users"
+    chmod 775 /var/log
+    chgrp ${JUPYTER_GROUP} /var/log
     touch ${JUPYTER_LOG}
     chown ${CONDA_USER}:${JUPYTER_GROUP} ${JUPYTER_LOG}
     chmod 664 ${JUPYTER_LOG}
