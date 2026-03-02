@@ -226,10 +226,10 @@ menu:
           name: "OpenAI Codex"
           description: "Install OpenAI Codex AI assistant"
 
-    # Install Docker CLI and plugins to /opt/docker
+    # Install Docker CLI and plugins
     - id: "install-docker-cli.sh"
       name: "Install Docker CLI"
-      description: "Install Docker CLI tools to /opt/docker"
+      description: "Install Docker CLI tools"
 
     # Create new project from Copier template
     - id: "new-project.sh"

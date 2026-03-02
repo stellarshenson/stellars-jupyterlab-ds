@@ -122,3 +122,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 123. **Task - Make /var/log group-writable**: Allow jupyter group to create log files<br>
     **Result**: Added `chmod 775 /var/log` and `chgrp ${JUPYTER_GROUP} /var/log` to the log directory setup block in `Dockerfile.jupyterlab` (line 361-362). Jupyter group members can now create new log files in `/var/log`, not just write to the pre-created `jupyterlab.log`
+
+124. **Task - Relocate Docker CLI to user-local**: Moved from /opt/docker to ~/.local/docker<br>
+    **Result**: Updated `install-docker-cli.sh` to install Docker CLI to `$HOME/.local/docker` instead of `/opt/docker`, eliminating sudo requirement for mkdir/cp operations during installation. Added `~/.local/bin/docker` symlink for PATH access (`.profile` already includes `~/.local/bin`). Plugin chain preserved: `/opt/extra/docker-cli-plugins/` -> `~/.local/docker/cli-plugins/` -> `~/.docker/cli-plugins/`. Removed `PATH="/opt/docker:$PATH"` from `platform.env` (redundant with `.profile` PATH). Updated `lab-utils.yml` menu description. Sudo retained only for bash completion install to `/etc/bash_completion.d/`

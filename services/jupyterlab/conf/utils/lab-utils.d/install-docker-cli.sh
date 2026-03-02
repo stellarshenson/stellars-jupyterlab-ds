@@ -1,9 +1,9 @@
 #!/bin/bash
-## Installs Docker CLI to /opt/docker
+## Installs Docker CLI to ~/.local/docker (user-local, no sudo required)
 
 set -e
 
-DOCKER_INSTALL_DIR="/opt/docker"
+DOCKER_INSTALL_DIR="$HOME/.local/docker"
 DOCKER_BASE_URL="https://download.docker.com/linux/static/stable"
 
 # Detect system architecture
@@ -83,25 +83,30 @@ if ! tar -xzf "$temp_file" -C "$temp_extract"; then
     exit 1
 fi
 
-# Install Docker CLI
+# Install Docker CLI (user-local, no sudo needed)
 echo "Installing to ${DOCKER_INSTALL_DIR}..."
-sudo mkdir -p "$DOCKER_INSTALL_DIR"
-if ! sudo cp -r "$temp_extract/docker/"* "$DOCKER_INSTALL_DIR/"; then
+mkdir -p "$DOCKER_INSTALL_DIR"
+if ! cp -r "$temp_extract/docker/"* "$DOCKER_INSTALL_DIR/"; then
     echo "ERROR: Failed to install binaries" >&2
     rm -rf "$temp_dir" "$temp_extract"
     exit 1
 fi
 
-# Create symlink from /opt/docker/cli-plugins to /opt/extra/docker-cli-plugins if available
+# Symlink docker binary to ~/.local/bin for PATH access
+mkdir -p "$HOME/.local/bin"
+ln -sf "$DOCKER_INSTALL_DIR/docker" "$HOME/.local/bin/docker"
+echo "Symlinked docker to ~/.local/bin/docker"
+
+# Create symlink from ~/.local/docker/cli-plugins to /opt/extra/docker-cli-plugins if available
 plugins_source="/opt/extra/docker-cli-plugins"
 plugins_dir="${DOCKER_INSTALL_DIR}/cli-plugins"
 if [[ -d "$plugins_source" ]] && [[ -n "$(ls -A $plugins_source 2>/dev/null)" ]]; then
     echo "Setting up Docker CLI plugins..."
-    sudo mkdir -p "$(dirname $plugins_dir)"
+    mkdir -p "$(dirname $plugins_dir)"
     if [[ -L "$plugins_dir" ]] || [[ -d "$plugins_dir" ]]; then
-        sudo rm -rf "$plugins_dir"
+        rm -rf "$plugins_dir"
     fi
-    sudo ln -sf "$plugins_source" "$plugins_dir"
+    ln -sf "$plugins_source" "$plugins_dir"
     echo "Plugin directory linked to ${plugins_source}"
 fi
 
@@ -147,6 +152,8 @@ if [[ -f "${DOCKER_INSTALL_DIR}/docker" ]]; then
     echo -e "\033[32mDocker CLI Installation Successful\033[0m"
     echo ""
     echo -e "Version: \033[1;34m$final_version\033[0m"
+    echo -e "Location: \033[1;34m${DOCKER_INSTALL_DIR}\033[0m"
+    echo -e "Binary: \033[1;34m~/.local/bin/docker\033[0m"
 
     # List installed plugins using docker's plugin discovery
     if [[ -d "${DOCKER_INSTALL_DIR}/cli-plugins" ]] && [[ -n "$(ls -A ${DOCKER_INSTALL_DIR}/cli-plugins 2>/dev/null)" ]]; then
