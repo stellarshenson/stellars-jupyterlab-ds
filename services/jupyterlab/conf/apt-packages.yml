@@ -6,6 +6,7 @@ packages:
     - bash-completion # completion for bash
     - btop # resources monitor
     - curl # for downloading files
+    - expect # automate interactive terminal commands
     - fish # modern extended shell
     - gawk # GNU awk for Makefile version management
     # - gcc # compiler, required for building some native packages
