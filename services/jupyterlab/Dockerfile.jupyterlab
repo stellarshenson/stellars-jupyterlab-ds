@@ -133,7 +133,15 @@ EOF
 # RUN apt update && apt install -y software-properties-common
 # RUN add-apt-repository ppa:rmescandon/yq -y && apt update && apt install yq -y
 # and then copy /etc/apt/sources.list.d to docker image
-RUN rm -f /etc/apt/apt.conf.d/50appstream && apt update && apt install yq -y
+RUN <<-EOF
+    echo "disabling AppStream metadata and installing yq"
+    cat > /etc/apt/apt.conf.d/99no-appstream <<-'CONF'
+    Acquire::IndexTargets::deb::DEP-11 "false";
+    Acquire::IndexTargets::deb::DEP-11-icons "false";
+    Acquire::IndexTargets::deb-src::DEP-11 "false";
+CONF
+    apt update && apt install yq -y
+EOF
 
 # install required packages, list will be taken from apt-packages.yml
 RUN <<-EOF
