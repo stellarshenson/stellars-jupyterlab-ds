@@ -6,14 +6,13 @@
 
 # the default umask is set in /etc/profile; for setting the umask
 # for ssh logins, install and configure the libpam-umask package.
-umask 022
+#umask 022
 
 # set default conda environment
 export CONDA_DEFAULT_ENV="base"
-
-# set default AWS profile
 export AWS_PROFILE="default"
 
+. "$HOME/.cargo/env"
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
@@ -23,13 +22,20 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-# set PATH so it includes user's private bin if it exists
+# set PATH so it includes user's private bin if it exists (idempotent)
 if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
+    case ":$PATH:" in *:"$HOME/bin":*) ;; *) PATH="$HOME/bin:$PATH" ;; esac
 fi
 
-# set PATH so it includes user's private bin if it exists
+# set PATH so it includes user's private bin if it exists (idempotent)
 if [ -d "$HOME/.local/bin" ] ; then
-    PATH="$HOME/.local/bin:$PATH"
+    case ":$PATH:" in *:"$HOME/.local/bin":*) ;; *) PATH="$HOME/.local/bin:$PATH" ;; esac
 fi
 
+# set PATH so it includes user's cargo bin if it exists (idempotent)
+if [ -d "$HOME/.cargo/bin" ] ; then
+    case ":$PATH:" in *:"$HOME/.cargo/bin":*) ;; *) PATH="$HOME/.cargo/bin:$PATH" ;; esac
+fi
+
+
+# EOF
