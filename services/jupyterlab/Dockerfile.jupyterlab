@@ -517,6 +517,24 @@ RUN <<-EOF
 EOF
 
 ########################################################
+#  PLAYWRIGHT CHROMIUM (system-wide)                   #
+########################################################
+# Required by:
+#   - jupyterlab_export_markdown_extension: rasterises SVGs for DOCX/PDF export
+#   - Playwright MCP server: lets AI assistants drive a browser
+#   - Agentic AI: lets agents operate user webapps (Streamlit, Shiny, Gradio,
+#     Chainlit, MLFlow) running behind the JupyterLab proxy
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
+RUN <<-EOF
+    echo "installing Playwright Chromium system-wide to ${PLAYWRIGHT_BROWSERS_PATH}"
+    set -e
+    mkdir -p ${PLAYWRIGHT_BROWSERS_PATH}
+    ${CONDA_CMD} run --name ${CONDA_DEFAULT_ENV} \
+        playwright install --with-deps chromium
+    chmod -R a+rX ${PLAYWRIGHT_BROWSERS_PATH}
+EOF
+
+########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT ON TORCH           #
 ########################################################
 
