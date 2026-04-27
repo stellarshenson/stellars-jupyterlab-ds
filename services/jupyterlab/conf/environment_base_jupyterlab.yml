@@ -45,6 +45,9 @@ dependencies:
     - jupyterlab_iframe # allows opening webpages in iframe
     - jupyter_app_launcher # allows adding custom launchers
 
+    # browser automation - chromium installed system-wide in Dockerfile
+    - playwright
+
     # stellarshenson extensions
     - stellars-jupyterlab-extensions # bundle of all stellars jupyterlab extensions
     - stellars-jupyterlab-fixes # bundle of all stellars jupyterlab hotfixes
