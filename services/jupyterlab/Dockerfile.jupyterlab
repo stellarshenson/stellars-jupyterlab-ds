@@ -69,32 +69,14 @@ ARG EXPORT_DIR=/opt/extra
 RUN mkdir ${BUILD_DIR} ${EXPORT_DIR}
 WORKDIR ${BUILD_DIR}
 
-## Build the llama-cpp-python library with CUDA support
-## additional permissible params: -DGGML_CUDA_FORCE_CUBLAS=on -DGGML_CUDA_FORCE_MMQ=on 
-RUN <<-EOF
-    CMAKE_ARGS="-DGGML_CUDA=on -DCUDA_ARCHITECTURES=all-major" FORCE_CMAKE=1 \
-    pip wheel llama-cpp-python --no-cache-dir
-EOF
+# copy builder-stage scripts (not present in runtime image)
+COPY --chmod=755 ./builder/ /opt/builder/
 
-# copy custom built packages to /opt/exports
-RUN cp llama*.whl ${EXPORT_DIR}
+## Build the llama-cpp-python library with CUDA support
+RUN /opt/builder/build-llama-cpp-python.sh "${BUILD_DIR}" "${EXPORT_DIR}"
 
 ## Build Docker CLI plugins
-RUN mkdir -p ${EXPORT_DIR}/docker-cli-plugins
-
-WORKDIR /opt/build
-RUN git clone https://github.com/docker/mcp-gateway.git
-
-WORKDIR /opt/build/mcp-gateway
-RUN echo "building Docker MCP Gateway" && \
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ${EXPORT_DIR}/docker-cli-plugins/docker-mcp ./cmd/docker-mcp
-
-WORKDIR /opt/build
-RUN git clone https://github.com/docker/buildx.git
-
-WORKDIR /opt/build/buildx
-RUN echo "building Docker Buildx" && \
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w" -o ${EXPORT_DIR}/docker-cli-plugins/docker-buildx ./cmd/buildx
+RUN /opt/builder/build-docker-plugins.sh "${BUILD_DIR}" "${EXPORT_DIR}"
 
 ##############################################################################################
 ##############################################################################################
