@@ -75,8 +75,8 @@ COPY --chmod=755 ./builder/ /opt/builder/
 ## Build the llama-cpp-python library with CUDA support
 RUN /opt/builder/build-llama-cpp-python.sh "${BUILD_DIR}" "${EXPORT_DIR}"
 
-## Build Docker CLI plugins
-RUN /opt/builder/build-docker-plugins.sh "${BUILD_DIR}" "${EXPORT_DIR}"
+## Install Docker CLI plugins from upstream release binaries
+RUN /opt/builder/install-docker-plugins.sh "${BUILD_DIR}" "${EXPORT_DIR}"
 
 ##############################################################################################
 ##############################################################################################
@@ -169,11 +169,16 @@ RUN chmod 644 /opt/utils/lab-utils.yml
 ## we need to remove them all and install conda
 ## filter packages to not uninstall base packages
 RUN <<-EOF
+    set -e
     echo "cleaning existing python installation"
-    pip freeze | grep -v blinker > requirements-to-uninstall.txt
-    pip uninstall -r requirements-to-uninstall.txt -y
+    # Ubuntu 24.04 system Python is PEP 668 externally-managed - pip uninstall
+    # requires --break-system-packages. Preserves blinker (apt-listchanges dep).
+    pip freeze | grep -v '^blinker' > requirements-to-uninstall.txt
+    pip uninstall --break-system-packages -y -r requirements-to-uninstall.txt
     pip cache purge
-    apt uninstall pip -y || true
+    rm requirements-to-uninstall.txt
+    apt-get remove -y python3-pip
+    apt-get autoremove -y
 EOF
 
 ## allow viewer extensions to midnight commander - like for parquet files
