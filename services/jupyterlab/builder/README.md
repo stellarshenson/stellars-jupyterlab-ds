@@ -14,18 +14,23 @@ There is no corresponding `COPY --from=builder /opt/builder ...` in the target s
 
 ## Scripts
 
-- `build-docker-plugins.sh` - Builds all bundled Docker CLI plugins from upstream Go source (currently `docker-mcp` and `docker-buildx`). Static builds via `CGO_ENABLED=0`, output binaries land in `${EXPORT_DIR}/docker-cli-plugins/`. Plugin list is hardcoded in the script
+- `install-docker-plugins.sh` - Downloads bundled Docker CLI plugins from upstream GitHub release binaries (currently `docker-mcp`, `docker-buildx`, `docker-compose`). Drops binaries into `${EXPORT_DIR}/docker-cli-plugins/`. Plugin list with pinned versions is hardcoded in the script
 - `build-llama-cpp-python.sh` - Builds the `llama-cpp-python` wheel with CUDA support and exports it to `${EXPORT_DIR}`
 
-## Adding a new Docker CLI plugin
+## Adding or updating a Docker CLI plugin
 
-Edit the `PLUGINS` array in `build-docker-plugins.sh`. Each entry is a `|`-separated string `name|repo-url|entrypoint|extra-ldflags`. Example for `docker-compose`:
+Edit the `PLUGINS` array in `install-docker-plugins.sh`. Each entry is a `|`-separated string `name|download-url|kind`:
+
+- `kind=raw` - the downloaded file is the plugin binary itself (compose, buildx)
+- `kind=tarball:<inner>` - the download is a gzipped tarball; extract and use the file named `<inner>` (mcp)
+
+Versions are pinned for reproducibility. To bump, replace the URL with the new release tag. Example bump for compose:
 
 ```bash
-"compose|https://github.com/docker/compose.git|./cmd|-X github.com/docker/compose/v2/internal.Version=v2.x.y"
+"compose|https://github.com/docker/compose/releases/download/v5.2.0/docker-compose-linux-x86_64|raw"
 ```
 
-The fourth field is optional — leave empty if no extra ldflags are needed. The compose plugin embeds its version via `-X github.com/docker/compose/v2/internal.Version=<tag>`; without it, `docker compose version` reports `unknown`.
+Pre-built binaries are preferred over source builds: faster image builds, no Go toolchain dependency, and reproducible across rebuilds.
 
 ## Conventions
 

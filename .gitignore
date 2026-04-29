@@ -8,6 +8,8 @@ lib/
 !**/lab-utils.lib/
 node_modules/
 *.log
+logs/*
+!logs/README.md
 .eslintcache
 .stylelintcache
 *.egg-info/

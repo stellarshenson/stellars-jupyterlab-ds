@@ -97,30 +97,28 @@ mkdir -p "$HOME/.local/bin"
 ln -sf "$DOCKER_INSTALL_DIR/docker" "$HOME/.local/bin/docker"
 echo "Symlinked docker to ~/.local/bin/docker"
 
-# Create symlink from ~/.local/docker/cli-plugins to /opt/extra/docker-cli-plugins if available
+# Symlink each plugin from /opt/extra/docker-cli-plugins individually into both
+# ~/.local/docker/cli-plugins and ~/.docker/cli-plugins. Per-file symlinks
+# preserve the user's ability to add custom plugins alongside the bundled ones.
 plugins_source="/opt/extra/docker-cli-plugins"
 plugins_dir="${DOCKER_INSTALL_DIR}/cli-plugins"
+user_plugin_dir="$HOME/.docker/cli-plugins"
+
 if [[ -d "$plugins_source" ]] && [[ -n "$(ls -A $plugins_source 2>/dev/null)" ]]; then
     echo "Setting up Docker CLI plugins..."
-    mkdir -p "$(dirname $plugins_dir)"
-    if [[ -L "$plugins_dir" ]] || [[ -d "$plugins_dir" ]]; then
-        rm -rf "$plugins_dir"
-    fi
-    ln -sf "$plugins_source" "$plugins_dir"
-    echo "Plugin directory linked to ${plugins_source}"
-fi
 
-# Create symlink in user directory for Docker plugin discovery
-# Docker looks for plugins in ~/.docker/cli-plugins/ by default
-user_plugin_dir="$HOME/.docker/cli-plugins"
-if [[ -d "${DOCKER_INSTALL_DIR}/cli-plugins" ]]; then
-    echo "Setting up user plugin directory..."
-    mkdir -p "$HOME/.docker"
-    if [[ -L "$user_plugin_dir" ]] || [[ -d "$user_plugin_dir" ]]; then
-        rm -rf "$user_plugin_dir"
-    fi
-    ln -sf "${DOCKER_INSTALL_DIR}/cli-plugins" "$user_plugin_dir"
-    echo "User plugin directory linked to ${DOCKER_INSTALL_DIR}/cli-plugins"
+    # Replace any prior dir-level symlinks with real directories
+    [[ -L "$plugins_dir" ]] && rm "$plugins_dir"
+    [[ -L "$user_plugin_dir" ]] && rm "$user_plugin_dir"
+    mkdir -p "$plugins_dir" "$user_plugin_dir"
+
+    for plugin in "$plugins_source"/docker-*; do
+        [[ -f "$plugin" ]] || continue
+        name="$(basename "$plugin")"
+        ln -sf "$plugin" "$plugins_dir/$name"
+        ln -sf "$plugins_dir/$name" "$user_plugin_dir/$name"
+        echo "Linked $name"
+    done
 fi
 
 # Install bash completion
@@ -166,13 +164,14 @@ if [[ -f "${DOCKER_INSTALL_DIR}/docker" ]]; then
     echo -e "1. Use Docker socket: '\033[1;34mexport DOCKER_HOST=unix:///var/run/docker.sock\033[0m'"
     echo -e "2. Connect to remote Docker: '\033[1;34mexport DOCKER_HOST=tcp://hostname:2375\033[0m'"
 
-    # Show plugin usage if installed
-    if [[ -f "${DOCKER_INSTALL_DIR}/cli-plugins/docker-buildx" ]]; then
-        echo -e "3. Build multi-platform images: '\033[1;34mdocker buildx build\033[0m'"
-    fi
-    if [[ -f "${DOCKER_INSTALL_DIR}/cli-plugins/docker-mcp" ]]; then
-        echo -e "4. Use MCP plugin: '\033[1;34mdocker mcp <command>\033[0m'"
-    fi
+    # Show plugin usage for every installed plugin
+    plugin_index=3
+    for plugin in "${DOCKER_INSTALL_DIR}/cli-plugins/"docker-*; do
+        [[ -f "$plugin" ]] || continue
+        name="$(basename "$plugin" | sed 's/^docker-//')"
+        echo -e "${plugin_index}. Use ${name} plugin: '\033[1;34mdocker ${name} <command>\033[0m'"
+        plugin_index=$((plugin_index + 1))
+    done
 
     echo ""
     echo -e "Note: Docker daemon not installed (CLI only)"
