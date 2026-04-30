@@ -94,7 +94,7 @@ c.ServerProxy.servers = {
         "port": 8000,
         "new_browser_tab": False,
         "launcher_entry": {
-            "enabled": False, # disabled, because it is problematic
+            "enabled": True,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/chainlit.svg",
             "title": "Chainlit"
@@ -158,7 +158,7 @@ c.ServerProxy.servers = {
         "port": 7860,
         "new_browser_tab": False,
         "launcher_entry": {
-            "enabled": True,
+            "enabled": False,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/gradio.svg",
             "title": "Gradio"
