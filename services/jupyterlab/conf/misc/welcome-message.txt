@@ -1,5 +1,4 @@
-[95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. This is your environment 
-designed for data science and machine learning / ai projects. [0m
+[95mWelcome to [1mstellars-jupyterlab-ds[0m[95m platform. [0m
 
 Use Lab Utils: [36mlab-utils[0m - utils, ai assistants and extra environments
 For more information visit: [94mhttps://github.com/stellarshenson/stellars-jupyterlab-ds[0m
