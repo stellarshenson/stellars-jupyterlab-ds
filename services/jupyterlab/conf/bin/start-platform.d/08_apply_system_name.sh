@@ -12,6 +12,7 @@ fi
 echo "Rebranding welcome files to ${JUPYTERLAB_SYSTEM_NAME}"
 sudo sed -i "s/stellars-jupyterlab-ds/${JUPYTERLAB_SYSTEM_NAME}/g" \
     /welcome.html \
-    /welcome-message.txt
+    /welcome-message.txt \
+    /etc/motd
 
 # EOF
