@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+import os
 import sys
 import re
+
+system_name = os.environ.get('JUPYTERLAB_SYSTEM_NAME') or 'stellars-jupyterlab-ds'
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -42,6 +45,7 @@ def substitute_vars(text):
         .replace("@BUILD_DATE@", f"\033[36m{build_date}\033[0m")
         .replace("@LAB_NAME@", lab_name)
         .replace("@SERVER_TOKEN@", server_token)
+        .replace("@SYSTEM_NAME@", system_name)
     )
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -73,7 +77,7 @@ Using certs (ssl) dir: \033[94m/mnt/certs\033[0m (mount)
 Jupyterlab settings saved to: \033[94m/home/lab/.jupyter\033[0m
 Jupyterlab server token: \033[95m@SERVER_TOKEN@\033[0m
 --------------------------------------------------------------------------------
-Visit: \033[36mhttps://github.com/stellarshenson/stellars-jupyterlab-ds\033[0m
+Visit: \033[36mhttps://github.com/stellarshenson/@SYSTEM_NAME@\033[0m
 """.strip().splitlines()
 
 # Apply replacements
