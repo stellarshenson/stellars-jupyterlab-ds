@@ -445,6 +445,9 @@ Configuration variables supported by the platform:
 - `JUPYTERLAB_SERVER_TOKEN` - access token (empty = no password required)
 - `JUPYTERLAB_BASE_URL` - base URL path (default: `/${COMPOSE_PROJECT_NAME}/jupyterlab`)
 - `JUPYTERLAB_TIMEZONE` - container timezone in IANA format (e.g. `Europe/Warsaw`); empty = UTC
+- `JUPYTERLAB_SYSTEM_NAME` - rebrand `stellars-jupyterlab-ds` mentions in welcome page, MOTD and toolbar header badge; empty = no rebrand
+- `JUPYTERLAB_HEADER_CAPITALIZE_SYSTEM_NAME` - uppercase the toolbar header badge (default: `1`)
+- `JUPYTERLAB_HEADER_SYSTEM_NAME_COLOR` - CSS color for the toolbar header badge text; empty = `--jp-ui-font-color2`
 
 **Service Toggles:**
 - `ENABLE_GPU_SUPPORT` - enable NVIDIA GPU support (default: `0`)

@@ -18,6 +18,7 @@ packages:
     # - iproute2 # additional networking tools
     - jq # tool for querying jsons used often by ai assistants
     - less # interactive file reader
+    - make # build automation tool
     - libgl1 # for torch / ultralytics / opencv-python to work properly
     # - man # man pages
     - mandoc # for showing manpages, required by aws autocompleter
