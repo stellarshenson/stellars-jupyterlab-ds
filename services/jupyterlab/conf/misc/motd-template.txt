@@ -1,1 +1,1 @@
-Jupyterlab platform build [94m@BUILD_NAME@[0m created on [94m@BUILD_DATE@[0m
+stellars-jupyterlab-ds platform build [94m@BUILD_NAME@[0m created on [94m@BUILD_DATE@[0m
