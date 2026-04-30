@@ -171,10 +171,22 @@ RUN chmod 644 /opt/utils/lab-utils.yml
 RUN <<-EOF
     set -e
     echo "cleaning existing python installation"
-    # Ubuntu 24.04 system Python is PEP 668 externally-managed - pip uninstall
-    # requires --break-system-packages. Preserves blinker (apt-listchanges dep).
-    pip freeze | grep -v '^blinker' > requirements-to-uninstall.txt
-    pip uninstall --break-system-packages -y -r requirements-to-uninstall.txt
+    # Filter pip freeze to only pip-installed packages (Location in /usr/local).
+    # Apt-installed packages live in /usr/lib/python3/dist-packages and lack
+    # RECORD metadata, so pip uninstall cannot remove them.
+    # Ubuntu 24.04 system Python is PEP 668 externally-managed -
+    # --break-system-packages required.
+    > requirements-to-uninstall.txt
+    for pkg in $(pip freeze | sed 's/[ =].*//'); do
+        if pip show "$pkg" | grep -q '^Location: /usr/local/'; then
+            echo "$pkg" >> requirements-to-uninstall.txt
+        fi
+    done
+    if [ -s requirements-to-uninstall.txt ]; then
+        pip uninstall --break-system-packages -y -r requirements-to-uninstall.txt
+    else
+        echo "no pip-installed packages to remove"
+    fi
     pip cache purge
     rm requirements-to-uninstall.txt
     apt-get remove -y python3-pip
