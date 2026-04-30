@@ -12,7 +12,10 @@
 export CONDA_DEFAULT_ENV="base"
 export AWS_PROFILE="default"
 
-. "$HOME/.cargo/env"
+# source cargo env if installed
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
+fi
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
