@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help build rebuild push start clean increment_version maybe_increment_version
+.PHONY: help build rebuild rebuild_no_version_increment push start clean increment_version maybe_increment_version
 
 # Include project configuration
 include project.env
@@ -68,6 +68,10 @@ rebuild: clean maybe_increment_version
 		--tag stellars/stellars-jupyterlab-ds:latest \
 		-f services/jupyterlab/Dockerfile.jupyterlab \
 		services/jupyterlab
+
+## rebuild 'target' stage without bumping the patch version
+rebuild_no_version_increment:
+	@$(MAKE) rebuild BUILD_OPTS="--no-version-increment $(BUILD_OPTS)"
 
 ## pull docker image from dockerhub
 pull:
