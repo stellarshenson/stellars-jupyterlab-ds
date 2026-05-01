@@ -43,8 +43,9 @@ COPY --chmod=644  ./conf/environment_builder.yml /environment_builder.yml
 RUN <<-EOF
     echo "installing miniforge3"
     set -e
-    curl --location "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
-	-o ~/miniforge3.sh
+    curl --location --retry 5 --retry-delay 3 --retry-all-errors \
+        "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
+        -o ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
     rm -rf ~/miniforge3.sh
 EOF
@@ -139,7 +140,8 @@ CONF
     # - The rmescandon PPA that provided the Go binary is dead
     # - mikefarah no longer ships a .deb artifact, only bare binaries
     YQ_VERSION=v4.44.3
-    curl -fsSL -o /usr/local/bin/yq \
+    curl -fsSL --retry 5 --retry-delay 3 --retry-all-errors \
+        -o /usr/local/bin/yq \
         "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
     chmod 0755 /usr/local/bin/yq
     yq --version
@@ -360,7 +362,8 @@ USER root
 RUN <<-EOF
     echo "installing amazon awscliv2 - AWS command line utility v2"
     set -e
-    curl --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
+    curl --location --retry 5 --retry-delay 3 --retry-all-errors \
+        "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
     unzip /tmp/awscliv2.zip -d /tmp
     /tmp/aws/install
     rm -rf /tmp/aws /tmp/awscliv2.zip
@@ -371,7 +374,8 @@ EOF
 RUN <<-EOF
     echo "installing uv bash autocompletion"
     set -e
-    curl -sL https://raw.githubusercontent.com/stellarshenson/uv-bash-autocompletion/main/bash_completion.d/uv-completion \
+    curl -sL --retry 5 --retry-delay 3 --retry-all-errors \
+        https://raw.githubusercontent.com/stellarshenson/uv-bash-autocompletion/main/bash_completion.d/uv-completion \
         -o /etc/bash_completion.d/uv-completion
     chmod 644 /etc/bash_completion.d/uv-completion
 EOF
@@ -425,8 +429,9 @@ WORKDIR ${CONDA_USER_HOME}
 RUN <<-EOF
     echo "installing miniforge3"
     set -e
-    curl -L "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
-	-o ~/miniforge3.sh
+    curl -L --retry 5 --retry-delay 3 --retry-all-errors \
+        "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
+        -o ~/miniforge3.sh
     bash ~/miniforge3.sh -b -u -p ${CONDA_HOME}
     rm -rf ~/miniforge3.sh
 EOF
