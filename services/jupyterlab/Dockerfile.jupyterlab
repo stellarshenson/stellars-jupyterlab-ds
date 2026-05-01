@@ -12,6 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Fix deprecated apt-key warning by migrating CUDA key from legacy keyring to trusted.gpg.d
 RUN <<-EOF
+    set -e
     if [ -f /etc/apt/trusted.gpg ] && [ -s /etc/apt/trusted.gpg ]; then
         echo "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d"
         # Copy the entire legacy keyring to new location
@@ -23,6 +24,7 @@ RUN <<-EOF
 EOF
 
 RUN <<-EOF
+    set -e
     echo "installing necessary OS packages"
     apt-get update
     apt-get install -y git build-essential curl \
@@ -38,6 +40,7 @@ COPY --chmod=644  ./conf/environment_builder.yml /environment_builder.yml
 
 # download and install conda
 RUN <<-EOF
+    set -e
     echo "installing miniforge3"
     curl --location "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
 	-o ~/miniforge3.sh
@@ -47,6 +50,7 @@ EOF
 
 ## install builder env in 'base'
 RUN <<-EOF
+    set -e
     echo "installing builder environment in base"
     ${CONDA_CMD} env update --name base --file=/environment_builder.yml
     ${CONDA_CMD} update --name base -c conda-forge -y conda
@@ -58,6 +62,7 @@ EOF
 COPY --chmod=755  ./conf/bin/conda-run.sh /conda-run.sh
 SHELL ["/conda-run.sh"]
 RUN <<-EOF
+    set -e
     echo "installing conda for bash and other shells"
     conda init
     conda init fish
@@ -101,6 +106,7 @@ COPY ./conf/apt-packages.yml /apt-packages.yml
 # Fix deprecated apt-key warning by migrating CUDA key from legacy keyring to trusted.gpg.d
 ENV DEBIAN_FRONTEND=noninteractive
 RUN <<-EOF
+    set -e
     if [ -f /etc/apt/trusted.gpg ] && [ -s /etc/apt/trusted.gpg ]; then
         echo "Migrating CUDA GPG key from legacy keyring to trusted.gpg.d"
         # Copy the entire legacy keyring to new location temporarily
@@ -116,19 +122,38 @@ EOF
 # RUN add-apt-repository ppa:rmescandon/yq -y && apt update && apt install yq -y
 # and then copy /etc/apt/sources.list.d to docker image
 RUN <<-EOF
+    set -e
     echo "disabling AppStream metadata and installing yq"
     cat > /etc/apt/apt.conf.d/99no-appstream <<-'CONF'
     Acquire::IndexTargets::deb::DEP-11 "false";
     Acquire::IndexTargets::deb::DEP-11-icons "false";
     Acquire::IndexTargets::deb-src::DEP-11 "false";
 CONF
-    apt update && apt install yq -y
+    apt update
+    # curl isn't in the base image - install it first so we can fetch yq.
+    apt install -y curl ca-certificates
+    # Install mikefarah/yq Go binary directly from GitHub (not apt):
+    # - Ubuntu's apt yq is a python wrapper with incompatible CLI
+    # - The rmescandon PPA that provided the Go binary is dead
+    # - mikefarah no longer ships a .deb artifact, only bare binaries
+    YQ_VERSION=v4.44.3
+    curl -fsSL -o /usr/local/bin/yq \
+        "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64"
+    chmod 0755 /usr/local/bin/yq
+    yq --version
 EOF
 
 # install required packages, list will be taken from apt-packages.yml
 RUN <<-EOF
+    set -e
     echo "installing OS packages from manifest"
-    apt install -y `yq eval '.packages[]' /apt-packages.yml | sed 's/$/ /' | tr -d '\r\n'`
+    PKGS=$(yq eval '.packages[]' /apt-packages.yml | tr '\n' ' ')
+    echo "Packages to install: ${PKGS}"
+    apt install -y ${PKGS}
+    echo "Verifying critical packages installed:"
+    for pkg in patch python3-pip make; do
+        dpkg -s "$pkg" >/dev/null 2>&1 && echo "  OK: $pkg" || { echo "  MISSING: $pkg"; exit 1; }
+    done
     apt update && apt upgrade -y
 EOF
 
@@ -171,30 +196,38 @@ RUN chmod 644 /opt/utils/lab-utils.yml
 RUN <<-EOF
     set -e
     echo "cleaning existing python installation"
-    # Filter pip freeze to only pip-installed packages (Location in /usr/local).
-    # Apt-installed packages live in /usr/lib/python3/dist-packages and lack
-    # RECORD metadata, so pip uninstall cannot remove them.
-    # Ubuntu 24.04 system Python is PEP 668 externally-managed -
-    # --break-system-packages required.
-    > requirements-to-uninstall.txt
-    for pkg in $(pip freeze | sed 's/[ =].*//'); do
-        if pip show "$pkg" | grep -q '^Location: /usr/local/'; then
-            echo "$pkg" >> requirements-to-uninstall.txt
+    # The CUDA base image variant is minimal and may not ship pip.
+    # If python3 -m pip is unavailable, there are no pip-installed packages
+    # to clean - just run apt autoremove to drop any python3-pip leftovers.
+    if python3 -m pip --version >/dev/null 2>&1; then
+        # Filter pip freeze to only pip-installed packages (Location in /usr/local).
+        # Apt-installed packages live in /usr/lib/python3/dist-packages and lack
+        # RECORD metadata, so pip uninstall cannot remove them.
+        # Ubuntu 24.04 system Python is PEP 668 externally-managed -
+        # --break-system-packages required.
+        > requirements-to-uninstall.txt
+        for pkg in $(python3 -m pip freeze | sed 's/[ =].*//'); do
+            if python3 -m pip show "$pkg" | grep -q '^Location: /usr/local/'; then
+                echo "$pkg" >> requirements-to-uninstall.txt
+            fi
+        done
+        if [ -s requirements-to-uninstall.txt ]; then
+            python3 -m pip uninstall --break-system-packages -y -r requirements-to-uninstall.txt
+        else
+            echo "no pip-installed packages to remove"
         fi
-    done
-    if [ -s requirements-to-uninstall.txt ]; then
-        pip uninstall --break-system-packages -y -r requirements-to-uninstall.txt
+        python3 -m pip cache purge
+        rm requirements-to-uninstall.txt
     else
-        echo "no pip-installed packages to remove"
+        echo "pip module not available - skipping pip cleanup"
     fi
-    pip cache purge
-    rm requirements-to-uninstall.txt
     apt-get remove -y python3-pip
     apt-get autoremove -y
 EOF
 
 ## allow viewer extensions to midnight commander - like for parquet files
 RUN <<-EOF
+    set -e
     echo "patching midnight-commander extensions"
     cp -a /etc/mc/mc.ext.ini /etc/mc/mc.ext.ini.bak 2>/dev/null || true
     patch /etc/mc/mc.ext.ini /tmp/patches/mc.ext.ini.patch
@@ -232,6 +265,7 @@ ARG JUPYTER_SHARE_PATH=/opt/conda/share/jupyter
 ## create new user with specific UID and GID, and add sudo rights
 ## also add group conda and add it to jupyterlab user
 RUN <<-EOF
+    set -e
     echo "preparing conda user account"
     echo "removing existing ubuntu account if exists"
     userdel -f -r ubuntu 2>/dev/null || true
@@ -257,6 +291,7 @@ EOF
 
 ## remove autogenerared home dir
 RUN <<-EOF
+    set -e
     echo "remove autogenerated user home directory"
     rm -rf ${CONDA_USER_HOME} || true
 EOF
@@ -265,6 +300,7 @@ EOF
 ## and also link standard config file to the template for jupyterlab
 COPY --chown=${CONDA_USER} ./templates/home ${CONDA_USER_HOME}
 RUN <<-EOF
+    set -e
     echo "preparing user directory from template"
     ln -s ${JUPYTER_ETC_DIR}/jupyter_lab_config.py ${CONDA_USER_HOME}/.jupyter
     chown -R ${CONDA_USER} ${CONDA_USER_HOME}
@@ -279,6 +315,7 @@ RUN mkdir ${CONDA_USER_WORKSPACE}
 ## ensure good permissions, this is because files in github repo
 ## might have mixed permissions. we need to fix that
 RUN <<-EOF
+    set -e
     echo "all directories in the ${CONDA_USER_HOME} should be accessible only to user '${CONDA_USER}'"
     find ${CONDA_USER_HOME} -type d -printf '"%p"\n' | xargs chmod 700
     echo "all files in the ${CONDA_USER_HOME} should be readible only to user '${CONDA_USER}'"
@@ -289,6 +326,7 @@ EOF
 ## last '|| echo ok' is required for docker to assume successful build, as vim
 ## plugins installation exits with non-zero exit code
 RUN <<-EOF
+    set -e
     echo "installing VIM plugins"
     git clone https://github.com/VundleVim/Vundle.vim.git ${CONDA_USER_HOME}/.vim/bundle/Vundle.vim
     vim -E -S ${CONDA_USER_HOME}/.vimrc -c "PluginInstall" -c "UnicodeDownload!" -c "qall" || echo ok
@@ -318,6 +356,7 @@ USER root
 ## need to install awscliv2 directly from amazon, otherwise it fails to work
 ## autocompleter for aws cli has been installed in /etc/bash_completion.d
 RUN <<-EOF
+    set -e
     echo "installing amazon awscliv2 - AWS command line utility v2"
     curl --location "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
     unzip /tmp/awscliv2.zip -d /tmp
@@ -328,6 +367,7 @@ EOF
 ## uv bash autocompletion from stellarshenson/uv-bash-autocompletion
 ## provides context-aware completion for uv run, uv tool run, uvx, uv add/remove
 RUN <<-EOF
+    set -e
     echo "installing uv bash autocompletion"
     curl -sL https://raw.githubusercontent.com/stellarshenson/uv-bash-autocompletion/main/bash_completion.d/uv-completion \
         -o /etc/bash_completion.d/uv-completion
@@ -356,6 +396,7 @@ ENV CONDA_AUTO_ACTIVATE_BASE=false
 
 ## change ownership of conda folder to jupyter group, remove 'others' access
 RUN <<-EOF
+    set -e
     echo "creating $CONDA_HOME directory"
     mkdir -p /opt/conda
     chown -R :${JUPYTER_GROUP} ${CONDA_HOME}
@@ -365,6 +406,7 @@ EOF
 ## create empty logfile with permissions for jupyterlab to write
 ARG JUPYTER_LOG=/var/log/jupyterlab.log
 RUN <<-EOF
+    set -e
     echo "creating jupyter logs directory accessible to users"
     chmod 775 /var/log
     chgrp ${JUPYTER_GROUP} /var/log
@@ -379,6 +421,7 @@ WORKDIR ${CONDA_USER_HOME}
 
 ## install conda from miniforge archive https://github.com/conda-forge/miniforge
 RUN <<-EOF
+    set -e
     echo "installing miniforge3"
     curl -L "https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh" \
 	-o ~/miniforge3.sh
@@ -390,6 +433,7 @@ EOF
 ## FIX (2026-02-09): conda clean -a in conda 26.x removes conda-meta/history, breaking 'conda run -n base'
 ## preserve history file before clean and restore it after
 RUN <<-EOF
+    set -e
     echo "installing ${CONDA_DEFAULT_ENV} env with python version from env file"
     set -e
     if [ "${CONDA_DEFAULT_ENV}" != "base" ]; then
@@ -414,6 +458,7 @@ SHELL ["/conda-run.sh"]
 ## Configure .bashrc to drop into a conda env and immediately activate our TARGET env
 ## Save CONDA_DEFAULT_ENV first, as it will be overwritten by conda init
 RUN <<-EOF
+    set -e
     echo "prepare bash shell initialisation script"
     conda init
     echo "# activate environment set by CONDA_DEFAULT_ENV env variable" >> ${CONDA_USER_HOME}/.bashrc
@@ -424,6 +469,7 @@ EOF
 
 ## it must be configured to work with jupyter notebooks via nbdime
 RUN <<-EOF
+    set -e
     echo "configuring git to work with jupyter notebooks"
     conda run -n ${CONDA_DEFAULT_ENV} conda run pip install nbdime --no-cache-dir
     conda run -n ${CONDA_DEFAULT_ENV} conda run nbdime config-git --enable --global
@@ -432,6 +478,7 @@ EOF
 ## final update of the entire conda base environment
 ## FIX (2026-02-09): conda update --all also removes conda-meta/history
 RUN <<-EOF
+    set -e
     echo "updating entire conda base environment"
     set -e
     cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
@@ -500,6 +547,7 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 ## and not to clone it to other environments
 USER ${CONDA_USER}
 RUN <<-EOF
+    set -e
     echo "installing Jupyterlab in ${CONDA_DEFAULT_ENV} env"
     set -e
     ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} --file=/environment_base_jupyterlab.yml
@@ -511,6 +559,7 @@ EOF
 ## change persmissions of shared resources
 USER root
 RUN <<-EOF
+    set -e
     echo "changing permissions of files in the shared folder app extension"
     find ${JUPYTER_SHARE_PATH}/jupyter_app_launcher -type f -exec chmod a-x {} +
 EOF
@@ -525,6 +574,7 @@ EOF
 #     Chainlit, MLFlow) running behind the JupyterLab proxy
 ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
 RUN <<-EOF
+    set -e
     echo "installing Playwright Chromium system-wide to ${PLAYWRIGHT_BROWSERS_PATH}"
     set -e
     mkdir -p ${PLAYWRIGHT_BROWSERS_PATH}
@@ -574,6 +624,7 @@ ENV PIP_ROOT_USER_ACTION=ignore
 ## generate build name and build date
 ## and generate motd using template
 RUN <<-EOF
+    set -e
     echo "generating build name"
     date >/build-date.txt
     gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
