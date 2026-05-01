@@ -6,6 +6,9 @@
 .DEFAULT_GOAL := help
 .PHONY: help build rebuild rebuild_no_version_increment push start clean increment_version maybe_increment_version
 
+# Use bash so we can use `set -o pipefail` to propagate docker's exit code through tee
+SHELL := /bin/bash
+
 # Include project configuration
 include project.env
 
@@ -57,9 +60,12 @@ build_verbose: clean maybe_increment_version
 	@cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
 
 ## rebuild 'target' stage only (uses cached 'builder' stage)
+## tees full BuildKit output to logs/rebuild.log (gitignored) for inspection
 rebuild: clean maybe_increment_version
 	@echo "Rebuilding 'target' stage (builder stage uses cache if available)..."
-	@docker build \
+	@mkdir -p logs
+	@set -o pipefail; docker build \
+		--progress=plain \
 		--network=host \
 		--platform linux/amd64 \
 		--target target \
@@ -67,7 +73,7 @@ rebuild: clean maybe_increment_version
 		$(DOCKER_BUILD_OPTS) \
 		--tag stellars/stellars-jupyterlab-ds:latest \
 		-f services/jupyterlab/Dockerfile.jupyterlab \
-		services/jupyterlab
+		services/jupyterlab 2>&1 | tee logs/rebuild.log
 
 ## rebuild 'target' stage without bumping the patch version
 rebuild_no_version_increment:

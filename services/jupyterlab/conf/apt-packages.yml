@@ -25,7 +25,7 @@ packages:
     - mc # midnight commander
     - netcat-traditional # netcat network swiss army tool
     - patch # tool to allow applying of diff/patches
-    - pip # pip python package manager
+    - python3-pip # pip python package manager (provides /usr/bin/pip3)
     - software-properties-common # for building from any sourcecode
     - sudo # superuser command executor
     - screen # terminal multiplexer for persistent sessions
