@@ -60,12 +60,23 @@ build_verbose: clean maybe_increment_version
 	@cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
 
 ## rebuild 'target' stage only (uses cached 'builder' stage)
-## tees full BuildKit output to logs/rebuild.log (gitignored) for inspection
+## DEBUG=1 enables --progress=plain and tees full output to logs/rebuild.log (gitignored)
+DEBUG ?= 0
+ifeq ($(DEBUG),1)
+    REBUILD_PROGRESS := --progress=plain
+    REBUILD_TEE := 2>&1 | tee logs/rebuild.log
+else
+    REBUILD_PROGRESS :=
+    REBUILD_TEE :=
+endif
 rebuild: clean maybe_increment_version
 	@echo "Rebuilding 'target' stage (builder stage uses cache if available)..."
+ifeq ($(DEBUG),1)
 	@mkdir -p logs
+	@echo "DEBUG=1: writing full BuildKit output to logs/rebuild.log"
+endif
 	@set -o pipefail; docker build \
-		--progress=plain \
+		$(REBUILD_PROGRESS) \
 		--network=host \
 		--platform linux/amd64 \
 		--target target \
@@ -73,7 +84,7 @@ rebuild: clean maybe_increment_version
 		$(DOCKER_BUILD_OPTS) \
 		--tag stellars/stellars-jupyterlab-ds:latest \
 		-f services/jupyterlab/Dockerfile.jupyterlab \
-		services/jupyterlab 2>&1 | tee logs/rebuild.log
+		services/jupyterlab $(REBUILD_TEE)
 
 ## rebuild 'target' stage without bumping the patch version
 rebuild_no_version_increment:
