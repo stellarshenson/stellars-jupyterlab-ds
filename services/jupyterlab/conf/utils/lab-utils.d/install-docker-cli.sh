@@ -150,7 +150,7 @@ if [[ -f "${DOCKER_INSTALL_DIR}/docker" ]]; then
     echo -e "\033[32mDocker CLI Installation Successful\033[0m"
     echo ""
     echo -e "Version: \033[1;34m$final_version\033[0m"
-    echo -e "Location: \033[1;34m${DOCKER_INSTALL_DIR}\033[0m"
+    echo -e "Location: \033[1;34m~/.local/docker\033[0m"
     echo -e "Binary: \033[1;34m~/.local/bin/docker\033[0m"
 
     # List installed plugins using docker's plugin discovery
@@ -161,11 +161,10 @@ if [[ -f "${DOCKER_INSTALL_DIR}/docker" ]]; then
 
     echo ""
     echo -e "Typical Usage:"
-    echo -e "1. Use Docker socket: '\033[1;34mexport DOCKER_HOST=unix:///var/run/docker.sock\033[0m'"
-    echo -e "2. Connect to remote Docker: '\033[1;34mexport DOCKER_HOST=tcp://hostname:2375\033[0m'"
+    echo -e "1. Connect to remote Docker: '\033[1;34mexport DOCKER_HOST=tcp://hostname:2375\033[0m'"
 
     # Show plugin usage for every installed plugin
-    plugin_index=3
+    plugin_index=2
     for plugin in "${DOCKER_INSTALL_DIR}/cli-plugins/"docker-*; do
         [[ -f "$plugin" ]] || continue
         name="$(basename "$plugin" | sed 's/^docker-//')"
