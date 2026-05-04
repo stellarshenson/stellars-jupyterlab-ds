@@ -131,6 +131,7 @@ RUN <<-EOF
     Acquire::IndexTargets::deb::DEP-11 "false";
     Acquire::IndexTargets::deb::DEP-11-icons "false";
     Acquire::IndexTargets::deb-src::DEP-11 "false";
+    Acquire::Retries "3";
 CONF
     apt update
     # curl isn't in the base image - install it first so we can fetch yq.
@@ -148,6 +149,7 @@ CONF
 EOF
 
 # install required packages, list will be taken from apt-packages.yml
+# hadolint ignore=SC2086
 RUN <<-EOF
     echo "installing OS packages from manifest"
     set -e
