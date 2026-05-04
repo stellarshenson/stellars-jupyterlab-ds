@@ -156,7 +156,12 @@ RUN <<-EOF
     apt install -y ${PKGS}
     echo "Verifying critical packages installed:"
     for pkg in patch python3-pip make; do
-        dpkg -s "$pkg" >/dev/null 2>&1 && echo "  OK: $pkg" || { echo "  MISSING: $pkg"; exit 1; }
+        if dpkg -s "$pkg" >/dev/null 2>&1; then
+            echo "  OK: $pkg"
+        else
+            echo "  MISSING: $pkg"
+            exit 1
+        fi
     done
     apt update && apt upgrade -y
 EOF
@@ -209,7 +214,7 @@ RUN <<-EOF
         # RECORD metadata, so pip uninstall cannot remove them.
         # Ubuntu 24.04 system Python is PEP 668 externally-managed -
         # --break-system-packages required.
-        > requirements-to-uninstall.txt
+        : > requirements-to-uninstall.txt
         for pkg in $(python3 -m pip freeze | sed 's/[ =].*//'); do
             if python3 -m pip show "$pkg" | grep -q '^Location: /usr/local/'; then
                 echo "$pkg" >> requirements-to-uninstall.txt
