@@ -148,14 +148,18 @@ CONF
     yq --version
 EOF
 
-# install required packages, list will be taken from apt-packages.yml
-# hadolint ignore=SC2086
+# install required packages, list will be taken from apt-packages.yml.
+# Pipe yq output via xargs so the package list is split into argv by xargs
+# (avoids SC2086 word-splitting); --no-run-if-empty is a second guard against
+# silent no-op installs when yq returns nothing.
 RUN <<-EOF
     echo "installing OS packages from manifest"
     set -e
-    PKGS=$(yq eval '.packages[]' /apt-packages.yml | tr '\n' ' ')
-    echo "Packages to install: ${PKGS}"
-    apt install -y ${PKGS}
+    yq eval '.packages[]' /apt-packages.yml > /tmp/pkglist
+    echo "Packages to install:"
+    cat /tmp/pkglist
+    xargs --no-run-if-empty apt install -y < /tmp/pkglist
+    rm -f /tmp/pkglist
     echo "Verifying critical packages installed:"
     for pkg in patch python3-pip make; do
         if dpkg -s "$pkg" >/dev/null 2>&1; then
