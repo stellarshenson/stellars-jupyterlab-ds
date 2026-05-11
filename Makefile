@@ -125,8 +125,8 @@ endif
 # COMMANDS                                                                      #
 #################################################################################
 
-## increment patch version in pyproject.toml
-increment_version: preflight
+## increment patch version in pyproject.toml (callers run preflight; sub-make would re-run it)
+increment_version:
 	@CURRENT='$(PROJECT_VERSION)'; \
 	NEW=$$(echo "$$CURRENT" | awk 'BEGIN{FS=OFS="."} {$$NF += 1; print}'); \
 	printf '%s%sVersion bumped: %s -> %s%s\n' "$(CYAN)" "$(BOLD)" "$$CURRENT" "$$NEW" "$(RESET)"; \
