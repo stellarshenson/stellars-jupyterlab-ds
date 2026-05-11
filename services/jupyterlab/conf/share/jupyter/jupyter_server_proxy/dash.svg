@@ -1,0 +1,11 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Plotly Dash mark: stylised "D" enclosing a small bar/line chart -->
+  <!-- Brand colour: Plotly Dash teal #00CC96 -->
+  <path d="M 24 16 L 24 112 L 64 112 C 90.5 112 112 90.5 112 64 C 112 37.5 90.5 16 64 16 Z M 40 32 L 64 32 C 81.6 32 96 46.4 96 64 C 96 81.6 81.6 96 64 96 L 40 96 Z"
+        fill="#00CC96" />
+  <!-- Mini bar chart inside the D's bowl -->
+  <rect x="52" y="72" width="6" height="14" fill="#FFFFFF" />
+  <rect x="62" y="60" width="6" height="26" fill="#FFFFFF" />
+  <rect x="72" y="50" width="6" height="36" fill="#FFFFFF" />
+  <rect x="82" y="42" width="6" height="44" fill="#FFFFFF" />
+</svg>

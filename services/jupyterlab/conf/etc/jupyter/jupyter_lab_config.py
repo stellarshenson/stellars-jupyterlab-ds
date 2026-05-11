@@ -150,10 +150,22 @@ c.ServerProxy.servers = {
         "port": 3838,
         "new_browser_tab": False,
         "launcher_entry": {
-            "enabled": True,
+            "enabled": False,
             "category": "Services",
             "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/shiny.svg",
             "title": "Shiny"
+        }
+    },
+    "dash": {
+        "command": [],
+        "absolute_url": True,
+        "port": 8050,
+        "new_browser_tab": False,
+        "launcher_entry": {
+            "enabled": True,
+            "category": "Services",
+            "icon_path": "/opt/conda/share/jupyter/jupyter_server_proxy/dash.svg",
+            "title": "Dash"
         }
     },
     "gradio": {
