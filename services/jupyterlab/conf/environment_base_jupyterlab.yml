@@ -52,7 +52,7 @@ dependencies:
     - stellars-jupyterlab-extensions # bundle of all stellars jupyterlab extensions
     - stellars-jupyterlab-fixes # bundle of all stellars jupyterlab hotfixes
     - nb_venv_kernels # kernelspec manager developed to handle all virtual environments
-    - notebook-intelligence # github copilot plugin
+    # - notebook-intelligence # github copilot plugin (disabled)
 
     ## themes
     - stellars-jupyterlab-sublime-theme # dark gray-blue theme based on intellij, fixed scrollbars
