@@ -594,11 +594,14 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
 RUN <<-EOF
     echo "installing Playwright Chromium system-wide to ${PLAYWRIGHT_BROWSERS_PATH}"
     set -e
-    set -e
     mkdir -p ${PLAYWRIGHT_BROWSERS_PATH}
     ${CONDA_CMD} run --name ${CONDA_DEFAULT_ENV} \
         playwright install --with-deps chromium
-    chmod -R a+rX ${PLAYWRIGHT_BROWSERS_PATH}
+    # readable for all; group-writable for the jupyter group so users can
+    # install extra browsers at runtime; setgid dirs keep new files in-group
+    chgrp -R ${JUPYTER_GROUP} ${PLAYWRIGHT_BROWSERS_PATH}
+    chmod -R a+rX,g+w ${PLAYWRIGHT_BROWSERS_PATH}
+    find ${PLAYWRIGHT_BROWSERS_PATH} -type d -exec chmod g+s {} +
 EOF
 
 ########################################################
