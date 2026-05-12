@@ -1,11 +1,120 @@
-<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
-  <!-- Plotly Dash mark: stylised "D" enclosing a small bar/line chart -->
-  <!-- Brand colour: Plotly Dash teal #00CC96 -->
-  <path d="M 24 16 L 24 112 L 64 112 C 90.5 112 112 90.5 112 64 C 112 37.5 90.5 16 64 16 Z M 40 32 L 64 32 C 81.6 32 96 46.4 96 64 C 96 81.6 81.6 96 64 96 L 40 96 Z"
-        fill="#00CC96" />
-  <!-- Mini bar chart inside the D's bowl -->
-  <rect x="52" y="72" width="6" height="14" fill="#FFFFFF" />
-  <rect x="62" y="60" width="6" height="26" fill="#FFFFFF" />
-  <rect x="72" y="50" width="6" height="36" fill="#FFFFFF" />
-  <rect x="82" y="42" width="6" height="44" fill="#FFFFFF" />
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="100"
+   height="100"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="dash.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs9" />
+  <sodipodi:namedview
+     id="namedview9"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="12.02"
+     inkscape:cx="50"
+     inkscape:cy="50"
+     inkscape:window-width="2560"
+     inkscape:window-height="1494"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9" />
+  <style
+     id="style1">
+    .bar { fill: #11182B; }
+    @media (prefers-color-scheme: dark) {
+      .bar { fill: #B2BCCB; }
+    }
+  </style>
+  <!-- Plotly Dash logo: stacked dot/bar columns in the Plotly colourway -->
+  <rect
+     class="bar"
+     x="19.138079"
+     y="57.176033"
+     width="8.5412445"
+     height="23.915483"
+     rx="4.2706223"
+     id="rect1"
+     style="stroke-width:0.854125" />
+  <rect
+     class="bar"
+     x="36.220566"
+     y="40.093544"
+     width="8.5412445"
+     height="40.997971"
+     rx="4.2706223"
+     id="rect2"
+     style="stroke-width:0.854125" />
+  <rect
+     class="bar"
+     x="53.303055"
+     y="57.176033"
+     width="8.5412445"
+     height="23.915483"
+     rx="4.2706223"
+     id="rect3"
+     style="stroke-width:0.854125" />
+  <rect
+     class="bar"
+     x="70.385544"
+     y="40.093544"
+     width="8.5412445"
+     height="40.997971"
+     rx="4.2706223"
+     id="rect4"
+     style="stroke-width:0.854125" />
+  <circle
+     cx="23.408701"
+     cy="23.011055"
+     r="4.2706223"
+     fill="#f13875"
+     id="circle4"
+     style="stroke-width:0.854125" />
+  <circle
+     cx="23.408701"
+     cy="40.093544"
+     r="4.2706223"
+     fill="#f03875"
+     id="circle5"
+     style="stroke-width:0.854125" />
+  <circle
+     cx="40.491188"
+     cy="23.011055"
+     r="4.2706223"
+     fill="#cd6c9e"
+     id="circle6"
+     style="stroke-width:0.854125" />
+  <circle
+     cx="57.573677"
+     cy="23.011055"
+     r="4.2706223"
+     fill="#a99fc7"
+     id="circle7"
+     style="stroke-width:0.854125" />
+  <circle
+     cx="57.573677"
+     cy="40.093544"
+     r="4.2706223"
+     fill="#aaa0c8"
+     id="circle8"
+     style="stroke-width:0.854125" />
+  <circle
+     cx="74.656166"
+     cy="23.011055"
+     r="4.2706223"
+     fill="#86d3f0"
+     id="circle9"
+     style="stroke-width:0.854125" />
 </svg>
