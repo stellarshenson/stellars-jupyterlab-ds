@@ -6,9 +6,9 @@ channels:
   - conda-forge # default repo for miniforge3
 
 dependencies:
-  - python=3.12 # make sure we have correct python version
+  - python=3.13 # make sure we have correct python version
   - pip # package manager
-  - setuptools=80.9 # FIX (2026-02-09): nb_conda requires pkg_resources, removed in setuptools 82
+  # - setuptools=80.9 # FIX (2026-02-09): nb_conda requires pkg_resources, removed in setuptools 82
 
   ## jupyterlab extensions
   - nb_conda # provides conda environment and package access extension from jupyter
