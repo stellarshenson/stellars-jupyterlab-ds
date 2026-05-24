@@ -26,7 +26,8 @@ c.AsyncFileContentsManager.delete_to_trash = True
 c.AsyncFileContentsManager.always_delete_dir = True
 
 ## default kernel for new notebooks
-c.KernelSpecManager.default_kernel_name = 'conda-base-py'
+# was: c.KernelSpecManager.default_kernel_name (no such trait - silently ignored)
+c.MappingKernelManager.default_kernel_name = 'conda-base-py'
 
 ## ssl configuration to use https - only when not using traefik proxy
 # c.ServerApp.certfile = u'/mnt/certs/server.crt'
