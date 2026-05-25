@@ -51,12 +51,17 @@ RUN <<-EOF
 EOF
 
 ## install builder env in 'base'
+## use cuda-compiler + cuda-libraries-dev instead of the full cuda-toolkit:
+## the toolkit pulls cuda-tools -> cuda-gdb -> gdb -> python<3.13, which conflicts
+## with the python=3.13 pin. We only need to compile (nvcc + dev libs), not debug.
 RUN <<-EOF
     echo "installing builder environment in base"
     set -e
     ${CONDA_CMD} env update --name base --file=/environment_builder.yml
     ${CONDA_CMD} update --name base -c conda-forge -y conda
-    ${CONDA_CMD} install --name base -v -y cuda-toolkit=${CUDA_TOOLKIT_VERSION}
+    ${CONDA_CMD} install --name base -v -y \
+        cuda-compiler=${CUDA_TOOLKIT_VERSION} \
+        cuda-libraries-dev=${CUDA_TOOLKIT_VERSION}
 EOF
 
 # enable special shell for conda

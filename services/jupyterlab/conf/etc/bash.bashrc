@@ -78,7 +78,14 @@ if [[ "$SHLVL" -le 3 ]]; then
 
     # display gpustat if GPU support enabled
     if [[ "${ENABLE_GPU_SUPPORT}" = 1 ]] && [[ "${ENABLE_GPUSTAT}" = 1 ]]; then
-        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib conda run --no-capture-output -n base gpustat --no-color --no-header --no-processes
+        # Narrow gpustat to the assigned GPUs when a specific subset is granted.
+        # NVIDIA_VISIBLE_DEVICES is 'all' for a full grant or a host-index list
+        # (e.g. '0,2') for a subset; pass that subset to gpustat --id.
+        gpustat_id=()
+        if [[ -n "${NVIDIA_VISIBLE_DEVICES}" ]] && [[ "${NVIDIA_VISIBLE_DEVICES}" != "all" ]]; then
+            gpustat_id=(--id "${NVIDIA_VISIBLE_DEVICES}")
+        fi
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib conda run --no-capture-output -n base gpustat "${gpustat_id[@]}" --no-color --no-header --no-processes
         echo
     fi
 
