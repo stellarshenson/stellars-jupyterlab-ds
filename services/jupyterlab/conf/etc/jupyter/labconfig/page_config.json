@@ -1,0 +1,6 @@
+{
+  "disabledExtensions": {
+    "@notebook-intelligence/notebook-intelligence": true,
+    "@jupyterlab/lsp-extension:plugin": true
+  }
+}
