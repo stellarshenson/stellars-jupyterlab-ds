@@ -6,7 +6,7 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 ---
 
-85. **Note - ttyd process lifecycle**: ttyd spawns processes on client connect, not on startup<br>
+85. **Task - ttyd process lifecycle**: ttyd spawns processes on client connect, not on startup<br>
     **Result**: Documented that ttyd starts btop process only when a browser client connects to `/rmonitor`, not when ttyd itself starts. Each browser connection spawns a new btop instance, and closing the tab terminates that instance. This is resource-efficient as btop only runs when actively viewed
 
 86. **Task - Update README and shell improvements**: Documentation and UX enhancements<br>
@@ -185,3 +185,6 @@ This journal tracks substantive work on documents, diagrams, and documentation c
 
 144. **Task - Standardize fish config to /etc/fish, per-GPU login banner** (v3.7.2_cuda-13.0.2_jl-4.5.7): baked fish config system-wide, dropped runtime generator<br>
     **Result**: Per `TASK-fish-config-standardization.md`, moved fish config from a per-user runtime generator to image-baked system-wide config. Created `conf/etc/fish/conf.d/default.fish` (auto-copied to `/etc/fish/conf.d/`, sorts after `50-source-profile.fish`): conda init via `eval /opt/conda/bin/conda shell.fish hook | source`, greeting off, `DOCKER_MCP_IN_CONTAINER=1`, `ldconfig`, welcome/MOTD/gpustat for top-level shells. Deleted `conf/bin/start-platform.d/06_fish_init.sh` - its job is now baked under `/etc/fish`, fixing stale `~/.config/fish/config.fish` on persistent `/home` volumes the old marker-guard never refreshed. Kept `conda init fish` in Dockerfile (harmless; default.fish actually enables conda-in-fish for lab). Companion: `bash.bashrc` + default.fish gpustat now narrow to `--id "$NVIDIA_VISIBLE_DEVICES"` unless grant is `all`. Caveat: `--id` uses in-container index - WSL2-correct, mismatches native-Linux specific grants
+
+145. **Task - Add system-wide JupyterLab disabledExtensions config** (v3.7.5_cuda-13.0.2_jl-4.5.7): bake `page_config.json` to disable two extensions globally<br>
+    **Result**: Created `services/jupyterlab/conf/etc/jupyter/labconfig/page_config.json` disabling `@notebook-intelligence/notebook-intelligence` (belt-and-suspenders alongside entry 139's commented-out env entry; defends against transitive reinstall) and `@jupyterlab/lsp-extension:plugin` (core JupyterLab, can't be uninstalled - suppress because `@jupyter-lsp/jupyterlab-lsp` is the LSP layer in use). Added a `COPY` in `Dockerfile.jupyterlab` after the `jupyter_lab_config.py` line shipping to `${JUPYTER_ETC_DIR}/labconfig/page_config.json` -> `/opt/conda/etc/jupyter/labconfig/page_config.json`. Path/format confirmed against installed `jupyterlab_server==2.28.0` source: `config.py:121` `disabled_key = "disabledExtensions"`, `:126-127` reads `page_config.json5` then `page_config.json`, `:381` `config_name = "labconfig"`. Container already had a `user`-level `/home/lab/.jupyter/labconfig/page_config.json` (same pattern, different level). Version 3.7.3 -> 3.7.5
