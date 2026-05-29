@@ -1,6 +1,7 @@
 {
   "disabledExtensions": {
     "@notebook-intelligence/notebook-intelligence": true,
+    "jupyter_app_launcher:notebookGrid": true,
     "@jupyterlab/lsp-extension:plugin": true
   }
 }
