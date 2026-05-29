@@ -29,6 +29,9 @@ c.AsyncFileContentsManager.always_delete_dir = True
 # was: c.KernelSpecManager.default_kernel_name (no such trait - silently ignored)
 c.MappingKernelManager.default_kernel_name = 'conda-base-py'
 
+## jupyterlab_share_files_extension shared files folder relative to workspace
+c.ShareFilesConfig.shares_dir = "@uploads"
+
 ## ssl configuration to use https - only when not using traefik proxy
 # c.ServerApp.certfile = u'/mnt/certs/server.crt'
 # c.ServerApp.keyfile = u'/mnt/certs/server.key'
