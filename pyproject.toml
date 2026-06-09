@@ -1,9 +1,9 @@
 [project]
 name = "stellars-jupyterlab-ds"
-version = "3.7.6"
+version = "3.7.8"
 description = "Pre-packaged, pre-configured JupyterLab environment with NVIDIA GPU support, curated data science packages, TensorFlow, PyTorch, and integrated services (MLFlow, TensorBoard, Optuna, Streamlit, Shiny) running behind Traefik reverse proxy, now with python 3.13"
 authors = [{name = "Konrad Jelen", email = "konrad.jelen+github@gmail.com"}]
 
 [tool.stellars]
 cuda = "13.0.2"
-jupyterlab = "4.5.7"
+jupyterlab = "4.5.8"
