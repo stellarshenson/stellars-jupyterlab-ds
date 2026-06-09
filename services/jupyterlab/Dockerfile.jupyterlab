@@ -613,11 +613,12 @@ EOF
 ########################################################
 #  PULSEAUDIO + SOX VOICE STACK (Claude Code /voice)   #
 ########################################################
-# Routes the browser mic (via the jupyterlab voice-capture extension's FIFO)
-# into PulseAudio's default source so SoX `rec` - and thus Claude Code /voice -
-# can record. The installer ships in the stellars jupyterlab bundle; see
-# Dockerfile.jupyterlab.target.d/README.md. Packages + /etc/pulse/client.conf +
-# AUDIODRIVER are baked here; the daemon is started at boot by
+# Routes the browser mic (via the jupyterlab voice-capture extension's FIFO at
+# /run/voice/pulseaudio.fifo) into PulseAudio's default source so SoX `rec` -
+# and thus Claude Code /voice - can record. The installer ships in the stellars
+# jupyterlab bundle; see Dockerfile.jupyterlab.target.d/README.md. Packages +
+# /etc/pulse/client.conf + AUDIODRIVER are baked here; the lab-owned /run/voice
+# dir (tmpfs) and the daemon are (re)created at boot by
 # start-platform.d/15_start_pulseaudio.sh.
 COPY --chmod=755 ./Dockerfile.jupyterlab.target.d/ /opt/target-install/
 RUN /opt/target-install/install-pulseaudio.sh
