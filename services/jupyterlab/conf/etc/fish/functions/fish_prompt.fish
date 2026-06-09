@@ -318,7 +318,7 @@ function __stellars_git_info
     set -l is_dirty 0
     
     # Check for uncommitted changes (count modified tracked files)
-    set -l modified_count (git diff --numstat 2>/dev/null | count)
+    set -l modified_count (git diff --name-only 2>/dev/null | count)
     if test $modified_count -gt 0
         set indicators "$indicators !$modified_count"
         set is_dirty 1
