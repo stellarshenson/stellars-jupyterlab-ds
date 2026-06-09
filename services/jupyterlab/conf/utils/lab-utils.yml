@@ -226,10 +226,15 @@ menu:
           name: "OpenAI Codex"
           description: "Install OpenAI Codex AI assistant"
 
-    # Install Docker CLI and plugins
-    - id: "install-docker-cli.sh"
-      name: "Install Docker CLI"
-      description: "Install Docker CLI tools"
+    # Install infrastructure tooling (Docker CLI, Cloudflare Tunnel)
+    - name: "Install Infrastructure"
+      submenu:
+        - id: "install-infrastructure.d/install-docker-cli.sh"
+          name: "Docker CLI"
+          description: "Install Docker CLI tools and plugins"
+        - id: "install-infrastructure.d/install-cloudflared.sh"
+          name: "Cloudflare Tunnel"
+          description: "Install cloudflared from Cloudflare apt repository"
 
     # Create new project from Copier template
     - id: "new-project.sh"
