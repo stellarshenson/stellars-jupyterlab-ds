@@ -82,7 +82,7 @@ RUN mkdir ${BUILD_DIR} ${EXPORT_DIR}
 WORKDIR ${BUILD_DIR}
 
 # copy builder-stage scripts (not present in runtime image)
-COPY --chmod=755 ./builder/ /opt/builder/
+COPY --chmod=755 ./Dockerfile.jupyterlab.builder.d/ /opt/builder/
 
 ## Build the llama-cpp-python library with CUDA support
 RUN /opt/builder/build-llama-cpp-python.sh "${BUILD_DIR}" "${EXPORT_DIR}"
@@ -609,6 +609,18 @@ RUN <<-EOF
     chmod -R a+rX,g+w ${PLAYWRIGHT_BROWSERS_PATH}
     find ${PLAYWRIGHT_BROWSERS_PATH} -type d -exec chmod g+s {} +
 EOF
+
+########################################################
+#  PULSEAUDIO + SOX VOICE STACK (Claude Code /voice)   #
+########################################################
+# Routes the browser mic (via the jupyterlab voice-capture extension's FIFO)
+# into PulseAudio's default source so SoX `rec` - and thus Claude Code /voice -
+# can record. The installer ships in the stellars jupyterlab bundle; see
+# Dockerfile.jupyterlab.target.d/README.md. Packages + /etc/pulse/client.conf +
+# AUDIODRIVER are baked here; the daemon is started at boot by
+# start-platform.d/15_start_pulseaudio.sh.
+COPY --chmod=755 ./Dockerfile.jupyterlab.target.d/ /opt/target-install/
+RUN /opt/target-install/install-pulseaudio.sh
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT ON TORCH           #
