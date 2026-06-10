@@ -121,22 +121,21 @@ if [[ -d "$plugins_source" ]] && [[ -n "$(ls -A $plugins_source 2>/dev/null)" ]]
     done
 fi
 
-# Install bash completion
-completion_dir="/etc/bash_completion.d"
-if [[ -d "$completion_dir" ]]; then
-    echo "Installing Docker bash completion..."
-    completion_url="https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker"
-    temp_completion=$(mktemp)
-    if curl -fsSL -o "$temp_completion" "$completion_url"; then
-        sudo cp "$temp_completion" "${completion_dir}/docker"
-        sudo chmod 644 "${completion_dir}/docker"
-        rm -f "$temp_completion"
-        echo "Bash completion installed to ${completion_dir}/docker"
-        echo "Completion will be available in new shell sessions"
-    else
-        rm -f "$temp_completion"
-        echo "WARNING: Failed to install bash completion" >&2
-    fi
+# Install bash completion user-local (XDG dir, auto-loaded by bash-completion,
+# under ~/.local so it persists across restarts like the binaries - no sudo)
+completion_dir="$HOME/.local/share/bash-completion/completions"
+echo "Installing Docker bash completion..."
+completion_url="https://raw.githubusercontent.com/docker/cli/master/contrib/completion/bash/docker"
+temp_completion=$(mktemp)
+if curl -fsSL -o "$temp_completion" "$completion_url"; then
+    mkdir -p "$completion_dir"
+    install -m 0644 "$temp_completion" "${completion_dir}/docker"
+    rm -f "$temp_completion"
+    echo "Bash completion installed to ~/.local/share/bash-completion/completions/docker"
+    echo "Completion will be available in new shell sessions"
+else
+    rm -f "$temp_completion"
+    echo "WARNING: Failed to install bash completion" >&2
 fi
 
 # Cleanup
