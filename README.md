@@ -23,11 +23,17 @@ Note: URLs use the project name from `.env` file (`COMPOSE_PROJECT_NAME`). Defau
 
 This platform integrates with **[stellars-jupyterhub-ds](https://github.com/stellarshenson/stellars-jupyterhub-ds)** for true multi-user environment management with authentication and user administration
 
-![JupyterLab](./.resources/jupyterlab.png)
-![lab utils](./.resources/screenshot-lab-utils.png)
-![Docker Desktop](./.resources/docker-desktop.png)
-![CUDA Test](./.resources/cuda-test.png)
-![Multi User 1](./.resources/multiuser-shutdown.png)
+![JupyterLab notebook](./.resources/screenshot-1.png)
+*JupyterLab running a data science notebook with model evaluation charts*
+
+![MLflow tracking](./.resources/screenshot-2.png)
+*MLflow experiment tracking embedded in a JupyterLab tab*
+
+![JupyterLab launcher](./.resources/screenshot-3.png)
+*The launcher with notebook, console, and integrated service tiles*
+
+![Lab Utils menu](./.resources/screenshot-4.png)
+*The Lab Utils menu for environments, AI assistants, and infrastructure installers*
 
 
 ## Getting Started
