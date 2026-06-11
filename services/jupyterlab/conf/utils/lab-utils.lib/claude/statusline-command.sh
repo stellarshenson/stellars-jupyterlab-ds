@@ -2,7 +2,7 @@
 # ============================================================================
 # Claude Code Status Line - Fish Prompt Style (Integrated Left)
 # ============================================================================
-# Layout: [context %][model][git][env][pwd]
+# Layout: [context %][model][effort][git][env][pwd]
 
 input=$(cat)
 DIRTRIM=3
@@ -12,6 +12,8 @@ CONTEXT_BG="9977DD"
 CONTEXT_FG="000000"
 MODEL_BG="774499"
 MODEL_FG="FFFFFF"
+EFFORT_BG="AA3377"
+EFFORT_FG="FFFFFF"
 GIT_BG_CLEAN="229922"
 GIT_BG_DIRTY="E87800"
 GIT_FG="000000"
@@ -118,7 +120,20 @@ model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
 prompt+=$(print_segment "$model_name" "$MODEL_BG" "$MODEL_FG" "$last_bg")
 last_bg="$MODEL_BG"
 
-# 3. Git
+# 3. Effort (from JSON if present, else $CLAUDE_EFFORT env var)
+effort=$(echo "$input" | jq -r '
+    if (.effort | type) == "object" then (.effort.level // empty)
+    elif (.effort | type) == "string" then .effort
+    else empty
+    end
+    // .session.effort // .model.effort // empty')
+[ -z "$effort" ] && effort="$CLAUDE_EFFORT"
+if [ -n "$effort" ]; then
+    prompt+=$(print_segment "$effort" "$EFFORT_BG" "$EFFORT_FG" "$last_bg")
+    last_bg="$EFFORT_BG"
+fi
+
+# 4. Git
 git_info=$(get_git_info)
 if [ -n "$git_info" ]; then
     is_dirty="${git_info%%:*}"
@@ -128,7 +143,7 @@ if [ -n "$git_info" ]; then
     last_bg="$git_bg"
 fi
 
-# 4. Environment (conda/venv)
+# 5. Environment (conda/venv)
 env_info=$(get_env)
 if [ -n "$env_info" ]; then
     env_type="${env_info%%:*}"
@@ -138,7 +153,7 @@ if [ -n "$env_info" ]; then
     last_bg="$env_bg"
 fi
 
-# 5. PWD (bold)
+# 6. PWD (bold)
 pwd_str=$(get_pwd)
 # Chevron transition
 prompt+=$(printf "\033[48;2;%d;%d;%dm\033[38;2;%d;%d;%dm%s" \
