@@ -21,5 +21,9 @@ done
 # Clear screen for clean interface
 clear
 
+# Set the terminal tab title (OSC 0 = icon + window title) so the JupyterLab
+# terminal tab reads "⚙  Lab Utils" instead of the default shell path
+printf '\033]0;\xe2\x9a\x99  Lab Utils\007'
+
 # Run lab-utils (YAML-driven menu system)
 lab-utils
