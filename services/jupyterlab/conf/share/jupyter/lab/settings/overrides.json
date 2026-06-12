@@ -1,4 +1,8 @@
 {
+  "@jupyterlab/extensionmanager-extension:plugin": {
+    "enabled": false,
+    "disclaimed": false
+  },
   "@jupyterlab/codemirror-extension:plugin": {
     "defaultConfig": {
       "autoClosingBrackets": true,
