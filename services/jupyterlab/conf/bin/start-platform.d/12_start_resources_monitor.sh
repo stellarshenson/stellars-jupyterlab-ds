@@ -27,9 +27,9 @@ fi
 
 echo "Launching btop resources monitor via ttyd"
 # Terminal sizing inside the launcher iframe is fixed client-side: the rmonitor
-# server-proxy entry (jupyter_lab_config.py) injects a ResizeObserver into
-# ttyd's HTML so the xterm terminal (and btop) refit when the iframe receives
-# its real size. No server-side SIGWINCH wrapper is needed.
+# server-proxy entry (jupyter_lab_config.py) injects a script into ttyd's HTML
+# that re-fits the xterm terminal after font metrics settle and on panel
+# resizes. No server-side SIGWINCH wrapper is needed.
 ttyd -W -p 7681 -t titleFixed="Resources Monitor" btop --utf-force &
 
 # EOF
