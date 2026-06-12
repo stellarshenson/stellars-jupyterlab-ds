@@ -57,6 +57,47 @@ c.ServerApp.tornado_settings = {
     }
 }
 
+## ttyd (the btop Resources monitor) only refits its xterm terminal on a window
+## 'resize' event. Inside the launcher iframe the initial fit runs before the
+## iframe has its final size, and no later resize fires - so btop stays cramped
+## at 80x24 until the user manually drags the panel. Injecting a ResizeObserver
+## into ttyd's HTML dispatches that missing resize whenever the terminal box
+## changes, so the terminal (and btop) size correctly on their own. ttyd serves
+## gzip when the client accepts it, so the body must be decompressed before the
+## marker can be found and re-compressed after injection.
+import gzip as _gzip
+
+_RMONITOR_RESIZE_FIX = b"""<script>
+(function(){
+  function fire(){ window.dispatchEvent(new Event('resize')); }
+  function setup(){
+    var el = document.getElementById('terminal-container');
+    if(!el || !window.ResizeObserver) return;
+    new ResizeObserver(fire).observe(el);
+  }
+  if(document.readyState === 'loading') window.addEventListener('DOMContentLoaded', setup);
+  else setup();
+})();
+</script>"""
+
+def _inject_rmonitor_resize_fix(response):
+    if "text/html" not in response.headers.get("Content-Type", ""):
+        return
+    encoding = response.headers.get("Content-Encoding", "").lower()
+    body = response.body
+    if encoding == "gzip":
+        try:
+            body = _gzip.decompress(body)
+        except Exception:
+            return
+    if b"</head>" not in body:
+        return
+    body = body.replace(b"</head>", _RMONITOR_RESIZE_FIX + b"</head>", 1)
+    if encoding == "gzip":
+        body = _gzip.compress(body)
+    response.body = body
+    response.headers["Content-Length"] = str(len(body))
+
 ## proxy config for selected services
 ## this is mandatory when using hub
 c.ServerProxy.servers = {
@@ -65,6 +106,7 @@ c.ServerProxy.servers = {
         "absolute_url": False,
         "port": 7681,
         "new_browser_tab": False,
+        "rewrite_response": _inject_rmonitor_resize_fix,
         "launcher_entry": {
             "enabled": True,
             "category": "Services",
