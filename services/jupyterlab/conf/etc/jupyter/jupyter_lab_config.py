@@ -32,6 +32,13 @@ c.MappingKernelManager.default_kernel_name = 'conda-base-py'
 ## jupyterlab_share_files_extension shared files folder relative to workspace
 c.ShareFilesConfig.shares_dir = "@uploads"
 
+## extension manager: JUPYTERLAB_EXTENSIONS_MANAGER_READONLY=1 switches to the
+## readonly backend - sidebar lists installed extensions with enable/disable
+## toggles but never queries PyPI (no registry network traffic) and cannot
+## install/uninstall; default 0 keeps the full pypi manager
+if os.environ.get("JUPYTERLAB_EXTENSIONS_MANAGER_READONLY", "0") == "1":
+    c.LabApp.extension_manager = "readonly"
+
 ## ssl configuration to use https - only when not using traefik proxy
 # c.ServerApp.certfile = u'/mnt/certs/server.crt'
 # c.ServerApp.keyfile = u'/mnt/certs/server.key'
