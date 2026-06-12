@@ -81,6 +81,8 @@ services:
       - ENABLE_SERVICE_TENSORBOARD=1                     # start TensorBoard server
       - ENABLE_GPU_SUPPORT=0                             # enable NVIDIA GPU passthrough
       - JUPYTERLAB_TIMEZONE=                               # container timezone (IANA format, empty = UTC)
+      - JUPYTERLAB_SUDO_ENABLE=1                           # 0 = disable sudo for good at container start
+
       - JUPYTERLAB_SYSTEM_NAME=                            # rebrand stellars-jupyterlab-ds in welcome/MOTD and toolbar badge (empty = no rebrand)
       # - JUPYTERLAB_HEADER_CAPITALIZE_SYSTEM_NAME=1       # capitalize header badge (1/0)
       # - JUPYTERLAB_HEADER_SYSTEM_NAME_COLOR=             # header badge text color (CSS, empty = --jp-ui-font-color2)
