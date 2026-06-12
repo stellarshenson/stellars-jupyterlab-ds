@@ -617,11 +617,13 @@ EOF
 # /run/voice/pulseaudio.fifo) into PulseAudio's default source so SoX `rec` -
 # and thus Claude Code /voice - can record. The installer ships in the stellars
 # jupyterlab bundle; see Dockerfile.jupyterlab.target.d/README.md. Packages +
-# /etc/pulse/client.conf + AUDIODRIVER are baked here; the lab-owned /run/voice
-# dir (tmpfs) and the daemon are (re)created at boot by
-# start-platform.d/15_start_pulseaudio.sh.
+# /etc/pulse/client.conf + AUDIODRIVER + the lab-owned /run/voice dir are baked
+# here (/run is plain writable-layer in docker, not tmpfs, so the dir and its
+# ownership persist); the daemon is started at boot by
+# start-platform.d/15_start_pulseaudio.sh - no sudo needed.
 COPY --chmod=755 ./Dockerfile.jupyterlab.target.d/ /opt/target-install/
-RUN /opt/target-install/install-pulseaudio.sh
+RUN /opt/target-install/install-pulseaudio.sh \
+    && chown ${CONDA_USER}:${JUPYTER_GROUP} /run/voice
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT ON TORCH           #
@@ -674,7 +676,8 @@ RUN <<-EOF
 	| sed "s/@BUILD_DATE@/$(cat /build-date.txt)/g" > /welcome.html
     rm /motd-template.txt
     rm /welcome-template.html
-    chmod 666 /welcome.html
+    # world-writable so 08_apply_system_name.sh can rebrand them without sudo
+    chmod 666 /welcome.html /welcome-message.txt /etc/motd
 EOF
 
 ## update terminal and shell settings
@@ -688,6 +691,7 @@ ENV JUPYTERLAB_TIMEZONE=""
 ENV JUPYTERLAB_SYSTEM_NAME=""
 ENV JUPYTERLAB_HEADER_CAPITALIZE_SYSTEM_NAME=1
 ENV JUPYTERLAB_HEADER_SYSTEM_NAME_COLOR=""
+ENV JUPYTERLAB_SUDO_ENABLE=1
 
 ## default values for GPU support envs
 # ENABLE_GPU_SUPPORT controls nvidia support of the system

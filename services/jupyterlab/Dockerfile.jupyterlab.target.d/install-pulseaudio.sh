@@ -4,11 +4,11 @@
 # Runs in the target stage (see README.md). The installer CLI ships in the
 # stellars jupyterlab bundle (jupyterlab_voice_capture_extension), so no extra
 # package is added to the conda env. `install` apt-installs pulseaudio,
-# pulseaudio-utils, sox and libsox-fmt-pulse, provisions the lab-owned
-# /run/voice runtime dir, and writes the default-server line to
-# /etc/pulse/client.conf. It does NOT start the daemon - that happens at boot
-# via start-platform.d/15_start_pulseaudio.sh (which also recreates /run/voice,
-# since /run is tmpfs and wiped each restart).
+# pulseaudio-utils, sox and libsox-fmt-pulse, provisions the /run/voice runtime
+# dir (chowned to the lab user by the Dockerfile right after this script -
+# /run is plain writable-layer in docker, not tmpfs, so it persists), and
+# writes the default-server line to /etc/pulse/client.conf. It does NOT start
+# the daemon - that happens at boot via start-platform.d/15_start_pulseaudio.sh.
 #
 # Runs as root in the target stage, so the CLI's apt step needs no sudo and the
 # platform.env append below writes directly.

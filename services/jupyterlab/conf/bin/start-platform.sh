@@ -13,6 +13,17 @@ if [[ -f "${HOME}/.profile" ]]; then
 fi
 
 
+# set container timezone via TZ env (userspace, no root writes needed - glibc
+# honours TZ in every child process: terminals, kernels, services)
+if [[ -n "${JUPYTERLAB_TIMEZONE}" ]]; then
+    if [[ -f "/usr/share/zoneinfo/${JUPYTERLAB_TIMEZONE}" ]]; then
+        export TZ="${JUPYTERLAB_TIMEZONE}"
+        echo "Timezone set to ${TZ}"
+    else
+        echo "WARNING: Invalid timezone '${JUPYTERLAB_TIMEZONE}' - zoneinfo not found"
+    fi
+fi
+
 # run series of start scripts
 # (services will need to run in background)
 START_PLATFORM_DIR='/start-platform.d'
