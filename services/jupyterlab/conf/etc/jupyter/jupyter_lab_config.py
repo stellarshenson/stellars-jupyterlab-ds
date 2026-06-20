@@ -46,6 +46,8 @@ if os.environ.get("JUPYTERLAB_EXTENSIONS_MANAGER_READONLY", "0") == "1":
 ## Brandong config
 # Custom main logo extension configuration
 c.Branding.logo_uri = os.environ.get("JUPYTERLAB_MAIN_ICON_URI", "")
+# Splash screen logo - use the same image as the main logo for now
+c.Branding.splash_logo_uri = os.environ.get("JUPYTERLAB_SPLASH_ICON_URI", "")
 # System name shown in the toolbar and used for rebranding welcome files
 c.Branding.system_name = os.environ.get("JUPYTERLAB_SYSTEM_NAME", "")
 
