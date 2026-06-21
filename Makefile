@@ -89,6 +89,10 @@ RESET := $(shell tput sgr0   2>/dev/null)
 # invocation). Shared by the build/push success banners below.
 RUNTIME_TAG_PYTHON_CMD := python3 -c 'import tomllib;d=tomllib.load(open("pyproject.toml","rb"));print(d["project"]["version"]+"_cuda-"+d["tool"]["stellars"]["cuda"]+"_jl-"+d["tool"]["stellars"]["jupyterlab"])'
 
+# Recipe-time read of the bare project version (post-bump). Passed as the
+# PKG_VERSION build arg so the duoptimum-lab-utils wheel reports the platform version.
+RUNTIME_VERSION_PYTHON_CMD := python3 -c 'import tomllib;print(tomllib.load(open("pyproject.toml","rb"))["project"]["version"])'
+
 # Reusable green/bold success banners. Trailing blank line separates the
 # banner from any subsequent shell output for visual breathing room.
 PRINT_BUILD_SUCCESS = @V=$$($(RUNTIME_TAG_PYTHON_CMD)); printf '\n%s%sBuild successful: stellars/stellars-jupyterlab-ds:%s%s\n\n' "$(GREEN)" "$(BOLD)" "$$V" "$(RESET)"
@@ -134,12 +138,12 @@ increment_version:
 
 ## build docker containers (BUILD_OPTS='--no-version-increment --no-cache')
 build: preflight maybe_increment_version
-	@cd ./scripts && ./build.sh $(DOCKER_BUILD_OPTS)
+	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
 
 ## build with verbose output (BUILD_OPTS='--no-version-increment --no-cache')
 build_verbose: preflight maybe_increment_version
-	@cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
+	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
 
 ## rebuild 'target' stage without bumping version (default; safe for dev iteration). DEBUG=1 to log
@@ -153,6 +157,7 @@ rebuild_increment_version: preflight maybe_increment_version _rebuild_impl
 # rebuild_increment_version) is reflected in the docker tag.
 _rebuild_impl:
 	$(eval CURRENT_VERSION := $(shell $(RUNTIME_TAG_PYTHON_CMD)))
+	$(eval CURRENT_SEMVER := $(shell $(RUNTIME_VERSION_PYTHON_CMD)))
 	@echo "Rebuilding 'target' stage (version: $(CURRENT_VERSION))..."
 ifeq ($(DEBUG),1)
 	@mkdir -p logs
@@ -164,6 +169,7 @@ endif
 		--platform linux/amd64 \
 		--target target \
 		--build-arg CACHEBUST=$$(date +%s) \
+		--build-arg PKG_VERSION=$(CURRENT_SEMVER) \
 		$(DOCKER_BUILD_OPTS) \
 		--tag stellars/stellars-jupyterlab-ds:latest \
 		-f services/jupyterlab/Dockerfile.jupyterlab \

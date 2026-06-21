@@ -1,0 +1,5 @@
+name: "Extra Tools"
+items:
+  - id: "alpha.sh"
+    name: "Extra Alpha"
+    description: "From a dict-form menu file"

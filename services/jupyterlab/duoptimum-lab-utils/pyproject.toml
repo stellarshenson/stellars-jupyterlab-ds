@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "duoptimum-lab-utils"
+description = "Duoptimum-themed lab utilities menu and runner for the Stellars JupyterLab DS platform"
+authors = [{name = "Konrad Jelen", email = "konrad.jelen+github@gmail.com"}]
+readme = "README.md"
+requires-python = ">=3.10"
+dynamic = ["version"]
+dependencies = [
+    "pyyaml",
+    "textual",
+    "rich",
+]
+
+[project.scripts]
+lab-utils = "duoptimum_lab_utils.cli:main"
+
+[tool.setuptools.dynamic]
+version = {file = ["src/duoptimum_lab_utils/_version.txt"]}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+duoptimum_lab_utils = ["_version.txt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

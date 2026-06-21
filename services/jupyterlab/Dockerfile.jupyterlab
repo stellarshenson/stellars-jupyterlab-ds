@@ -90,6 +90,18 @@ RUN /opt/builder/build-llama-cpp-python.sh "${BUILD_DIR}" "${EXPORT_DIR}"
 ## Install Docker CLI plugins from upstream release binaries
 RUN /opt/builder/install-docker-plugins.sh "${BUILD_DIR}" "${EXPORT_DIR}"
 
+## Build the duoptimum-lab-utils wheel; installed into base in the target stage.
+## PKG_VERSION (the platform version) is stamped into the wheel so the tool's
+## header and `importlib.metadata.version` report the platform version.
+ARG PKG_VERSION=0.0.0
+COPY ./duoptimum-lab-utils /opt/build/duoptimum-lab-utils
+RUN <<-EOF
+    echo "building duoptimum-lab-utils wheel (version ${PKG_VERSION})"
+    set -e
+    echo "${PKG_VERSION}" > /opt/build/duoptimum-lab-utils/src/duoptimum_lab_utils/_version.txt
+    pip wheel --no-deps /opt/build/duoptimum-lab-utils -w /opt/duoptimum-wheel
+EOF
+
 ##############################################################################################
 ##############################################################################################
 
@@ -587,6 +599,22 @@ RUN <<-EOF
     echo "changing permissions of files in the shared folder app extension"
     set -e
     find ${JUPYTER_SHARE_PATH}/jupyter_app_launcher -type f -exec chmod a-x {} +
+EOF
+
+## install the duoptimum-lab-utils wheel (built in the builder stage) into the
+## base env, then drop the wheel so it is not retained in the final image. The
+## console script lands in ${CONDA_HOME}/bin, which is on PATH only while base is
+## active; symlink it into /opt/utils - which start-platform prepends to PATH in
+## every conda env - so `lab-utils` is the env-independent overlay to the base
+## install (works after `conda activate <other-env>`).
+COPY --from=builder /opt/duoptimum-wheel /tmp/duoptimum-wheel
+RUN <<-EOF
+    echo "installing duoptimum-lab-utils into base"
+    set -e
+    conda run -n base pip install --no-deps --no-index --no-cache-dir \
+        --find-links /tmp/duoptimum-wheel duoptimum-lab-utils
+    ln -sf ${CONDA_HOME}/bin/lab-utils /opt/utils/lab-utils
+    rm -rf /tmp/duoptimum-wheel
 EOF
 
 ########################################################

@@ -1,0 +1,26 @@
+menu:
+  title: "Test Lab Utils"
+  items:
+    - id: "alpha.sh"
+      name: "Alpha"
+      description: "Alpha script"
+    - id: "echo hello"
+      name: "Echo"
+      description: "Print hello"
+      type: command
+    - name: "Sub Menu"
+      submenu:
+        - id: "beta.sh"
+          name: "Beta"
+          description: "Beta script"
+    - name: "Picker"
+      selector:
+        current: "one"
+        options:
+          - value: "one"
+            label: "One"
+          - value: "two"
+            label: "Two"
+        apply_cmd: "true"
+    - name: "Local Scripts"
+      scan_dir: "~/.local/lab-utils.d"
