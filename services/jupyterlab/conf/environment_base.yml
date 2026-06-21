@@ -22,6 +22,8 @@ dependencies:
     - cookiecutter-data-science # data science project scaffolding (ccds command)
     - copier # another templating engine
     - textual # modern terminal user interface library
+    - rich # rich text and styling (duoptimum-lab-utils runtime dep; installed --no-deps)
+    - pyyaml # yaml parsing (duoptimum-lab-utils runtime dep; installed --no-deps)
     - make # build tools
     - matplotlib # plots library
     - mlflow # powerful mlops suite and experiment runner (library)

@@ -1,0 +1,5 @@
+name: "Aux Submenu"
+items:
+  - id: "alpha.sh"
+    name: "Aux Alpha"
+    description: "Aux-provided alpha"

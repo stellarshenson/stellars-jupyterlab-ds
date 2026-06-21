@@ -64,6 +64,8 @@ services:
       network: host # BuildKit DNS workaround for WSL2
       platforms:
         - linux/amd64
+      args:
+        PKG_VERSION: ${PKG_VERSION:-0.0.0} # platform version stamped into the duoptimum-lab-utils wheel
     environment:
       - CONDA_DEFAULT_ENV=base                        # default conda environment activated on login
       - JUPYTERLAB_SERVER_IP=*                           # listen on all interfaces
