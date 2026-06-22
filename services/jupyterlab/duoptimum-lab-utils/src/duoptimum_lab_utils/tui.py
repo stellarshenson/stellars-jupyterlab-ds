@@ -4,6 +4,11 @@ that executes a chosen item and re-shows the menu.
 Item type is conveyed by colour and text, never pictographic glyphs: submenus in
 cyan, attention tags (markers, selector values) in amber, leaf names in default
 text, Back/Exit in muted text. The current row uses a subtle surface highlight.
+
+Type-to-filter: typing in the menu filters commands as-you-type across the whole
+subtree (not just the current level), each match shown with its submenu ancestor
+path and the typed substring highlighted. The standard Textual command palette is
+disabled - the in-menu filter replaces it, so there is no confusing popup.
 """
 
 import subprocess
@@ -22,17 +27,25 @@ from .theme import APP_TITLE, DUO, HEADER_CSS, PASTEL, VERSION
 from .util import flush_input_buffer
 
 
-def _drop_theme_command(app, screen):
-    """Yield the default system commands minus the Theme switcher (fixed brand theme)."""
-    for cmd in super(type(app), app).get_system_commands(screen):
-        if cmd.title != "Theme":
-            yield cmd
+def _is_submenu(item: dict) -> bool:
+    return "submenu" in item or "scan_dir" in item or "menu_file" in item
+
+
+def _expand_submenu(item: dict) -> list:
+    """Resolve a submenu item's children (inline + menu_file + scan_dir)."""
+    children = list(item.get("submenu", []))
+    if "menu_file" in item:
+        children.extend(menu_mod.load_menu_file_items(item["menu_file"]))
+    if "scan_dir" in item:
+        children.extend(menu_mod.scan_directory_for_menu_items(item["scan_dir"]))
+    return children
 
 
 class LabUtilsApp(App):
-    """YAML-driven hierarchical menu."""
+    """YAML-driven hierarchical menu with type-to-filter."""
 
     TITLE = APP_TITLE
+    ENABLE_COMMAND_PALETTE = False  # in-menu filter replaces the standard palette
     CSS = f"""
     Screen {{ background: {DUO['bg_dim']}; }}
 {HEADER_CSS}
@@ -41,7 +54,6 @@ class LabUtilsApp(App):
         padding: 0 2;
         background: {DUO['bg_subtle']};
         color: {DUO['text_muted']};
-        text-style: italic;
     }}
     #menu-container {{ width: 100%; height: 1fr; padding: 1 2; }}
     OptionList {{
@@ -67,10 +79,9 @@ class LabUtilsApp(App):
     """
 
     BINDINGS = [
-        Binding("escape", "quit", "Quit", show=True),
+        Binding("escape", "go_back", "Back", show=True),
         Binding("ctrl+c", "quit", "Quit", show=False),
-        Binding("left", "go_back", "Back", show=True),
-        Binding("backspace", "go_back", "Back", show=False),
+        Binding("left", "go_back", "Back", show=False),
         Binding("right", "select_item", "Select", show=True),
     ]
 
@@ -80,9 +91,9 @@ class LabUtilsApp(App):
         self.menu_stack = []  # (title, items)
         self.current_items = []
         self.pending_command = None
-
-    def get_system_commands(self, screen):
-        yield from _drop_theme_command(self, screen)
+        self.filter_query = ""
+        self._flat_index = None   # lazily built per menu level
+        self.filtered = []        # (path, item) currently shown under a filter
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="app-header"):
@@ -97,9 +108,13 @@ class LabUtilsApp(App):
         self.push_menu(self.root_menu.get("title", "Lab Utils"),
                        self.root_menu.get("items", []))
 
+    # --- navigation state -------------------------------------------------
+
     def push_menu(self, title: str, items: list) -> None:
         self.menu_stack.append((title, items))
         self.current_items = items
+        self.filter_query = ""
+        self._flat_index = None
         self.refresh_menu()
 
     def pop_menu(self) -> bool:
@@ -108,18 +123,48 @@ class LabUtilsApp(App):
         self.menu_stack.pop()
         _, items = self.menu_stack[-1]
         self.current_items = items
+        self.filter_query = ""
+        self._flat_index = None
         self.refresh_menu()
         return True
 
-    def get_breadcrumb(self) -> str:
-        return " > ".join(t for t, _ in self.menu_stack)
+    def _flatten(self) -> list:
+        """Flatten the current subtree to leaf commands, each with its ancestor path.
+
+        Built once per menu level (lazily, on the first filter keystroke) so a
+        command nested in a submenu is findable from here and shown with the path
+        it lives under. Submenu expansion can touch the filesystem - guarded.
+        """
+        out = []
+
+        def walk(items, path):
+            for item in items:
+                name = item.get("name", "")
+                if _is_submenu(item):
+                    try:
+                        children = _expand_submenu(item)
+                    except Exception:
+                        children = []
+                    walk(children, path + [name])
+                else:
+                    out.append((tuple(path), item))
+
+        walk(self.current_items, [])
+        return out
+
+    def _ensure_flat_index(self) -> list:
+        if self._flat_index is None:
+            self._flat_index = self._flatten()
+        return self._flat_index
+
+    # --- rendering --------------------------------------------------------
 
     def _item_text(self, item: dict, index: int) -> Text:
         """Build a no-glyph option label, type conveyed by colour and text."""
         name = item.get("name", f"Item {index}")
         desc = item.get("description", "")
 
-        if "submenu" in item or "scan_dir" in item or "menu_file" in item:
+        if _is_submenu(item):
             # trailing "/" signals "descends" in text (not colour alone), matching
             # the CLI tree, so submenu vs leaf is distinguishable without hue
             return Text(f"{name}/", style=PASTEL["submenu"])
@@ -146,13 +191,54 @@ class LabUtilsApp(App):
             line.append(f" - {desc}", style=PASTEL["desc"])
         return line
 
+    def _filtered_text(self, path: tuple, item: dict, query: str) -> Text:
+        """Match label: muted ancestor path + leaf name with the typed run boldened."""
+        line = Text()
+        prefix = ""
+        if path:
+            prefix = " / ".join(path) + " / "
+            line.append(prefix, style=PASTEL["submenu"])
+        name = item.get("name", "")
+        line.append(name, style=PASTEL["name"])
+        start = name.lower().find(query.lower())
+        if start >= 0:
+            s = len(prefix) + start
+            line.stylize(f"bold {DUO['amber']}", s, s + len(query))
+        desc = item.get("description", "")
+        if desc:
+            line.append(f" - {desc}", style=PASTEL["desc"])
+        return line
+
+    def _breadcrumb_text(self) -> Text:
+        """Path within the menu (root excluded - it is the header title), or, while
+        filtering, the live query and match count. No root duplication of the header."""
+        bc = Text()
+        if self.filter_query:
+            matches = len(self.filtered)
+            bc.append("filter: ", style=PASTEL["desc"])
+            bc.append(self.filter_query, style=PASTEL["tag"])
+            bc.append(f"   {matches} match{'' if matches == 1 else 'es'}", style=PASTEL["nav"])
+            return bc
+        sub = [t for t, _ in self.menu_stack[1:]]
+        if sub:
+            bc.append(" > ".join(sub), style=PASTEL["nav"])
+        else:
+            bc.append("type to filter", style=PASTEL["desc"])
+        return bc
+
     def refresh_menu(self) -> None:
         menu = self.query_one("#menu", OptionList)
         breadcrumb = self.query_one("#breadcrumb", Static)
-
         menu.clear_options()
-        breadcrumb.update(self.get_breadcrumb())
 
+        if self.filter_query:
+            self._render_filtered(menu)
+        else:
+            self._render_navigation(menu)
+
+        breadcrumb.update(self._breadcrumb_text())
+
+    def _render_navigation(self, menu: OptionList) -> None:
         if len(self.menu_stack) > 1:
             menu.add_option(Option(Text("Back", style=PASTEL["nav"]), id="__back__"))
         else:
@@ -165,6 +251,46 @@ class LabUtilsApp(App):
         if self.current_items:
             menu.highlighted = 1
 
+    def _render_filtered(self, menu: OptionList) -> None:
+        query = self.filter_query
+        self.filtered = [
+            (path, item) for (path, item) in self._ensure_flat_index()
+            if query.lower() in item.get("name", "").lower()
+        ]
+        if not self.filtered:
+            menu.add_option(Option(Text("no matches - esc to clear", style=PASTEL["nav"]),
+                                   id="__none__"))
+            return
+        for idx, (path, item) in enumerate(self.filtered):
+            menu.add_option(Option(self._filtered_text(path, item, query), id=f"f{idx}"))
+        menu.highlighted = 0
+
+    # --- input ------------------------------------------------------------
+
+    def on_key(self, event) -> None:
+        char = event.character
+        if char and len(char) == 1 and char.isprintable():
+            self.filter_query += char
+            self.refresh_menu()
+            event.stop()
+            event.prevent_default()
+            return
+        if event.key == "backspace":
+            if self.filter_query:
+                self.filter_query = self.filter_query[:-1]
+                self.refresh_menu()
+            else:
+                self.action_go_back()
+            event.stop()
+            event.prevent_default()
+            return
+        if event.key == "escape" and self.filter_query:
+            # esc clears the filter first; only quits when there is no filter
+            self.filter_query = ""
+            self.refresh_menu()
+            event.stop()
+            event.prevent_default()
+
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         option_id = event.option.id
 
@@ -174,43 +300,50 @@ class LabUtilsApp(App):
         if option_id == "__back__":
             self.pop_menu()
             return
-
-        try:
-            selected_item = self.current_items[int(option_id)]
-        except (ValueError, IndexError):
+        if option_id == "__none__":
             return
 
-        item_name = selected_item.get("name", "")
+        if option_id and option_id.startswith("f"):
+            try:
+                _, item = self.filtered[int(option_id[1:])]
+            except (ValueError, IndexError):
+                return
+        else:
+            try:
+                item = self.current_items[int(option_id)]
+            except (ValueError, IndexError):
+                return
 
-        if "selector" in selected_item:
-            self.pending_command = (selected_item["selector"], item_name, "selector")
+        self._activate_item(item)
+
+    def _activate_item(self, item: dict) -> None:
+        item_name = item.get("name", "")
+
+        if "selector" in item:
+            self.pending_command = (item["selector"], item_name, "selector")
             self.exit()
             return
 
-        if "submenu" in selected_item or "scan_dir" in selected_item or "menu_file" in selected_item:
-            submenu_items = list(selected_item.get("submenu", []))
-            if "menu_file" in selected_item:
-                submenu_items.extend(menu_mod.load_menu_file_items(selected_item["menu_file"]))
-            if "scan_dir" in selected_item:
-                submenu_items.extend(menu_mod.scan_directory_for_menu_items(selected_item["scan_dir"]))
-
+        if _is_submenu(item):
+            submenu_items = _expand_submenu(item)
             if submenu_items:
                 self.push_menu(item_name, submenu_items)
             else:
                 self.notify(f"No items found in {item_name}", severity="warning")
+            return
 
-        elif "id" in selected_item:
-            item_type = selected_item.get("type", "script")
-            item_id = selected_item["id"]
+        if "id" in item:
+            item_type = item.get("type", "script")
+            item_id = item["id"]
 
-            if selected_item.get("_conda_env"):
+            if item.get("_conda_env"):
                 self.pending_command = (item_id, item_name, "conda_env")
                 self.exit()
             elif item_type == "command":
                 self.pending_command = (item_id, item_name, "command")
                 self.exit()
             else:
-                script_path = resolve_script_path(item_id, selected_item.get("_full_path", False))
+                script_path = resolve_script_path(item_id, item.get("_full_path", False))
                 if script_path is None:
                     self.notify(f"Script not found: {item_id}", severity="error")
                     return
@@ -218,6 +351,10 @@ class LabUtilsApp(App):
                 self.exit()
 
     def action_go_back(self) -> None:
+        if self.filter_query:
+            self.filter_query = ""
+            self.refresh_menu()
+            return
         if not self.pop_menu():
             self.exit()
 
@@ -230,6 +367,7 @@ class LabUtilsApp(App):
 class SelectorApp(App):
     """Single-choice selector for a configured option list."""
 
+    ENABLE_COMMAND_PALETTE = False
     CSS = f"""
     Screen {{ background: {DUO['bg_dim']}; }}
 {HEADER_CSS}
@@ -275,9 +413,6 @@ class SelectorApp(App):
         self.options = options
         self.selector_config = selector_config
         self.selected = None
-
-    def get_system_commands(self, screen):
-        yield from _drop_theme_command(self, screen)
 
     def compose(self) -> ComposeResult:
         current = next((o.get("label", o["value"]) for o in self.options if o.get("current")), "Not set")
@@ -325,7 +460,8 @@ def run_selector(selector_config: dict, title: str) -> None:
         print(f"No options available for {title}")
         try:
             input("\nPress Enter to continue...")
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
+            # EOFError: stdin closed/redirected (echo | lab-utils, CI, ttyd detach)
             print()
         return
 
@@ -342,7 +478,8 @@ def run_selector(selector_config: dict, title: str) -> None:
             cli.print_cancelled()
         try:
             input("\nPress Enter to continue...")
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
+            # EOFError: stdin closed/redirected (echo | lab-utils, CI, ttyd detach)
             print()
 
 
@@ -385,5 +522,6 @@ def run_interactive_menu() -> None:
 
         try:
             input("\nPress Enter to continue...")
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
+            # EOFError: stdin closed/redirected (echo | lab-utils, CI, ttyd detach)
             print()

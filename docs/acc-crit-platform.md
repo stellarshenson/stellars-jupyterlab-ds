@@ -20,7 +20,7 @@ stellars-jupyterlab-ds is a containerized JupyterLab data-science platform serve
   - [Module Structure](#module-structure)
   - [CLI Parity](#cli-parity)
   - [Data Discovery](#data-discovery)
-  - [TUI Styling](#tui-styling)
+  - [TUI](#tui)
   - [CLI Styling](#cli-styling)
   - [Tests and Test Data](#tests-and-test-data)
   - [Completions](#completions)
@@ -88,12 +88,14 @@ The lab-utils terminal menu is refactored into an installable `duoptimum-lab-uti
 - [x] **Version** - package version matches the lab platform version from pyproject project.version, not an independent number
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - installed dist version 3.8.8 equals the root platform pyproject version, dynamic from _version.txt stamped by the builder
+  - log: 2026-06-22 make increment_version now also writes the bumped version into src/duoptimum_lab_utils/_version.txt (Makefile LAB_UTILS_VERSION_FILE) so the committed package version tracks the platform even in dev installs, not only at image build; _version.txt synced to the current platform version (no longer the 0.0.0 placeholder); guarded by test_version.py
 - [x] **Entry point** - pyproject [project.scripts] defines lab-utils -> duoptimum_lab_utils.cli:main
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - console script installed and runs from the throwaway venv
 - [x] **No dep churn** - the wheel installs with --no-deps so the base env's textual, rich and pyyaml are neither upgraded nor downgraded; pyproject declares all three and they match environment_base.yml
   - log: 2026-06-21 criterion added (as "Pinned deps")
   - log: 2026-06-21 reworded to the --no-deps mechanism and verified - deps align with environment_base.yml, install is --no-deps (architect census aligned)
+  - log: 2026-06-22 pinned textual>=2 (tui adversary finding) - the menu highlight index relies on textual 2.x's add_option(None) separator model; a lower bound stops a constrained dev resolver pulling the pre-2.0 separator that breaks highlighted=1; base ships 8.2.7 so no churn
 - [x] **Bundled data** - lab-utils.yml, lab-utils.d/ and lab-utils.lib/ ship as package data or as deployment files at a known path, discoverable without __file__ assumptions
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - data resolves via config.data_home() (/opt/utils default), not __file__; JSON parity confirms discovery
@@ -189,7 +191,7 @@ The lab-utils terminal menu is refactored into an installable `duoptimum-lab-uti
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - absent dirs yield an empty section, no crash (tests)
 
-### TUI Styling
+### TUI
 
 - [x] **Palette** - both the menu and selector screens use the Duoptimum palette of cyan and orange on dark slate, not Textual default theme tokens
   - log: 2026-06-21 criterion added
@@ -206,9 +208,37 @@ The lab-utils terminal menu is refactored into an installable `duoptimum-lab-uti
 - [x] **Truecolor** - COLORTERM is set to truecolor before import so dark slates are not downsampled under WSL or ttyd
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - COLORTERM=truecolor set in package __init__ before any rich/textual import (UX re-confirm fix)
-- [x] **Fixed theme** - the Ctrl+P command palette drops the Theme switcher and the brand theme is fixed
+- [x] **Fixed theme** - the brand theme is fixed; no theme switcher reachable
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - get_system_commands drops the Theme switcher, keeps Quit/Keys/Screenshot
+  - log: 2026-06-22 superseded - the standard command palette is now disabled outright (ENABLE_COMMAND_PALETTE = False), so no Theme switcher (nor any palette) is reachable; the get_system_commands override was removed as dead code; brand theme remains the only theme
+- [x] **Type-to-filter** - typing printable characters in the menu filters commands as-you-type instead of requiring arrow selection
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - on_key builds a filter query; Pilot test types and asserts the filtered result set (test_tui.py)
+- [x] **Subtree search** - the filter matches commands anywhere in the current subtree, not only the current level; a command nested in a submenu is found from the parent
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - flat index walks submenu/scan_dir/menu_file; typing "git" at root finds the nested git-commit leaf (test_tui.py)
+- [x] **Ancestor path** - each filtered match shows its submenu ancestor path so the user sees where the command lives
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - filtered row renders "Sub / name"; path prefix in submenu colour (test_filtered_text_shows_path_and_highlights_match)
+- [x] **Match highlight** - the substring the user typed is highlighted within the matched command name
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - the typed run carries a bold amber style span over the matched offset (test_tui.py)
+- [x] **Filter indicator** - while filtering, the breadcrumb shows the live query and the match count
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - breadcrumb renders "filter: git   2 matches"
+- [x] **No duplicate title** - the breadcrumb does not repeat the header app title at the root; it shows the in-menu path, or a "type to filter" hint at root
+  - log: 2026-06-22 criterion added - reported issue: title appeared twice (header + breadcrumb root title)
+  - log: 2026-06-22 verified - breadcrumb excludes the root stack entry; at root it shows "type to filter", not the app title (test_tui.py)
+- [x] **Command palette disabled** - the standard Textual command palette (the confusing 2-row popup) is disabled; the in-menu filter replaces it
+  - log: 2026-06-22 criterion added - reported issue: standard palette popup was a useless 2-row box
+  - log: 2026-06-22 verified - ENABLE_COMMAND_PALETTE = False on both apps (test_command_palette_disabled)
+- [x] **Edge: clear filter** - escape or backspace-to-empty clears the filter and restores the navigable menu rather than quitting
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - escape clears a non-empty filter (test_escape_clears_the_filter); backspace deletes a char then falls back to Back
+- [x] **Edge: no matches** - a filter query matching nothing shows a "no matches" notice, not a crash or empty screen
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - _render_filtered emits a "no matches - esc to clear" row when the match set is empty
 
 ### CLI Styling
 
@@ -224,6 +254,7 @@ The lab-utils terminal menu is refactored into an installable `duoptimum-lab-uti
 - [x] **Suite** - a pytest suite ships with the package and runs offline
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - pytest runs offline, 37 passed (textual 8.2.7)
+  - log: 2026-06-22 grew to 45 passed - added TUI type-to-filter/no-duplicate-title/palette-disabled tests and version-sync tests
 - [x] **Fixtures** - test data includes a sample lab-utils.yml, a fake lab-utils.d/ tree with top-level and nested .d scripts, and lab-utils.lib/ entries
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - fixtures ship the sample yml, the lab-utils.d tree and lib entries
@@ -239,6 +270,12 @@ The lab-utils terminal menu is refactored into an installable `duoptimum-lab-uti
 - [x] **CLI tests** - argument dispatch for --help, --list, --json, --create-local and direct run, with correct exit codes
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 verified - cli tests cover dispatch and exit codes
+- [x] **TUI tests** - headless render plus Pilot-driven type-to-filter, ancestor-path, match-highlight, escape-clears and palette-disabled checks
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - test_tui.py covers no-glyphs, no-duplicate-title, filter behaviour and ENABLE_COMMAND_PALETTE
+- [x] **Version tests** - _version.txt holds a real semver (not 0.0.0) and __version__ resolves, falling back to the file with no dist metadata
+  - log: 2026-06-22 criterion added
+  - log: 2026-06-22 verified - test_version.py asserts the semver, resolution, and the monkeypatched fallback
 
 ### Completions
 
@@ -267,3 +304,6 @@ The lab-utils terminal menu is refactored into an installable `duoptimum-lab-uti
   - log: 2026-06-21 criterion added
   - log: 2026-06-21 in progress - yaml items recognised by the menu loader (parity-stable); the conda env create runtime path pending image verification
   - log: 2026-06-21 verified in image - menu loads install-conda-env/{r,rust,tensorflow,torch} and /opt/utils/conda-env.d present; conda env create lives in the unchanged /opt/utils/lab-utils.d/install-conda-env.d scripts, which the package resolves and runs (direct-run + exit-code parity proven)
+- [x] **Edge: closed stdin** - the post-run "Press Enter to continue" does not traceback when stdin is closed or redirected (echo | lab-utils, CI, ttyd detach)
+  - log: 2026-06-22 criterion added (tui adversary finding)
+  - log: 2026-06-22 verified - the three input() guards catch EOFError as well as KeyboardInterrupt; test_press_enter_survives_closed_stdin exercises the no-options run_selector path with input() raising EOFError

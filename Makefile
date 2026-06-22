@@ -32,6 +32,11 @@ JL_VERSION      := $(word 4,$(PROJECT_META))
 VERSION         := $(PROJECT_VERSION)_cuda-$(CUDA_VERSION)_jl-$(JL_VERSION)
 TAG             := $(VERSION)
 
+# The bundled duoptimum-lab-utils package reads its version from this file
+# (setuptools dynamic version). increment_version keeps it in sync with the
+# platform version so the committed package version is never stale.
+LAB_UTILS_VERSION_FILE := services/jupyterlab/duoptimum-lab-utils/src/duoptimum_lab_utils/_version.txt
+
 ## verify tools, python tomllib, docker compose, docker daemon, and key project files
 preflight:
 	@rc=0; \
@@ -134,7 +139,9 @@ increment_version:
 	@CURRENT='$(PROJECT_VERSION)'; \
 	NEW=$$(echo "$$CURRENT" | awk 'BEGIN{FS=OFS="."} {$$NF += 1; print}'); \
 	printf '%s%sVersion bumped: %s -> %s%s\n' "$(CYAN)" "$(BOLD)" "$$CURRENT" "$$NEW" "$(RESET)"; \
-	sed -i 's/^version = "'"$$CURRENT"'"$$/version = "'"$$NEW"'"/' pyproject.toml
+	sed -i 's/^version = "'"$$CURRENT"'"$$/version = "'"$$NEW"'"/' pyproject.toml; \
+	printf '%s' "$$NEW" > $(LAB_UTILS_VERSION_FILE); \
+	printf '%s%sSynced duoptimum-lab-utils version -> %s%s\n' "$(CYAN)" "$(BOLD)" "$$NEW" "$(RESET)"
 
 ## build docker containers (BUILD_OPTS='--no-version-increment --no-cache')
 build: preflight maybe_increment_version
