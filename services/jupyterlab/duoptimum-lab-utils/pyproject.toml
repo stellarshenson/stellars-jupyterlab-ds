@@ -11,7 +11,7 @@ requires-python = ">=3.10"
 dynamic = ["version"]
 dependencies = [
     "pyyaml",
-    "textual",
+    "textual>=2",  # >=2: the add_option(None) separator model the highlight index relies on
     "rich",
 ]
 
