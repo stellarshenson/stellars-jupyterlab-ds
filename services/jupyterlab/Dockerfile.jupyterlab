@@ -591,6 +591,14 @@ RUN <<-EOF
     cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
     ${CONDA_CMD} clean -a -y
     cp /tmp/conda-meta-history ${CONDA_HOME}/conda-meta/history
+    # nb_venv_kernels' installer writes kernel_spec_manager_class under both the
+    # deprecated NotebookApp key (Jupyter Server logs a deprecation warning for it
+    # at every launch) and the modern ServerApp key. Drop the redundant NotebookApp
+    # block so only ServerApp remains - no warning, identical behaviour.
+    JUPYTER_CONFIG_JSON="${JUPYTER_ETC_DIR}/jupyter_config.json"
+    if [ -f "${JUPYTER_CONFIG_JSON}" ]; then
+        ${CONDA_CMD} run --name ${CONDA_DEFAULT_ENV} python -c 'import json,sys,pathlib; p=pathlib.Path(sys.argv[1]); c=json.loads(p.read_text()); c.pop("NotebookApp",None); p.write_text(json.dumps(c,indent=2)+"\n")' "${JUPYTER_CONFIG_JSON}"
+    fi
 EOF
 
 ## change persmissions of shared resources

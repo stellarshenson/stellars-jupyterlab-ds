@@ -27,8 +27,8 @@ if [[ -d "${LOCAL_SCRIPTS_DIR}" ]]; then
 
     # run all scripts as a bundle if any found
     if [[ ${#scripts[@]} -gt 0 ]]; then
-        echo "Executing user startup scripts from ${LOCAL_SCRIPTS_DIR}"
-        echo "Log file: ${LOCAL_SCRIPTS_LOG}"
+        log_info "Executing user startup scripts from ${LOCAL_SCRIPTS_DIR}"
+        log_info "Log file: ${LOCAL_SCRIPTS_LOG}"
         nohup bash -c '
             # Track results
             failed_scripts=()

@@ -25,11 +25,15 @@ if [[ ${ENABLE_SERVICE_RESOURCES_MONITOR} != 1 ]]; then
     exit 0
 fi
 
-echo "Launching btop resources monitor via ttyd"
+log_info "Launching btop resources monitor via ttyd"
 # Terminal sizing inside the launcher iframe is fixed client-side: the rmonitor
 # server-proxy entry (jupyter_lab_config.py) injects a script into ttyd's HTML
 # that re-fits the xterm terminal after font metrics settle and on panel
 # resizes. No server-side SIGWINCH wrapper is needed.
-ttyd -W -p 7681 -t titleFixed="Resources Monitor" btop --utf-force &
+#
+# -d 3 lowers libwebsockets verbosity (default 7 = ERR|WARN|NOTICE) to ERR|WARN,
+# dropping the unattributed 'N:' NOTICE banner. Remaining ttyd output is piped
+# through log_pipe so any line is tagged to this script instead of arriving raw.
+ttyd -d 3 -W -p 7681 -t titleFixed="Resources Monitor" btop --utf-force 2>&1 | log_pipe INFO &
 
 # EOF

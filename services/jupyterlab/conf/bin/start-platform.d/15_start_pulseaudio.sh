@@ -15,7 +15,7 @@
 # no sudo needed anywhere.
 # ----------------------------------------------------------------------------------------
 
-echo "Starting PulseAudio voice source for Claude Code /voice"
+log_info "Starting PulseAudio voice source for Claude Code /voice"
 conda run -n base jupyterlab_voice_capture start -d
 
 # EOF

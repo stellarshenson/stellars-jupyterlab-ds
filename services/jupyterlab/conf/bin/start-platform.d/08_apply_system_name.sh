@@ -9,7 +9,7 @@ if [[ -z "${JUPYTERLAB_SYSTEM_NAME}" ]]; then
     exit 0
 fi
 
-echo "Rebranding welcome files to ${JUPYTERLAB_SYSTEM_NAME}"
+log_info "Rebranding welcome files to ${JUPYTERLAB_SYSTEM_NAME}"
 
 # Files are made world-writable at build time, but their directories (/ and
 # /etc) are root-owned - so no `sed -i` (it replaces the file via a temp file

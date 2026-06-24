@@ -27,26 +27,26 @@ for file in "${JUPYTERLAB_AUX_SCRIPTS_PATH}"/*; do
 done
 
 if [[ ${#scripts[@]} -eq 0 ]]; then
-    echo "No executable scripts in ${JUPYTERLAB_AUX_SCRIPTS_PATH}"
+    log_info "No executable scripts in ${JUPYTERLAB_AUX_SCRIPTS_PATH}"
     exit 0
 fi
 
-echo "Running ${#scripts[@]} auxiliary script(s) from ${JUPYTERLAB_AUX_SCRIPTS_PATH}"
+log_info "Running ${#scripts[@]} auxiliary script(s) from ${JUPYTERLAB_AUX_SCRIPTS_PATH}"
 
 failed=0
 for script in "${scripts[@]}"; do
     script_name=$(basename "$script")
-    echo "  running: ${script_name}"
+    log_info "running: ${script_name}"
     if ! bash "${script}"; then
-        echo "  FAILED: ${script_name} (exit code: $?)"
+        log_error "FAILED: ${script_name} (exit code: $?)"
         failed=$((failed + 1))
     fi
 done
 
 if [[ $failed -gt 0 ]]; then
-    echo "Auxiliary scripts: ${failed}/${#scripts[@]} failed"
+    log_warn "Auxiliary scripts: ${failed}/${#scripts[@]} failed"
 else
-    echo "Auxiliary scripts: all ${#scripts[@]} completed"
+    log_info "Auxiliary scripts: all ${#scripts[@]} completed"
 fi
 
 # EOF

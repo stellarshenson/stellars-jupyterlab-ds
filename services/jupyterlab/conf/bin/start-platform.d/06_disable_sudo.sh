@@ -15,11 +15,11 @@
 
 if [[ ${JUPYTERLAB_SUDO_ENABLE:-1} == 0 ]]; then
     user="$(id -un)"
-    echo "Disabling sudo for ${user} (JUPYTERLAB_SUDO_ENABLE=0)"
+    log_info "Disabling sudo for ${user} (JUPYTERLAB_SUDO_ENABLE=0)"
     sudo -n /bin/sh -c "printf '%s ALL=(ALL:ALL) !ALL\n' '${user}' > /etc/sudoers.d/conda \
         && chmod 0440 /etc/sudoers.d/conda \
         && visudo -cf /etc/sudoers.d/conda" \
-        || echo "sudo already disabled"
+        || log_info "sudo already disabled"
 fi
 
 # EOF
