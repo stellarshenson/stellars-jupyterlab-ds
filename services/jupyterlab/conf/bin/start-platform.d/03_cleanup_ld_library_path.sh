@@ -16,7 +16,7 @@ FISH_CONFIG="${HOME}/.config/fish/config.fish"
 cleanup_file() {
     local file="$1"
     if [[ -f "${file}" ]] && grep -q "LD_LIBRARY_PATH.*conda/lib" "${file}"; then
-        echo "Cleaning up LD_LIBRARY_PATH from ${file}..."
+        log_info "Cleaning up LD_LIBRARY_PATH from ${file}"
         sed -i '/# Include conda lib for libmamba solver/d' "${file}"
         sed -i '/LD_LIBRARY_PATH.*conda\/lib.*export/d' "${file}"
         sed -i '/export LD_LIBRARY_PATH.*conda\/lib/d' "${file}"

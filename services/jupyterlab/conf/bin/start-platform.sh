@@ -12,15 +12,20 @@ if [[ -f "${HOME}/.profile" ]]; then
     set +a
 fi
 
+# shared logging helpers - exported so every start-platform.d/*.sh child inherits
+# log_info / log_warn / log_error / log_pipe (see /lib-logging.sh)
+source /lib-logging.sh
+export -f _log log_info log_warn log_error log_pipe
+
 
 # set container timezone via TZ env (userspace, no root writes needed - glibc
 # honours TZ in every child process: terminals, kernels, services)
 if [[ -n "${JUPYTERLAB_TIMEZONE}" ]]; then
     if [[ -f "/usr/share/zoneinfo/${JUPYTERLAB_TIMEZONE}" ]]; then
         export TZ="${JUPYTERLAB_TIMEZONE}"
-        echo "Timezone set to ${TZ}"
+        log_info "Timezone set to ${TZ}"
     else
-        echo "WARNING: Invalid timezone '${JUPYTERLAB_TIMEZONE}' - zoneinfo not found"
+        log_warn "Invalid timezone '${JUPYTERLAB_TIMEZONE}' - zoneinfo not found"
     fi
 fi
 
@@ -35,12 +40,12 @@ done
 
 # if jupyterhub
 if [[ -n ${JUPYTERHUB_USER} ]]; then
-    echo "Starting jupyterlab under jupyterhub"
+    log_info "Starting jupyterlab under jupyterhub"
     conda run --no-capture-output -n base jupyter-labhub "$@"
 
 # standalone jupyterlab
 else
-    echo "Starting standalone jupyterlab server"
+    log_info "Starting standalone jupyterlab server"
     conda run --no-capture-output -n base jupyter-lab \
 	--autoreload \
 	--ip=$JUPYTERLAB_SERVER_IP \

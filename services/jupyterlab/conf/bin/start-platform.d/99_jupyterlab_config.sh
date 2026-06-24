@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------------------------------
 CONDA_USER_WORKSPACE=${CONDA_USER_WORKSPACE:-/home/lab/workspace}
 
-echo "Forcing predefined jupyterlab config file"
+log_info "Forcing predefined jupyterlab config file"
 
 JUPYTERLAB_CONFIG_FILE_USER="${HOME}/.jupyter/jupyter_lab_config.py"
 JUPYTERLAB_CONFIG_FILE_TEMPLATE="/opt/conda/etc/jupyter/jupyter_lab_config.py"
