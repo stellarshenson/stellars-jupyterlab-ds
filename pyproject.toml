@@ -5,5 +5,5 @@ description = "Pre-packaged, pre-configured JupyterLab environment with NVIDIA G
 authors = [{name = "Konrad Jelen", email = "konrad.jelen+github@gmail.com"}]
 
 [tool.stellars]
-cuda = "13.3.0"
+cuda = "13.2.0"
 jupyterlab = "4.6.0"
