@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help preflight build build_verbose rebuild rebuild_increment_version _rebuild_impl push pull start clean increment_version maybe_increment_version tag
+.PHONY: help preflight build build_verbose rebuild rebuild_increment_version _rebuild_impl push pull start stop clean increment_version maybe_increment_version tag
 
 # Use bash so we can use `set -o pipefail` to propagate docker's exit code through tee (DEBUG=1)
 SHELL := /bin/bash
@@ -209,7 +209,11 @@ tag: preflight
 
 ## start jupyterlab (fg)
 start: preflight
-	@cd ./scripts && ./start.sh
+	@./start.sh
+
+## stop jupyterlab
+stop: preflight
+	@./stop.sh
 
 ## clean orphaned containers
 clean: preflight
