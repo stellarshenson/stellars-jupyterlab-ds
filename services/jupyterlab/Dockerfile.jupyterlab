@@ -659,8 +659,13 @@ EOF
 # ownership persist); the daemon is started at boot by
 # start-platform.d/15_start_pulseaudio.sh - no sudo needed.
 COPY --chmod=755 ./Dockerfile.jupyterlab.target.d/ /opt/target-install/
-RUN /opt/target-install/install-pulseaudio.sh \
-    && chown ${CONDA_USER}:${JUPYTER_GROUP} /run/voice
+RUN <<-EOF
+    echo "installing pulseaudio voice stack and removing the installer"
+    set -e
+    /opt/target-install/install-pulseaudio.sh
+    chown ${CONDA_USER}:${JUPYTER_GROUP} /run/voice
+    rm -rf /opt/target-install
+EOF
 
 ########################################################
 #  GENERATIVE AI WITHi CUDA SUPPORT ON TORCH           #
