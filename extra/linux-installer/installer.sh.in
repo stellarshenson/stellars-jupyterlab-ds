@@ -18,8 +18,6 @@ set -e
 
 VERSION="@VERSION@"
 PROJECT_NAME="stellars-jupyterlab-ds"
-ACCESS_URL="https://localhost/$PROJECT_NAME/jupyterlab"
-INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$PROJECT_NAME"
 
 echo "Stellars JupyterLab DS $VERSION - installer"
 echo
@@ -32,6 +30,21 @@ if ! docker compose version >/dev/null 2>&1; then
     echo "Rancher Desktop (https://rancherdesktop.io/) and run this installer again." >&2
     exit 1
 fi
+
+# platform (project) name - part of the access URL and the prefix for container and volume names
+echo "The platform (project) name becomes part of the access URL (https://lab.<name>.localhost)"
+echo "and the prefix for container and volume names. Lowercase letters, digits and dashes only."
+while :; do
+    printf "Project name [%s]: " "$PROJECT_NAME"
+    read REPLY
+    [ -z "$REPLY" ] && break
+    case "$REPLY" in
+        *[!a-z0-9-]*) echo "Use lowercase letters, digits and dashes only." ;;
+        *) PROJECT_NAME="$REPLY"; break ;;
+    esac
+done
+ACCESS_URL="https://lab.$PROJECT_NAME.localhost"
+INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$PROJECT_NAME"
 
 # install directory
 printf "Install directory [%s]: " "$INSTALL_DIR"
@@ -56,7 +69,9 @@ while [ -z "$JUPYTERLAB_PASSWORD" ]; do
     echo
 done
 {
-    echo "# name of the project for docker-compose"
+    echo "# local overrides over .env.default"
+    echo "# platform name - access hosts lab.<name>.localhost / traefik.<name>.localhost,"
+    echo "# and the prefix for container and volume names"
     echo "COMPOSE_PROJECT_NAME=$PROJECT_NAME"
     echo "# initial JupyterLab password (login page asks for it); change it after you log in"
     echo "JUPYTERLAB_SERVER_TOKEN=$JUPYTERLAB_PASSWORD"
@@ -72,11 +87,11 @@ printf "Also remove the data volumes (JupyterLab home, workspace, cache, certifi
 read REPLY
 case "$REPLY" in [Yy]*) VOLUMES="--volumes";; esac
 echo "Stopping the platform and removing containers and images..."
-docker compose --env-file .env -f compose.yml down --remove-orphans --rmi all $VOLUMES || \
+docker compose --env-file .env.default --env-file .env -f compose.yml down --remove-orphans --rmi all $VOLUMES || \
     echo "WARNING: docker compose down failed (is docker running?) - remove containers manually." >&2
 INSTALL_DIR=$(pwd)
 cd /
-rm -f "$INSTALL_DIR/compose.yml" "$INSTALL_DIR/compose-gpu.yml" "$INSTALL_DIR/start.sh" \
+rm -f "$INSTALL_DIR/compose.yml" "$INSTALL_DIR/compose-gpu.yml" "$INSTALL_DIR/.env.default" "$INSTALL_DIR/start.sh" \
       "$INSTALL_DIR/stop.sh" "$INSTALL_DIR/LICENSE" "$INSTALL_DIR/.env" "$INSTALL_DIR/uninstall.sh"
 rmdir "$INSTALL_DIR" 2>/dev/null || echo "Note: $INSTALL_DIR not empty, left in place."
 echo "Uninstalled."

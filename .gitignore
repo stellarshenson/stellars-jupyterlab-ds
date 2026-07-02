@@ -125,3 +125,6 @@ dmypy.json
 
 # Yarn cache
 .yarn/
+
+# local environment overrides (holds JUPYTERLAB_SERVER_TOKEN)
+.env

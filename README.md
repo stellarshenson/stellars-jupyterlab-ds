@@ -10,16 +10,16 @@
 
 This project provides a pre-configured JupyterLab environment running on Miniforge with NVIDIA GPU support. It includes a curated base environment with data science packages, plus on-demand installation of TensorFlow, PyTorch, R, and Rust environments, allowing you to start your data science projects with ease.
 
-All services run behind **Traefik** reverse proxy, enabling multiple environments without port collisions. Services are available via distinct URLs:
+All services run behind **Traefik** reverse proxy with host-based routing - every platform instance gets its own `*.localhost` namespace derived from the project name (`*.localhost` names resolve to 127.0.0.1 in modern browsers automatically):
 
- - **JupyterLab:** [https://localhost/stellars-jupyterlab-ds/jupyterlab](https://localhost/stellars-jupyterlab-ds/jupyterlab)
- - **MLFlow:** [https://localhost/stellars-jupyterlab-ds/mlflow](https://localhost/stellars-jupyterlab-ds/mlflow)
- - **TensorBoard:** [https://localhost/stellars-jupyterlab-ds/tensorboard](https://localhost/stellars-jupyterlab-ds/tensorboard)
- - **Resources Monitor:** [https://localhost/stellars-jupyterlab-ds/rmonitor](https://localhost/stellars-jupyterlab-ds/rmonitor)
- - **Optuna:** [https://localhost/stellars-jupyterlab-ds/optuna](https://localhost/stellars-jupyterlab-ds/optuna) (when running)
- - **Traefik Dashboard:** [http://localhost:8080/dashboard](http://localhost:8080/dashboard)
+ - **JupyterLab:** [https://lab.stellars-jupyterlab-ds.localhost](https://lab.stellars-jupyterlab-ds.localhost)
+ - **MLFlow:** [https://lab.stellars-jupyterlab-ds.localhost/mlflow](https://lab.stellars-jupyterlab-ds.localhost/mlflow)
+ - **TensorBoard:** [https://lab.stellars-jupyterlab-ds.localhost/tensorboard](https://lab.stellars-jupyterlab-ds.localhost/tensorboard)
+ - **Resources Monitor:** [https://lab.stellars-jupyterlab-ds.localhost/rmonitor](https://lab.stellars-jupyterlab-ds.localhost/rmonitor)
+ - **Optuna:** [https://lab.stellars-jupyterlab-ds.localhost/optuna](https://lab.stellars-jupyterlab-ds.localhost/optuna) (when running)
+ - **Traefik Dashboard:** [https://traefik.stellars-jupyterlab-ds.localhost](https://traefik.stellars-jupyterlab-ds.localhost)
 
-Note: URLs use the project name from `.env` file (`COMPOSE_PROJECT_NAME`). Default is `stellars-jupyterlab-ds`
+Note: hosts use the project name from `.env.default` (`COMPOSE_PROJECT_NAME`, override in `.env`). Default is `stellars-jupyterlab-ds`. The legacy path-based routing (`https://localhost/<project>/jupyterlab`) remains available via `compose-old.yml`
 
 This platform integrates with **[stellars-jupyterhub-ds](https://github.com/stellarshenson/stellars-jupyterhub-ds)** for true multi-user environment management with authentication and user administration
 
@@ -67,7 +67,7 @@ The simplest way to launch a single-user environment is using the included launc
 start.bat
 ```
 
-The launcher detects NVIDIA GPU via `nvidia-smi` and automatically launches with GPU support when available. After starting, access JupyterLab at https://localhost/stellars-jupyterlab-ds/jupyterlab
+The launcher detects NVIDIA GPU via `nvidia-smi` and automatically launches with GPU support when available. After starting, access JupyterLab at https://lab.stellars-jupyterlab-ds.localhost
 
 ### Docker Compose
 
@@ -83,7 +83,7 @@ docker compose up
 docker compose -f compose.yml -f compose-gpu.yml up
 ```
 
-Access the platform at https://localhost/stellars-jupyterlab-ds/jupyterlab once containers are running.
+Access the platform at https://lab.stellars-jupyterlab-ds.localhost once containers are running.
 
 ### Multi-User Standalone Scripts
 
@@ -131,11 +131,8 @@ graph TB
     end
 
     Browser -->|HTTPS| Traefik
-    Traefik -->|/jupyterlab| JLServer
-    Traefik -->|/mlflow| ServerProxy
-    Traefik -->|/tensorboard| ServerProxy
-    Traefik -->|/rmonitor| ServerProxy
-    Traefik -->|/optuna| ServerProxy
+    Traefik -->|"lab.[project].localhost"| JLServer
+    JLServer -->|"/mlflow /tensorboard /rmonitor /optuna"| ServerProxy
 
     ServerProxy --> MLflow
     ServerProxy --> TensorBoard
@@ -376,11 +373,12 @@ docker compose build
 
 ### Configuration
 
-The `.env` file contains core configuration including project name and authentication tokens. The project name determines URL paths for all services - changing from the default `stellars-jupyterlab-ds` requires updating URLs accordingly.
+Configuration is layered: `.env.default` (tracked) holds the defaults, `.env` (gitignored, created on first start) holds local overrides and secrets. The project name determines the access hosts (`lab.<name>.localhost`, `traefik.<name>.localhost`) and the container/volume name prefix.
 
 **Key configuration options:**
-- `COMPOSE_PROJECT_NAME` - Determines URL paths and container names
-- `JUPYTERLAB_SERVER_TOKEN` - Authentication token (empty means no password required)
+- `COMPOSE_PROJECT_NAME` - Determines access hosts and container/volume names
+- `JUPYTERLAB_SERVER_TOKEN` - Authentication token, set in `.env` (empty means no password required)
+- `LAB_PORT` - External HTTPS port (default: `443`)
 - `CONDA_DEFAULT_ENV` - Default conda environment (only base is pre-installed)
 
 Set `CONDA_DEFAULT_ENV` in `compose.yml` or `~/.profile` to specify which conda environment loads by default. Additional environments (tensorflow, torch, r_base, rust) install on-demand via lab-utils. 
@@ -417,9 +415,11 @@ All volumes are named and persist across container updates:
 ### Repository Structure
 ```
 .
-├── compose.yml              # Main docker compose configuration
+├── compose.yml              # Main docker compose configuration (host-based routing)
+├── compose-old.yml          # Legacy path-based routing variant
 ├── compose-gpu.yml          # GPU support overlay
-├── .env                     # Project configuration (name, tokens)
+├── .env.default             # Default configuration (project name, port)
+├── .env                     # Local overrides (auth token), gitignored
 ├── Makefile                 # Convenient build/run commands
 ├── start.sh / start.bat     # Quick start scripts
 ├── services/
@@ -442,14 +442,15 @@ System implements number of helpful _Lab Utilities_ to support streamlined devel
 Configuration variables supported by the platform:
 
 **Core Configuration:**
-- `COMPOSE_PROJECT_NAME` - project name (used for container names, volumes, and URL paths)
+- `COMPOSE_PROJECT_NAME` - project name (container/volume names and the access hosts `lab.<name>.localhost` / `traefik.<name>.localhost`)
+- `LAB_PORT` - external HTTPS port the platform listens on (default: `443`)
 - `LAB_NAME` - lab instance name (defaults to `COMPOSE_PROJECT_NAME`)
 
 **JupyterLab Settings:**
 - `CONDA_DEFAULT_ENV` - default conda environment to activate (default: `base`)
 - `JUPYTERLAB_SERVER_IP` - IP address for JupyterLab (default: `*` for all interfaces)
 - `JUPYTERLAB_SERVER_TOKEN` - access token (empty = no password required)
-- `JUPYTERLAB_BASE_URL` - base URL path (default: `/${COMPOSE_PROJECT_NAME}/jupyterlab`)
+- `JUPYTERLAB_BASE_URL` - base URL path (default: `/` - the lab is served from the host root)
 - `JUPYTERLAB_TIMEZONE` - container timezone in IANA format (e.g. `Europe/Warsaw`); empty = UTC
 - `JUPYTERLAB_SYSTEM_NAME` - rebrand `stellars-jupyterlab-ds` mentions in welcome page, MOTD and toolbar header badge; empty = no rebrand
 

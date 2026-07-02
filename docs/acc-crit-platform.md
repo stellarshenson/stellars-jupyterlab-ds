@@ -28,8 +28,27 @@ stellars-jupyterlab-ds is a containerized JupyterLab data-science platform serve
 
 ## Access and Routing
 
-- [ ] **Routing** - browser reaches JupyterLab and every integrated service through the single Traefik HTTPS endpoint; criteria to be detailed
-  - log: 2026-06-21 section scaffolded
+- [x] **Host routing** - `https://lab.<project>.localhost` reaches JupyterLab (jupyter-server redirects `/` -> `/lab`); host derives from `COMPOSE_PROJECT_NAME`
+  - log: 2026-07-02 criterion added with the host-based routing switch
+  - log: 2026-07-02 verified live - curl 302 -> /lab, override project renders Host(`lab.my-lab.localhost`) (v3.8.11)
+- [x] **Dashboard host** - `https://traefik.<project>.localhost` serves the traefik dashboard via `api@internal` over TLS
+  - log: 2026-07-02 verified live - /dashboard/ 200 over TLS (v3.8.11)
+- [x] **Proxied services** - mlflow, tensorboard, rmonitor, optuna reachable under the lab host via jupyter-server-proxy (`/mlflow`, `/tensorboard`, `/rmonitor`, `/optuna`, `/proxy/<port>/`)
+  - log: 2026-07-02 verified live - /mlflow /tensorboard /rmonitor answer under the lab host; optuna same mechanism, not running by default (v3.8.11)
+- [x] **Cert SANs** - generated cert carries `DNS:localhost`, `DNS:*.localhost`, `DNS:*.<project>.localhost`, `IP:127.0.0.1`, `IP:::1`; CN `lab.<project>.localhost`
+  - log: 2026-07-02 verified live - openssl s_client shows all five SANs and the CN from the rebuilt image (v3.8.11)
+- [x] **Cert regen guard** - cert regenerates when missing or when the `*.<project>.localhost` SAN is absent (pre-SAN volume or project rename); untouched otherwise
+  - log: 2026-07-02 verified live - stale SAN-less volume regenerated on start; md5 unchanged across a further restart (v3.8.11)
+- [x] **Configurable port** - `LAB_PORT` (default 443) sets the published HTTPS port; access URL gains `:<port>` only when != 443
+  - log: 2026-07-02 verified live - platform served on LAB_PORT=8443 alongside the workbench stack holding :443 (v3.8.11)
+- [x] **Env layering** - `.env.default` (tracked defaults) + `.env` (gitignored overrides incl. `JUPYTERLAB_SERVER_TOKEN`); every compose invocation passes both env-files
+  - log: 2026-07-02 verified - compose config with both files, later file wins; start/stop/Makefile/installers all pass both (v3.8.11)
+- [x] **Legacy variant** - path-based routing (`https://localhost/<project>/jupyterlab`) preserved in `compose-old.yml`, runnable via `docker compose -f compose-old.yml`
+  - log: 2026-07-02 verified - compose config clean for compose-old.yml and the GPU overlay (v3.8.11)
+- [x] **Edge: stale cert volume** - existing `vol_certs` from a pre-SAN deployment regenerates on next start without manual volume removal
+  - log: 2026-07-02 verified live - old-image cert migrated on container recreate, traefik serves the SAN cert after its (ordered) start (v3.8.11)
+- [x] **Edge: project rename** - changing `COMPOSE_PROJECT_NAME` regenerates the cert with the new wildcard SAN and moves both hosts to the new namespace
+  - log: 2026-07-02 verified - guard regen path proven for SAN-mismatch (rename = same path); renamed hosts render in compose config (v3.8.11)
 
 ## Image Build and Versioning
 

@@ -7,6 +7,6 @@ mkdir -p dist
 rm -f dist/stellars-jupyterlab-ds-setup-*.sh
 OUT="dist/stellars-jupyterlab-ds-setup-$VERSION.sh"
 sed "s/@VERSION@/$VERSION/" installer.sh.in > "$OUT"
-tar czf - -C ../.. compose.yml compose-gpu.yml start.sh stop.sh LICENSE >> "$OUT"
+tar czf - -C ../.. compose.yml compose-gpu.yml .env.default start.sh stop.sh LICENSE >> "$OUT"
 chmod +x "$OUT"
 echo "installer built: $OUT"

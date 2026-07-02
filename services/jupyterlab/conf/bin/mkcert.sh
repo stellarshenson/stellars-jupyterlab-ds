@@ -2,8 +2,8 @@
 
 # Validate input arguments
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
-  echo "Usage: $0 <certificate_directory> <common_name> <certificate_prefix>"
-  echo "Example: $0 /etc/ssl/mycerts mydomain"
+  echo "Usage: $0 <certificate_directory> <common_name> <certificate_prefix> [subject_alt_names]"
+  echo "Example: $0 /etc/ssl/mycerts mydomain server 'DNS:mydomain,DNS:*.mydomain'"
   exit 1
 fi
 
@@ -11,6 +11,7 @@ fi
 CERT_DIR="$1"
 CERT_CN="$2"
 CERT_PREFIX="$3"
+CERT_SAN="${4:-DNS:$2}" # subjectAltName list, defaults to the common name
 mkdir -p $CERT_DIR
 
 # Certificate details
@@ -20,18 +21,12 @@ COMMON_NAME=${CERT_CN}
 CERT_FILE="${CERT_DIR}/${CERT_PREFIX}.crt"
 KEY_FILE="${CERT_DIR}/${CERT_PREFIX}.key"
 
-# Generate the private key
-openssl genrsa -out $KEY_FILE 2048
-
-# Generate the certificate signing request (CSR)
-openssl req -new -key $KEY_FILE -out "${CERT_DIR}/${CERT_PREFIX}.csr" \
-    -subj "/CN=$COMMON_NAME"
-
-# Generate the self-signed certificate
-openssl x509 -req -days 365 -in "${CERT_DIR}/${CERT_PREFIX}.csr" -signkey $KEY_FILE -out $CERT_FILE
-
-# Clean up the CSR
-rm "${CERT_DIR}/${CERT_PREFIX}.csr"
+# Generate the key and the self-signed certificate in one step; browsers ignore the CN
+# and require the hostnames to be listed in subjectAltName
+openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+    -keyout $KEY_FILE -out $CERT_FILE \
+    -subj "/CN=$COMMON_NAME" \
+    -addext "subjectAltName=$CERT_SAN"
 
 # Change permissions of private key
 chmod 600 $CERT_FILE $KEY_FILE

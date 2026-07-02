@@ -21,19 +21,26 @@ set gpu_available=%errorlevel%
 REM Execute commands based on GPU availability
 if %gpu_available% equ 0 (
     echo NVIDIA GPU is available
-    docker.exe compose --env-file .env -f compose.yml -f compose-gpu.yml up --no-recreate --no-build -d
+    docker.exe compose --env-file .env.default --env-file .env -f compose.yml -f compose-gpu.yml up --no-recreate --no-build -d
 ) else (
     echo NVIDIA GPU is not available
-    docker.exe compose --env-file .env -f compose.yml up --no-recreate --no-build -d
+    docker.exe compose --env-file .env.default --env-file .env -f compose.yml up --no-recreate --no-build -d
 )
 
-REM Access information
+REM Access information: hosts derive from COMPOSE_PROJECT_NAME (.env overrides .env.default)
 set "PROJECT_NAME="
-for /f "tokens=1,* delims==" %%a in ('findstr /b /c:"COMPOSE_PROJECT_NAME=" "%ENV_FILE%"') do set "PROJECT_NAME=%%b"
+for /f "tokens=1,* delims==" %%a in ('findstr /b /c:"COMPOSE_PROJECT_NAME=" "%ENV_FILE%" 2^>nul') do set "PROJECT_NAME=%%b"
+if not defined PROJECT_NAME for /f "tokens=1,* delims==" %%a in ('findstr /b /c:"COMPOSE_PROJECT_NAME=" ".env.default" 2^>nul') do set "PROJECT_NAME=%%b"
 if not defined PROJECT_NAME set "PROJECT_NAME=stellars-jupyterlab-ds"
+set "LAB_PORT="
+for /f "tokens=1,* delims==" %%a in ('findstr /b /c:"LAB_PORT=" "%ENV_FILE%" 2^>nul') do set "LAB_PORT=%%b"
+if not defined LAB_PORT for /f "tokens=1,* delims==" %%a in ('findstr /b /c:"LAB_PORT=" ".env.default" 2^>nul') do set "LAB_PORT=%%b"
+if not defined LAB_PORT set "LAB_PORT=443"
+set "ACCESS_URL=https://lab.!PROJECT_NAME!.localhost"
+if not "!LAB_PORT!"=="443" set "ACCESS_URL=!ACCESS_URL!:!LAB_PORT!"
 echo.
 echo JupyterLab is starting.
-echo Access URL: https://localhost/!PROJECT_NAME!/jupyterlab
+echo Access URL: !ACCESS_URL!
 echo Log in with the password you set ^(it is not in the URL^).
 echo The password is stored in %~dp0%ENV_FILE% ^(key JUPYTERLAB_SERVER_TOKEN^).
 echo.
@@ -49,5 +56,3 @@ echo Initial password saved to %ENV_FILE% ^(key JUPYTERLAB_SERVER_TOKEN^).
 goto :eof
 
 REM EOF
-
-

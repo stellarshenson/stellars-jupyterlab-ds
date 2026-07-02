@@ -222,7 +222,8 @@ stop: preflight
 ## clean orphaned containers
 clean: preflight
 	@echo 'removing dangling and unused images, containers, nets and volumes'
-	@docker compose --env-file .env -f compose.yml down --remove-orphans
+	@touch .env
+	@docker compose --env-file .env.default --env-file .env -f compose.yml down --remove-orphans
 	@yes | docker image prune
 	@yes | docker network prune
 	@echo ""
