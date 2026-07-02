@@ -143,17 +143,19 @@ increment_version:
 	printf '%s' "$$NEW" > $(LAB_UTILS_VERSION_FILE); \
 	printf '%s%sSynced duoptimum-lab-utils version -> %s%s\n' "$(CYAN)" "$(BOLD)" "$$NEW" "$(RESET)"
 
-## build docker containers and the windows installer (BUILD_OPTS='--no-version-increment --no-cache')
+## build docker containers and the windows + linux installers (BUILD_OPTS='--no-version-increment --no-cache')
 build: preflight maybe_increment_version
 	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
 	@./extra/windows-installer/build.sh
+	@./extra/linux-installer/build.sh
 
 ## build with verbose output (BUILD_OPTS='--no-version-increment --no-cache')
 build_verbose: preflight maybe_increment_version
 	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
 	@./extra/windows-installer/build.sh
+	@./extra/linux-installer/build.sh
 
 ## rebuild 'target' stage without bumping version (default; safe for dev iteration). DEBUG=1 to log
 rebuild: preflight _rebuild_impl

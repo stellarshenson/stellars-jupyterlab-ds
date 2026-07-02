@@ -1,0 +1,107 @@
+#!/bin/sh
+# --------------------------------------------------------------------------------------------------
+#
+#   Stellars JupyterLab DS Platform - linux all-in-one installer (self-extracting)
+#   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
+#
+#   Extracts the embedded docker compose deployment (compose files + start/stop scripts),
+#   asks for the initial JupyterLab password (stored in .env as JUPYTERLAB_SERVER_TOKEN),
+#   writes an uninstaller and optionally starts the platform. The platform image is pulled
+#   from Docker Hub on first start, nothing is built locally.
+#
+#   Requires docker with the compose plugin - checked before anything is installed.
+#   Run as a file (sh stellars-jupyterlab-ds-setup-<version>.sh) - the payload is appended
+#   below the __ARCHIVE_BELOW__ marker, so piping the script into sh will not work.
+#
+# --------------------------------------------------------------------------------------------------
+set -e
+
+VERSION="@VERSION@"
+PROJECT_NAME="stellars-jupyterlab-ds"
+ACCESS_URL="https://localhost/$PROJECT_NAME/jupyterlab"
+INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$PROJECT_NAME"
+
+echo "Stellars JupyterLab DS $VERSION - installer"
+echo
+
+# prerequisite: docker compose must be available
+if ! docker compose version >/dev/null 2>&1; then
+    echo "ERROR: Docker Compose was not found on this system." >&2
+    echo "Install Docker Engine with the compose plugin (https://docs.docker.com/engine/install/)," >&2
+    echo "Docker Desktop (https://www.docker.com/products/docker-desktop/) or" >&2
+    echo "Rancher Desktop (https://rancherdesktop.io/) and run this installer again." >&2
+    exit 1
+fi
+
+# install directory
+printf "Install directory [%s]: " "$INSTALL_DIR"
+read REPLY
+[ -n "$REPLY" ] && INSTALL_DIR="$REPLY"
+mkdir -p "$INSTALL_DIR"
+
+# extract the embedded payload appended below the marker
+ARCHIVE_LINE=$(awk '/^__ARCHIVE_BELOW__$/{print NR+1; exit}' "$0")
+tail -n +"$ARCHIVE_LINE" "$0" | tar xzf - -C "$INSTALL_DIR"
+
+# initial password -> .env; the JupyterLab login page asks for it, it is never placed in the URL
+echo
+echo "Set the initial password for JupyterLab access."
+echo "This is the initial password; you can change it after you log in."
+JUPYTERLAB_PASSWORD=""
+while [ -z "$JUPYTERLAB_PASSWORD" ]; do
+    printf "Enter a password: "
+    stty -echo 2>/dev/null || true
+    read JUPYTERLAB_PASSWORD
+    stty echo 2>/dev/null || true
+    echo
+done
+{
+    echo "# name of the project for docker-compose"
+    echo "COMPOSE_PROJECT_NAME=$PROJECT_NAME"
+    echo "# initial JupyterLab password (login page asks for it); change it after you log in"
+    echo "JUPYTERLAB_SERVER_TOKEN=$JUPYTERLAB_PASSWORD"
+} > "$INSTALL_DIR/.env"
+
+# uninstaller - removes containers, images, (on confirmation) data volumes, then the installed files
+cat > "$INSTALL_DIR/uninstall.sh" <<'UNINSTALL_EOF'
+#!/bin/sh
+# Stellars JupyterLab DS Platform - uninstaller
+cd "$(dirname "$0")"
+VOLUMES=""
+printf "Also remove the data volumes (JupyterLab home, workspace, cache, certificates)? This permanently deletes all notebooks and data. [y/N]: "
+read REPLY
+case "$REPLY" in [Yy]*) VOLUMES="--volumes";; esac
+echo "Stopping the platform and removing containers and images..."
+docker compose --env-file .env -f compose.yml down --remove-orphans --rmi all $VOLUMES || \
+    echo "WARNING: docker compose down failed (is docker running?) - remove containers manually." >&2
+INSTALL_DIR=$(pwd)
+cd /
+rm -f "$INSTALL_DIR/compose.yml" "$INSTALL_DIR/compose-gpu.yml" "$INSTALL_DIR/start.sh" \
+      "$INSTALL_DIR/stop.sh" "$INSTALL_DIR/LICENSE" "$INSTALL_DIR/.env" "$INSTALL_DIR/uninstall.sh"
+rmdir "$INSTALL_DIR" 2>/dev/null || echo "Note: $INSTALL_DIR not empty, left in place."
+echo "Uninstalled."
+UNINSTALL_EOF
+chmod +x "$INSTALL_DIR/uninstall.sh"
+
+# access information
+echo
+echo "Installed to $INSTALL_DIR"
+echo "Access URL: $ACCESS_URL"
+echo "Log in with the password you set (it is not in the URL)."
+echo "The password is stored in $INSTALL_DIR/.env (key JUPYTERLAB_SERVER_TOKEN)."
+echo
+echo "Start:     $INSTALL_DIR/start.sh"
+echo "Stop:      $INSTALL_DIR/stop.sh"
+echo "Uninstall: $INSTALL_DIR/uninstall.sh"
+echo
+
+# optionally start now - start.sh pulls the image when missing (several GB) and starts compose (GPU-aware)
+printf "Start the platform now? [Y/n]: "
+read REPLY
+case "$REPLY" in
+    [Nn]*) ;;
+    *) "$INSTALL_DIR/start.sh" ;;
+esac
+
+exit 0
+__ARCHIVE_BELOW__

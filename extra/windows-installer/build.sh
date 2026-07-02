@@ -8,5 +8,6 @@ if ! command -v makensis >/dev/null 2>&1; then
 fi
 VERSION=$(python3 -c 'import tomllib;print(tomllib.load(open("../../pyproject.toml","rb"))["project"]["version"])')
 mkdir -p dist
+rm -f dist/stellars-jupyterlab-ds-setup-*.exe
 makensis -DVERSION="$VERSION" installer.nsi
 echo "installer built: dist/stellars-jupyterlab-ds-setup-$VERSION.exe"

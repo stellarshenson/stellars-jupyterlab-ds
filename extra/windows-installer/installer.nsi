@@ -135,6 +135,9 @@ Section "Install"
   CreateShortCut "$SMPROGRAMS\${DISPLAY_NAME}\Start JupyterLab.lnk" "$INSTDIR\start.bat"
   CreateShortCut "$SMPROGRAMS\${DISPLAY_NAME}\Stop JupyterLab.lnk" "$INSTDIR\stop.bat"
   WriteINIStr "$SMPROGRAMS\${DISPLAY_NAME}\Open JupyterLab.url" "InternetShortcut" "URL" "${ACCESS_URL}"
+
+  ; desktop shortcut to the server access URL
+  WriteINIStr "$DESKTOP\JupyterLab.url" "InternetShortcut" "URL" "${ACCESS_URL}"
   WriteUninstaller "$INSTDIR\uninstall.exe"
   CreateShortCut "$SMPROGRAMS\${DISPLAY_NAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe"
 
@@ -183,6 +186,7 @@ keep_volumes:
   RMDir "$INSTDIR"
 
   ; shortcuts and registry
+  Delete "$DESKTOP\JupyterLab.url"
   Delete "$SMPROGRAMS\${DISPLAY_NAME}\Start JupyterLab.lnk"
   Delete "$SMPROGRAMS\${DISPLAY_NAME}\Stop JupyterLab.lnk"
   Delete "$SMPROGRAMS\${DISPLAY_NAME}\Open JupyterLab.url"
