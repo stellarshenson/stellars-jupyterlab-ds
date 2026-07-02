@@ -10,10 +10,6 @@
 #   Jupyter Lab       - https://lab.<project>.localhost (redirects to /lab)
 #   Traefik dashboard - https://traefik.<project>.localhost
 #
-#   Integrated services (tensorboard, mlflow, rmonitor, optuna, generic app/callback) are
-#   reached through jupyter-server-proxy under the lab host, e.g.
-#   https://lab.<project>.localhost/mlflow, /tensorboard, /rmonitor, /proxy/<port>/
-#
 #   Example project .env file content:
 #   COMPOSE_PROJECT_NAME=my-lab-platform
 #   JUPYTERLAB_SERVER_TOKEN=my_secret_token123

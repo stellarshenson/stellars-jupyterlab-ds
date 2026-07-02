@@ -4,7 +4,8 @@
 ;   Project Home: https://github.com/stellarshenson/stellars-jupyterlab-ds
 ;
 ;   Installs the docker compose deployment (compose files + start/stop scripts) into a
-;   per-user directory, asks for the platform (project) name - it becomes part of the
+;   per-user directory, notes the license (Elastic License 2.0, shipped as the LICENSE
+;   file), asks for the platform (project) name - it becomes part of the
 ;   access URL (https://lab.<name>.localhost) and the prefix for container and volume
 ;   names - and the initial JupyterLab password (stored in .env as JUPYTERLAB_SERVER_TOKEN),
 ;   creates Start Menu shortcuts and registers an uninstaller that removes containers,
@@ -53,7 +54,7 @@ Var AccessUrl
 ; ---------------------------------------- pages
 
 !define MUI_WELCOMEPAGE_TITLE "${DISPLAY_NAME} ${VERSION}"
-!define MUI_WELCOMEPAGE_TEXT "This wizard installs the ${DISPLAY_NAME} platform (JupyterLab, Traefik proxy and watchtower - a docker compose deployment).$\r$\n$\r$\nDocker Desktop or Rancher Desktop with the docker compose plugin must be installed and able to run Linux containers.$\r$\n$\r$\nThe first start downloads the platform image from Docker Hub (several GB)."
+!define MUI_WELCOMEPAGE_TEXT "This wizard installs the ${DISPLAY_NAME} platform (JupyterLab, Traefik proxy and watchtower - a docker compose deployment).$\r$\n$\r$\nDocker Desktop or Rancher Desktop with the docker compose plugin must be installed and able to run Linux containers.$\r$\n$\r$\nThe first start downloads the platform image from Docker Hub (several GB).$\r$\n$\r$\nThe platform is licensed under the Elastic License 2.0 - the full text is installed as the LICENSE file in the installation folder."
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_DIRECTORY
 Page custom ConfigPageCreate ConfigPageLeave
