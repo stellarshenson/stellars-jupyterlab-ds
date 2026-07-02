@@ -3,5 +3,6 @@
 - **obsidian** - add on config to `docker-compose.yml` to launch __vnc__ based obsidian server on :3000
 - **watchtower** - allows to start service to refresh container images every 1h if needed
 - **windows** - windows task scheduler config & related scripts to run jupyterlab with computer start
+- **windows-installer** - NSIS setup `.exe` that installs and runs the platform on windows (requires docker compose), with uninstaller
 - **aws** - tools that support running aws projects, i.e. tunnel setup to allow awscliv2 sso config
 
