@@ -13,10 +13,6 @@ This project provides a pre-configured JupyterLab environment running on Minifor
 All services run behind **Traefik** reverse proxy. Default delivery is now **host-based routing** (previously path-based) - each instance gets its own `*.{project}.localhost` namespace, so many deployments run side by side on one machine (`*.localhost` resolves to 127.0.0.1 in modern browsers, no hosts-file edits):
 
  - **JupyterLab:** [https://lab.stellars-jupyterlab-ds.localhost](https://lab.stellars-jupyterlab-ds.localhost)
- - **MLFlow:** [https://lab.stellars-jupyterlab-ds.localhost/mlflow](https://lab.stellars-jupyterlab-ds.localhost/mlflow)
- - **TensorBoard:** [https://lab.stellars-jupyterlab-ds.localhost/tensorboard](https://lab.stellars-jupyterlab-ds.localhost/tensorboard)
- - **Resources Monitor:** [https://lab.stellars-jupyterlab-ds.localhost/rmonitor](https://lab.stellars-jupyterlab-ds.localhost/rmonitor)
- - **Optuna:** [https://lab.stellars-jupyterlab-ds.localhost/optuna](https://lab.stellars-jupyterlab-ds.localhost/optuna) (when running)
  - **Traefik Dashboard:** [https://traefik.stellars-jupyterlab-ds.localhost](https://traefik.stellars-jupyterlab-ds.localhost)
 
 Note: hosts use the project name from `.env.default` (`COMPOSE_PROJECT_NAME`, override in `.env`). Default is `stellars-jupyterlab-ds`

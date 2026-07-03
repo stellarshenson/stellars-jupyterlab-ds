@@ -57,8 +57,7 @@ services:
     restart: unless-stopped
 
 
-  ## Run jupyterlab via traefic with btop, mlflow, optuna and tensorboard
-  ## Services are mapped to distinct URLs using traefic proxy
+  ## JupyterLab, routed by traefik to https://lab.<project>.localhost
   jupyterlab:
     container_name: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
     hostname: ${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds}-jupyterlab
