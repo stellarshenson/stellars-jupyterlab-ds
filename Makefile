@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help preflight build build_verbose rebuild rebuild_increment_version _rebuild_impl push pull start stop clean increment_version maybe_increment_version tag
+.PHONY: help preflight build build_verbose rebuild rebuild_increment_version _rebuild_impl installers push pull start stop clean increment_version maybe_increment_version tag
 
 # Use bash so we can use `set -o pipefail` to propagate docker's exit code through tee (DEBUG=1)
 SHELL := /bin/bash
@@ -63,6 +63,11 @@ preflight:
 		printf "  %-26s OK   reachable\n" "docker daemon"; \
 	else \
 		printf "  %-26s MISSING (daemon not reachable)\n" "docker daemon"; rc=1; \
+	fi; \
+	if p=$$(command -v makensis 2>/dev/null); then \
+		printf "  %-26s OK   %s\n" "makensis (NSIS, optional)" "$$p"; \
+	else \
+		printf "  %-26s SKIP (optional; Windows installer build skipped - apt install nsis)\n" "makensis (NSIS, optional)"; \
 	fi; \
 	echo; \
 	printf "%-28s %s\n" "File" "Status"; \
@@ -147,15 +152,13 @@ increment_version:
 build: preflight maybe_increment_version
 	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
-	@./extra/windows-installer/build.sh
-	@./extra/linux-installer/build.sh
+	@$(MAKE) installers
 
 ## build with verbose output (BUILD_OPTS='--no-version-increment --no-cache')
 build_verbose: preflight maybe_increment_version
 	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
-	@./extra/windows-installer/build.sh
-	@./extra/linux-installer/build.sh
+	@$(MAKE) installers
 
 ## rebuild 'target' stage without bumping version (default; safe for dev iteration). DEBUG=1 to log
 rebuild: preflight _rebuild_impl
@@ -186,6 +189,10 @@ endif
 		-f services/jupyterlab/Dockerfile.jupyterlab \
 		services/jupyterlab $(REBUILD_TEE)
 	$(PRINT_BUILD_SUCCESS)
+	@$(MAKE) installers
+
+## build the windows + linux all-in-one installers (windows exe skipped when NSIS is absent)
+installers:
 	@./extra/windows-installer/build.sh
 	@./extra/linux-installer/build.sh
 

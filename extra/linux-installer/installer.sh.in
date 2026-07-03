@@ -11,7 +11,7 @@
 #   from Docker Hub on first start, nothing is built locally.
 #
 #   Requires docker with the compose plugin - checked before anything is installed.
-#   Run as a file (sh stellars-jupyterlab-ds-setup-<version>.sh) - the payload is appended
+#   Run as a file (sh stellars-jupyterlab-ds-setup-{version}.sh) - the payload is appended
 #   below the __ARCHIVE_BELOW__ marker, so piping the script into sh will not work.
 #
 # --------------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ echo "installed as the LICENSE file in the install directory."
 echo
 
 # platform (project) name - part of the access URL and the prefix for container and volume names
-echo "The platform (project) name becomes part of the access URL (https://lab.<name>.localhost)"
+echo "The platform (project) name becomes part of the access URL (https://lab.{name}.localhost)"
 echo "and the prefix for container and volume names. Lowercase letters, digits and dashes only."
 while :; do
     printf "Project name [%s]: " "$PROJECT_NAME"
@@ -76,7 +76,7 @@ while [ -z "$JUPYTERLAB_PASSWORD" ]; do
 done
 {
     echo "# local overrides over .env.default"
-    echo "# platform name - access hosts lab.<name>.localhost / traefik.<name>.localhost,"
+    echo "# platform name - access hosts lab.{name}.localhost / traefik.{name}.localhost,"
     echo "# and the prefix for container and volume names"
     echo "COMPOSE_PROJECT_NAME=$PROJECT_NAME"
     echo "# initial JupyterLab password (login page asks for it); change it after you log in"

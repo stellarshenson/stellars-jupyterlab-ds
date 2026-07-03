@@ -10,7 +10,7 @@
 
 This project provides a pre-configured JupyterLab environment running on Miniforge with NVIDIA GPU support. It includes a curated base environment with data science packages, plus on-demand installation of TensorFlow, PyTorch, R, and Rust environments, allowing you to start your data science projects with ease.
 
-All services run behind **Traefik** reverse proxy. Default delivery is now **host-based routing** (previously path-based) - each instance gets its own `*.<project>.localhost` namespace, so many deployments run side by side on one machine (`*.localhost` resolves to 127.0.0.1 in modern browsers, no hosts-file edits):
+All services run behind **Traefik** reverse proxy. Default delivery is now **host-based routing** (previously path-based) - each instance gets its own `*.{project}.localhost` namespace, so many deployments run side by side on one machine (`*.localhost` resolves to 127.0.0.1 in modern browsers, no hosts-file edits):
 
  - **JupyterLab:** [https://lab.stellars-jupyterlab-ds.localhost](https://lab.stellars-jupyterlab-ds.localhost)
  - **MLFlow:** [https://lab.stellars-jupyterlab-ds.localhost/mlflow](https://lab.stellars-jupyterlab-ds.localhost/mlflow)
@@ -371,9 +371,17 @@ For local modifications or development work, build the image locally. Note that 
 docker compose build
 ```
 
+**Building the installers (optional):**
+
+`make build` and `make rebuild` also produce the standalone Windows and Linux installers in the repo-root `dist/` folder (gitignored); `make installers` builds just those.
+
+- **NSIS required for the Windows installer** - the `.exe` is compiled with NSIS; install it first (`sudo apt install nsis`)
+- **Skipped gracefully when absent** - without NSIS the Windows step prints a warning and is skipped; the Linux installer still builds
+- **Reported by preflight** - `make preflight` lists NSIS as an optional tool (`OK` when present, `SKIP` when not) and never fails on it
+
 ### Configuration
 
-Configuration is layered: `.env.default` (tracked) holds the defaults, `.env` (gitignored, created on first start) holds local overrides and secrets. The project name determines the access hosts (`lab.<name>.localhost`, `traefik.<name>.localhost`) and the container/volume name prefix.
+Configuration is layered: `.env.default` (tracked) holds the defaults, `.env` (gitignored, created on first start) holds local overrides and secrets. The project name determines the access hosts (`lab.{name}.localhost`, `traefik.{name}.localhost`) and the container/volume name prefix.
 
 **Key configuration options:**
 - `COMPOSE_PROJECT_NAME` - Determines access hosts and container/volume names
@@ -441,7 +449,7 @@ System implements number of helpful _Lab Utilities_ to support streamlined devel
 Configuration variables supported by the platform:
 
 **Core Configuration:**
-- `COMPOSE_PROJECT_NAME` - project name (container/volume names and the access hosts `lab.<name>.localhost` / `traefik.<name>.localhost`)
+- `COMPOSE_PROJECT_NAME` - project name (container/volume names and the access hosts `lab.{name}.localhost` / `traefik.{name}.localhost`)
 - `LAB_PORT` - external HTTPS port the platform listens on (default: `443`)
 - `LAB_NAME` - lab instance name (defaults to `COMPOSE_PROJECT_NAME`)
 

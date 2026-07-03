@@ -6,7 +6,7 @@
 ;   Installs the docker compose deployment (compose files + start/stop scripts) into a
 ;   per-user directory, notes the license (Elastic License 2.0, shipped as the LICENSE
 ;   file), asks for the platform (project) name - it becomes part of the
-;   access URL (https://lab.<name>.localhost) and the prefix for container and volume
+;   access URL (https://lab.{name}.localhost) and the prefix for container and volume
 ;   names - and the initial JupyterLab password (stored in .env as JUPYTERLAB_SERVER_TOKEN),
 ;   creates Start Menu shortcuts and registers an uninstaller that removes containers,
 ;   images and (on confirmation) the data volumes.
@@ -38,7 +38,7 @@ ${StrStr} # declare for use in ConfigPageLeave
 !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PROJECT_NAME}"
 
 Name "${DISPLAY_NAME}"
-OutFile "dist/${PROJECT_NAME}-setup-${VERSION}.exe"
+OutFile "../../dist/${PROJECT_NAME}-setup-${VERSION}.exe"
 InstallDir "$LOCALAPPDATA\${PROJECT_NAME}"
 RequestExecutionLevel user
 ShowInstDetails show
@@ -93,7 +93,7 @@ Function .onInit
 FunctionEnd
 
 ; platform configuration page - the project name becomes part of the access URL
-; (https://lab.<name>.localhost) and the prefix for container and volume names; the
+; (https://lab.{name}.localhost) and the prefix for container and volume names; the
 ; password becomes JUPYTERLAB_SERVER_TOKEN in .env, asked for on the JupyterLab login page
 Function ConfigPageCreate
   !insertmacro MUI_HEADER_TEXT "Platform configuration" "Choose the platform name and the initial JupyterLab password"
@@ -102,7 +102,7 @@ Function ConfigPageCreate
   ${If} $Dialog == error
     Abort
   ${EndIf}
-  ${NSD_CreateLabel} 0 0 100% 26u "Platform (project) name - it becomes part of the access URL (https://lab.<name>.localhost) and the prefix for container and volume names. Lowercase letters, digits and dashes only."
+  ${NSD_CreateLabel} 0 0 100% 26u "Platform (project) name - it becomes part of the access URL (https://lab.{name}.localhost) and the prefix for container and volume names. Lowercase letters, digits and dashes only."
   Pop $0
   ${NSD_CreateLabel} 0 30u 20% 12u "Project name:"
   Pop $0
@@ -159,7 +159,7 @@ Section "Install"
   ; .env holds local overrides over .env.default - the chosen project name and password
   FileOpen $0 "$INSTDIR\.env" w
   FileWrite $0 "# local overrides over .env.default$\r$\n"
-  FileWrite $0 "# platform name - access hosts lab.<name>.localhost / traefik.<name>.localhost,$\r$\n"
+  FileWrite $0 "# platform name - access hosts lab.{name}.localhost / traefik.{name}.localhost,$\r$\n"
   FileWrite $0 "# and the prefix for container and volume names$\r$\n"
   FileWrite $0 "COMPOSE_PROJECT_NAME=$ProjectName$\r$\n"
   FileWrite $0 "# initial JupyterLab password (login page asks for it); change it after you log in$\r$\n"
