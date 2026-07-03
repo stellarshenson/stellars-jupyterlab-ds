@@ -186,6 +186,8 @@ endif
 		-f services/jupyterlab/Dockerfile.jupyterlab \
 		services/jupyterlab $(REBUILD_TEE)
 	$(PRINT_BUILD_SUCCESS)
+	@./extra/windows-installer/build.sh
+	@./extra/linux-installer/build.sh
 
 ## pull docker image from dockerhub
 pull: preflight

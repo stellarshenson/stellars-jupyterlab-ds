@@ -43,8 +43,9 @@ stellars-jupyterlab-ds is a containerized JupyterLab data-science platform serve
   - log: 2026-07-02 verified live - platform served on LAB_PORT=8443 alongside the workbench stack holding :443 (v3.8.11)
 - [x] **Env layering** - `.env.default` (tracked defaults) + `.env` (gitignored overrides incl. `JUPYTERLAB_SERVER_TOKEN`); every compose invocation passes both env-files
   - log: 2026-07-02 verified - compose config with both files, later file wins; start/stop/Makefile/installers all pass both (v3.8.11)
-- [x] **Legacy variant** - path-based routing (`https://localhost/<project>/jupyterlab`) preserved in `compose-old.yml`, runnable via `docker compose -f compose-old.yml`
+- [x] **Legacy variant removed** - path-based `compose-old.yml` dropped; host-based routing is the sole compose configuration
   - log: 2026-07-02 verified - compose config clean for compose-old.yml and the GPU overlay (v3.8.11)
+  - log: 2026-07-03 compose-old.yml removed - legacy path-based variant retired, host-based is the only delivery (v3.9.1)
 - [x] **Edge: stale cert volume** - existing `vol_certs` from a pre-SAN deployment regenerates on next start without manual volume removal
   - log: 2026-07-02 verified live - old-image cert migrated on container recreate, traefik serves the SAN cert after its (ordered) start (v3.8.11)
 - [x] **Edge: project rename** - changing `COMPOSE_PROJECT_NAME` regenerates the cert with the new wildcard SAN and moves both hosts to the new namespace

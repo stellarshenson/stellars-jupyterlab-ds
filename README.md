@@ -10,7 +10,7 @@
 
 This project provides a pre-configured JupyterLab environment running on Miniforge with NVIDIA GPU support. It includes a curated base environment with data science packages, plus on-demand installation of TensorFlow, PyTorch, R, and Rust environments, allowing you to start your data science projects with ease.
 
-All services run behind **Traefik** reverse proxy with host-based routing - every platform instance gets its own `*.localhost` namespace derived from the project name (`*.localhost` names resolve to 127.0.0.1 in modern browsers automatically):
+All services run behind **Traefik** reverse proxy. Default delivery is now **host-based routing** (previously path-based) - each instance gets its own `*.<project>.localhost` namespace, so many deployments run side by side on one machine (`*.localhost` resolves to 127.0.0.1 in modern browsers, no hosts-file edits):
 
  - **JupyterLab:** [https://lab.stellars-jupyterlab-ds.localhost](https://lab.stellars-jupyterlab-ds.localhost)
  - **MLFlow:** [https://lab.stellars-jupyterlab-ds.localhost/mlflow](https://lab.stellars-jupyterlab-ds.localhost/mlflow)
@@ -19,7 +19,7 @@ All services run behind **Traefik** reverse proxy with host-based routing - ever
  - **Optuna:** [https://lab.stellars-jupyterlab-ds.localhost/optuna](https://lab.stellars-jupyterlab-ds.localhost/optuna) (when running)
  - **Traefik Dashboard:** [https://traefik.stellars-jupyterlab-ds.localhost](https://traefik.stellars-jupyterlab-ds.localhost)
 
-Note: hosts use the project name from `.env.default` (`COMPOSE_PROJECT_NAME`, override in `.env`). Default is `stellars-jupyterlab-ds`. The legacy path-based routing (`https://localhost/<project>/jupyterlab`) remains available via `compose-old.yml`
+Note: hosts use the project name from `.env.default` (`COMPOSE_PROJECT_NAME`, override in `.env`). Default is `stellars-jupyterlab-ds`
 
 This platform integrates with **[stellars-jupyterhub-ds](https://github.com/stellarshenson/stellars-jupyterhub-ds)** for true multi-user environment management with authentication and user administration
 
@@ -416,7 +416,6 @@ All volumes are named and persist across container updates:
 ```
 .
 ├── compose.yml              # Main docker compose configuration (host-based routing)
-├── compose-old.yml          # Legacy path-based routing variant
 ├── compose-gpu.yml          # GPU support overlay
 ├── .env.default             # Default configuration (project name, port)
 ├── .env                     # Local overrides (auth token), gitignored
