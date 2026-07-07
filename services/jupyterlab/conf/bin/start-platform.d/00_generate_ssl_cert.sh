@@ -9,10 +9,14 @@ CERTS_DIR="/mnt/certs"
 CERT_CN="lab.${LAB_NAME:-stellars-jupyterlab-ds}.localhost"
 CERT_SAN="DNS:localhost,DNS:*.localhost,DNS:*.${LAB_NAME:-stellars-jupyterlab-ds}.localhost,IP:127.0.0.1,IP:::1"
 
-# (re)generate when no certificate exists yet, or when the existing one lacks the
-# per-project wildcard SAN (pre-SAN certificate, or the project was renamed)
+# (re)generate when no certificate exists yet, when the existing one lacks the
+# per-project wildcard SAN (pre-SAN certificate, or the project was renamed), or when
+# it expires within 30 days (the certs volume outlives every image update - without
+# this check an install older than a year serves an expired cert forever)
 CERT_FILE=$(find $CERTS_DIR -name '*.crt' | head -n 1)
-if [[ -z "$CERT_FILE" ]] || ! openssl x509 -in "$CERT_FILE" -noout -ext subjectAltName 2>/dev/null | grep -qF "*.${LAB_NAME:-stellars-jupyterlab-ds}.localhost"; then
+if [[ -z "$CERT_FILE" ]] \
+	|| ! openssl x509 -in "$CERT_FILE" -noout -ext subjectAltName 2>/dev/null | grep -qF "*.${LAB_NAME:-stellars-jupyterlab-ds}.localhost" \
+	|| ! openssl x509 -in "$CERT_FILE" -noout -checkend 2592000 >/dev/null 2>&1; then
 	log_info "generating self-signed certificate CN=$CERT_CN"
 	/mkcert.sh "$CERTS_DIR" "$CERT_CN" "server" "$CERT_SAN" # params: certs_dir, common_name, file_prefix, san_list
 fi

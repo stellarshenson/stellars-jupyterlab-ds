@@ -38,7 +38,11 @@ tensorboard --bind_all --logdir $TENSORBOARD_LOGDIR --port $TENSORBOARD_PORT
 EOF
 )
 
-# use conda to execute command
-conda run -n base "$COMMAND" &
+# ensure log file exists
+touch /var/log/tensorboard.log 2>/dev/null || true
+
+# use conda to execute command (same launch shape as mlflow: explicit bash -c,
+# unbuffered output, dedicated log file instead of vanishing into conda run's capture)
+conda run -n base --no-capture-output bash -c "$COMMAND" >> /var/log/tensorboard.log 2>&1 &
 
 # EOF

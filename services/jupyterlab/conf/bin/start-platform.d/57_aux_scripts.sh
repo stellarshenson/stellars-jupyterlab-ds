@@ -37,8 +37,10 @@ failed=0
 for script in "${scripts[@]}"; do
     script_name=$(basename "$script")
     log_info "running: ${script_name}"
-    if ! bash "${script}"; then
-        log_error "FAILED: ${script_name} (exit code: $?)"
+    bash "${script}"
+    rc=$?
+    if [[ ${rc} -ne 0 ]]; then # capture rc before testing - inside 'if ! cmd' $? is the negation, always 0
+        log_error "FAILED: ${script_name} (exit code: ${rc})"
         failed=$((failed + 1))
     fi
 done

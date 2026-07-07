@@ -1,7 +1,7 @@
 #!/bin/sh
-CURRENT_FILE=`readlink -f $0`
-CURRENT_DIR=`dirname $CURRENT_FILE`
-cd $CURRENT_DIR
+CURRENT_FILE=$(readlink -f "$0")
+CURRENT_DIR=$(dirname "$CURRENT_FILE")
+cd "$CURRENT_DIR" || exit 1
 
 ENV_FILE=".env"
 
@@ -11,17 +11,27 @@ ENV_FILE=".env"
 if ! grep -q '^JUPYTERLAB_SERVER_TOKEN=' "$ENV_FILE" 2>/dev/null; then
     echo "First start - set the initial password for JupyterLab access."
     echo "This is the initial password; you can change it after you log in."
-    printf "Enter a password: "
-    stty -echo 2>/dev/null
-    read JUPYTERLAB_PASSWORD
-    stty echo 2>/dev/null
-    echo
+    trap 'stty echo 2>/dev/null || true' EXIT INT TERM # never leave the terminal with echo off
+    JUPYTERLAB_PASSWORD=""
+    while [ -z "$JUPYTERLAB_PASSWORD" ]; do
+        printf "Enter a password: "
+        stty -echo 2>/dev/null || true
+        if ! read JUPYTERLAB_PASSWORD; then # stdin EOF (non-interactive run) - abort instead of spinning
+            stty echo 2>/dev/null || true
+            echo
+            echo "ERROR: no interactive input - add JUPYTERLAB_SERVER_TOKEN=<password> to $ENV_FILE and re-run." >&2
+            exit 1
+        fi
+        stty echo 2>/dev/null || true
+        echo
+    done
     printf 'JUPYTERLAB_SERVER_TOKEN=%s\n' "$JUPYTERLAB_PASSWORD" >> "$ENV_FILE"
+    chmod 600 "$ENV_FILE" 2>/dev/null || true # holds the password - keep it private
     echo "Initial password saved to $ENV_FILE (key JUPYTERLAB_SERVER_TOKEN)."
 fi
 
 # Check if nvidia-smi is available
-if command -v nvidia-smi &> /dev/null; then
+if command -v nvidia-smi > /dev/null 2>&1; then
     if nvidia-smi > /dev/null 2>&1; then
         echo "Nvidia GPU found."
         # Run the command for when GPU is available
@@ -57,6 +67,7 @@ echo "JupyterLab is starting."
 echo "Access URL: $ACCESS_URL"
 echo "Log in with the password you set (it is not in the URL)."
 echo "The password is stored in $CURRENT_DIR/$ENV_FILE (key JUPYTERLAB_SERVER_TOKEN)."
+echo "Note: changes to $ENV_FILE apply after ./stop.sh && ./start.sh (running containers are not recreated)."
 echo
 printf "Press Enter to close this window..."
 read dummy

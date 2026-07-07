@@ -52,9 +52,10 @@ done
 ACCESS_URL="https://lab.$PROJECT_NAME.localhost"
 INSTALL_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/$PROJECT_NAME"
 
-# install directory
+# install directory (~ is expanded manually - read does not)
 printf "Install directory [%s]: " "$INSTALL_DIR"
 read REPLY
+case "$REPLY" in "~") REPLY="$HOME";; "~/"*) REPLY="$HOME${REPLY#\~}";; esac
 [ -n "$REPLY" ] && INSTALL_DIR="$REPLY"
 mkdir -p "$INSTALL_DIR"
 
@@ -66,11 +67,17 @@ tail -n +"$ARCHIVE_LINE" "$0" | tar xzf - -C "$INSTALL_DIR"
 echo
 echo "Set the initial password for JupyterLab access."
 echo "This is the initial password; you can change it after you log in."
+trap 'stty echo 2>/dev/null || true' EXIT INT TERM # never leave the terminal with echo off (set -e aborts mid-prompt)
 JUPYTERLAB_PASSWORD=""
 while [ -z "$JUPYTERLAB_PASSWORD" ]; do
     printf "Enter a password: "
     stty -echo 2>/dev/null || true
-    read JUPYTERLAB_PASSWORD
+    if ! read JUPYTERLAB_PASSWORD; then # stdin EOF - abort cleanly instead of dying via set -e with echo off
+        stty echo 2>/dev/null || true
+        echo
+        echo "ERROR: no interactive input - run the installer from a terminal." >&2
+        exit 1
+    fi
     stty echo 2>/dev/null || true
     echo
 done
@@ -82,6 +89,7 @@ done
     echo "# initial JupyterLab password (login page asks for it); change it after you log in"
     echo "JUPYTERLAB_SERVER_TOKEN=$JUPYTERLAB_PASSWORD"
 } > "$INSTALL_DIR/.env"
+chmod 600 "$INSTALL_DIR/.env" # holds the password - keep it private
 
 # uninstaller - removes containers, images, (on confirmation) data volumes, then the installed files
 cat > "$INSTALL_DIR/uninstall.sh" <<'UNINSTALL_EOF'
@@ -93,6 +101,7 @@ printf "Also remove the data volumes (JupyterLab home, workspace, cache, certifi
 read REPLY
 case "$REPLY" in [Yy]*) VOLUMES="--volumes";; esac
 echo "Stopping the platform and removing containers and images..."
+[ -f .env ] || touch .env # compose errors on a missing env-file
 docker compose --env-file .env.default --env-file .env -f compose.yml down --remove-orphans --rmi all $VOLUMES || \
     echo "WARNING: docker compose down failed (is docker running?) - remove containers manually." >&2
 INSTALL_DIR=$(pwd)

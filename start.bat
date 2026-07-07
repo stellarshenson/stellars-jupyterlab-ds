@@ -12,8 +12,9 @@ REM login page asks for (it is never placed in the URL).
 findstr /b /c:"JUPYTERLAB_SERVER_TOKEN=" "%ENV_FILE%" >nul 2>&1
 if errorlevel 1 call :set_password
 
-REM Check for Nvidia GPU using wmic, only NVIDIA check is supported
-wmic path win32_VideoController get name | findstr /i "NVIDIA" >nul
+REM Check for Nvidia GPU via nvidia-smi (ships with the NVIDIA driver; wmic is
+REM removed on Windows 11 24H2+). Missing command or failing query = no GPU.
+nvidia-smi >nul 2>&1
 
 REM Capture the exit code
 set gpu_available=%errorlevel%
@@ -50,7 +51,12 @@ exit /b
 :set_password
 echo First start - set the initial password for JupyterLab access.
 echo This is the initial password; you can change it after you log in.
+set "JUPYTERLAB_PASSWORD="
 set /p "JUPYTERLAB_PASSWORD=Enter a password: "
+if not defined JUPYTERLAB_PASSWORD (
+    echo Password cannot be empty.
+    goto :set_password
+)
 >>"%ENV_FILE%" echo JUPYTERLAB_SERVER_TOKEN=!JUPYTERLAB_PASSWORD!
 echo Initial password saved to %ENV_FILE% ^(key JUPYTERLAB_SERVER_TOKEN^).
 goto :eof

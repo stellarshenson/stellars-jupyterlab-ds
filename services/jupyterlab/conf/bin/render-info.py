@@ -44,7 +44,6 @@ def substitute_vars(text):
         .replace("@BUILD_NAME@", f"\033[36m{build_name}\033[0m")
         .replace("@BUILD_DATE@", f"\033[36m{build_date}\033[0m")
         .replace("@LAB_NAME@", lab_name)
-        .replace("@SERVER_TOKEN@", server_token)
         .replace("@SYSTEM_NAME@", system_name)
     )
 
@@ -53,20 +52,19 @@ def substitute_vars(text):
 # ─────────────────────────────────────────────────────────────────────────────
 
 if len(sys.argv) < 4:
-    print("Usage: render_build_info.py <LAB_NAME> <BUILD_NAME> <BUILD_DATE> <SERVER_TOKEN>")
+    print("Usage: render_build_info.py <LAB_NAME> <BUILD_NAME> <BUILD_DATE>")
     sys.exit(1)
 
-lab_name, build_name, build_date, server_token = "", "", "", ""
-if len(sys.argv) == 5:
-    lab_name, build_name, build_date, server_token = sys.argv[1:]
-elif len(sys.argv) == 4:
-    lab_name, build_name, build_date = sys.argv[1:]
+lab_name, build_name, build_date = "", "", ""
+if len(sys.argv) >= 4:
+    lab_name, build_name, build_date = sys.argv[1:4]
 
 
-# Raw content block
+# Raw content block - the auth token itself is never rendered: this banner goes to
+# the container log (docker logs), which must not hold the password
 raw_info = """
 Build @BUILD_NAME@ created on @BUILD_DATE@
-Jupyterlab server token: \033[95m@SERVER_TOKEN@\033[0m
+Jupyterlab server token: \033[95mset at deployment (key JUPYTERLAB_SERVER_TOKEN in .env)\033[0m
 --------------------------------------------------------------------------------
 Visit: \033[36mhttps://github.com/stellarshenson/@SYSTEM_NAME@\033[0m
 """.strip().splitlines()

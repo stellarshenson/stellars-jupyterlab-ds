@@ -38,7 +38,7 @@ services:
     ports:
       - "80:80"
       - "${LAB_PORT:-443}:443"
-      - "8080:8080"
+      - "127.0.0.1:8080:8080" # api.insecure dashboard - loopback only, still locks the port to one traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - vol_certs:/mnt/certs # named volume to hold certificates
@@ -79,12 +79,13 @@ services:
       - TENSORBOARD_LOGDIR=/tmp/tensorboard              # directory for tensorboard log files
       - MLFLOW_TRACKING_URI=http://localhost:5000         # MLFlow server connection URI
       - MLFLOW_PORT=5000                                 # MLFlow server port
-      - MLFLOW_HOST=*                                    # MLFlow listen on all interfaces
+      - MLFLOW_HOST=0.0.0.0                              # MLFlow listen on all interfaces
       - MLFLOW_WORKERS=1                                 # MLFlow worker processes
-      - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds} # used in welcome messages, service URLs and cert names
+      - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds} # carries the project name into the container for cert generation
       - ENABLE_SERVICE_MLFLOW=1                          # start MLFlow tracking server
       - ENABLE_SERVICE_RESOURCES_MONITOR=1               # start btop resources monitor
       - ENABLE_SERVICE_TENSORBOARD=1                     # start TensorBoard server
+      - ENABLE_SERVICE_PULSEAUDIO=1                      # start PulseAudio voice source (Claude Code /voice)
       - ENABLE_GPU_SUPPORT=0                             # enable NVIDIA GPU passthrough
       - JUPYTERLAB_TIMEZONE=                               # container timezone (IANA format, empty = UTC)
       - JUPYTERLAB_SUDO_ENABLE=1                           # 0 = disable sudo for good at container start
@@ -115,7 +116,9 @@ services:
     ipc: host
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pgrep -f jupyter-lab > /dev/null || exit 1"]
+      # bracket pattern so pgrep -f does not match the healthcheck's own sh -c wrapper
+      # (a plain 'pgrep -f jupyter-lab' always exits 0 and reports healthy even when the lab is down)
+      test: ["CMD-SHELL", "pgrep -f 'jupyter-la[b]' > /dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10

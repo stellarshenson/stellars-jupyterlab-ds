@@ -15,11 +15,17 @@
 
 if [[ ${JUPYTERLAB_SUDO_ENABLE:-1} == 0 ]]; then
     user="$(id -un)"
-    log_info "Disabling sudo for ${user} (JUPYTERLAB_SUDO_ENABLE=0)"
-    sudo -n /bin/sh -c "printf '%s ALL=(ALL:ALL) !ALL\n' '${user}' > /etc/sudoers.d/conda \
-        && chmod 0440 /etc/sudoers.d/conda \
-        && visudo -cf /etc/sudoers.d/conda" \
-        || log_info "sudo already disabled"
+    # distinguish "escalation already revoked" (expected on restart) from a real
+    # failure of the disabling itself - a failed security control must not log as success
+    if sudo -n true 2>/dev/null; then
+        log_info "Disabling sudo for ${user} (JUPYTERLAB_SUDO_ENABLE=0)"
+        sudo -n /bin/sh -c "printf '%s ALL=(ALL:ALL) !ALL\n' '${user}' > /etc/sudoers.d/conda \
+            && chmod 0440 /etc/sudoers.d/conda \
+            && visudo -cf /etc/sudoers.d/conda" \
+            || log_error "failed to disable sudo for ${user} - escalation may still be possible"
+    else
+        log_info "sudo already disabled"
+    fi
 fi
 
 # EOF

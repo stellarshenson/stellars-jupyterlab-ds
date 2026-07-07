@@ -78,17 +78,29 @@ EOF
 # create work directory
 ARG BUILD_DIR=/opt/build
 ARG EXPORT_DIR=/opt/extra
-RUN mkdir ${BUILD_DIR} ${EXPORT_DIR}
+RUN <<-EOF
+    echo "creating builder work and export directories"
+    set -e
+    mkdir ${BUILD_DIR} ${EXPORT_DIR}
+EOF
 WORKDIR ${BUILD_DIR}
 
 # copy builder-stage scripts (not present in runtime image)
 COPY --chmod=755 ./Dockerfile.jupyterlab.builder.d/ /opt/builder/
 
 ## Build the llama-cpp-python library with CUDA support
-RUN /opt/builder/build-llama-cpp-python.sh "${BUILD_DIR}" "${EXPORT_DIR}"
+RUN <<-EOF
+    echo "building llama-cpp-python with CUDA support"
+    set -e
+    /opt/builder/build-llama-cpp-python.sh "${BUILD_DIR}" "${EXPORT_DIR}"
+EOF
 
 ## Install Docker CLI plugins from upstream release binaries
-RUN /opt/builder/install-docker-plugins.sh "${BUILD_DIR}" "${EXPORT_DIR}"
+RUN <<-EOF
+    echo "installing docker CLI plugins from upstream release binaries"
+    set -e
+    /opt/builder/install-docker-plugins.sh "${BUILD_DIR}" "${EXPORT_DIR}"
+EOF
 
 ## Build the duoptimum-lab-utils wheel; installed into base in the target stage.
 ## PKG_VERSION (the platform version) is stamped into the wheel so the tool's
@@ -191,7 +203,11 @@ EOF
 
 # create directories
 ARG JUPYTER_ETC_DIR=/opt/conda/etc/jupyter
-RUN mkdir -p ${JUPYTER_ETC_DIR}
+RUN <<-EOF
+    echo "creating the jupyter etc config directory"
+    set -e
+    mkdir -p ${JUPYTER_ETC_DIR}
+EOF
 
 # copy all config files and scripts
 COPY --chmod=644  ./conf/etc/bash.bashrc /etc/bash.bashrc
@@ -218,7 +234,11 @@ COPY --chmod=755  ./conf/utils /opt/utils
 COPY --chmod=644  ./conf/patches /tmp/patches
 COPY ./conf/share/jupyter /opt/conda/share/jupyter
 
-RUN chmod 644 /opt/utils/lab-utils.yml
+RUN <<-EOF
+    echo "normalizing lab-utils menu file permissions"
+    set -e
+    chmod 644 /opt/utils/lab-utils.yml
+EOF
 
 ########################################################
 #  FIX PACKAGES AND REMOVE UNNECESSARY                 #
@@ -344,7 +364,11 @@ EOF
 USER ${CONDA_USER}
 
 ## create workspace, this is where user projects will be located
-RUN mkdir ${CONDA_USER_WORKSPACE}
+RUN <<-EOF
+    echo "creating the user workspace directory"
+    set -e
+    mkdir ${CONDA_USER_WORKSPACE}
+EOF
 
 ## ensure good permissions, this is because files in github repo
 ## might have mixed permissions. we need to fix that
@@ -685,7 +709,12 @@ EOF
 ########################################################
 
 ## final round of updates to keep all up to date and final cleanup
-RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache purge
+RUN <<-EOF
+    echo "final conda and pip cache cleanup"
+    set -e
+    CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy
+    pip cache purge
+EOF
 ## COMMENTED OUT - tensorflow, torch, r_base are now installed on-demand
 #RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
 #RUN CONDA_DEFAULT_ENV=${CONDA_TORCH_ENV} conda clean -ltpy && pip cache purge
@@ -693,7 +722,11 @@ RUN CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy && pip cache 
 
 ## apt cleanup and remove prebuilt packages
 USER root
-RUN apt autoremove -y && apt purge 
+RUN <<-EOF
+    echo "apt cleanup of no-longer-needed packages"
+    set -e
+    apt autoremove -y
+EOF
 
 
 ########################################################
@@ -728,7 +761,7 @@ ENV TERM=xterm-256color
 ## default ENV parameters for jupyterlab
 ENV JUPYTERLAB_SERVER_IP="*"
 ENV JUPYTERLAB_SERVER_TOKEN=""
-ENV JUPYTERLAB_BASE_URL="/lab"
+ENV JUPYTERLAB_BASE_URL="/"
 ENV JUPYTERLAB_TIMEZONE=""
 ENV JUPYTERLAB_SYSTEM_NAME=""
 ENV JUPYTERLAB_SUDO_ENABLE=1
@@ -742,6 +775,7 @@ ENV ENABLE_GPUSTAT=1
 ENV ENABLE_SERVICE_MLFLOW=1
 ENV ENABLE_SERVICE_RESOURCES_MONITOR=1
 ENV ENABLE_SERVICE_TENSORBOARD=1
+ENV ENABLE_SERVICE_PULSEAUDIO=1
 ENV ENABLE_LOCAL_SCRIPTS=1
 ENV CONDA_DEFAULT_ENV=base
 ENV TF_CPP_MIN_LOG_LEVEL=3 
@@ -749,7 +783,7 @@ ENV TENSORBOARD_LOGDIR=/tmp/tensorboard
 ENV MLFLOW_DATA=${CONDA_USER_CACHE}/mlflow
 ENV MLFLOW_TRACKING_URI=http://localhost:5000
 ENV MLFLOW_PORT=5000
-ENV MLFLOW_HOST=*
+ENV MLFLOW_HOST=0.0.0.0
 ENV MLFLOW_WORKERS=1
 ENV UV_LINK_MODE=copy
 
@@ -766,19 +800,20 @@ WORKDIR ${CONDA_USER_WORKSPACE}
 ENTRYPOINT ["/conda-entry.sh"]
 CMD ["/start-platform.sh"]
 
-## expose ports
-# 8888 - jupyterlab, 8000 and 8001 - jupyterhub
-# 6006 - tensorboard, 5000 - mlflow, 3030 - general purpose callback port
-# you would typically use socat to pass callback traffic to container
-EXPOSE 8888 
+## expose ports (documentation metadata - the services behind them are proxied
+## through jupyter-server-proxy under the lab host, not published individually)
+# 8888 - jupyterlab, 8000 - chainlit, 8001 - jupyterhub
+# 6006 - tensorboard, 5000 - mlflow, 8080 - optuna, 7681 - resources monitor (ttyd/btop)
+# 8030/3030 - general purpose callback ports (typically socat-forwarded into the container)
+EXPOSE 8888
 EXPOSE 8000
-EXPOSE 8001 
-EXPOSE 8080 
-EXPOSE 8030 
+EXPOSE 8001
+EXPOSE 8080
+EXPOSE 8030
 EXPOSE 6006
 EXPOSE 5000
 EXPOSE 3030
-EXPOSE 61208
+EXPOSE 7681
 
 # Set default terminal shell for JupyterLab
 ENV JUPYTERLAB_TERMINAL_SHELL=${DEFAULT_SHELL}

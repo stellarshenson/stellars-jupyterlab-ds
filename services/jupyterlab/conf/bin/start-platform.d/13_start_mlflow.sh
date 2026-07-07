@@ -43,8 +43,9 @@ MLFLOW_DATA=${MLFLOW_DATA:-$HOME/.cache/mlflow} && mkdir -p ${MLFLOW_DATA}
 MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI:-sqlite:///${MLFLOW_DATA}/mlflow.sqlite3}
 MLFLOW_ARTIFACT_ROOT=${MLFLOW_ARTIFACT_ROOT:-${MLFLOW_DATA}/artifacts}
 MLFLOW_WORKERS=${MLFLOW_WORKERS:-1}
-MLFLOW_PORT=${MLFLOW_SERVER_PORT:-5000}
+MLFLOW_PORT=${MLFLOW_SERVER_PORT:-${MLFLOW_PORT:-5000}} # honour the MLFLOW_PORT knob shipped in compose.yml; MLFLOW_SERVER_PORT wins when both set
 MLFLOW_HOST=${MLFLOW_HOST:-0.0.0.0}
+[ "$MLFLOW_HOST" = "*" ] && MLFLOW_HOST=0.0.0.0 # gunicorn binds 0.0.0.0; a literal * would also glob in /tmp below
 MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
 FORWARDED_ALLOW_IPS=${FORWARDED_ALLOW_IPS:-*}
 MLFLOW_SERVER_ALLOWED_HOSTS=${MLFLOW_SERVER_ALLOWED_HOSTS:-*}
@@ -57,11 +58,11 @@ export MLFLOW_SERVER_ALLOWED_HOSTS='$MLFLOW_SERVER_ALLOWED_HOSTS'
 export MLFLOW_SERVER_CORS_ALLOWED_ORIGINS='$MLFLOW_SERVER_CORS_ALLOWED_ORIGINS'
 echo "Launching MLflow tracking server on $MLFLOW_HOST:$MLFLOW_PORT"
 mlflow server \\
-  --backend-store-uri $MLFLOW_BACKEND_STORE_URI \\
-  --default-artifact-root $MLFLOW_ARTIFACT_ROOT \\
-  --workers $MLFLOW_WORKERS \\
-  --host $MLFLOW_HOST \\
-  --port $MLFLOW_PORT \\
+  --backend-store-uri '$MLFLOW_BACKEND_STORE_URI' \\
+  --default-artifact-root '$MLFLOW_ARTIFACT_ROOT' \\
+  --workers '$MLFLOW_WORKERS' \\
+  --host '$MLFLOW_HOST' \\
+  --port '$MLFLOW_PORT' \\
   --serve-artifacts \\
   --gunicorn-opts "--access-logfile=-"
 EOF

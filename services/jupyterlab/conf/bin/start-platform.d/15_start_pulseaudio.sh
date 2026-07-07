@@ -15,6 +15,11 @@
 # no sudo needed anywhere.
 # ----------------------------------------------------------------------------------------
 
+# check if enabled (default on - same ENABLE_SERVICE_* convention as the other services)
+if [[ ${ENABLE_SERVICE_PULSEAUDIO:-1} != 1 ]]; then
+    exit 0
+fi
+
 log_info "Starting PulseAudio voice source for Claude Code /voice"
 conda run -n base jupyterlab_voice_capture start -d
 

@@ -34,7 +34,7 @@ fi
 START_PLATFORM_DIR='/start-platform.d'
 for file in ${START_PLATFORM_DIR}/*.sh; do
     if [ -f "${file}" ] && [ -x "${file}" ]; then
-        "${file}" 
+        "${file}" || log_warn "startup hook ${file##*/} failed (exit $?)"
     fi
 done
 
@@ -46,11 +46,13 @@ if [[ -n ${JUPYTERHUB_USER} ]]; then
 # standalone jupyterlab
 else
     log_info "Starting standalone jupyterlab server"
+    # token passed via JUPYTER_TOKEN env, not argv - /proc/<pid>/cmdline is world-readable
+    # (also on the host), /proc/<pid>/environ is not
+    export JUPYTER_TOKEN="$JUPYTERLAB_SERVER_TOKEN"
     conda run --no-capture-output -n base jupyter-lab \
 	--autoreload \
-	--ip=$JUPYTERLAB_SERVER_IP \
-	--IdentityProvider.token=$JUPYTERLAB_SERVER_TOKEN \
-	--ServerApp.base_url=$JUPYTERLAB_BASE_URL \
+	--ip="$JUPYTERLAB_SERVER_IP" \
+	--ServerApp.base_url="$JUPYTERLAB_BASE_URL" \
 	--no-browser \
 	"$@"
 fi

@@ -87,9 +87,13 @@ Function .onInit
   Pop $0
   Pop $1
   ${If} $0 != "0"
-    MessageBox MB_ICONSTOP "Docker Compose was not found on this system.$\r$\n$\r$\nInstall Docker Desktop (https://www.docker.com/products/docker-desktop/) or Rancher Desktop (https://rancherdesktop.io/) and run this installer again."
+    MessageBox MB_ICONSTOP "Docker Compose was not found on this system.$\r$\n$\r$\nInstall Docker Desktop (https://www.docker.com/products/docker-desktop/) or Rancher Desktop (https://rancherdesktop.io/) and run this installer again." /SD IDOK
     Abort
   ${EndIf}
+  ; defaults for a silent install (/S skips the config page); the password stays empty
+  ; and is then asked for by start.bat on the first start instead of being written empty
+  StrCpy $ProjectName "${PROJECT_NAME}"
+  StrCpy $AccessUrl "https://lab.$ProjectName.localhost"
 FunctionEnd
 
 ; platform configuration page - the project name becomes part of the access URL
@@ -162,8 +166,12 @@ Section "Install"
   FileWrite $0 "# platform name - access hosts lab.{name}.localhost / traefik.{name}.localhost,$\r$\n"
   FileWrite $0 "# and the prefix for container and volume names$\r$\n"
   FileWrite $0 "COMPOSE_PROJECT_NAME=$ProjectName$\r$\n"
-  FileWrite $0 "# initial JupyterLab password (login page asks for it); change it after you log in$\r$\n"
-  FileWrite $0 "JUPYTERLAB_SERVER_TOKEN=$Password$\r$\n"
+  ; silent install (/S): no password was collected - omit the key entirely so
+  ; start.bat prompts on first start instead of running with auth disabled
+  ${If} $Password != ""
+    FileWrite $0 "# initial JupyterLab password (login page asks for it); change it after you log in$\r$\n"
+    FileWrite $0 "JUPYTERLAB_SERVER_TOKEN=$Password$\r$\n"
+  ${EndIf}
   FileClose $0
 
   ; start menu shortcuts - start/stop console scripts, access URL and uninstaller
@@ -197,14 +205,21 @@ FunctionEnd
 ; ---------------------------------------- uninstall
 
 Section "Uninstall"
-  ; ask about the data volumes first - deleting them erases all notebooks and data
+  ; ask about the data volumes first - deleting them erases all notebooks and data;
+  ; /SD IDNO keeps the volumes on a silent uninstall (uninstall.exe /S) - without it
+  ; NSIS would skip the box and fall through to the delete branch
   StrCpy $R0 ""
-  MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "Also remove the data volumes (JupyterLab home, workspace, cache, certificates)?$\r$\n$\r$\nThis permanently deletes all notebooks and data stored in the platform." IDNO keep_volumes
+  MessageBox MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 "Also remove the data volumes (JupyterLab home, workspace, cache, certificates)?$\r$\n$\r$\nThis permanently deletes all notebooks and data stored in the platform." /SD IDNO IDNO keep_volumes
   StrCpy $R0 "--volumes"
 keep_volumes:
 
   ; stop and remove containers, the network and the images used by the services
   DetailPrint "Stopping the platform and removing containers and images..."
+  ; compose errors on a missing env-file - create an empty .env if the user removed it
+  ${IfNot} ${FileExists} "$INSTDIR\.env"
+    FileOpen $1 "$INSTDIR\.env" w
+    FileClose $1
+  ${EndIf}
   nsExec::ExecToLog 'cmd.exe /C cd /d "$INSTDIR" && docker compose --env-file .env.default --env-file .env -f compose.yml down --remove-orphans --rmi all $R0'
   Pop $0
   ${If} $0 != "0"

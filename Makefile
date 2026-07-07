@@ -15,7 +15,7 @@ SHELL := /bin/bash
 # those targets read. Run `make preflight` before build/push to catch missing
 # prerequisites early; failures print OK / MISSING per item and exit 1.
 PREFLIGHT_TOOLS := python3 awk sed bash docker git
-PREFLIGHT_FILES := pyproject.toml compose.yml services/jupyterlab/Dockerfile.jupyterlab
+PREFLIGHT_FILES := pyproject.toml compose.yml compose-gpu.yml .env.default services/jupyterlab/Dockerfile.jupyterlab
 
 # ── Project metadata extracted from pyproject.toml ──
 # Parse-time extraction: the empty-string + $(error) idiom fails loud if any
@@ -164,7 +164,15 @@ build_verbose: preflight maybe_increment_version
 rebuild: preflight _rebuild_impl
 
 ## rebuild 'target' stage and bump patch version
-rebuild_increment_version: preflight maybe_increment_version _rebuild_impl
+# recipe-sequenced sub-makes (not prerequisites) so the bump always lands before the
+# build even under `make -j` - prerequisite order is not guaranteed in parallel make
+rebuild_increment_version: preflight
+ifeq ($(NO_VERSION_INCREMENT),)
+	@$(MAKE) --no-print-directory increment_version
+else
+	@printf '%s%sVersion unchanged: %s (--no-version-increment)%s\n' "$(CYAN)" "$(BOLD)" "$(PROJECT_VERSION)" "$(RESET)"
+endif
+	@$(MAKE) --no-print-directory _rebuild_impl DEBUG=$(DEBUG) BUILD_OPTS='$(BUILD_OPTS)'
 
 # Internal: actual `target` stage rebuild. Reads CURRENT_VERSION at recipe time
 # so a preceding maybe_increment_version bump (when invoked via
