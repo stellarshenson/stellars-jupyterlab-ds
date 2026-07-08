@@ -8,9 +8,18 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
-# set default conda environment
-export CONDA_DEFAULT_ENV="base"
-export AWS_PROFILE="default"
+# set default conda environment - container env (compose/hub knobs) wins when provided
+export CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV:-base}"
+export AWS_PROFILE="${AWS_PROFILE:-default}"
+
+# user environment variables (lab-utils > Settings > Environment Variables) - shells read the
+# central store here at login; the platform start sources the SAME file directly
+# (start-platform.sh), so this block is shell-only wiring
+if [ -f "$HOME/.local/environment.env" ]; then
+    set -a
+    . "$HOME/.local/environment.env"
+    set +a
+fi
 
 # source cargo env if installed
 if [ -f "$HOME/.cargo/env" ]; then

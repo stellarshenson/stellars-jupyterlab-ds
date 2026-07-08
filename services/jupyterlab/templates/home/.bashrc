@@ -119,9 +119,10 @@ if ! shopt -oq posix; then
 fi
 
 # Fallback to 'base' conda environment if env in CONDA_DEFAULT_ENV does not exist
-if ! conda env list | grep -q $CONDA_DEFAULT_ENV; then
+# (exact match on the name column - a substring hit on some env's path must not pass)
+if [ -n "$CONDA_DEFAULT_ENV" ] && ! conda env list | awk '{print $1}' | grep -qx "$CONDA_DEFAULT_ENV"; then
     echo -e "\033[33mWARNING: preferred environment '$CONDA_DEFAULT_ENV' does not exist, falling back to 'base'\033[0m"
-    echo -e "\033[33mCONDA_DEFAULT_ENV variable in ~/.profile determines preferred environment\033[0m"
+    echo -e "\033[33mset the preferred environment via lab-utils > Settings > Default Conda Env\033[0m"
     export CONDA_DEFAULT_ENV="base"
 fi
 

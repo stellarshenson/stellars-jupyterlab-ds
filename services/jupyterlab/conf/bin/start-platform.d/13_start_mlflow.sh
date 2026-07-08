@@ -18,7 +18,7 @@
 #   MLFLOW_BACKEND_STORE_URI         - Backend metadata storage URI (default: sqlite:///<data>/mlflow.sqlite3)
 #   MLFLOW_ARTIFACT_ROOT             - Artifact storage directory (default: <data>/artifacts)
 #   MLFLOW_SERVER_PORT               - Port to bind (default: 5000)
-#   MLFLOW_HOST                      - IP address to bind (default: 0.0.0.0)
+#   MLFLOW_HOST                      - IP address to bind (default: 127.0.0.1, proxy-only)
 #   MLFLOW_TRACKING_URI              - Tracking URI for clients (default: http://localhost:5000)
 #   MLFLOW_WORKERS                   - Number of Gunicorn workers (default: 1)
 #   MLFLOW_SERVER_ALLOWED_HOSTS      - Allowed Host headers for DNS rebinding protection (default: *)
@@ -44,9 +44,13 @@ MLFLOW_BACKEND_STORE_URI=${MLFLOW_BACKEND_STORE_URI:-sqlite:///${MLFLOW_DATA}/ml
 MLFLOW_ARTIFACT_ROOT=${MLFLOW_ARTIFACT_ROOT:-${MLFLOW_DATA}/artifacts}
 MLFLOW_WORKERS=${MLFLOW_WORKERS:-1}
 MLFLOW_PORT=${MLFLOW_SERVER_PORT:-${MLFLOW_PORT:-5000}} # honour the MLFLOW_PORT knob shipped in compose.yml; MLFLOW_SERVER_PORT wins when both set
-MLFLOW_HOST=${MLFLOW_HOST:-0.0.0.0}
-[ "$MLFLOW_HOST" = "*" ] && MLFLOW_HOST=0.0.0.0 # gunicorn binds 0.0.0.0; a literal * would also glob in /tmp below
-MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:5000}
+# loopback by default: mlflow has no auth of its own - it must be reachable only
+# through the authenticated jupyter-server-proxy, not from the docker network
+MLFLOW_HOST=${MLFLOW_HOST:-127.0.0.1}
+[ "$MLFLOW_HOST" = "*" ] && MLFLOW_HOST=0.0.0.0 # gunicorn cannot bind a literal * (it would also glob in /tmp below)
+# MLFLOW_TRACKING_URI is derived by start-platform.sh BEFORE hooks run; this
+# fallback only fires when the hook is executed outside the platform boot
+MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-http://localhost:${MLFLOW_PORT}}
 FORWARDED_ALLOW_IPS=${FORWARDED_ALLOW_IPS:-*}
 MLFLOW_SERVER_ALLOWED_HOSTS=${MLFLOW_SERVER_ALLOWED_HOSTS:-*}
 MLFLOW_SERVER_CORS_ALLOWED_ORIGINS=${MLFLOW_SERVER_CORS_ALLOWED_ORIGINS:-*}
@@ -68,7 +72,10 @@ mlflow server \\
 EOF
 )
 
-# use conda to execute (cd /tmp to keep gunicorn.ctl out of workspace)
+# use conda to execute (cd /tmp to keep gunicorn.ctl out of workspace);
+# announce in the platform log like the other service hooks - the server's own
+# output goes to /var/log/mlflow.log
+log_info "Starting MLflow tracking server on ${MLFLOW_HOST}:${MLFLOW_PORT}"
 cd /tmp && conda run -n base --no-capture-output bash -c "$COMMAND" >> /var/log/mlflow.log 2>&1 &
 
 # EOF

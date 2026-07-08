@@ -2,9 +2,13 @@
 """
 Return AWS profiles as JSON options for selector.
 
+Deliberately no "current" flags: the selector's current_cmd (get-profile-var)
+is the single authority for the current value - a second detection here drifted
+(unanchored ~/.profile regex matched comments and ignored the env store).
+
 Output format:
 [
-  {"value": "default", "label": "default", "current": true},
+  {"value": "default", "label": "default"},
   {"value": "production", "label": "production"}
 ]
 """
@@ -15,16 +19,6 @@ from pathlib import Path
 
 AWS_CONFIG = Path.home() / ".aws" / "config"
 AWS_CREDENTIALS = Path.home() / ".aws" / "credentials"
-PROFILE_FILE = Path.home() / ".profile"
-
-
-def get_current_default() -> str:
-    """Get current AWS_PROFILE from ~/.profile."""
-    if not PROFILE_FILE.exists():
-        return ""
-    content = PROFILE_FILE.read_text()
-    match = re.search(r'AWS_PROFILE=["\'"]?([^"\'"\n]*)["\'"]?', content)
-    return match.group(1) if match else ""
 
 
 def get_aws_profiles() -> list:
@@ -47,21 +41,8 @@ def get_aws_profiles() -> list:
 
 
 def main():
-    current = get_current_default()
     profiles = get_aws_profiles()
-
-    if not profiles:
-        print("[]")
-        return
-
-    options = []
-    for profile in profiles:
-        opt = {"value": profile, "label": profile}
-        if profile == current:
-            opt["current"] = True
-        options.append(opt)
-
-    print(json.dumps(options))
+    print(json.dumps([{"value": p, "label": p} for p in profiles]))
 
 
 if __name__ == "__main__":

@@ -4,6 +4,20 @@ import logging
 
 HOME = os.environ.get("HOME")
 
+
+def _env_port(*names, default):
+    """First set port knob as int. A typo (MLFLOW_PORT=50O0) must not abort the
+    whole server at config load - warn and fall back instead."""
+    for name in names:
+        raw = os.environ.get(name)
+        if raw:
+            try:
+                return int(raw)
+            except ValueError:
+                logging.getLogger("ServerApp").warning(
+                    "ignoring non-numeric %s=%r, using %s", name, raw, default)
+    return default
+
 ## Configuration file for lab.
 c = get_config()  #noqa
 c.ServerApp.root_dir = f"{HOME}/workspace"
@@ -88,7 +102,8 @@ c.ServerProxy.servers = {
     "mlflow": {
         "command": [],
         "absolute_url": False,
-        "port": 5000,
+        # same resolution as 13_start_mlflow.sh: MLFLOW_SERVER_PORT wins over MLFLOW_PORT
+        "port": _env_port("MLFLOW_SERVER_PORT", "MLFLOW_PORT", default=5000),
         "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,
@@ -100,7 +115,7 @@ c.ServerProxy.servers = {
     "tensorboard": {
         "command": [],
         "absolute_url": False,
-        "port": 6006,
+        "port": _env_port("TENSORBOARD_PORT", default=6006), # mirrors 14_start_tensorboard.sh
         "new_browser_tab": False,
         "launcher_entry": {
             "enabled": True,

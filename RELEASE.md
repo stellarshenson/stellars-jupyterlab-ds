@@ -24,7 +24,7 @@ Integrated Docker CLI installation with pre-compiled plugins for AI-assisted Doc
 
 - **Docker MCP Gateway:** Model Context Protocol integration for AI-assisted container operations
 - **Docker Buildx:** Multi-platform image building support
-- **On-demand installation:** Available via `lab-utils` > "Install Docker CLI"
+- **On-demand installation:** Available via `lab-utils` > "Install Infrastructure" > "Docker CLI"
 - **Automatic plugin detection:** Plugins installed automatically when Docker CLI is installed
 - **Environment variable:** `DOCKER_MCP_IN_CONTAINER=1` for MCP detection
 
@@ -131,7 +131,7 @@ Modernized bash configuration based on Ubuntu 24.04 standard.
 
 - `DEFAULT_SHELL` build argument for custom default shell
 - `JUPYTERLAB_TERMINAL_SHELL` environment variable
-- Interactive selection via lab-utils > Set Defaults > Default Shell
+- Interactive selection via lab-utils > Settings > Default Shell
 - Requires JupyterLab restart to take effect
 
 ### Default Kernel Configuration

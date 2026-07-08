@@ -14,13 +14,14 @@ PROFILE="${HOME}/.profile"
 FISH_CONFIG="${HOME}/.config/fish/config.fish"
 
 cleanup_file() {
+    # only the line pair the old platform version wrote (marker comment + the
+    # assignment directly under it) is removed - a user's OWN LD_LIBRARY_PATH
+    # lines mentioning conda/lib must survive every boot
     local file="$1"
-    if [[ -f "${file}" ]] && grep -q "LD_LIBRARY_PATH.*conda/lib" "${file}"; then
-        log_info "Cleaning up LD_LIBRARY_PATH from ${file}"
-        sed -i '/# Include conda lib for libmamba solver/d' "${file}"
-        sed -i '/LD_LIBRARY_PATH.*conda\/lib.*export/d' "${file}"
-        sed -i '/export LD_LIBRARY_PATH.*conda\/lib/d' "${file}"
-        sed -i '/set -gx LD_LIBRARY_PATH.*conda\/lib/d' "${file}"
+    if [[ -f "${file}" ]] && grep -q '# Include conda lib for libmamba solver' "${file}"; then
+        log_info "Cleaning up legacy libmamba LD_LIBRARY_PATH lines from ${file}"
+        sed -i '/# Include conda lib for libmamba solver/{N;/LD_LIBRARY_PATH/d}' "${file}"
+        sed -i '/# Include conda lib for libmamba solver/d' "${file}" # marker without assignment underneath
     fi
 }
 

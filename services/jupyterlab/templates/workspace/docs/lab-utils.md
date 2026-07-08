@@ -8,6 +8,8 @@ Interactive utility framework for managing your JupyterLab environment. Lab Util
 - **YAML-Driven Configuration** - Menu structure defined in `/opt/utils/lab-utils.yml`
 - **CLI Support** - Direct script execution via `lab-utils <script-name>`
 - **Selectors** - Inline configuration dialogs with current value display
+- **Environment Variables** - manage user env vars in `~/.local/environment.env`; new terminals see changes immediately, notebooks and services after a server restart
+- **Run on Start** - flag standard scripts (extra conda environments, AI assistants, infrastructure) to run at every platform start - no wrapper scripts needed
 - **Local Scripts** - User-customizable scripts in `~/.local/lab-utils.d/`
 - **Tab Completion** - Bash and Fish shell autocompletion
 
@@ -46,5 +48,7 @@ lab-utils --create-local # Create ~/.local/lab-utils.d/ with demo script
 
 Add custom scripts to `~/.local/lab-utils.d/` and they appear automatically in the Local Scripts menu. Run `lab-utils --create-local` to scaffold the directory with a demo template.
 
-Add custom conda environments as YAML files to `~/.local/extra-env.d/` for the Install Extra Environments menu.
+Add custom conda environments as YAML files to `~/.local/conda-env.d/` for the Install Extra Environments menu.
+
+Manage environment variables in `lab-utils` > Settings > Environment Variables (stored in `~/.local/environment.env`), and flag standard scripts to run at every platform start in `lab-utils` > Settings > Run on Start. The Settings menu also holds the default shell, conda environment and AWS profile selectors - all writing the same store.
 

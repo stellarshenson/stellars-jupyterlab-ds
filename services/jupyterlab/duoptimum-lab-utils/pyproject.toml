@@ -17,6 +17,8 @@ dependencies = [
 
 [project.scripts]
 lab-utils = "duoptimum_lab_utils.cli:main"
+lab-utils-env = "duoptimum_lab_utils.envman:main"
+lab-utils-onstart = "duoptimum_lab_utils.onstart:main"
 
 [tool.setuptools.dynamic]
 version = {file = ["src/duoptimum_lab_utils/_version.txt"]}

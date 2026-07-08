@@ -52,7 +52,7 @@
 #
 #   Combined (submenu + menu_file + scan_dir)
 #     Static items, then file-loaded items, then directory-scanned items.
-#     - name: "Install Conda Env"
+#     - name: "Install Extra Environments"
 #       submenu:
 #         - id: "install-conda-env.d/tensorflow.sh"
 #           name: "TensorFlow"
@@ -92,7 +92,7 @@
 #             label: "Bash"
 #           - value: "/usr/bin/fish"
 #             label: "Fish"
-#         current_cmd: "grep -oP 'MY_VAR=\"\\K[^\"]*' ~/.profile"
+#         current_cmd: "/opt/utils/lab-utils.lib/get-profile-var JUPYTERLAB_TERMINAL_SHELL"
 #         apply_script: "set-profile-var"
 #         apply_args: "JUPYTERLAB_TERMINAL_SHELL"
 #
@@ -100,7 +100,7 @@
 #     - name: "Default Conda Env"
 #       selector:
 #         options_script: "conda-env-options"
-#         current_cmd: "grep -oP 'CONDA_DEFAULT_ENV=\"\\K[^\"]*' ~/.profile"
+#         current_cmd: "/opt/utils/lab-utils.lib/get-profile-var CONDA_DEFAULT_ENV"
 #         apply_script: "set-profile-var"
 #         apply_args: "CONDA_DEFAULT_ENV"
 #
@@ -139,37 +139,6 @@
 menu:
   title: "Lab Utils"
   items:
-    # Configure default shell, conda environment, and AWS profile
-    - name: "Set Defaults"
-      submenu:
-        - name: "Default Shell"
-          description: "Configure default terminal shell"
-          selector:
-            options:
-              - value: "/bin/bash"
-                label: "Bash"
-              - value: "/usr/bin/fish"
-                label: "Fish"
-            current_cmd: "grep -oP 'JUPYTERLAB_TERMINAL_SHELL=\"\\K[^\"]*' ~/.profile 2>/dev/null"
-            apply_script: "set-profile-var"
-            apply_args: "JUPYTERLAB_TERMINAL_SHELL"
-
-        - name: "Default Conda Env"
-          description: "Set default conda environment"
-          selector:
-            options_script: "conda-env-options"
-            current_cmd: "grep -oP 'CONDA_DEFAULT_ENV=\"\\K[^\"]*' ~/.profile 2>/dev/null"
-            apply_script: "set-profile-var"
-            apply_args: "CONDA_DEFAULT_ENV"
-
-        - name: "Default AWS Profile"
-          description: "Configure default AWS CLI profile"
-          selector:
-            options_script: "aws-profile-options"
-            current_cmd: "grep -oP 'AWS_PROFILE=\"\\K[^\"]*' ~/.profile 2>/dev/null"
-            apply_script: "set-profile-var"
-            apply_args: "AWS_PROFILE"
-
     # Batch git operations across all workspace repositories
     - name: "Git Utils"
       submenu:
@@ -185,6 +154,11 @@ menu:
         - id: "git-utils.d/git-pull-submodules.sh"
           name: "Pull Submodules"
           description: "Update all git submodules recursively"
+
+    # Create new project from Copier template
+    - id: "new-project.sh"
+      name: "New Project"
+      description: "Scaffold new data science project using Copier"
 
     # Install additional conda environments (TensorFlow, PyTorch, R, Rust)
     - name: "Install Extra Environments"
@@ -205,7 +179,7 @@ menu:
           name: "Rust"
           description: "Install Rust programming environment"
           marker: "conda"
-      scan_dir: "~/.local/extra-env.d"
+      scan_dir: "~/.local/conda-env.d" # created by 05_user_directories.sh; documented in conda-env.d/README.md
 
     # Install AI coding assistants (Claude Code, OpenCode, Cursor, Gemini, Codex)
     - name: "Install AI Assistant"
@@ -236,15 +210,61 @@ menu:
           name: "Cloudflare Tunnel"
           description: "Install cloudflared from Cloudflare apt repository"
 
-    # Create new project from Copier template
-    - id: "new-project.sh"
-      name: "New Project"
-      description: "Scaffold new data science project using Copier"
-
     # Verify GPU and CUDA configuration
     - id: "test-cuda.sh"
       name: "Test CUDA"
       description: "Test CUDA GPU support with TensorFlow and PyTorch"
+
+    # User preferences - every item below writes the same user store
+    # (~/.local/environment.env or ~/.local/start-platform.d symlinks); grouping
+    # them makes that relationship visible. Settings sits second-to-last by the
+    # settings-live-at-the-bottom convention.
+    - name: "Settings"
+      submenu:
+        # Manage user environment variables (~/.local/environment.env applet);
+        # interactive: the applet manages its own screen - no result banner or
+        # "Press Enter" pause on exit
+        - id: "lab-utils-env"
+          name: "Environment Variables"
+          description: "Manage user environment variables"
+          type: command
+          interactive: true
+
+        # Flag standard scripts to run at every platform start (~/.local/start-platform.d)
+        - id: "lab-utils-onstart"
+          name: "Run on Start"
+          description: "Choose standard scripts to run at every platform start"
+          type: command
+          interactive: true
+
+        - name: "Default Shell"
+          description: "Configure default terminal shell"
+          selector:
+            options:
+              - value: "/bin/bash"
+                label: "Bash"
+              - value: "/usr/bin/fish"
+                label: "Fish"
+            current_cmd: "/opt/utils/lab-utils.lib/get-profile-var JUPYTERLAB_TERMINAL_SHELL"
+            apply_script: "set-profile-var"
+            apply_args: "JUPYTERLAB_TERMINAL_SHELL"
+
+        - name: "Default Conda Env"
+          description: "Set default conda environment"
+          selector:
+            options_script: "conda-env-options"
+            current_cmd: "/opt/utils/lab-utils.lib/get-profile-var CONDA_DEFAULT_ENV"
+            apply_script: "set-profile-var"
+            apply_args: "CONDA_DEFAULT_ENV"
+
+        - name: "Default AWS Profile"
+          description: "Configure default AWS CLI profile"
+          selector:
+            options_script: "aws-profile-options"
+            current_cmd: "/opt/utils/lab-utils.lib/get-profile-var AWS_PROFILE"
+            apply_script: "set-profile-var"
+            apply_args: "AWS_PROFILE"
+            empty_message: "No AWS profiles found - run 'aws configure' in a terminal first"
 
     # User-defined scripts from ~/.local/lab-utils.d/
     - name: "Local Scripts"

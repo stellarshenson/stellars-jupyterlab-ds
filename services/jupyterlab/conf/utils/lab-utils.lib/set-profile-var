@@ -1,50 +1,24 @@
 #!/opt/conda/bin/python3
 """
-Set an environment variable in ~/.profile.
+Set a user environment variable in the central store ~/.local/environment.env.
 
 Usage: set-profile-var VAR_NAME value
 
-Example: set-profile-var JUPYTERLAB_TERMINAL_SHELL /bin/bash
+Historically this wrote `export VAR=...` into ~/.profile; it now routes through
+the same store as the Environment Variables applet (lab-utils-env), so there is
+ONE place a value lives. ~/.profile sources the store with `set -a` AFTER its
+own defaults, so store values override the shipped .profile defaults and reach
+the JupyterLab server, kernels, bash and fish alike.
 """
 
-import re
-import shutil
 import sys
-from pathlib import Path
 
-PROFILE_FILE = Path.home() / ".profile"
+from duoptimum_lab_utils.envman import ENV_FILE, _NAME_RE, is_protected, set_var
 
 # Colors
 GREEN = '\033[0;32m'
 ORANGE = '\033[0;33m'
 NC = '\033[0m'
-
-
-def set_profile_value(env_var: str, value: str) -> Path:
-    """Set an environment variable in ~/.profile."""
-    backup_path = Path(str(PROFILE_FILE) + ".backup")
-
-    if PROFILE_FILE.exists():
-        shutil.copy2(PROFILE_FILE, backup_path)
-        content = PROFILE_FILE.read_text()
-    else:
-        PROFILE_FILE.touch()
-        content = ""
-
-    export_line = f'export {env_var}="{value}"'
-    comment = f"# set {env_var.lower().replace('_', ' ')}"
-
-    # Check if variable already exists
-    pattern = rf'^\s*(?:export\s+)?{re.escape(env_var)}=.*$'
-    if re.search(pattern, content, re.MULTILINE):
-        content = re.sub(pattern, export_line, content, flags=re.MULTILINE)
-    else:
-        if content and not content.endswith("\n"):
-            content += "\n"
-        content += f"{comment}\n{export_line}\n"
-
-    PROFILE_FILE.write_text(content)
-    return backup_path
 
 
 def main():
@@ -55,13 +29,23 @@ def main():
     var_name = sys.argv[1]
     value = sys.argv[2]
 
-    backup = set_profile_value(var_name, value)
-    print(f"{GREEN}{var_name} set to: {value}{NC}")
-    print(f"Backup: {backup}")
+    # same validation as the Environment Variables applet - a malformed name would
+    # land in the store as a line the applet cannot list, edit or delete
+    if not _NAME_RE.match(var_name):
+        print("Invalid name - letters, digits and _ only; cannot start with a digit.",
+              file=sys.stderr)
+        sys.exit(1)
 
-    # Special message for certain variables
-    if var_name == "JUPYTERLAB_TERMINAL_SHELL":
-        print(f"\n{ORANGE}Restart JupyterLab for changes to take effect.{NC}")
+    if is_protected(var_name):
+        print(f"{var_name} is protected - overriding it can break the platform start.",
+              file=sys.stderr)
+        sys.exit(1)
+
+    set_var(var_name, value)
+    print(f"{GREEN}{var_name} set to: {value}{NC}")
+    print(f"Store: {ENV_FILE}")
+    print(f"\n{ORANGE}New terminals see the change at once - restart the server "
+          f"to apply it to notebooks and services.{NC}")
 
 
 if __name__ == "__main__":

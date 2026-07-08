@@ -62,7 +62,7 @@ Page custom ConfigPageCreate ConfigPageLeave
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "Start the platform now"
 !define MUI_FINISHPAGE_RUN_FUNCTION StartPlatform
-!define MUI_FINISHPAGE_TEXT "${DISPLAY_NAME} has been installed.$\r$\n$\r$\nAccess URL: $AccessUrl$\r$\n$\r$\nLog in with the password you set - it is never placed in the URL, and you can change it after you log in. The password is stored in $INSTDIR\.env (key JUPYTERLAB_SERVER_TOKEN).$\r$\n$\r$\nUse the Start Menu shortcuts to start, stop or open JupyterLab later."
+!define MUI_FINISHPAGE_TEXT "${DISPLAY_NAME} has been installed.$\r$\n$\r$\nAccess URL: $AccessUrl$\r$\n$\r$\nLog in with the password you set - it is never placed in the URL. It is stored in $INSTDIR\.env (key JUPYTERLAB_SERVER_TOKEN); change it there and restart the platform to apply.$\r$\n$\r$\nUse the Start Menu shortcuts to start, stop or open JupyterLab later."
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -100,6 +100,12 @@ FunctionEnd
 ; (https://lab.{name}.localhost) and the prefix for container and volume names; the
 ; password becomes JUPYTERLAB_SERVER_TOKEN in .env, asked for on the JupyterLab login page
 Function ConfigPageCreate
+  ; a reinstall/upgrade keeps the existing .env (project name and password) - the
+  ; page's inputs would be silently discarded, so skip the page instead of
+  ; collecting a name and password only to throw them away
+  ${If} ${FileExists} "$INSTDIR\.env"
+    Abort
+  ${EndIf}
   !insertmacro MUI_HEADER_TEXT "Platform configuration" "Choose the platform name and the initial JupyterLab password"
   nsDialogs::Create 1018
   Pop $Dialog
@@ -112,7 +118,7 @@ Function ConfigPageCreate
   Pop $0
   ${NSD_CreateText} 21% 28u 65% 13u "${PROJECT_NAME}"
   Pop $ProjectNameBox
-  ${NSD_CreateLabel} 0 52u 100% 26u "Initial password for JupyterLab access - you can change it after you log in. It is stored in the .env file (key JUPYTERLAB_SERVER_TOKEN) and asked for on the login page - it is never placed in the URL."
+  ${NSD_CreateLabel} 0 52u 100% 26u "Initial password for JupyterLab access - stored in the .env file (key JUPYTERLAB_SERVER_TOKEN) and asked for on the login page, never placed in the URL. Printable ASCII characters only, no single quotes. Change it later in .env and restart to apply."
   Pop $0
   ${NSD_CreateLabel} 0 82u 20% 12u "Password:"
   Pop $0
@@ -128,7 +134,10 @@ Function ConfigPageLeave
     MessageBox MB_ICONEXCLAMATION "Please enter a project name."
     Abort
   ${EndIf}
-  ; validate: lowercase letters, digits and dashes only (URL hostname + docker naming safe)
+  ; validate: lowercase letters, digits and dashes only (URL hostname + docker naming
+  ; safe); a leading dash would read as a compose flag and break the deployment
+  StrCpy $R2 $ProjectName 1 0
+  StrCmp $R2 "-" name_bad
   StrCpy $R1 0
 name_char_loop:
   StrCpy $R2 $ProjectName 1 $R1
@@ -138,7 +147,7 @@ name_char_loop:
   IntOp $R1 $R1 + 1
   Goto name_char_loop
 name_bad:
-  MessageBox MB_ICONEXCLAMATION "The project name may contain lowercase letters, digits and dashes only."
+  MessageBox MB_ICONEXCLAMATION "The project name may contain lowercase letters, digits and dashes only, and must start with a letter or digit."
   Abort
 name_ok:
   ${NSD_GetText} $PasswordBox $Password
@@ -146,6 +155,29 @@ name_ok:
     MessageBox MB_ICONEXCLAMATION "Please enter a password."
     Abort
   ${EndIf}
+  ; the value is written single-quoted (compose dotenv keeps $ and # literal that way),
+  ; so a single quote inside the password cannot be represented
+  ${StrStr} $R3 $Password "'"
+  StrCmp $R3 "" password_ok
+  MessageBox MB_ICONEXCLAMATION "Single quotes (') are not supported in the password - please choose another."
+  Abort
+password_ok:
+  ; printable ASCII only - .env is written in the ANSI codepage while the container
+  ; side reads UTF-8, so any non-ASCII character would be silently corrupted
+  ; (start.bat enforces the same rule when it prompts)
+  StrCpy $R1 0
+  StrCpy $R4 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 !#$$%&()*+,-./:;<=>?@[\]^_`{|}~"'
+pw_char_loop:
+  StrCpy $R2 $Password 1 $R1
+  StrCmp $R2 "" pw_charset_ok
+  ${StrStr} $R3 $R4 $R2
+  StrCmp $R3 "" pw_charset_bad
+  IntOp $R1 $R1 + 1
+  Goto pw_char_loop
+pw_charset_bad:
+  MessageBox MB_ICONEXCLAMATION "Use printable ASCII characters only in the password - Windows would corrupt other characters in .env."
+  Abort
+pw_charset_ok:
   StrCpy $AccessUrl "https://lab.$ProjectName.localhost"
 FunctionEnd
 
@@ -160,19 +192,71 @@ Section "Install"
   File "../../stop.bat"
   File "../../LICENSE"
 
-  ; .env holds local overrides over .env.default - the chosen project name and password
-  FileOpen $0 "$INSTDIR\.env" w
-  FileWrite $0 "# local overrides over .env.default$\r$\n"
-  FileWrite $0 "# platform name - access hosts lab.{name}.localhost / traefik.{name}.localhost,$\r$\n"
-  FileWrite $0 "# and the prefix for container and volume names$\r$\n"
-  FileWrite $0 "COMPOSE_PROJECT_NAME=$ProjectName$\r$\n"
-  ; silent install (/S): no password was collected - omit the key entirely so
-  ; start.bat prompts on first start instead of running with auth disabled
-  ${If} $Password != ""
-    FileWrite $0 "# initial JupyterLab password (login page asks for it); change it after you log in$\r$\n"
-    FileWrite $0 "JUPYTERLAB_SERVER_TOKEN=$Password$\r$\n"
+  ; .env holds local overrides over .env.default - the chosen project name and password.
+  ; A reinstall/upgrade must never clobber an existing .env: it holds the project name
+  ; (= volume prefix, losing it orphans all data) and the current password
+  ${If} ${FileExists} "$INSTDIR\.env"
+    ; the PRESERVED project name wins - shortcuts and the finish page must point at
+    ; the platform that actually runs, not the config-page default (the page is
+    ; skipped on reinstall, see ConfigPageCreate). LAST non-empty assignment wins,
+    ; matching compose dotenv / start.bat / start.sh / Makefile; a LAB_PORT
+    ; override lands in the URL too (start.bat prints it the same way)
+    FileOpen $R6 "$INSTDIR\.env" r
+    StrCpy $R8 ""
+    StrCpy $R9 ""
+env_read_loop:
+    FileRead $R6 $R4
+    StrCmp $R4 "" env_read_done
+    StrCpy $R5 $R4 21
+    StrCmp $R5 "COMPOSE_PROJECT_NAME=" env_name_found
+    StrCpy $R5 $R4 9
+    StrCmp $R5 "LAB_PORT=" env_port_found env_read_loop
+env_name_found:
+    StrCpy $R4 $R4 "" 21
+    Call TrimCRLF
+    StrCmp $R4 "" env_read_loop
+    StrCpy $ProjectName $R4
+    StrCpy $R8 "found"
+    Goto env_read_loop
+env_port_found:
+    StrCpy $R4 $R4 "" 9
+    Call TrimCRLF
+    StrCmp $R4 "" env_read_loop
+    StrCpy $R9 $R4
+    Goto env_read_loop
+env_read_done:
+    FileClose $R6
+    ; a token-only .env (created by start.bat's password prompt) carries no name -
+    ; write the default one (= what compose runs via .env.default), otherwise the
+    ; uninstaller's no-name guard refuses forever (linux installer does the same).
+    ; The leading CRLF guards a hand-made file missing its final newline
+    StrCmp $R8 "found" env_name_present
+    FileOpen $R6 "$INSTDIR\.env" a
+    FileSeek $R6 0 END
+    FileWrite $R6 "$\r$\nCOMPOSE_PROJECT_NAME=$ProjectName$\r$\n"
+    FileClose $R6
+env_name_present:
+    StrCpy $AccessUrl "https://lab.$ProjectName.localhost"
+    StrCmp $R9 "" env_url_done
+    StrCmp $R9 "443" env_url_done
+    StrCpy $AccessUrl "$AccessUrl:$R9"
+env_url_done:
+    DetailPrint "Existing configuration found - keeping $INSTDIR\.env (project name '$ProjectName' and password preserved)."
+  ${Else}
+    FileOpen $0 "$INSTDIR\.env" w
+    FileWrite $0 "# local overrides over .env.default$\r$\n"
+    FileWrite $0 "# platform name - access hosts lab.{name}.localhost / traefik.{name}.localhost,$\r$\n"
+    FileWrite $0 "# and the prefix for container and volume names$\r$\n"
+    FileWrite $0 "COMPOSE_PROJECT_NAME=$ProjectName$\r$\n"
+    ; silent install (/S): no password was collected - omit the key entirely so
+    ; start.bat prompts on first start instead of running with auth disabled
+    ${If} $Password != ""
+      FileWrite $0 "# initial JupyterLab password (login page asks for it); change it here and restart to apply$\r$\n"
+      FileWrite $0 "# single-quoted so $$, # and spaces survive compose dotenv parsing verbatim$\r$\n"
+      FileWrite $0 "JUPYTERLAB_SERVER_TOKEN='$Password'$\r$\n"
+    ${EndIf}
+    FileClose $0
   ${EndIf}
-  FileClose $0
 
   ; start menu shortcuts - start/stop console scripts, access URL and uninstaller
   CreateDirectory "$SMPROGRAMS\${DISPLAY_NAME}"
@@ -202,6 +286,18 @@ Function StartPlatform
   ExecShell "open" "$INSTDIR\start.bat"
 FunctionEnd
 
+; strip trailing CR/LF from $R4 in place (FileRead keeps the line ending)
+Function TrimCRLF
+trim_loop:
+  StrCpy $R5 $R4 1 -1
+  StrCmp $R5 "$\r" trim_do
+  StrCmp $R5 "$\n" trim_do trim_done
+trim_do:
+  StrCpy $R4 $R4 -1
+  Goto trim_loop
+trim_done:
+FunctionEnd
+
 ; ---------------------------------------- uninstall
 
 Section "Uninstall"
@@ -213,17 +309,38 @@ Section "Uninstall"
   StrCpy $R0 "--volumes"
 keep_volumes:
 
-  ; stop and remove containers, the network and the images used by the services
-  DetailPrint "Stopping the platform and removing containers and images..."
-  ; compose errors on a missing env-file - create an empty .env if the user removed it
+  ; stop and remove containers, the network and the images used by the services.
+  ; Refuse to guess: without .env the project name (container/volume prefix) is
+  ; unknown and compose would try to down a DIFFERENT (default-named) project
   ${IfNot} ${FileExists} "$INSTDIR\.env"
-    FileOpen $1 "$INSTDIR\.env" w
-    FileClose $1
+    MessageBox MB_ICONSTOP ".env not found in $INSTDIR - cannot tell which containers belong to this install.$\r$\n$\r$\nRestore .env (COMPOSE_PROJECT_NAME=<name>) or remove the containers manually, then re-run the uninstaller." /SD IDOK
+    Abort
   ${EndIf}
+  ; a token-only .env (created by start.bat's password prompt) carries no project
+  ; name - refuse rather than let compose fall back to a default-named project
+  ; (same guard as the linux uninstaller)
+  StrCpy $R2 ""
+  FileOpen $R6 "$INSTDIR\.env" r
+un_name_loop:
+  FileRead $R6 $R4
+  StrCmp $R4 "" un_name_done
+  StrCpy $R5 $R4 21
+  StrCmp $R5 "COMPOSE_PROJECT_NAME=" 0 un_name_loop
+  StrCpy $R2 "found"
+un_name_done:
+  FileClose $R6
+  ${If} $R2 != "found"
+    MessageBox MB_ICONSTOP ".env in $INSTDIR has no COMPOSE_PROJECT_NAME - cannot tell which containers belong to this install.$\r$\n$\r$\nAdd COMPOSE_PROJECT_NAME=<name> to .env or remove the containers manually, then re-run the uninstaller." /SD IDOK
+    Abort
+  ${EndIf}
+  DetailPrint "Stopping the platform and removing containers and images..."
   nsExec::ExecToLog 'cmd.exe /C cd /d "$INSTDIR" && docker compose --env-file .env.default --env-file .env -f compose.yml down --remove-orphans --rmi all $R0'
   Pop $0
   ${If} $0 != "0"
-    DetailPrint "Warning: docker compose down failed (is Docker Desktop running?) - remove containers manually."
+    ; deletion happens ONLY after a successful down - otherwise restart:unless-stopped
+    ; containers would resurrect with the uninstaller already gone
+    MessageBox MB_ICONSTOP "docker compose down failed (is Docker Desktop running?).$\r$\n$\r$\nNothing was deleted - start Docker and re-run the uninstaller." /SD IDOK
+    Abort
   ${EndIf}
 
   ; installed files

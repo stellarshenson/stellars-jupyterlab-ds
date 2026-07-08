@@ -69,26 +69,19 @@ The launcher detects NVIDIA GPU via `nvidia-smi` and automatically launches with
 
 For manual control over the deployment configuration, use docker compose directly. This approach requires specifying GPU configuration explicitly when needed.
 
+Always pass both env-files - they carry the project name (volume prefix) and the auth token; without them compose falls back to the directory name and a random token.
+
 **Without GPU:**
 ```bash
-docker compose up
+docker compose --env-file .env.default --env-file .env up
 ```
 
 **With NVIDIA GPU:**
 ```bash
-docker compose -f compose.yml -f compose-gpu.yml up
+docker compose --env-file .env.default --env-file .env -f compose.yml -f compose-gpu.yml up
 ```
 
 Access the platform at https://lab.stellars-jupyterlab-ds.localhost once containers are running.
-
-### Multi-User Standalone Scripts
-
-For running multiple single-user instances without JupyterHub, launcher scripts in the `multi-user/` directory create isolated environments per user:
-
-- `start_lab_user.sh` - Launch new user environment
-- `stop_lab_user.sh` - Shutdown user environment
-
-This approach provides basic multi-user support through container isolation without centralized authentication.
 
 ## Key Features
 
@@ -166,91 +159,78 @@ graph TB
         start["start-platform.sh<br/>Main Entrypoint"]
         startup_scripts["start-platform.d/<br/>Startup Scripts"]
 
-        workspace_scripts["03_workspace_scripts.sh<br/>Symlink Utils"]
+        workspace_scripts["04_workspace_shortcuts.sh<br/>Workspace Symlinks"]
         start_services["12_start_resources_monitor.sh<br/>13_start_mlflow.sh<br/>14_start_tensorboard.sh"]
-        user_scripts["58_start_lab_scripts.sh<br/>User Custom Startup"]
+        user_scripts["58_user_scripts.sh<br/>User + Flagged Startup Scripts"]
     end
 
     subgraph utils["Lab Utils System (/opt/utils)"]
-        lab_utils["lab-utils<br/>Main Menu<br/>(Dialog-based)"]
+        lab_utils["lab-utils<br/>Main Menu (Textual TUI,<br/>driven by lab-utils.yml)"]
         launch_wrapper["launch-lab-utils.sh<br/>JupyterLab Launcher Wrapper"]
 
-        subgraph peer_scripts["Peer Scripts (lab-utils.d/)"]
-            aws_profile["default-aws-profile.sh<br/>AWS Profile Selector"]
-            conda_env["default-conda-env.sh<br/>Conda Env Selector"]
-            new_project["new-project.sh<br/>Project Scaffolder"]
-            test_cuda["test-cuda.sh<br/>GPU Testing"]
+        subgraph settings_menu["Settings"]
+            env_applet["lab-utils-env<br/>Environment Variables<br/>(~/.local/environment.env)"]
+            onstart_applet["lab-utils-onstart<br/>Run on Start<br/>(symlinks into ~/.local/start-platform.d)"]
+            set_defaults["Default Shell / Conda Env / AWS Profile<br/>set-profile-var -> environment.env"]
         end
 
-        subgraph git_menu["Git Utils (lab-utils.d/)"]
-            git_runner["git-utils.sh<br/>Git Operations Menu"]
+        subgraph git_menu["Git Utils"]
             git_scripts["git-utils.d/<br/>git-pull-repos.sh<br/>git-push-repos.sh<br/>git-commit-repos.sh<br/>git-pull-submodules.sh"]
         end
 
-        subgraph conda_menu["Conda Env Install (lab-utils.d/)"]
-            conda_runner["install-conda-env.sh<br/>Environment Menu"]
-            conda_installers["install-conda-env.d/<br/>tensorflow.sh<br/>torch.sh<br/>r.sh<br/>rust.sh"]
-            conda_system["conda-env.d/<br/>System .yml/.sh files"]
-            conda_user["~/.local/conda-env.d/<br/>User .yml/.sh files"]
+        subgraph conda_menu["Install Extra Environments"]
+            conda_installers["install-conda-env.d/<br/>tensorflow.sh, torch.sh, r.sh, rust.sh"]
+            conda_user["~/.local/conda-env.d/<br/>User environment recipes"]
         end
 
-        subgraph ai_menu["AI Assistant Install (lab-utils.d/)"]
-            ai_runner["install-ai-assistant.sh<br/>AI Assistant Menu"]
-            ai_installers["install-ai-assistant.d/<br/>anthropic-claude-code.sh<br/>anysphere-cursor.sh<br/>google-gemini-cli.sh<br/>openai-codex.sh"]
+        subgraph install_menu["Install Menus"]
+            ai_installers["install-ai-assistant.d/<br/>claude-code, opencode, cursor,<br/>gemini-cli, codex"]
+            infra_installers["install-infrastructure.d/<br/>docker-cli, cloudflared"]
         end
+
+        tools["new-project.sh | test-cuda.sh"]
     end
 
     subgraph user["User Workspace"]
-        workspace["~/workspace/<br/>Symlinked Scripts"]
         launcher["JupyterLab Launcher<br/>Lab Utils Tile"]
-        user_startup["~/.local/start-platform.d/<br/>Custom Startup Scripts"]
+        user_startup["~/.local/start-platform.d/<br/>Custom + Flagged Scripts"]
+        local_scripts["~/.local/lab-utils.d/<br/>User Menu Scripts"]
     end
 
     start -->|"Execute numbered<br/>scripts in order"| startup_scripts
     startup_scripts -->|"Start background<br/>services"| start_services
-    startup_scripts -->|"Create symlinks<br/>to workspace"| workspace_scripts
+    startup_scripts -->|"Create workspace<br/>symlinks"| workspace_scripts
     startup_scripts -->|"Execute if<br/>ENABLE_LOCAL_SCRIPTS=1"| user_scripts
-
-    workspace_scripts -->|"Symlink lab-utils<br/>and peer scripts"| workspace
-    user_scripts -->|"Run custom<br/>startup logic"| user_startup
+    user_scripts -->|"Run every executable<br/>(user scripts + flagged symlinks)"| user_startup
 
     launcher -->|"Execute with<br/>terminal init"| launch_wrapper
-    launch_wrapper -->|"Wait for terminal<br/>verify dimensions"| lab_utils
-    workspace -->|"Direct CLI<br/>execution"| lab_utils
+    launch_wrapper --> lab_utils
 
-    lab_utils -->|"Show menu<br/>execute selection"| peer_scripts
-    lab_utils -->|"Show menu<br/>execute selection"| git_runner
-    lab_utils -->|"Show menu<br/>execute selection"| conda_runner
-    lab_utils -->|"Show menu<br/>execute selection"| ai_runner
+    lab_utils --> settings_menu
+    lab_utils --> git_menu
+    lab_utils --> conda_menu
+    lab_utils --> install_menu
+    lab_utils --> tools
+    lab_utils -->|"Local Scripts menu"| local_scripts
 
-    git_runner -->|"Show submenu<br/>execute selection"| git_scripts
-
-    conda_runner -->|"Discover .sh<br/>files"| conda_installers
-    conda_runner -->|"Discover .yml/.sh<br/>files"| conda_system
-    conda_runner -->|"Discover .yml/.sh<br/>files"| conda_user
-
-    ai_runner -->|"Show submenu<br/>execute selection"| ai_installers
+    onstart_applet -->|"Toggle = symlink"| user_startup
 
     style container fill:none,stroke:#0284c7,stroke-width:2px
     style utils fill:none,stroke:#10b981,stroke-width:2px
     style user fill:none,stroke:#a855f7,stroke-width:2px
-    style peer_scripts fill:none,stroke:#6b7280,stroke-width:1px
+    style settings_menu fill:none,stroke:#6b7280,stroke-width:1px
     style git_menu fill:none,stroke:#6b7280,stroke-width:1px
     style conda_menu fill:none,stroke:#6b7280,stroke-width:1px
-    style ai_menu fill:none,stroke:#6b7280,stroke-width:1px
+    style install_menu fill:none,stroke:#6b7280,stroke-width:1px
 
     style start fill:none,stroke:#0284c7,stroke-width:2px
     style lab_utils fill:none,stroke:#10b981,stroke-width:3px
-    style git_runner fill:none,stroke:#6b7280,stroke-width:2px
-    style conda_runner fill:none,stroke:#6b7280,stroke-width:2px
-    style ai_runner fill:none,stroke:#6b7280,stroke-width:2px
-    style launcher fill:none,stroke:#a855f7,stroke-width:2px
 ```
 
 **Key Components:**
 - **Traefik Reverse Proxy:** All services run behind Traefik, enabling multiple environments without port conflicts
 - **JupyterHub ServerProxy:** Routes traffic from JupyterLab to integrated services (MLflow, TensorBoard, Resources Monitor)
-- **Watchtower:** Automatic container updates (runs daily at midnight)
+- **Watchtower:** Daily image pull at midnight (monitor-only - a pulled update applies on the next stop + start)
 - **Named Volumes:** Persistent data for workspace, home directory, cache, and certificates
 - **GPU Support:** Optional NVIDIA GPU access for accelerated computing
 
@@ -290,7 +270,7 @@ graph TB
 
 **Additional Environments (On-Demand Installation):**
 
-Use `lab-utils` > "Install Conda Environments" to install additional environments:
+Use `lab-utils` > "Install Extra Environments" to install additional environments:
 
 **TensorFlow Environment:**
 - TensorFlow 2.18+ with CUDA GPU acceleration support
@@ -322,7 +302,7 @@ Entrepreneur, enterprise architect, and data science/machine learning practition
 Docker must be installed on your system to run this platform. JupyterLab 4 runs as a containerized application, ensuring complete isolation from your host system and consistent behavior across different environments.
 
 **Docker Hub Repository:** [stellars/stellars-jupyterlab-ds](https://hub.docker.com/repository/docker/stellars/stellars-jupyterlab-ds/general)
-**Current Version:** 3.3.32_cuda-13.0.2_jl-4.5.0
+**Current Version:** see `pyproject.toml` (tag format `<version>_cuda-<cuda>_jl-<jupyterlab>`, e.g. `3.9.3_cuda-13.2.0_jl-4.6.1`)
 
 ### Prerequisites
 
@@ -381,11 +361,11 @@ Configuration is layered: `.env.default` (tracked) holds the defaults, `.env` (g
 
 **Key configuration options:**
 - `COMPOSE_PROJECT_NAME` - Determines access hosts and container/volume names
-- `JUPYTERLAB_SERVER_TOKEN` - Authentication token, set in `.env` (empty means no password required)
+- `JUPYTERLAB_SERVER_TOKEN` - Authentication token, set in `.env` (never leave it empty - jupyter would autogenerate a random token and lock you out)
 - `LAB_PORT` - External HTTPS port (default: `443`)
 - `CONDA_DEFAULT_ENV` - Default conda environment (only base is pre-installed)
 
-Set `CONDA_DEFAULT_ENV` in `compose.yml` or `~/.profile` to specify which conda environment loads by default. Additional environments (tensorflow, torch, r_base, rust) install on-demand via lab-utils. 
+Set the default conda environment per user via `lab-utils` > Settings > Default Conda Env. Additional environments (tensorflow, torch, r_base, rust) install on-demand via lab-utils.
 
 ## Default Settings
 - **Work Directory:** `~/workspace` (mounted as `vol_workspace`)
@@ -416,6 +396,8 @@ All volumes are named and persist across container updates:
 - `vol_cache` - cached computation results
 - `vol_certs` - TLS certificates for HTTPS
 
+User-installed conda environments land in `~/.conda/envs` (inside `vol_home`), so they survive container updates and recreation.
+
 ### Repository Structure
 ```
 .
@@ -430,7 +412,6 @@ All volumes are named and persist across container updates:
 │       ├── Dockerfile.jupyterlab
 │       └── conf/            # Environment configs, packages
 ├── scripts/                 # Build and start helper scripts
-├── multi-user/              # Multi-user deployment scripts
 └── extra/                   # Additional configurations (AWS, CVAT, etc.)
 ```
 
@@ -450,29 +431,32 @@ Configuration variables supported by the platform:
 - `LAB_NAME` - lab instance name (defaults to `COMPOSE_PROJECT_NAME`)
 
 **JupyterLab Settings:**
-- `CONDA_DEFAULT_ENV` - default conda environment to activate (default: `base`)
+- `CONDA_DEFAULT_ENV` - default conda environment to activate (default: `base`); set it per user via `lab-utils` > Settings > Default Conda Env, not `.env` - compose pins the container default
 - `JUPYTERLAB_SERVER_IP` - IP address for JupyterLab (default: `*` for all interfaces)
-- `JUPYTERLAB_SERVER_TOKEN` - access token (empty = no password required)
+- `JUPYTERLAB_SERVER_TOKEN` - access token (never leave it empty - jupyter would autogenerate a random token and lock you out)
 - `JUPYTERLAB_BASE_URL` - base URL path (default: `/` - the lab is served from the host root)
 - `JUPYTERLAB_TIMEZONE` - container timezone in IANA format (e.g. `Europe/Warsaw`); empty = UTC
 - `JUPYTERLAB_SYSTEM_NAME` - rebrand `stellars-jupyterlab-ds` mentions in welcome page, MOTD and toolbar header badge; empty = no rebrand
 
 **Service Toggles:**
-- `ENABLE_GPU_SUPPORT` - enable NVIDIA GPU support (default: `0`)
+- `ENABLE_GPU_SUPPORT` - GPU flag set by the `compose-gpu.yml` overlay (default: `0`)
 - `ENABLE_GPUSTAT` - enable GPU monitoring
 - `ENABLE_SERVICE_MLFLOW` - enable MLFlow service (default: `1`)
 - `ENABLE_SERVICE_RESOURCES_MONITOR` - enable Resources Monitor/btop (default: `1`)
 - `ENABLE_SERVICE_TENSORBOARD` - enable TensorBoard (default: `1`)
-- `ENABLE_LOCAL_SCRIPTS` - enable user-defined startup scripts
+- `ENABLE_SERVICE_PULSEAUDIO` - enable PulseAudio voice source (default: `1`)
+- `ENABLE_LOCAL_SCRIPTS` - enable user-defined startup scripts (default: `1`)
+- `JUPYTERLAB_SUDO_ENABLE` - `0` disables sudo for good at container start (default: `1`)
+- `JUPYTERLAB_EXTENSIONS_MANAGER_READONLY` - `1` locks the extension manager to installed-only (default: `0`)
 - `JUPYTERLAB_AUX_SCRIPTS_PATH` - path to auxiliary startup scripts (e.g. `/mnt/shared/start-platform.d` for admin-managed setup like AWS keys, repo credentials, hackathon config)
 - `JUPYTERLAB_AUX_MENU_PATH` - path to auxiliary menu directory (e.g. `/mnt/shared/lab-utils.d`); executable scripts become menu items, YAML files become submenus
 
 **Service Configuration:**
 - `TF_CPP_MIN_LOG_LEVEL` - TensorFlow logging level (default: `3` for errors only)
 - `TENSORBOARD_LOGDIR` - TensorBoard log directory (default: `/tmp/tensorboard`)
-- `MLFLOW_TRACKING_URI` - MLFlow tracking URI (default: `http://localhost:5000`)
+- `MLFLOW_TRACKING_URI` - MLFlow tracking URI (default: derived from `MLFLOW_PORT`)
 - `MLFLOW_PORT` - MLFlow service port (default: `5000`)
-- `MLFLOW_HOST` - MLFlow bind address (default: `*`)
+- `MLFLOW_HOST` - MLFlow bind address (default: `127.0.0.1`, reachable only via the authenticated Jupyter proxy)
 - `MLFLOW_WORKERS` - MLFlow worker count (default: `1`)
 
 
@@ -513,7 +497,7 @@ Configuration variables supported by the platform:
 - Lab utilities helper scripts for common tasks
 - Favorites sidebar for quick navigation
 - Cell execution time tracking
-- Automatic container updates via Watchtower
+- Daily image pulls via Watchtower (applied on the next restart)
 - Self-signed TLS certificates for HTTPS access
 
 <!-- EOF -->

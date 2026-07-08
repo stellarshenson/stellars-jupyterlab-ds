@@ -22,12 +22,19 @@ rewrite() {
     rm -f "${tmp}"
 }
 
-# Drop the upstream GitHub link from welcome-message.txt - the URL would point
-# to a non-existent repo once the system name is rebranded
+# Drop the upstream GitHub links - after rebranding the substituted URL
+# (github.com/stellarshenson/<new-name>) would point to a non-existent repo.
+# In welcome.html the repo link is the ONLY entry of the Documentation section,
+# so the whole section goes (deleting just the line leaves an empty heading):
+# P;D re-tests each buffered line, the inner block eats div-open through </div>
 rewrite /welcome-message.txt '/^For more information visit:/d'
+rewrite /welcome.html '/<div class="section">/{ N; /<h2>Documentation<\/h2>/{ :a; N; /<\/div>/!ba; d }; P; D }'
 
+# sed-safe replacement: strip the characters that would break the s||| expression
+# (a name with / & \ or | is invalid for URLs and docker naming anyway)
+SAFE_NAME=$(printf '%s' "${JUPYTERLAB_SYSTEM_NAME}" | tr -d '/&\\|')
 for file in /welcome.html /welcome-message.txt /etc/motd; do
-    rewrite "${file}" "s/stellars-jupyterlab-ds/${JUPYTERLAB_SYSTEM_NAME}/g"
+    rewrite "${file}" "s|stellars-jupyterlab-ds|${SAFE_NAME}|g"
 done
 
 # EOF

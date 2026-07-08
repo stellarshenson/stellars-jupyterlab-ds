@@ -2,31 +2,23 @@
 """
 Return conda environments as JSON options for selector.
 
+Deliberately no "current" flags: the selector's current_cmd (get-profile-var)
+is the single authority for the current value - a second detection here drifted
+(unanchored ~/.profile regex matched comments and ignored the env store).
+
 Output format:
 [
-  {"value": "base", "label": "base", "current": true},
+  {"value": "base", "label": "base"},
   {"value": "myenv", "label": "myenv"}
 ]
 """
 
 import json
 import os
-import re
 import subprocess
-import sys
-from pathlib import Path
 
-CONDA_CMD = "/opt/conda/bin/conda"
-PROFILE_FILE = Path.home() / ".profile"
-
-
-def get_current_default() -> str:
-    """Get current CONDA_DEFAULT_ENV from ~/.profile."""
-    if not PROFILE_FILE.exists():
-        return ""
-    content = PROFILE_FILE.read_text()
-    match = re.search(r'CONDA_DEFAULT_ENV=["\'"]?([^"\'"\n]*)["\'"]?', content)
-    return match.group(1) if match else ""
+# image ENV wins when set - one name, one binary (matches the shell scripts)
+CONDA_CMD = os.environ.get("CONDA_CMD") or "/opt/conda/bin/conda"
 
 
 def get_conda_envs() -> list:
@@ -50,17 +42,8 @@ def get_conda_envs() -> list:
 
 
 def main():
-    current = get_current_default()
     envs = get_conda_envs()
-
-    options = []
-    for env in envs:
-        opt = {"value": env, "label": env}
-        if env == current:
-            opt["current"] = True
-        options.append(opt)
-
-    print(json.dumps(options))
+    print(json.dumps([{"value": e, "label": e} for e in envs]))
 
 
 if __name__ == "__main__":

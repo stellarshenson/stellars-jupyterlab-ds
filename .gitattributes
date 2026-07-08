@@ -1,0 +1,3 @@
+# batch files must reach Windows with CRLF endings - cmd.exe goto/call label
+# scanning misfires on LF-only files
+*.bat text eol=crlf

@@ -61,13 +61,25 @@ if len(sys.argv) >= 4:
 
 
 # Raw content block - the auth token itself is never rendered: this banner goes to
-# the container log (docker logs), which must not hold the password
-raw_info = """
+# the container log (docker logs), which must not hold the password.
+# Under JupyterHub there is no .env and no standalone token - auth belongs to the hub.
+if os.environ.get('JUPYTERHUB_USER'):
+    token_line = "Authentication: \033[95mmanaged by JupyterHub\033[0m"
+else:
+    token_line = "Jupyterlab server token: \033[95mset at deployment (key JUPYTERLAB_SERVER_TOKEN in .env)\033[0m"
+
+raw_info = f"""
 Build @BUILD_NAME@ created on @BUILD_DATE@
-Jupyterlab server token: \033[95mset at deployment (key JUPYTERLAB_SERVER_TOKEN in .env)\033[0m
---------------------------------------------------------------------------------
-Visit: \033[36mhttps://github.com/stellarshenson/@SYSTEM_NAME@\033[0m
+{token_line}
 """.strip().splitlines()
+
+# the upstream GitHub link only holds for the unrebranded system name
+# (mirrors 08_apply_system_name.sh, which drops it from welcome-message.txt)
+if system_name == 'stellars-jupyterlab-ds':
+    raw_info += [
+        "-" * 80,
+        "Visit: \033[36mhttps://github.com/stellarshenson/@SYSTEM_NAME@\033[0m",
+    ]
 
 # Apply replacements
 colored_lines = [substitute_vars(line) for line in raw_info]

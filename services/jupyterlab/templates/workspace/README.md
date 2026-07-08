@@ -27,6 +27,9 @@ test-cuda.sh           # Verify GPU support
 
 ## Customization
 
+- **Environment variables** - manage in `lab-utils` > Settings > Environment Variables (stored in `~/.local/environment.env`); new terminals see changes immediately, notebooks and services after a server restart
+- **Run on start** - `lab-utils` > Settings > Run on Start flags standard scripts (extra conda envs, AI assistants, infrastructure) to run at every platform start - no wrapper scripts needed
 - **Local scripts** - Add to `~/.local/lab-utils.d/` (run `lab-utils --create-local`)
 - **Startup scripts** - Add to `~/.local/start-platform.d/` for auto-execution
-- **Extra environments** - Add conda YAML files to `~/.local/extra-env.d/`
+- **Extra environments** - Add conda YAML files to `~/.local/conda-env.d/`
+- **Conda environments persist** - `conda create -n <name>` (and the lab-utils extra environments) land in `~/.conda/envs`, so they survive platform updates

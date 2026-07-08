@@ -24,7 +24,7 @@ dependencies:
     - textual # modern terminal user interface library
     - rich # rich text and styling (duoptimum-lab-utils runtime dep; installed --no-deps)
     - pyyaml # yaml parsing (duoptimum-lab-utils runtime dep; installed --no-deps)
-    - make # build tools
+    # NOTE: no pip 'make' here - PyPI 'make' is a jinja scaffolder, GNU make ships via apt
     - matplotlib # plots library
     - mlflow # powerful mlops suite and experiment runner (library)
     - numpy # advanced library for working with arrays

@@ -1,0 +1,218 @@
+"""Env-store round-trip, quoting, atomicity, and a headless applet render check."""
+
+import asyncio
+
+import pytest
+
+pytest.importorskip("textual")
+
+from duoptimum_lab_utils import envman  # noqa: E402
+
+
+@pytest.fixture
+def env_file(tmp_path):
+    return tmp_path / "environment.env"
+
+
+# --- parsing -----------------------------------------------------------------
+
+def test_parse_recognises_plain_quoted_and_export_forms(env_file):
+    env_file.write_text(
+        "PLAIN=abc\n"
+        "SINGLE='a b c'\n"
+        'DOUBLE="d e f"\n'
+        "export EXPORTED=xyz\n"
+    )
+    found = envman.parse_vars(envman.read_lines(env_file))
+    assert found == {"PLAIN": "abc", "SINGLE": "a b c",
+                     "DOUBLE": "d e f", "EXPORTED": "xyz"}
+
+
+def test_parse_last_assignment_wins_like_shell(env_file):
+    env_file.write_text("K=first\nK=second\n")
+    assert envman.parse_vars(envman.read_lines(env_file)) == {"K": "second"}
+
+
+def test_parse_ignores_comments_blanks_and_junk(env_file):
+    env_file.write_text("# comment\n\nnot a var line\n1BAD=x\nGOOD=1\n")
+    assert envman.parse_vars(envman.read_lines(env_file)) == {"GOOD": "1"}
+
+
+def test_missing_file_reads_as_empty(env_file):
+    assert envman.read_lines(env_file) == []
+    assert envman.parse_vars([]) == {}
+
+
+# --- writing -----------------------------------------------------------------
+
+def test_set_var_creates_file_with_header(env_file):
+    envman.set_var("MY_VAR", "hello world", env_file)
+    text = env_file.read_text()
+    assert "MY_VAR='hello world'" in text
+    assert text.startswith("#")  # header comment written for a fresh file
+    assert envman.parse_vars(envman.read_lines(env_file))["MY_VAR"] == "hello world"
+
+
+def test_set_var_replaces_in_place_and_preserves_other_lines(env_file):
+    env_file.write_text("# my comment\nA=1\nB=2\n")
+    envman.set_var("A", "changed", env_file)
+    lines = envman.read_lines(env_file)
+    assert lines[0] == "# my comment"        # comment untouched
+    assert lines[1] == "A='changed'"          # replaced at its original position
+    assert lines[2] == "B=2"                  # untouched, original form kept
+
+
+def test_set_var_collapses_duplicate_assignments(env_file):
+    env_file.write_text("K=one\nK=two\n")
+    envman.set_var("K", "final", env_file)
+    lines = [l for l in envman.read_lines(env_file) if l.startswith("K")]
+    assert lines == ["K='final'"]
+
+
+def test_quoting_round_trips_spaces_quotes_and_dollars(env_file):
+    tricky = """spa ced 'sin"gle' $HOME `cmd` !bang"""
+    envman.set_var("TRICKY", tricky, env_file)
+    assert envman.parse_vars(envman.read_lines(env_file))["TRICKY"] == tricky
+
+
+def test_written_file_sources_cleanly_in_sh(env_file, tmp_path):
+    import subprocess
+    value = "with spaces and 'quotes' and $dollar"
+    envman.set_var("SRC_TEST", value, env_file)
+    out = subprocess.run(
+        ["sh", "-c", f". '{env_file}' && printf %s \"$SRC_TEST\""],
+        capture_output=True, text=True)
+    assert out.returncode == 0
+    assert out.stdout == value
+
+
+def test_delete_var_removes_all_assignments_only(env_file):
+    env_file.write_text("# keep\nGONE=1\nKEEP=2\nGONE=3\n")
+    envman.delete_var("GONE", env_file)
+    assert envman.read_lines(env_file) == ["# keep", "KEEP=2"]
+
+
+def test_no_stray_tempfiles_after_operations(env_file):
+    envman.set_var("A", "1", env_file)
+    envman.delete_var("A", env_file)
+    leftovers = [p for p in env_file.parent.iterdir()
+                 if p.name.startswith(".environment.env.")]
+    assert leftovers == []
+
+
+def test_non_utf8_store_survives_writes(env_file):
+    # a single foreign byte (Windows-1252 paste) must never make read_lines
+    # report "no file" - set_var would then rewrite the store from an empty
+    # list and silently wipe every variable
+    env_file.write_bytes(b"# caf\xe9 config\nA='1'\nB='2'\n")
+    envman.set_var("NEW", "x", env_file)
+    raw = env_file.read_bytes()
+    assert b"caf\xe9 config" in raw          # foreign byte round-tripped
+    assert b"A='1'" in raw and b"B='2'" in raw
+    assert envman.parse_vars(envman.read_lines(env_file))["NEW"] == "x"
+
+
+# --- applet ------------------------------------------------------------------
+
+def test_name_validation_regex():
+    assert envman._NAME_RE.match("GOOD_NAME1")
+    assert not envman._NAME_RE.match("1BAD")
+    assert not envman._NAME_RE.match("BAD-NAME")
+    assert not envman._NAME_RE.match("")
+    assert not envman._NAME_RE.match("SPA CED")
+
+
+def test_protected_names_refused():
+    for name in ["PATH", "HOME", "LD_LIBRARY_PATH", "JUPYTERHUB_USER", "JUPYTERHUB_API_TOKEN",
+                 "JUPYTERLAB_SERVER_TOKEN", "JUPYTERLAB_SERVER_IP", "JUPYTERLAB_BASE_URL",
+                 "MLFLOW_HOST"]:
+        assert envman.is_protected(name)
+    # JUPYTERLAB_TERMINAL_SHELL is the Settings > Default Shell knob - the
+    # prefix guard must not block the platform's own selector
+    for name in ["MY_VAR", "AWS_PROFILE", "CONDA_DEFAULT_ENV", "PATHLIKE", "MLFLOW_PORT",
+                 "JUPYTERLAB_TERMINAL_SHELL"]:
+        assert not envman.is_protected(name)
+
+
+def test_applet_refuses_protected_variable(env_file):
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)) as pilot:
+            await pilot.press("a")
+            await pilot.press(*"PATH")
+            await pilot.press("tab")
+            await pilot.press(*"/evil")
+            await pilot.press("enter")
+            await pilot.pause()
+            # modal stays open with the protection error; nothing written
+            from textual.widgets import Static
+            err = str(app.screen.query_one("#edit-error", Static).render())
+            assert "protected" in err
+
+    asyncio.run(_go())
+    assert not env_file.exists()
+
+
+def _option_texts(app):
+    from textual.widgets import OptionList
+    option_list = app.query_one("#env-list", OptionList)
+    return [str(option_list.get_option_at_index(i).prompt)
+            for i in range(option_list.option_count)]
+
+
+def test_applet_lists_vars_and_restart_note(env_file):
+    env_file.write_text("ZED=26\nALPHA='a value'\n")
+
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)):
+            from textual.widgets import Static
+            texts = _option_texts(app)
+            assert texts == ["ALPHA = a value", "ZED = 26"]  # sorted, unquoted display
+            note = str(app.query_one("#restart-note", Static).render())
+            assert "restart the server" in note
+
+    asyncio.run(_go())
+
+
+def test_applet_empty_state(env_file):
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)):
+            assert "press 'a' to add one" in _option_texts(app)[0]
+
+    asyncio.run(_go())
+
+
+def test_applet_add_flow_writes_file(env_file):
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)) as pilot:
+            await pilot.press("a")
+            await pilot.press(*"NEW", "underscore", *"VAR")  # '_' has no bare key name
+            await pilot.press("tab")            # name -> value input
+            await pilot.press(*"val", "space", "1")
+            await pilot.press("enter")
+            await pilot.pause()
+            assert "NEW_VAR = val 1" in _option_texts(app)
+
+    asyncio.run(_go())
+    assert envman.parse_vars(envman.read_lines(env_file))["NEW_VAR"] == "val 1"
+
+
+def test_applet_delete_flow_requires_confirmation(env_file):
+    env_file.write_text("DOOMED=1\n")
+
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)) as pilot:
+            await pilot.press("d")
+            await pilot.press("n")              # declined - still there
+            await pilot.pause()
+            assert envman.parse_vars(envman.read_lines(env_file)) == {"DOOMED": "1"}
+            await pilot.press("d")
+            await pilot.press("y")
+            await pilot.pause()
+            assert envman.parse_vars(envman.read_lines(env_file)) == {}
+
+    asyncio.run(_go())

@@ -4,6 +4,10 @@
 ARG CUDA_VERSION=13.2.0
 FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu24.04 AS builder
 
+# pre-FROM ARGs are out of scope inside a stage - without this redeclaration
+# CUDA_TOOLKIT_VERSION expanded EMPTY and the toolkit pins below resolved to latest
+ARG CUDA_VERSION
+
 # cuda toolkit version - should be the same as torch
 ARG CUDA_TOOLKIT_VERSION=${CUDA_VERSION}
 
@@ -310,8 +314,11 @@ ENV CONDA_USER_CACHE=${CONDA_USER_HOME}/.cache
 ENV CONDA_USER_WORKSPACE=${CONDA_USER_HOME}/workspace
 ARG CONDA_USER_SHARED=/mnt/shared
 ENV CONDA_RUN_DEBUG=0
-ENV PATH=${PATH}:${CONDA_HOME}/condabin
+ENV PATH=${UTILS_PATH}:${PATH}:${CONDA_HOME}/condabin
 ENV PIP_EXISTS_ACTION=w
+# never populate pip's http cache during the build - a later-layer 'rm' cannot
+# reclaim space already committed to an earlier layer
+ENV PIP_NO_CACHE_DIR=1
 # signals MCP gateway that it's running inside container
 ENV DOCKER_MCP_IN_CONTAINER=1
 ARG JUPYTER_SHARE_PATH=/opt/conda/share/jupyter
@@ -496,7 +503,6 @@ EOF
 RUN <<-EOF
     echo "installing ${CONDA_DEFAULT_ENV} env with python version from env file"
     set -e
-    set -e
     if [ "${CONDA_DEFAULT_ENV}" != "base" ]; then
 	${CONDA_CMD} create --name ${CONDA_DEFAULT_ENV} -y
 	cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
@@ -540,7 +546,6 @@ EOF
 ## FIX (2026-02-09): conda update --all also removes conda-meta/history
 RUN <<-EOF
     echo "updating entire conda base environment"
-    set -e
     set -e
     cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
     CONDA_DEFAULT_ENV="${CONDA_DEFAULT_ENV}" conda update -y -c conda-forge --all
@@ -592,11 +597,9 @@ USER ${CONDA_USER}
 #    ${CONDA_CMD} clean -a -y
 #EOF
 
-## make sure CUDNN_PATH and LD_LIBRARY_PATH is pointing to cuda
-## see https://stackoverflow.com/questions/60208936/cannot-dlopen-some-gpu-libraries-skipping-registering-gpu-devices
-## path can be obtained by using >> python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
-ENV CUDNN_PATH=/opt/conda/lib/python3.1/site-packages/nvidia/cudnn
-ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
+## CUDNN_PATH/LD_LIBRARY_PATH intentionally NOT set here: the old value pointed at
+## a nonexistent path (python3.1 typo, and cudnn is not in base site-packages) -
+## runtime LD_LIBRARY_PATH hygiene lives in 03_cleanup_ld_library_path.sh
 
 
 ########################################################
@@ -609,7 +612,6 @@ ENV LD_LIBRARY_PATH=${CUDNN_PATH}/lib:${LD_LIBRARY_PATH}
 USER ${CONDA_USER}
 RUN <<-EOF
     echo "installing Jupyterlab in ${CONDA_DEFAULT_ENV} env"
-    set -e
     set -e
     ${CONDA_CMD} env update --name ${CONDA_DEFAULT_ENV} --file=/environment_base_jupyterlab.yml
     cp ${CONDA_HOME}/conda-meta/history /tmp/conda-meta-history
@@ -645,7 +647,18 @@ RUN <<-EOF
     set -e
     conda run -n base pip install --no-deps --no-index --no-cache-dir \
         --find-links /tmp/duoptimum-wheel duoptimum-lab-utils
+    # the conda tree belongs to ${CONDA_USER} - root-owned package files inside it
+    # would make the user's own pip upgrade/uninstall of the package fail
+    chown -R ${CONDA_USER}:${CONDA_USER_GROUP} \
+        ${CONDA_HOME}/lib/python*/site-packages/duoptimum_lab_utils \
+        ${CONDA_HOME}/lib/python*/site-packages/duoptimum_lab_utils-* \
+        ${CONDA_HOME}/bin/lab-utils*
     ln -sf ${CONDA_HOME}/bin/lab-utils /opt/utils/lab-utils
+    ln -sf ${CONDA_HOME}/bin/lab-utils-env /opt/utils/lab-utils-env
+    ln -sf ${CONDA_HOME}/bin/lab-utils-onstart /opt/utils/lab-utils-onstart
+    # quick commands advertised in the workspace README - reachable without the menu
+    ln -sf /opt/utils/lab-utils.d/new-project.sh /opt/utils/new-project.sh
+    ln -sf /opt/utils/lab-utils.d/test-cuda.sh /opt/utils/test-cuda.sh
     rm -rf /tmp/duoptimum-wheel
 EOF
 
@@ -710,10 +723,10 @@ EOF
 
 ## final round of updates to keep all up to date and final cleanup
 RUN <<-EOF
-    echo "final conda and pip cache cleanup"
+    echo "final conda cache cleanup"
     set -e
     CONDA_DEFAULT_ENV=${CONDA_DEFAULT_ENV:-base} conda clean -ltpy
-    pip cache purge
+    # pip http cache is disabled build-wide via PIP_NO_CACHE_DIR - nothing to purge
 EOF
 ## COMMENTED OUT - tensorflow, torch, r_base are now installed on-demand
 #RUN CONDA_DEFAULT_ENV=${CONDA_TENSORFLOW_ENV} conda clean -ltpy && pip cache purge
@@ -723,9 +736,15 @@ EOF
 ## apt cleanup and remove prebuilt packages
 USER root
 RUN <<-EOF
-    echo "apt cleanup of no-longer-needed packages"
+    echo "apt cleanup, apt lists and the lab user's build-time pip cache"
     set -e
     apt autoremove -y
+    rm -rf /var/lib/apt/lists/*
+    # belt-and-braces: PIP_NO_CACHE_DIR keeps this empty during the build; the
+    # real space saving is prevention - an rm here reclaims no earlier-layer space
+    rm -rf /home/lab/.cache/pip
+    # build-time patch inputs - root-owned in /tmp, the user could never delete them
+    rm -rf /tmp/patches
 EOF
 
 
@@ -777,13 +796,14 @@ ENV ENABLE_SERVICE_RESOURCES_MONITOR=1
 ENV ENABLE_SERVICE_TENSORBOARD=1
 ENV ENABLE_SERVICE_PULSEAUDIO=1
 ENV ENABLE_LOCAL_SCRIPTS=1
-ENV CONDA_DEFAULT_ENV=base
-ENV TF_CPP_MIN_LOG_LEVEL=3 
+ENV TF_CPP_MIN_LOG_LEVEL=3
 ENV TENSORBOARD_LOGDIR=/tmp/tensorboard
 ENV MLFLOW_DATA=${CONDA_USER_CACHE}/mlflow
-ENV MLFLOW_TRACKING_URI=http://localhost:5000
+# MLFLOW_TRACKING_URI is deliberately NOT baked: start-platform.sh derives it
+# from the port knobs at start, so a hub/compose MLFLOW_PORT override propagates
 ENV MLFLOW_PORT=5000
-ENV MLFLOW_HOST=0.0.0.0
+# loopback: mlflow has no auth - reachable only via the authenticated jupyter proxy
+ENV MLFLOW_HOST=127.0.0.1
 ENV MLFLOW_WORKERS=1
 ENV UV_LINK_MODE=copy
 

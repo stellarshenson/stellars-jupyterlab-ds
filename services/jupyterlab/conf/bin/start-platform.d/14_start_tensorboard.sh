@@ -18,7 +18,7 @@
 #
 # BEHAVIOR:
 #   - Creates the log directory if it does not exist
-#   - Runs TensorBoard bound to all interfaces on port 6006
+#   - Runs TensorBoard on loopback port 6006 (reachable via the authenticated jupyter proxy)
 # ----------------------------------------------------------------------------------------
 
 # check if enabled
@@ -34,7 +34,7 @@ TENSORBOARD_PORT=${TENSORBOARD_PORT:-6006}
 COMMAND=$(cat <<EOF
 echo "Launching tensorflow training monitoring and logging server on port $TENSORBOARD_PORT"
 mkdir -p $TENSORBOARD_LOGDIR 2>/dev/null
-tensorboard --bind_all --logdir $TENSORBOARD_LOGDIR --port $TENSORBOARD_PORT
+tensorboard --host 127.0.0.1 --logdir $TENSORBOARD_LOGDIR --port $TENSORBOARD_PORT
 EOF
 )
 
@@ -42,7 +42,9 @@ EOF
 touch /var/log/tensorboard.log 2>/dev/null || true
 
 # use conda to execute command (same launch shape as mlflow: explicit bash -c,
-# unbuffered output, dedicated log file instead of vanishing into conda run's capture)
+# unbuffered output, dedicated log file instead of vanishing into conda run's capture);
+# announce in the platform log like the other service hooks
+log_info "Starting TensorBoard on 127.0.0.1:${TENSORBOARD_PORT}"
 conda run -n base --no-capture-output bash -c "$COMMAND" >> /var/log/tensorboard.log 2>&1 &
 
 # EOF

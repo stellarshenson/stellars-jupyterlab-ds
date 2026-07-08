@@ -47,7 +47,7 @@ PASTEL = {
     "ok":      DUO["mint"],          # success
     "warn":    DUO["orange"],        # warning
     "err":     DUO["rose"],          # error
-    "info":    DUO["cyan_dark"],     # info text
+    "info":    DUO["cyan"],          # info text (cyan_dark fails WCAG AA on bg_subtle)
 }
 
 # Shared one-row top header: app name left, version pinned to the right corner.

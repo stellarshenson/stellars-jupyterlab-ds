@@ -13,7 +13,7 @@
 # container (possibly with JUPYTERLAB_SUDO_ENABLE=1) restores escalation.
 # ----------------------------------------------------------------------------------------
 
-if [[ ${JUPYTERLAB_SUDO_ENABLE:-1} == 0 ]]; then
+if [[ ${JUPYTERLAB_SUDO_ENABLE} == 0 ]]; then
     user="$(id -un)"
     # distinguish "escalation already revoked" (expected on restart) from a real
     # failure of the disabling itself - a failed security control must not log as success
@@ -25,6 +25,29 @@ if [[ ${JUPYTERLAB_SUDO_ENABLE:-1} == 0 ]]; then
             || log_error "failed to disable sudo for ${user} - escalation may still be possible"
     else
         log_info "sudo already disabled"
+    fi
+
+    # the welcome files advertise sudo and its default password - drop those so the
+    # in-product docs stay truthful when escalation is off. Files are world-writable
+    # but their directories are root-owned, so overwrite through cat (see 08)
+    if [[ -w /welcome-message.txt ]] && grep -qi 'sudo' /welcome-message.txt; then
+        tmp=$(mktemp)
+        grep -vi 'sudo' /welcome-message.txt > "${tmp}" && cat "${tmp}" > /welcome-message.txt
+        rm -f "${tmp}"
+    fi
+    # html: remove the whole Access Control section (its opening <div> precedes the
+    # matchable <h2>, so buffer one line - plain line-grep would orphan the tags)
+    if [[ -w /welcome.html ]] && grep -q '<h2>Access Control</h2>' /welcome.html; then
+        tmp=$(mktemp)
+        awk '
+            hold && /<h2>Access Control<\/h2>/ { skip=1; hold=0; next }
+            hold { print buf; hold=0 }
+            /<div class="section">/ { buf=$0; hold=1; next }
+            skip && /<\/div>/ { skip=0; next }
+            skip { next }
+            { print }
+        ' /welcome.html > "${tmp}" && cat "${tmp}" > /welcome.html
+        rm -f "${tmp}"
     fi
 fi
 

@@ -7,7 +7,7 @@ This directory contains conda environment definitions that are available for ins
 
 ## Usage
 
-Environment definitions (both `.yml` and `.sh` files) placed in any of these directories will automatically appear in the "Install Conda Environment" menu accessible via Lab Utils:
+Environment definitions (both `.yml` and `.sh` files) placed in any of these directories will automatically appear in the "Install Extra Environments" menu accessible via Lab Utils:
 
 - **`/opt/utils/lab-utils.d/install-conda-env.d/`** - Built-in environment scripts
 - **`/opt/utils/conda-env.d/`** - System-wide environment definitions (YAML or shell scripts)
@@ -87,7 +87,7 @@ For complex installations requiring custom logic or multiple steps.
 set -e
 
 ENV_NAME="my_environment"
-CONDA_CMD=/opt/conda/bin/conda
+CONDA_CMD=${CONDA_CMD:-/opt/conda/bin/conda}
 
 echo "Creating conda environment: ${ENV_NAME}"
 
@@ -118,7 +118,7 @@ echo ""
 set -e
 
 ENV_NAME="custom_ml"
-CONDA_CMD=/opt/conda/bin/conda
+CONDA_CMD=${CONDA_CMD:-/opt/conda/bin/conda}
 
 echo "Creating conda environment: ${ENV_NAME}"
 

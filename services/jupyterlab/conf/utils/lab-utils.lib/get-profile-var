@@ -1,0 +1,41 @@
+#!/opt/conda/bin/python3
+"""
+Print a user environment variable, resolved as login shells resolve it:
+~/.profile `export VAR=...` lines first, then ~/.local/environment.env
+(sourced later in .profile) overriding.
+
+Usage: get-profile-var VAR_NAME
+"""
+
+import re
+import sys
+from pathlib import Path
+
+from duoptimum_lab_utils.envman import parse_vars, read_lines
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: get-profile-var VAR_NAME", file=sys.stderr)
+        sys.exit(1)
+    var_name = sys.argv[1]
+
+    value = None
+    profile = Path.home() / ".profile"
+    if profile.exists():
+        pattern = re.compile(
+            rf'^\s*(?:export\s+)?{re.escape(var_name)}="?([^"\n]*)"?\s*$', re.MULTILINE)
+        matches = pattern.findall(profile.read_text())
+        if matches:
+            value = matches[-1]
+
+    store = parse_vars(read_lines())
+    if var_name in store:
+        value = store[var_name]
+
+    if value is not None:
+        print(value)
+
+
+if __name__ == "__main__":
+    main()

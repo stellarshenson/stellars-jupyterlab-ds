@@ -4,7 +4,7 @@
 # GLOBALS                                                                       #
 #################################################################################
 .DEFAULT_GOAL := help
-.PHONY: help preflight build build_verbose rebuild rebuild_increment_version _rebuild_impl installers push pull start stop clean increment_version maybe_increment_version tag
+.PHONY: help preflight build build_verbose rebuild rebuild_increment_version _rebuild_impl installers push pull start stop status logs clean increment_version maybe_increment_version tag
 
 # Use bash so we can use `set -o pipefail` to propagate docker's exit code through tee (DEBUG=1)
 SHELL := /bin/bash
@@ -150,13 +150,13 @@ increment_version:
 
 ## build docker containers and the windows + linux installers (BUILD_OPTS='--no-version-increment --no-cache')
 build: preflight maybe_increment_version
-	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build.sh $(DOCKER_BUILD_OPTS)
+	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)) CUDA_VERSION='$(CUDA_VERSION)'; cd ./scripts && ./build.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
 	@$(MAKE) installers
 
 ## build with verbose output (BUILD_OPTS='--no-version-increment --no-cache')
 build_verbose: preflight maybe_increment_version
-	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)); cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
+	@export PKG_VERSION=$$($(RUNTIME_VERSION_PYTHON_CMD)) CUDA_VERSION='$(CUDA_VERSION)'; cd ./scripts && ./build_verbose.sh $(DOCKER_BUILD_OPTS)
 	$(PRINT_BUILD_SUCCESS)
 	@$(MAKE) installers
 
@@ -192,6 +192,7 @@ endif
 		--target target \
 		--build-arg CACHEBUST=$$(date +%s) \
 		--build-arg PKG_VERSION=$(CURRENT_SEMVER) \
+		--build-arg CUDA_VERSION=$(CUDA_VERSION) \
 		$(DOCKER_BUILD_OPTS) \
 		--tag stellars/stellars-jupyterlab-ds:latest \
 		-f services/jupyterlab/Dockerfile.jupyterlab \
@@ -236,13 +237,25 @@ start: preflight
 stop: preflight
 	@./stop.sh
 
+## show container status for this deployment
+status:
+	@touch .env
+	@docker compose --env-file .env.default --env-file .env -f compose.yml ps
+
+## follow the jupyterlab container logs (Ctrl+C to detach)
+logs:
+	@touch .env
+	@docker compose --env-file .env.default --env-file .env -f compose.yml logs -f jupyterlab
+
 ## clean orphaned containers
+# prune scoped to THIS project's label value - never prunes other projects on the
+# host. .env.default first, .env last + tail -1 = last-wins layering, matching how
+# compose itself resolves the two env-files and duplicated keys
 clean: preflight
-	@echo 'removing dangling and unused images, containers, nets and volumes'
+	@echo 'removing project containers, orphans and dangling compose images'
 	@touch .env
 	@docker compose --env-file .env.default --env-file .env -f compose.yml down --remove-orphans
-	@yes | docker image prune
-	@yes | docker network prune
+	@docker image prune -f --filter "label=com.docker.compose.project=$$(grep -hs '^COMPOSE_PROJECT_NAME=' .env.default .env | tail -1 | cut -d= -f2 | tr -d '\r')"
 	@echo ""
 
 ## prints the list of available commands

@@ -16,7 +16,7 @@
 #   - btop installed (resource monitor)
 #
 # CONFIGURATION:
-#   - Accessible via http://<host>:7681 by default
+#   - loopback-only on :7681 (-i lo), reachable via the authenticated jupyter proxy /rmonitor
 #   - ttyd -W flag enables write mode for interactivity
 # ----------------------------------------------------------------------------------------
 
@@ -34,6 +34,9 @@ log_info "Launching btop resources monitor via ttyd"
 # -d 3 lowers libwebsockets verbosity (default 7 = ERR|WARN|NOTICE) to ERR|WARN,
 # dropping the unattributed 'N:' NOTICE banner. Remaining ttyd output is piped
 # through log_pipe so any line is tagged to this script instead of arriving raw.
-ttyd -d 3 -W -p 7681 -t titleFixed="Resources Monitor" btop --utf-force 2>&1 | log_pipe INFO &
+# -i lo: loopback only - ttyd is write-enabled (a live shell); it must be
+# reachable solely through the authenticated jupyter-server-proxy, never from
+# the docker network (other instances, or other users' containers under a hub)
+ttyd -d 3 -W -i lo -p 7681 -t titleFixed="Resources Monitor" btop --utf-force 2>&1 | log_pipe INFO &
 
 # EOF

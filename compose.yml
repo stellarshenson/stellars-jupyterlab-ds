@@ -10,18 +10,19 @@
 #   Jupyter Lab       - https://lab.<project>.localhost (redirects to /lab)
 #   Traefik dashboard - https://traefik.<project>.localhost
 #
-#   Example project .env file content:
+#   Example project .env file content (every ${VAR:-default} below is overridable there;
+#   GPU passthrough needs the compose-gpu.yml overlay, not an env var):
 #   COMPOSE_PROJECT_NAME=my-lab-platform
 #   JUPYTERLAB_SERVER_TOKEN=my_secret_token123
 #   LAB_PORT=8443
-#   ENABLE_GPU_SUPPORT=1
+#   JUPYTERLAB_SUDO_ENABLE=0
 #
 # --------------------------------------------------------------------------------------------------
 
 services:
 
   # Proxy for smart trafic routing to make it possible to host multiple similar containers
-  # exposing ports 80, 413 & 8080 to force docker to keep only one traefik service
+  # exposing ports 80, 443 & 8080 to force docker to keep only one traefik service
   # traefik dashboard is available under https://traefik.<project>.localhost
   traefik:
     image: traefik:latest
@@ -70,28 +71,31 @@ services:
         - linux/amd64
       args:
         PKG_VERSION: ${PKG_VERSION:-0.0.0} # platform version stamped into the duoptimum-lab-utils wheel
+        CUDA_VERSION: ${CUDA_VERSION:-13.2.0} # exported by make from pyproject [tool.stellars] - the image tag's single source of truth
     environment:
       - CONDA_DEFAULT_ENV=base                        # default conda environment activated on login
       - JUPYTERLAB_SERVER_IP=*                           # listen on all interfaces
-      - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # auth token, empty = no password required
+      - JUPYTERLAB_SERVER_TOKEN=${JUPYTERLAB_SERVER_TOKEN:-} # auth token; EMPTY means jupyter autogenerates a random one (lockout), not "no password"
       - JUPYTERLAB_BASE_URL=/                            # host-based routing, lab served from the root
       - TF_CPP_MIN_LOG_LEVEL=3                           # tensorflow logs ERR only
-      - TENSORBOARD_LOGDIR=/tmp/tensorboard              # directory for tensorboard log files
-      - MLFLOW_TRACKING_URI=http://localhost:5000         # MLFlow server connection URI
-      - MLFLOW_PORT=5000                                 # MLFlow server port
-      - MLFLOW_HOST=0.0.0.0                              # MLFlow listen on all interfaces
-      - MLFLOW_WORKERS=1                                 # MLFlow worker processes
+      - TENSORBOARD_LOGDIR=${TENSORBOARD_LOGDIR:-/tmp/tensorboard} # directory for tensorboard log files
+      - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-} # MLFlow client URI; empty = start-platform.sh derives it (MLFLOW_SERVER_PORT wins over MLFLOW_PORT - the one derivation site)
+      - MLFLOW_PORT=${MLFLOW_PORT:-5000}                 # MLFlow server port
+      - MLFLOW_HOST=${MLFLOW_HOST:-127.0.0.1}            # loopback: reachable only via the authenticated jupyter proxy
+      - MLFLOW_WORKERS=${MLFLOW_WORKERS:-1}              # MLFlow worker processes
       - LAB_NAME=${COMPOSE_PROJECT_NAME:-stellars-jupyterlab-ds} # carries the project name into the container for cert generation
-      - ENABLE_SERVICE_MLFLOW=1                          # start MLFlow tracking server
-      - ENABLE_SERVICE_RESOURCES_MONITOR=1               # start btop resources monitor
-      - ENABLE_SERVICE_TENSORBOARD=1                     # start TensorBoard server
-      - ENABLE_SERVICE_PULSEAUDIO=1                      # start PulseAudio voice source (Claude Code /voice)
-      - ENABLE_GPU_SUPPORT=0                             # enable NVIDIA GPU passthrough
-      - JUPYTERLAB_TIMEZONE=                               # container timezone (IANA format, empty = UTC)
-      - JUPYTERLAB_SUDO_ENABLE=1                           # 0 = disable sudo for good at container start
-      - JUPYTERLAB_EXTENSIONS_MANAGER_READONLY=0           # 1 = extension manager lists installed only, no PyPI queries or installs
+      - ENABLE_SERVICE_MLFLOW=${ENABLE_SERVICE_MLFLOW:-1}  # start MLFlow tracking server
+      - ENABLE_SERVICE_RESOURCES_MONITOR=${ENABLE_SERVICE_RESOURCES_MONITOR:-1} # start btop resources monitor
+      - ENABLE_SERVICE_TENSORBOARD=${ENABLE_SERVICE_TENSORBOARD:-1} # start TensorBoard server
+      - ENABLE_SERVICE_PULSEAUDIO=${ENABLE_SERVICE_PULSEAUDIO:-1} # start PulseAudio voice source (Claude Code /voice)
+      - ENABLE_LOCAL_SCRIPTS=${ENABLE_LOCAL_SCRIPTS:-1}  # run user scripts from ~/.local/start-platform.d at start
+      - ENABLE_GPUSTAT=${ENABLE_GPUSTAT:-1}              # GPU status widget in the JupyterLab toolbar
+      - ENABLE_GPU_SUPPORT=0                             # informational GPU flag - set by the compose-gpu.yml overlay, not .env
+      - JUPYTERLAB_TIMEZONE=${JUPYTERLAB_TIMEZONE:-}       # container timezone (IANA format, empty = UTC)
+      - JUPYTERLAB_SUDO_ENABLE=${JUPYTERLAB_SUDO_ENABLE:-1} # 0 = disable sudo for good at container start
+      - JUPYTERLAB_EXTENSIONS_MANAGER_READONLY=${JUPYTERLAB_EXTENSIONS_MANAGER_READONLY:-0} # 1 = extension manager lists installed only, no PyPI queries or installs
 
-      - JUPYTERLAB_SYSTEM_NAME=                            # rebrand stellars-jupyterlab-ds in welcome/MOTD and toolbar badge (empty = no rebrand)
+      - JUPYTERLAB_SYSTEM_NAME=${JUPYTERLAB_SYSTEM_NAME:-} # rebrand stellars-jupyterlab-ds in welcome/MOTD and toolbar badge (empty = no rebrand)
       - JUPYTERLAB_AUX_SCRIPTS_PATH=/mnt/shared/start-platform.d # aux startup scripts from shared volume
       - JUPYTERLAB_AUX_MENU_PATH=/mnt/shared/lab-utils.d          # aux menu dir from shared volume (scripts + yml submenus)
     volumes:
@@ -116,13 +120,14 @@ services:
     ipc: host
     restart: unless-stopped
     healthcheck:
-      # bracket pattern so pgrep -f does not match the healthcheck's own sh -c wrapper
-      # (a plain 'pgrep -f jupyter-lab' always exits 0 and reports healthy even when the lab is down)
-      test: ["CMD-SHELL", "pgrep -f 'jupyter-la[b]' > /dev/null || exit 1"]
+      # readiness, not process presence: the http probe flips healthy only when the
+      # server actually answers on :8888 (a pgrep-style check reported healthy while
+      # the socket was still down, giving brief 502s through traefik)
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://127.0.0.1:8888/ || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 5s
+      start_period: 60s
 
   ## watchtower for automatic docker image refresh
   ## exposing port to force docker to allow only one instance of service
@@ -132,19 +137,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --cleanup --monitor-only --schedule "0 0 0 * * *" # daily midnight UTC (6-field cron), pull only (no restart)
-    security_opt:
-      - seccomp:unconfined #optional
     depends_on:
       jupyterlab:
         condition: service_healthy
       traefik:
         condition: service_started
     ports:
-      - "9911:9911"
+      - "127.0.0.1:9911:9911" # metrics API - loopback only, still locks the port to one watchtower
     networks:
       - proxy-network
     restart: unless-stopped
-    privileged: true
+    # least privilege: the docker socket alone is all a monitor-only watchtower needs
 
 volumes:
   vol_workspace:
