@@ -216,3 +216,75 @@ def test_applet_delete_flow_requires_confirmation(env_file):
             assert envman.parse_vars(envman.read_lines(env_file)) == {}
 
     asyncio.run(_go())
+
+
+# --- deployment lock (JUPYTERLAB_USER_ENV_ENABLE) ------------------------------
+
+def test_store_locked_only_on_literal_zero(monkeypatch):
+    monkeypatch.delenv(envman.ENABLE_ENV, raising=False)
+    assert envman.store_locked() is False
+    for value in ("1", "", "yes", "00"):
+        monkeypatch.setenv(envman.ENABLE_ENV, value)
+        assert envman.store_locked() is False
+    for value in ("0", " 0 "):
+        monkeypatch.setenv(envman.ENABLE_ENV, value)
+        assert envman.store_locked() is True
+
+
+def test_main_refuses_when_locked(monkeypatch, capsys):
+    monkeypatch.setenv(envman.ENABLE_ENV, "0")
+    with pytest.raises(SystemExit) as exc:
+        envman.main()
+    assert exc.value.code == 1
+    assert envman.ENABLE_ENV in capsys.readouterr().err
+
+
+# --- consumption-point protection filter (iter_store_exports) -----------------
+
+def test_iter_store_exports_drops_protected_keeps_user(env_file):
+    env_file.write_text(
+        "NORMAL='keep me'\n"
+        "export ANOTHER=ok\n"
+        "JUPYTERLAB_SUDO_ENABLE='1'\n"
+        "export JUPYTERLAB_SERVER_TOKEN='steal'\n"
+        "LD_PRELOAD='/tmp/evil.so'\n"
+        "MLFLOW_HOST='0.0.0.0'\n"
+        "JUPYTERHUB_API_TOKEN='x'\n"
+        "PATH='/tmp/bad'\n"
+        "JUPYTERLAB_TERMINAL_SHELL='/usr/bin/fish'\n")  # exempt
+    got = dict(envman.iter_store_exports(env_file))
+    assert got == {"NORMAL": "keep me", "ANOTHER": "ok",
+                   "JUPYTERLAB_TERMINAL_SHELL": "/usr/bin/fish"}
+
+
+def test_iter_store_exports_compound_line_cannot_smuggle(env_file):
+    # a compound shell line is not a valid KEY=VALUE assignment - the parser
+    # matches only the leading token, so the whole line is treated as one key
+    # ("X" with a value) and no protected var is ever produced
+    env_file.write_text(
+        "X=1; export JUPYTERLAB_SUDO_ENABLE=1\n"
+        "export DECOY=1 MLFLOW_HOST=0.0.0.0\n")
+    keys = {k for k, _ in envman.iter_store_exports(env_file)}
+    assert "JUPYTERLAB_SUDO_ENABLE" not in keys
+    assert "MLFLOW_HOST" not in keys
+
+
+def test_iter_store_exports_rejects_nul_in_value(env_file):
+    # NUL is the caller's frame delimiter; splitlines() does not cut on NUL, so
+    # an embedded-NUL value would parse as one unprotected key here and then
+    # re-split into a protected assignment at the consumer. Drop such pairs.
+    env_file.write_bytes(b"A=x\x00JUPYTERLAB_SUDO_ENABLE=1\nB=fine\n")
+    got = dict(envman.iter_store_exports(env_file))
+    assert "A" not in got            # the NUL-bearing pair is dropped whole
+    assert got == {"B": "fine"}      # clean neighbour still flows
+
+
+def test_iter_store_exports_preserves_non_utf8_value(env_file):
+    # the store round-trips foreign bytes via surrogateescape (read/write);
+    # the emitter must too, so a Windows-1252 value survives to the consumer
+    # regardless of container locale rather than crashing the export loop
+    env_file.write_bytes(b"FOREIGN=caf\xe9\nCLEAN=ok\n")
+    got = dict(envman.iter_store_exports(env_file))
+    assert got["CLEAN"] == "ok"
+    # the hardened emitter re-encodes with surrogateescape - byte-exact recovery
+    assert got["FOREIGN"].encode("utf-8", "surrogateescape") == b"caf\xe9"

@@ -13,7 +13,8 @@ the JupyterLab server, kernels, bash and fish alike.
 
 import sys
 
-from duoptimum_lab_utils.envman import ENV_FILE, _NAME_RE, is_protected, set_var
+from duoptimum_lab_utils.envman import (ENV_FILE, LOCKED_MESSAGE, _NAME_RE,
+                                        is_protected, set_var, store_locked)
 
 # Colors
 GREEN = '\033[0;32m'
@@ -22,6 +23,12 @@ NC = '\033[0m'
 
 
 def main():
+    # deployment lock: same refusal as the Environment Variables applet - the
+    # menu hides the callers, this guards direct CLI invocation
+    if store_locked():
+        print(LOCKED_MESSAGE, file=sys.stderr)
+        sys.exit(1)
+
     if len(sys.argv) < 3:
         print("Usage: set-profile-var VAR_NAME value", file=sys.stderr)
         sys.exit(1)

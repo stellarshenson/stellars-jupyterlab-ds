@@ -15,6 +15,34 @@ AUX_MENU_ENV = "JUPYTERLAB_AUX_MENU_PATH"
 _EXCLUDED = {"README.md", "readme.md"}
 
 
+def switch_off(var: str) -> bool:
+    """True when the named platform switch is 0 after whitespace trim.
+
+    THE lock predicate - envman.store_locked() delegates here, and the bash
+    consumers see the same contract because start-platform.sh normalizes the
+    switch value once at boot. Unset or any other value = on (the platform
+    switch convention, matching e.g. JUPYTERLAB_SUDO_ENABLE)."""
+    return os.environ.get(var, "1").strip() == "0"
+
+
+def prune_disabled(items: list) -> list:
+    """Drop items whose `enable_env` switch is off, recursing into submenus.
+
+    An item carrying `enable_env: VAR` is hidden when switch_off(VAR). Used by
+    the env Settings entries so a deployment with JUPYTERLAB_USER_ENV_ENABLE=0
+    shows no dead menu items for the locked user env store."""
+    kept = []
+    for item in items:
+        if isinstance(item, dict):
+            switch = item.get("enable_env")
+            if switch and switch_off(switch):
+                continue
+            if isinstance(item.get("submenu"), list):
+                item["submenu"] = prune_disabled(item["submenu"])
+        kept.append(item)
+    return kept
+
+
 def load_menu_config() -> dict:
     """Load the root menu YAML.
 
@@ -29,6 +57,10 @@ def load_menu_config() -> dict:
 
     with open(menu_config) as f:
         data = yaml.safe_load(f)
+
+    menu = data.get("menu") if isinstance(data, dict) else None
+    if isinstance(menu, dict) and isinstance(menu.get("items"), list):
+        menu["items"] = prune_disabled(menu["items"])
 
     aux_menu_path = os.environ.get(AUX_MENU_ENV, "")
     if aux_menu_path:
@@ -125,9 +157,9 @@ def load_menu_file_items(menu_file_path: str) -> list:
 
     if isinstance(data, dict) and "items" in data:
         items = data["items"]
-        return items if isinstance(items, list) else []
+        return prune_disabled(items) if isinstance(items, list) else []
 
     if isinstance(data, list):
-        return data
+        return prune_disabled(data)
 
     return []

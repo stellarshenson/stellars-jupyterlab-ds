@@ -15,6 +15,7 @@ directory).
 
 import os
 import re
+import sys
 import tempfile
 from pathlib import Path
 
@@ -42,6 +43,11 @@ _NAME_RE = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
 # names that can brick the platform start when overridden from the store
 # (~/.profile sources it before start-platform.sh resolves conda/jupyter) or
 # that belong to the deployment, not the user - refused by the applet.
+# ALSO enforced where the SERVER consumes the store: start-platform.sh applies
+# it via iter_store_exports (below), filtering these same sets - so a
+# hand-edited store cannot override the server/hook env even without the applet.
+# (Login shells source the store raw via ~/.profile - shell-only, never the
+# server.)
 # JUPYTERLAB_* covers the platform's own knobs (SERVER_TOKEN/IP/BASE_URL...) -
 # start-platform.sh sources the store BEFORE consuming them, so a store value
 # would silently override the compose/hub-provided one (token -> lockout);
@@ -52,6 +58,23 @@ PROTECTED_PREFIXES = ("JUPYTERHUB_", "JUPYTERLAB_")
 # per-user knobs the platform deliberately reads FROM the store - exempt from
 # the prefix guard (Settings > Default Shell writes JUPYTERLAB_TERMINAL_SHELL)
 ALLOWED_NAMES = {"JUPYTERLAB_TERMINAL_SHELL"}
+
+# deployment switch: 0 (whitespace-trimmed) locks the user env store - the
+# env-writing Settings entries are hidden (lab-utils.yml enable_env), this
+# applet and set-profile-var refuse to write, and start-platform.sh skips the
+# store at boot so nothing in it can reach the server, kernels or services.
+# ~/.profile stays the user's manual, shell-only channel. One predicate for the
+# whole stack: menu.switch_off (bash sees the same via the start-platform.sh
+# normalization).
+ENABLE_ENV = "JUPYTERLAB_USER_ENV_ENABLE"
+LOCKED_MESSAGE = (f"Environment variable management is disabled on this deployment "
+                  f"({ENABLE_ENV}=0) - the user env store is not applied at platform "
+                  f"start. Edit ~/.profile manually for shell-only variables.")
+
+
+def store_locked() -> bool:
+    from .menu import switch_off  # deferred: keep the applet import light
+    return switch_off(ENABLE_ENV)
 
 
 def is_protected(name: str) -> bool:
@@ -96,6 +119,27 @@ def parse_vars(lines: list) -> dict:
         if m:
             found[m.group(1)] = _unquote(m.group(2))
     return found
+
+
+def iter_store_exports(path: Path = ENV_FILE) -> list:
+    """(KEY, VALUE) for every NON-protected assignment in the store, last-wins.
+
+    The platform start consumes this instead of sourcing the store as shell:
+    `. file` runs arbitrary shell grammar, so a compound line
+    (`X=1; export JUPYTERLAB_SUDO_ENABLE=1`) would smuggle a protected
+    assignment past any per-line text filter. Parsing to (key, value) pairs and
+    filtering on the PARSED key closes that - a value is only ever assigned as
+    literal data, never evaluated.
+
+    A pair containing a NUL byte is dropped: the caller streams these
+    NUL-delimited, and str.splitlines() (read_lines) does not split on NUL, so
+    an embedded-NUL value (`A=x\\0JUPYTERLAB_SUDO_ENABLE=1`) would parse as one
+    unprotected key here yet re-split into a protected assignment at the
+    consumer's frame boundary. NUL can never appear in a real env value
+    (execve forbids it), so rejecting it costs nothing and closes the last
+    in-band-delimiter smuggle."""
+    return [(k, v) for k, v in parse_vars(read_lines(path)).items()
+            if not is_protected(k) and "\x00" not in k and "\x00" not in v]
 
 
 def _write_atomic(path: Path, lines: list) -> None:
@@ -371,6 +415,9 @@ class EnvManagerApp(App):
 
 
 def main() -> None:
+    if store_locked():
+        print(LOCKED_MESSAGE, file=sys.stderr)
+        sys.exit(1)
     EnvManagerApp().run()
 
 

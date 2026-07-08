@@ -5,14 +5,46 @@ set -a
 . /etc/default/platform.env
 set +a
 
+# normalize the deployment switches ONCE for every consumer (this shell and all
+# start-platform.d hooks inherit the exports): a whitespace-padded "0 " from a
+# hand-edited .env or hub spawner config must still switch OFF - the Python
+# layers (menu.switch_off / envman.store_locked) trim the same way, so the
+# enforcement below can never disagree with the menu/applet about the lock state
+export JUPYTERLAB_USER_ENV_ENABLE="${JUPYTERLAB_USER_ENV_ENABLE//[[:space:]]/}"
+export JUPYTERLAB_SUDO_ENABLE="${JUPYTERLAB_SUDO_ENABLE//[[:space:]]/}"
+
 # load and export the user's central env store DIRECTLY - the server (and thus
 # every notebook kernel and platform service) must not depend on ~/.profile,
 # which stays a shell-only concern (login shells source the same store there).
 # One store, two readers: start-platform.sh for the server, .profile for shells.
-if [[ -f "${HOME}/.local/environment.env" ]]; then
-    set -a
-    . "${HOME}/.local/environment.env"
-    set +a
+# JUPYTERLAB_USER_ENV_ENABLE=0 locks the store: skipping it HERE is the actual
+# enforcement - whatever a user writes into the file can no longer reach the
+# server, kernels or services (the menu/applet/set-profile-var refusals are
+# convenience on top). ~/.profile remains the manual, shell-only channel.
+# Logged by the 05_lock_user_env.sh hook (log helpers load below this line).
+#
+# The store is PARSED as data, never sourced as shell: `. file` executes
+# arbitrary shell, so a hand-edited compound line
+# (`X=1; export JUPYTERLAB_SUDO_ENABLE=1`) would smuggle a protected assignment
+# past any per-line filter and override deployment env (re-arm sudo on the next
+# recreate, re-expose mlflow via MLFLOW_HOST, inject LD_PRELOAD) for this shell
+# and every start-platform.d hook. envman.iter_store_exports drops the
+# PROTECTED_NAMES / *_PREFIXES set (JUPYTERLAB_TERMINAL_SHELL exempt) on the
+# PARSED key and emits NUL-delimited KEY=VALUE pairs; each value is assigned as
+# literal data. This covers the server and every start-platform.d hook. Login
+# shells (terminals) still source the store raw via ~/.profile - the accepted
+# shell-only channel: a poisoned store there only alters that terminal's own
+# env (and the menu/applet lock predicate the terminal reads), never the
+# server, kernels or services.
+if [[ ${JUPYTERLAB_USER_ENV_ENABLE:-1} != 0 && -f "${HOME}/.local/environment.env" ]]; then
+    _store_err=$(mktemp) # capture stderr; log helpers load below, so warn later
+    while IFS= read -r -d '' _pair; do
+        export "${_pair%%=*}=${_pair#*=}"
+    done < <(/opt/conda/bin/python3 -c 'import sys
+from duoptimum_lab_utils.envman import iter_store_exports
+for k, v in iter_store_exports():
+    sys.stdout.buffer.write((k + "=" + v + "\0").encode("utf-8", "surrogateescape"))' 2>"${_store_err}")
+    unset _pair
 fi
 
 # self-heal PATH: the store is user-managed, so a hand-edited PATH must not
@@ -26,6 +58,16 @@ export PATH
 # log_info / log_warn / log_error / log_pipe (see /lib-logging.sh)
 source /lib-logging.sh
 export -f _log log_info log_warn log_error log_pipe
+
+# surface a failed store load now that the log helpers exist (the export loop
+# above ran before them). Non-empty stderr = the store applied zero vars; the
+# fail-safe direction is correct (better empty than a raw source), but a silent
+# degrade reads to the user as "my env vars vanished" with no diagnostic.
+if [[ -n ${_store_err:-} ]]; then
+    [[ -s ${_store_err} ]] && log_warn "user env store not applied: $(tr '\n' ' ' < "${_store_err}")"
+    rm -f "${_store_err}"
+    unset _store_err
+fi
 
 
 # mlflow clients (kernels, services) reach the tracking server via this URI -

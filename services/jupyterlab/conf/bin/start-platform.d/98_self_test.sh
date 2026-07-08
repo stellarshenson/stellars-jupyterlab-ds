@@ -130,18 +130,27 @@
         add_row "persistent conda envs" "FAIL" "~/.condarc missing envs_dirs"
     fi
 
-    # user env-var chain (~/.local/environment.env sourced by ~/.profile)
-    if grep -qs 'environment\.env' "${HOME}/.profile"; then
-        add_row "env-var chain" "OK" "~/.profile sources ~/.local/environment.env"
-    else
+    # user env-var chain (~/.local/environment.env sourced by ~/.profile);
+    # the wiring is checked in BOTH lock states - when locked the store still
+    # feeds login shells (the manual channel), so broken wiring always FAILs.
+    # A valid locked state only changes the detail, surfacing the sudo bypass
+    if ! grep -qs 'environment\.env' "${HOME}/.profile"; then
         add_row "env-var chain" "FAIL" "~/.profile does not source the env store"
+    elif [[ ${JUPYTERLAB_USER_ENV_ENABLE:-1} == 0 ]]; then
+        if [[ ${JUPYTERLAB_SUDO_ENABLE:-1} != 0 ]]; then
+            add_row "env-var chain" "OK" "store locked; WARNING: sudo enabled - lock bypassable"
+        else
+            add_row "env-var chain" "OK" "user env store locked (JUPYTERLAB_USER_ENV_ENABLE=0)"
+        fi
+    else
+        add_row "env-var chain" "OK" "~/.profile sources ~/.local/environment.env"
     fi
 
     # sudo state - informational, both states are valid configurations
     if sudo -n true 2>/dev/null; then
         add_row "sudo" "OK" "enabled"
     else
-        add_row "sudo" "OK" "disabled (JUPYTERLAB_SUDO_ENABLE=${JUPYTERLAB_SUDO_ENABLE})"
+        add_row "sudo" "OK" "disabled (JUPYTERLAB_SUDO_ENABLE=${JUPYTERLAB_SUDO_ENABLE:-1})"
     fi
 
     # render the table - cells are padded BEFORE coloring, so alignment holds.

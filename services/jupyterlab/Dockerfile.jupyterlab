@@ -784,6 +784,10 @@ ENV JUPYTERLAB_BASE_URL="/"
 ENV JUPYTERLAB_TIMEZONE=""
 ENV JUPYTERLAB_SYSTEM_NAME=""
 ENV JUPYTERLAB_SUDO_ENABLE=1
+# 1 = user env store (~/.local/environment.env) editable and injected at start;
+# 0 = locked: Settings writers hidden/refused, store not injected. Baked so
+# hub-spawned containers (no compose.yml) get the default; compose passes the knob
+ENV JUPYTERLAB_USER_ENV_ENABLE=1
 ENV JUPYTERLAB_EXTENSIONS_MANAGER_READONLY=0
 
 ## default values for GPU support envs

@@ -14,3 +14,5 @@ Logs from background builds and long-running jobs in this deployment.
 - `rebuild-round9.log` - rebuild baking the round-9 fixes (condarc channel-freeze fix, anchored persistence guards, hint-once launch wrapper, single mlflow URI derivation, CONDA_CMD unification)
 - `rebuild-round10.log` - final rebuild + installers baking the round-10 polish (voice FAIL log pointer, call-time script-group resolution, CONDA_CMD in the menu's conda branch)
 - `container-test-final.log` - final 68-check container verification (voice restart survival, condarc purity, round-6..10 bake probes)
+- `rebuild-envlock.log` - rebuilds baking the JUPYTERLAB_USER_ENV_ENABLE lock switch and its adversarial-review fixes (menu gating, store-injection skip, permissions hook, data-parse consumption filter, NUL rejection, surrogateescape emitter)
+- `container-test-envlock.log` - final 41-check container verification of the env-lock switch (five switch states, symlink/compound-line/NUL smuggle probes, sudo pairing warning, boot-chain writability)

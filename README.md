@@ -447,6 +447,7 @@ Configuration variables supported by the platform:
 - `ENABLE_SERVICE_PULSEAUDIO` - enable PulseAudio voice source (default: `1`)
 - `ENABLE_LOCAL_SCRIPTS` - enable user-defined startup scripts (default: `1`)
 - `JUPYTERLAB_SUDO_ENABLE` - `0` disables sudo for good at container start (default: `1`)
+- `JUPYTERLAB_USER_ENV_ENABLE` - `0` locks the user env store: env Settings hidden, writers refuse, store not applied at start; pair with `JUPYTERLAB_SUDO_ENABLE=0` (default: `1`)
 - `JUPYTERLAB_EXTENSIONS_MANAGER_READONLY` - `1` locks the extension manager to installed-only (default: `0`)
 - `JUPYTERLAB_AUX_SCRIPTS_PATH` - path to auxiliary startup scripts (e.g. `/mnt/shared/start-platform.d` for admin-managed setup like AWS keys, repo credentials, hackathon config)
 - `JUPYTERLAB_AUX_MENU_PATH` - path to auxiliary menu directory (e.g. `/mnt/shared/lab-utils.d`); executable scripts become menu items, YAML files become submenus

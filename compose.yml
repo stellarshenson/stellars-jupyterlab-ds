@@ -93,6 +93,7 @@ services:
       - ENABLE_GPU_SUPPORT=0                             # informational GPU flag - set by the compose-gpu.yml overlay, not .env
       - JUPYTERLAB_TIMEZONE=${JUPYTERLAB_TIMEZONE:-}       # container timezone (IANA format, empty = UTC)
       - JUPYTERLAB_SUDO_ENABLE=${JUPYTERLAB_SUDO_ENABLE:-1} # 0 = disable sudo for good at container start
+      - JUPYTERLAB_USER_ENV_ENABLE=${JUPYTERLAB_USER_ENV_ENABLE:-1} # 0 = lock user env store; pair with JUPYTERLAB_SUDO_ENABLE=0
       - JUPYTERLAB_EXTENSIONS_MANAGER_READONLY=${JUPYTERLAB_EXTENSIONS_MANAGER_READONLY:-0} # 1 = extension manager lists installed only, no PyPI queries or installs
 
       - JUPYTERLAB_SYSTEM_NAME=${JUPYTERLAB_SYSTEM_NAME:-} # rebrand stellars-jupyterlab-ds in welcome/MOTD and toolbar badge (empty = no rebrand)

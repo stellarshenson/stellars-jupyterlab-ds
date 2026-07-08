@@ -104,6 +104,14 @@
 #         apply_script: "set-profile-var"
 #         apply_args: "CONDA_DEFAULT_ENV"
 #
+# COMMON FIELDS (any item type):
+# ------------------------------
+#
+#   enable_env: "VAR_NAME"
+#     Hide the item when the named environment variable is 0 after whitespace
+#     trim (unset or any other value = shown). Used by the env-writing Settings
+#     entries, gated on JUPYTERLAB_USER_ENV_ENABLE.
+#
 # AUXILIARY MENU (JUPYTERLAB_AUX_MENU_PATH):
 # -------------------------------------------
 #
@@ -179,7 +187,7 @@ menu:
           name: "Rust"
           description: "Install Rust programming environment"
           marker: "conda"
-      scan_dir: "~/.local/conda-env.d" # created by 05_user_directories.sh; documented in conda-env.d/README.md
+      scan_dir: "~/.local/conda-env.d" # created by 09_user_directories.sh; documented in conda-env.d/README.md
 
     # Install AI coding assistants (Claude Code, OpenCode, Cursor, Gemini, Codex)
     - name: "Install AI Assistant"
@@ -223,12 +231,16 @@ menu:
       submenu:
         # Manage user environment variables (~/.local/environment.env applet);
         # interactive: the applet manages its own screen - no result banner or
-        # "Press Enter" pause on exit
+        # "Press Enter" pause on exit. Every entry writing that store carries
+        # enable_env: a deployment with JUPYTERLAB_USER_ENV_ENABLE=0 locks the
+        # store, so the writers disappear from the menu (Run on Start stays -
+        # it manages symlinks, not env vars)
         - id: "lab-utils-env"
           name: "Environment Variables"
           description: "Manage user environment variables"
           type: command
           interactive: true
+          enable_env: "JUPYTERLAB_USER_ENV_ENABLE"
 
         # Flag standard scripts to run at every platform start (~/.local/start-platform.d)
         - id: "lab-utils-onstart"
@@ -239,6 +251,7 @@ menu:
 
         - name: "Default Shell"
           description: "Configure default terminal shell"
+          enable_env: "JUPYTERLAB_USER_ENV_ENABLE"
           selector:
             options:
               - value: "/bin/bash"
@@ -251,6 +264,7 @@ menu:
 
         - name: "Default Conda Env"
           description: "Set default conda environment"
+          enable_env: "JUPYTERLAB_USER_ENV_ENABLE"
           selector:
             options_script: "conda-env-options"
             current_cmd: "/opt/utils/lab-utils.lib/get-profile-var CONDA_DEFAULT_ENV"
@@ -259,6 +273,7 @@ menu:
 
         - name: "Default AWS Profile"
           description: "Configure default AWS CLI profile"
+          enable_env: "JUPYTERLAB_USER_ENV_ENABLE"
           selector:
             options_script: "aws-profile-options"
             current_cmd: "/opt/utils/lab-utils.lib/get-profile-var AWS_PROFILE"

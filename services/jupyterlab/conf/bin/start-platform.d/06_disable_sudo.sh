@@ -13,7 +13,7 @@
 # container (possibly with JUPYTERLAB_SUDO_ENABLE=1) restores escalation.
 # ----------------------------------------------------------------------------------------
 
-if [[ ${JUPYTERLAB_SUDO_ENABLE} == 0 ]]; then
+if [[ ${JUPYTERLAB_SUDO_ENABLE:-1} == 0 ]]; then
     user="$(id -un)"
     # distinguish "escalation already revoked" (expected on restart) from a real
     # failure of the disabling itself - a failed security control must not log as success
