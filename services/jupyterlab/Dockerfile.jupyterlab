@@ -757,16 +757,27 @@ USER root
 ## ignore pip warnings re root access
 ENV PIP_ROOT_USER_ACTION=ignore
 
+## bake the platform version as an env so the banners and render-info.py can
+## show "<version> build <NAME>" - PKG_VERSION is the build arg the wheel was
+## stamped from (redeclared here: pre-FROM args are out of scope inside a stage)
+ARG PKG_VERSION=0.0.0
+ENV JUPYTERLAB_BUILD_VERSION=${PKG_VERSION}
+
 ## generate build name and build date
 ## and generate motd using template
 RUN <<-EOF
-    echo "generating build name"
+    echo "generating build name and date"
     set -e
     date >/build-date.txt
-    gpw 1 4 | tr [:lower:] [:upper:] >/build-name.txt
-    cat /motd-template.txt | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
+    # build name: a short (4-6 char) UPPERCASE first name from the `names` corpus
+    # (hundreds of options), installed transiently to /tmp so it never ships in the
+    # runtime image - replaces gpw's pronounceable gibberish
+    /opt/conda/bin/python -m pip install --quiet --no-cache-dir --target /tmp/nm names
+    PYTHONPATH=/tmp/nm /opt/conda/bin/python -c "import names; n=next(x for x in iter(names.get_first_name,None) if 4<=len(x)<=6); print(n.upper())" >/build-name.txt
+    rm -rf /tmp/nm
+    cat /motd-template.txt | sed "s/@VERSION@/${JUPYTERLAB_BUILD_VERSION}/g" | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
 	| sed "s/@BUILD_DATE@/$(cat /build-date.txt)/g" > /etc/motd
-    cat /welcome-template.html | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
+    cat /welcome-template.html | sed "s/@VERSION@/${JUPYTERLAB_BUILD_VERSION}/g" | sed "s/@BUILD_NAME@/$(cat /build-name.txt)/g" \
 	| sed "s/@BUILD_DATE@/$(cat /build-date.txt)/g" > /welcome.html
     rm /motd-template.txt
     rm /welcome-template.html

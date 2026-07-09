@@ -4,6 +4,9 @@ import sys
 import re
 
 system_name = os.environ.get('JUPYTERLAB_SYSTEM_NAME') or 'stellars-jupyterlab-ds'
+# platform version, stamped as an env at build time (Dockerfile
+# ENV JUPYTERLAB_BUILD_VERSION=${PKG_VERSION}); rendered as "<version> build <NAME>"
+build_version = os.environ.get('JUPYTERLAB_BUILD_VERSION', '')
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -41,6 +44,7 @@ def build_table_block(content_lines, pad=2):
 def substitute_vars(text):
     return (
         text
+        .replace("@VERSION@", f"\033[36m{build_version}\033[0m")
         .replace("@BUILD_NAME@", f"\033[36m{build_name}\033[0m")
         .replace("@BUILD_DATE@", f"\033[36m{build_date}\033[0m")
         .replace("@LAB_NAME@", lab_name)
@@ -55,9 +59,7 @@ if len(sys.argv) < 4:
     print("Usage: render_build_info.py <LAB_NAME> <BUILD_NAME> <BUILD_DATE>")
     sys.exit(1)
 
-lab_name, build_name, build_date = "", "", ""
-if len(sys.argv) >= 4:
-    lab_name, build_name, build_date = sys.argv[1:4]
+lab_name, build_name, build_date = sys.argv[1:4]
 
 
 # Raw content block - the auth token itself is never rendered: this banner goes to
@@ -69,7 +71,7 @@ else:
     token_line = "Jupyterlab server token: \033[95mset at deployment (key JUPYTERLAB_SERVER_TOKEN in .env)\033[0m"
 
 raw_info = f"""
-Build @BUILD_NAME@ created on @BUILD_DATE@
+Version @VERSION@ build @BUILD_NAME@ created on @BUILD_DATE@
 {token_line}
 """.strip().splitlines()
 
