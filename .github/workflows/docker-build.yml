@@ -14,16 +14,31 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    # bound the run: --check resolves base-image metadata from a registry, so a
+    # slow/unreachable Docker Hub must not hang against the 6h default timeout
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Lint Dockerfile with hadolint
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: services/jupyterlab/Dockerfile.jupyterlab
-          ignore: DL3008,DL3013,DL3015,DL3059,DL3027,DL4006,SC2006,SC1008,DL3046,SC2153,DL3001,SC2016,SC2002
+      # BuildKit's built-in linter (buildx build --check) is used instead of
+      # hadolint: hadolint cannot parse Dockerfile heredocs (RUN <<-EOF), the
+      # form this repo's Dockerfile convention mandates, so every hadolint run
+      # aborts with a parse error and lints nothing. --check uses Docker's own
+      # parser, understands heredocs, and honours the in-Dockerfile `# check=`
+      # directives. It exits non-zero on any rule violation.
+      #
+      # The runner's preinstalled buildx is used directly (no setup-buildx-action):
+      # its default `docker` driver matches how --check was verified, and buildx
+      # on ubuntu-latest is far newer than v0.15 which introduced --check. --check
+      # only resolves base-image metadata (public nvidia/cuda images); it does not
+      # build. The Dockerfile's own ARG defaults make --build-arg unnecessary.
+      - name: Lint Dockerfile with buildx build --check
+        run: |
+          docker buildx build --check \
+            -f services/jupyterlab/Dockerfile.jupyterlab \
+            services/jupyterlab
 
       - name: Validation completed
         run: echo "Dockerfile validation completed successfully"
