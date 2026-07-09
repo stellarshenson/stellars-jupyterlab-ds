@@ -12,8 +12,10 @@ on:
   workflow_dispatch:
 
 jobs:
+  # job id `validate` is the status-check context (no explicit job name: an
+  # unnamed job reports its id) - keep it so branch-protection rules pinned to
+  # `validate` still resolve after the file/workflow-name rename
   validate:
-    name: Validate Dockerfile
     runs-on: ubuntu-latest
     # bound the run: --check resolves base-image metadata from a registry, so a
     # slow/unreachable Docker Hub must not hang against the 6h default timeout
@@ -41,8 +43,9 @@ jobs:
             -f services/jupyterlab/Dockerfile.jupyterlab \
             services/jupyterlab
 
+  # new status-check context `test` (job id); add it to branch protection if the
+  # unit suite should gate merges
   test:
-    name: duoptimum-lab-utils tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
