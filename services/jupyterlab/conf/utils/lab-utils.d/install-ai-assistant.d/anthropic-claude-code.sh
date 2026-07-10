@@ -30,6 +30,34 @@ if [[ -f "$CLAUDE_SRC/statusline-command.sh" ]] && [[ ! -f "$CLAUDE_DIR/statusli
     echo "Installed statusline-command.sh"
 fi
 
+# Install the mdstamp timestamp-cadence hook scripts if the user doesn't have them
+mkdir -p "$CLAUDE_DIR/bin" "$CLAUDE_DIR/.mdstamp"
+for f in mdstamp mdstamp-hook; do
+    if [[ -f "$CLAUDE_SRC/bin/$f" ]] && [[ ! -f "$CLAUDE_DIR/bin/$f" ]]; then
+        cp "$CLAUDE_SRC/bin/$f" "$CLAUDE_DIR/bin/$f"
+        chmod +x "$CLAUDE_DIR/bin/$f"
+        echo "Installed bin/$f"
+    fi
+done
+
+# Wire the mdstamp UserPromptSubmit hook into settings.json. jq-merge (not copy)
+# so it reaches users who already have a settings.json; the presence check keeps
+# it idempotent - never a duplicate on re-run. New users are covered too: their
+# settings.json was seeded above, or is created empty here.
+HOOK_CMD="/home/lab/.claude/bin/mdstamp-hook"
+[[ -f "$CLAUDE_DIR/settings.json" ]] || echo '{}' > "$CLAUDE_DIR/settings.json"
+if command -v jq >/dev/null 2>&1 \
+   && ! jq -e --arg c "$HOOK_CMD" 'any(.hooks.UserPromptSubmit[]?.hooks[]?; .command == $c)' "$CLAUDE_DIR/settings.json" >/dev/null 2>&1; then
+    tmp="$(mktemp)"
+    if jq --arg c "$HOOK_CMD" '.hooks.UserPromptSubmit = ((.hooks.UserPromptSubmit // []) + [{hooks: [{type: "command", command: $c, timeout: 5}]}])' "$CLAUDE_DIR/settings.json" > "$tmp"; then
+        mv "$tmp" "$CLAUDE_DIR/settings.json"
+        echo "Wired mdstamp UserPromptSubmit hook into settings.json"
+    else
+        rm -f "$tmp"
+        echo "Warning: could not merge mdstamp hook into settings.json"
+    fi
+fi
+
 clear
 echo -e "\033[32mClaude Code Installation Successful\033[0m"
 echo ""

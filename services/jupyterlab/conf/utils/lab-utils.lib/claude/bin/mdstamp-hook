@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# UserPromptSubmit hook - once per ~30 min per session, inject a reminder (with
+# the ready value) to lead the next reply with the message timestamp. Pairs with
+# ~/.claude/bin/mdstamp; the injected reminder is self-contained.
+# Stdout on exit 0 is added to the model context; stays silent inside the window.
+input="$(cat)"
+sid="$(printf '%s' "$input" | python3 -c 'import sys, json
+try:
+    print(json.load(sys.stdin).get("session_id", "default"))
+except Exception:
+    print("default")' 2>/dev/null || echo default)"
+
+statedir="$HOME/.claude/.mdstamp"
+mkdir -p "$statedir" 2>/dev/null || true
+f="$statedir/$sid"
+
+now="$(date +%s)"
+last=0
+[ -f "$f" ] && last="$(cat "$f" 2>/dev/null || echo 0)"
+
+if [ "$(( now - last ))" -ge 1800 ]; then
+  printf '%s' "$now" > "$f" 2>/dev/null || true
+  stamp="$("$HOME/.claude/bin/mdstamp" 2>/dev/null || true)"
+  [ -n "$stamp" ] && printf 'Timestamp cadence: 30+ min elapsed this session. Begin your next reply to the user with this exact stamp, then a space, then your message: %s\n' "$stamp"
+fi
+exit 0

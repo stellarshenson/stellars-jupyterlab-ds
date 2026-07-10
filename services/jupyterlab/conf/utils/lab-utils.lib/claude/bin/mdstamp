@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# mdstamp - emit the message-timestamp stamp, ready to paste.
+# Prints the whole inline-code-wrapped `[YYYY-MM-DD Day HH:MM]` token so the
+# value is never hand-typed or stale. Called by ~/.claude/bin/mdstamp-hook.
+printf '`[%s]`\n' "$(date '+%Y-%m-%d %a %H:%M')"
