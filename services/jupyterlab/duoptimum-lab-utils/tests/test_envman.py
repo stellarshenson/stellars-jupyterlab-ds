@@ -288,3 +288,164 @@ def test_iter_store_exports_preserves_non_utf8_value(env_file):
     assert got["CLEAN"] == "ok"
     # the hardened emitter re-encodes with surrogateescape - byte-exact recovery
     assert got["FOREIGN"].encode("utf-8", "surrogateescape") == b"caf\xe9"
+
+
+# --- legacy default-shell migration (migrate_legacy_shell) ---------------------
+
+@pytest.fixture
+def fake_shell(tmp_path):
+    """An executable file standing in for /usr/bin/fish."""
+    shell = tmp_path / "fish"
+    shell.write_text("#!/bin/sh\n")
+    shell.chmod(0o755)
+    return shell
+
+
+@pytest.fixture
+def profile(tmp_path):
+    return tmp_path / ".profile"
+
+
+def test_migrate_seeds_store_from_legacy_profile_line(profile, env_file, fake_shell):
+    # the exact format the pre-store selector (default-shell.sh) wrote
+    profile.write_text(
+        "# set default jupyterlab terminal shell\n"
+        f'export JUPYTERLAB_TERMINAL_SHELL="{fake_shell}"\n')
+    got = envman.migrate_legacy_shell(profile=profile, path=env_file)
+    assert got == str(fake_shell)
+    assert envman.parse_vars(envman.read_lines(env_file)) == {
+        "JUPYTERLAB_TERMINAL_SHELL": str(fake_shell)}
+    # the seeded value must actually reach the server: exempt from the
+    # JUPYTERLAB_ prefix guard at the consumption point
+    assert dict(envman.iter_store_exports(env_file)) == {
+        "JUPYTERLAB_TERMINAL_SHELL": str(fake_shell)}
+
+
+def test_migrate_accepts_unquoted_and_bare_forms_last_wins(profile, env_file, fake_shell):
+    # shell semantics: the boot used to SOURCE .profile, so the last line won
+    profile.write_text(
+        "JUPYTERLAB_TERMINAL_SHELL=/nonexistent/zsh\n"
+        f"export JUPYTERLAB_TERMINAL_SHELL={fake_shell}\n")
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) == str(fake_shell)
+
+
+def test_migrate_noop_when_store_already_has_key(profile, env_file, fake_shell):
+    # the store is the source of truth once the key exists - a later .profile
+    # edit must never override a selector-made choice
+    envman.set_var("JUPYTERLAB_TERMINAL_SHELL", "/bin/bash", env_file)
+    profile.write_text(f'export JUPYTERLAB_TERMINAL_SHELL="{fake_shell}"\n')
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert envman.parse_vars(envman.read_lines(env_file)) == {
+        "JUPYTERLAB_TERMINAL_SHELL": "/bin/bash"}
+
+
+def test_migrate_noop_when_store_locked(profile, env_file, fake_shell, monkeypatch):
+    monkeypatch.setenv(envman.ENABLE_ENV, "0")
+    profile.write_text(f'export JUPYTERLAB_TERMINAL_SHELL="{fake_shell}"\n')
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert not env_file.exists()
+
+
+def test_migrate_noop_without_legacy_line(profile, env_file):
+    profile.write_text("# plain profile, nothing to migrate\nexport EDITOR=vim\n")
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert not env_file.exists()
+
+
+def test_migrate_noop_when_profile_absent(profile, env_file):
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert not env_file.exists()
+
+
+def test_migrate_rejects_non_executable_and_bogus_paths(profile, env_file, tmp_path):
+    plain = tmp_path / "not-a-shell"
+    plain.write_text("data\n")  # exists but not executable
+    for bogus in [str(plain), "/nonexistent/fish", str(tmp_path)]:
+        profile.write_text(f'export JUPYTERLAB_TERMINAL_SHELL="{bogus}"\n')
+        assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert not env_file.exists()
+
+
+def test_migrate_preserves_other_store_lines(profile, env_file, fake_shell):
+    envman.set_var("MY_VAR", "keep", env_file)
+    profile.write_text(f'export JUPYTERLAB_TERMINAL_SHELL="{fake_shell}"\n')
+    envman.migrate_legacy_shell(profile=profile, path=env_file)
+    got = envman.parse_vars(envman.read_lines(env_file))
+    assert got == {"MY_VAR": "keep",
+                   "JUPYTERLAB_TERMINAL_SHELL": str(fake_shell)}
+
+
+def test_migrate_never_executes_the_candidate(profile, env_file, tmp_path):
+    # the security boundary: the value is DATA - validation must never run it.
+    # A canary executable records any invocation; migration must leave no trace.
+    canary = tmp_path / "canary-shell"
+    sentinel = tmp_path / "executed"
+    canary.write_text(f"#!/bin/sh\ntouch {sentinel}\n")
+    canary.chmod(0o755)
+    profile.write_text(f'export JUPYTERLAB_TERMINAL_SHELL="{canary}"\n')
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) == str(canary)
+    assert not sentinel.exists()
+
+
+def test_migrate_rejects_relative_and_bare_names(profile, env_file, tmp_path, monkeypatch):
+    # a bare `fish` would resolve against the process's incidental CWD, not the
+    # PATH the old sourced-.profile regime used - absolute paths only
+    trap = tmp_path / "fish"
+    trap.write_text("#!/bin/sh\n")
+    trap.chmod(0o755)
+    monkeypatch.chdir(tmp_path)  # make the relative name resolvable on purpose
+    for sneaky in ["fish", "./fish", "bin/../fish"]:
+        profile.write_text(f"export JUPYTERLAB_TERMINAL_SHELL={sneaky}\n")
+        assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert not env_file.exists()
+
+
+def test_migrate_is_move_not_copy_no_resurrection_after_delete(profile, env_file, fake_shell):
+    # round-2 adversarial find: a COPY would resurrect a deleted key from
+    # ~/.profile on every boot - deleting a shell preference must stick
+    profile.write_text(
+        "# set default jupyterlab terminal shell\n"
+        f'export JUPYTERLAB_TERMINAL_SHELL="{fake_shell}"\n')
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) == str(fake_shell)
+    # the legacy line AND its marker comment are gone from ~/.profile
+    assert "JUPYTERLAB_TERMINAL_SHELL" not in profile.read_text()
+    assert "set default jupyterlab terminal shell" not in profile.read_text()
+    # user resets their choice - it must stay deleted across the next boot
+    envman.delete_var("JUPYTERLAB_TERMINAL_SHELL", env_file)
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert "JUPYTERLAB_TERMINAL_SHELL" not in envman.parse_vars(envman.read_lines(env_file))
+
+
+def test_migrate_scrubs_stale_line_when_store_already_governs(profile, env_file, fake_shell):
+    # store has the key (user re-selected): the stale ~/.profile line is
+    # dropped so a later delete cannot be resurrected either
+    envman.set_var("JUPYTERLAB_TERMINAL_SHELL", "/bin/bash", env_file)
+    profile.write_text(f'export JUPYTERLAB_TERMINAL_SHELL="{fake_shell}"\n')
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert "JUPYTERLAB_TERMINAL_SHELL" not in profile.read_text()
+    envman.delete_var("JUPYTERLAB_TERMINAL_SHELL", env_file)
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+
+
+def test_migrate_keeps_rejected_line_and_reports(profile, env_file, capsys):
+    # a refused value stays visible in ~/.profile and lands a stderr notice
+    # (the boot logs it) - rejection must be distinguishable from not-found
+    profile.write_text('export JUPYTERLAB_TERMINAL_SHELL="/nonexistent/fish"\n')
+    assert envman.migrate_legacy_shell(profile=profile, path=env_file) is None
+    assert "JUPYTERLAB_TERMINAL_SHELL" in profile.read_text()
+    assert "not migrated" in capsys.readouterr().err
+
+
+def test_migrate_scrub_preserves_other_profile_content(profile, env_file, fake_shell):
+    before = ("# my precious profile\n"
+              "export EDITOR=vim\n"
+              "# set default jupyterlab terminal shell\n"
+              f'export JUPYTERLAB_TERMINAL_SHELL="{fake_shell}"\n'
+              "alias ll='ls -la'\n")
+    profile.write_text(before)
+    envman.migrate_legacy_shell(profile=profile, path=env_file)
+    after = profile.read_text()
+    assert "# my precious profile" in after
+    assert "export EDITOR=vim" in after
+    assert "alias ll='ls -la'" in after
+    assert "JUPYTERLAB_TERMINAL_SHELL" not in after

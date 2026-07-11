@@ -188,6 +188,70 @@ def delete_var(key: str, path: Path = ENV_FILE) -> None:
     _write_atomic(path, out)
 
 
+# the exact marker comment the pre-store selector (default-shell.sh) wrote
+# above its export line - scrubbed together with the line on migration
+_LEGACY_SHELL_COMMENT = "# set default jupyterlab terminal shell"
+
+
+def migrate_legacy_shell(profile: Path = None, path: Path = ENV_FILE):
+    """MOVE a pre-store Default Shell choice from ~/.profile into the store.
+
+    The original selector (default-shell.sh) wrote
+    `export JUPYTERLAB_TERMINAL_SHELL="..."` straight into ~/.profile and the
+    platform start sourced ~/.profile, so the choice reached terminado. The
+    hardened start reads ONLY this store - a choice stranded in ~/.profile
+    never reaches the server and the boot silently falls back to bash.
+    Called by start-platform.sh BEFORE the store is applied, so the first boot
+    after the upgrade already spawns the selected shell.
+
+    Move, not copy: once the store governs the key, the machine-written legacy
+    line (and its marker comment) is removed from ~/.profile - otherwise a
+    user deleting the key via the applet would see it silently resurrected
+    from ~/.profile on the next boot. A value that is not an absolute path to
+    an executable is refused with a stderr notice and LEFT in ~/.profile for
+    the user to see. No-op when the store is locked or no legacy line exists.
+    Returns the migrated value, or None when nothing was migrated."""
+    if store_locked():
+        return None
+    if profile is None:
+        profile = Path.home() / ".profile"
+    lines = read_lines(profile)
+    value = None
+    found = False
+    for line in lines:
+        m = _VAR_RE.match(line)
+        if m and m.group(1) == "JUPYTERLAB_TERMINAL_SHELL":
+            found = True
+            value = _unquote(m.group(2))  # last assignment wins, like a shell
+    if not found:
+        return None
+
+    def _scrub_profile():
+        keep = [l for l in lines
+                if l.strip() != _LEGACY_SHELL_COMMENT
+                and not (_VAR_RE.match(l)
+                         and _VAR_RE.match(l).group(1) == "JUPYTERLAB_TERMINAL_SHELL")]
+        _write_atomic(profile, keep)
+
+    if "JUPYTERLAB_TERMINAL_SHELL" in parse_vars(read_lines(path)):
+        # store governs already - drop the stale legacy line so a later
+        # delete_var cannot be resurrected from ~/.profile on the next boot
+        _scrub_profile()
+        return None
+    # absolute paths only - the legacy selector's picklist never wrote anything
+    # else, and a bare name would resolve against this process's incidental CWD
+    # rather than the PATH the old sourced-.profile regime would have used
+    if (not value or not os.path.isabs(value)
+            or not os.path.isfile(value) or not os.access(value, os.X_OK)):
+        print(f"legacy JUPYTERLAB_TERMINAL_SHELL={value!r} in ~/.profile not "
+              f"migrated: not an absolute path to an executable",
+              file=sys.stderr)
+        return None
+    set_var("JUPYTERLAB_TERMINAL_SHELL", value, path)
+    _scrub_profile()
+    return value
+
+
 class EditVarScreen(ModalScreen):
     """Add or edit one variable. Enter saves, Esc cancels."""
 

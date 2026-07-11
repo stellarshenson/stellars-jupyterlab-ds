@@ -36,6 +36,19 @@ export JUPYTERLAB_SUDO_ENABLE="${JUPYTERLAB_SUDO_ENABLE//[[:space:]]/}"
 # shell-only channel: a poisoned store there only alters that terminal's own
 # env (and the menu/applet lock predicate the terminal reads), never the
 # server, kernels or services.
+# one-time migration BEFORE the store is applied: the pre-store Default Shell
+# selector wrote `export JUPYTERLAB_TERMINAL_SHELL=...` into ~/.profile, which
+# the boot (deliberately) no longer sources - without this MOVE into the store
+# a choice stranded there never reaches terminado and the terminal silently
+# falls back to bash. Prints the migrated value on stdout; diagnostics land on
+# stderr - both captured here and logged below once the log helpers exist
+# (a crashed or refused migration must be visible, not a silent no-op).
+_migrate_err=$(mktemp)
+_migrated_shell=$(/opt/conda/bin/python3 -c 'from duoptimum_lab_utils.envman import migrate_legacy_shell
+v = migrate_legacy_shell()
+if v:
+    print(v)' 2>"${_migrate_err}") || _migrate_failed=1
+
 if [[ ${JUPYTERLAB_USER_ENV_ENABLE:-1} != 0 && -f "${HOME}/.local/environment.env" ]]; then
     _store_err=$(mktemp) # capture stderr; log helpers load below, so warn later
     while IFS= read -r -d '' _pair; do
@@ -68,6 +81,19 @@ if [[ -n ${_store_err:-} ]]; then
     rm -f "${_store_err}"
     unset _store_err
 fi
+
+# surface the legacy default-shell migration outcome (ran before the helpers):
+# a migrated value is worth a line; a crashed or refused migration must never
+# be silent - stderr is single-lined so a traceback stays one log record
+if [[ -n ${_migrate_err:-} ]]; then
+    if [[ -n ${_migrate_failed:-} || -s ${_migrate_err} ]]; then
+        log_warn "legacy default-shell migration: $(tr '\n' ' ' < "${_migrate_err}")"
+    elif [[ -n ${_migrated_shell:-} ]]; then
+        log_info "Migrated legacy default shell '${_migrated_shell}' from ~/.profile into the env store"
+    fi
+    rm -f "${_migrate_err}"
+fi
+unset _migrated_shell _migrate_failed _migrate_err
 
 
 # mlflow clients (kernels, services) reach the tracking server via this URI -
