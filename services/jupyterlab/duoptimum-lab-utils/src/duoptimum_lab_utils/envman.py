@@ -52,12 +52,97 @@ _NAME_RE = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
 # start-platform.sh sources the store BEFORE consuming them, so a store value
 # would silently override the compose/hub-provided one (token -> lockout);
 # MLFLOW_HOST from the store would re-expose unauthenticated mlflow beyond loopback
-PROTECTED_NAMES = {"PATH", "HOME", "USER", "SHELL", "LD_LIBRARY_PATH", "LD_PRELOAD",
-                   "MLFLOW_HOST"}
-PROTECTED_PREFIXES = ("JUPYTERHUB_", "JUPYTERLAB_")
-# per-user knobs the platform deliberately reads FROM the store - exempt from
-# the prefix guard (Settings > Default Shell writes JUPYTERLAB_TERMINAL_SHELL)
-ALLOWED_NAMES = {"JUPYTERLAB_TERMINAL_SHELL"}
+# Built-in fail-safe policy - a PERMANENT floor. The managed artefact
+# (lab-utils.lib/env-var-policy.yml) can only EXTEND it (add protections,
+# exemptions and selector-managed keys), never remove a built-in one, so a
+# missing/unreadable/invalid/partial file can never drop a protection. The
+# shipped artefact mirrors this net (drift-guarded by a test); removing a
+# built-in protection is a code change here, not a config edit.
+#   protected_names / protected_prefixes - refused everywhere (applet,
+#     set-profile-var, and dropped from the store at boot before it reaches the
+#     server); a value here can override deployment env or re-expose a service.
+#   allowed_names - exempt from the prefix guard: per-user knobs the platform
+#     reads FROM the store (Default Shell writes JUPYTERLAB_TERMINAL_SHELL, so it
+#     must stay writable despite the JUPYTERLAB_ prefix).
+#   selector_managed - owned by a Settings selector: the applet HIDES these and
+#     refuses to add them, so the selector stays the single editor; value = where
+#     to point the user.
+_BUILTIN_POLICY = {
+    "protected_names": ["PATH", "HOME", "USER", "SHELL", "LD_LIBRARY_PATH",
+                        "LD_PRELOAD", "MLFLOW_HOST"],
+    "protected_prefixes": ["JUPYTERHUB_", "JUPYTERLAB_"],
+    "allowed_names": ["JUPYTERLAB_TERMINAL_SHELL"],
+    "selector_managed": {"JUPYTERLAB_TERMINAL_SHELL": "Settings > Default Shell"},
+}
+
+POLICY_FILE = "env-var-policy.yml"
+
+
+def _builtin_policy() -> dict:
+    """A fresh copy of the strict fail-safe policy."""
+    return {
+        "protected_names": set(_BUILTIN_POLICY["protected_names"]),
+        "protected_prefixes": tuple(_BUILTIN_POLICY["protected_prefixes"]),
+        "allowed_names": set(_BUILTIN_POLICY["allowed_names"]),
+        "selector_managed": dict(_BUILTIN_POLICY["selector_managed"]),
+    }
+
+
+def _str_list(value) -> list:
+    """value if it is a non-empty list of non-empty strings, else None.
+
+    Element typing keeps a stray int / nested list from either raising in
+    set()/tuple() or surviving into is_protected() and crashing str.startswith()
+    per key at boot; an empty-string prefix would make startswith() match every
+    name, so blanks are rejected too. A rejected value simply contributes
+    nothing to the union below - the built-in floor stays intact."""
+    if isinstance(value, list) and value and all(
+            isinstance(x, str) and x.strip() for x in value):
+        return value
+    return None
+
+
+def env_policy() -> dict:
+    """Effective env-var policy: the built-in fail-safe floor EXTENDED by the
+    managed artefact. The built-in protections, exemptions and selector-managed
+    keys are always present - the artefact can only ADD to them, never remove
+    one - so a missing, partial, malformed or hand-broken file can never drop a
+    protection, un-exempt the shell selector, or un-hide a selector-managed key
+    (removing a built-in protection is a code change, not a config edit). Read
+    fresh each call (the file is tiny, boot/applet call counts are low, and the
+    file is image-baked so it cannot change within a process), so editing the
+    artefact takes effect without reimport."""
+    policy = _builtin_policy()
+    try:
+        from . import config  # deferred + inside the guard: an import failure
+        import yaml            # here must fall back to the floor, not escape
+        data = yaml.safe_load((config.lib_dir() / POLICY_FILE).read_text())
+        if not isinstance(data, dict):
+            return policy
+        names = _str_list(data.get("protected_names"))
+        if names:
+            policy["protected_names"] |= set(names)
+        prefixes = _str_list(data.get("protected_prefixes"))
+        if prefixes:
+            policy["protected_prefixes"] = tuple(
+                dict.fromkeys(policy["protected_prefixes"] + tuple(prefixes)))
+        allowed = _str_list(data.get("allowed_names"))
+        if allowed:
+            policy["allowed_names"] |= set(allowed)
+        managed = data.get("selector_managed")
+        if isinstance(managed, dict) and all(
+                isinstance(k, str) and k for k in managed):
+            policy["selector_managed"].update(
+                {k: str(v) for k, v in managed.items()})
+    except Exception:  # fail-safe: any load/parse failure keeps the strict built-in
+        return _builtin_policy()
+    return policy
+
+
+def selector_managed() -> dict:
+    """Keys owned by a Settings selector -> where to send the user. The applet
+    hides these and refuses to add them; the selector is the single editor."""
+    return env_policy()["selector_managed"]
 
 # deployment switch: 0 (whitespace-trimmed) locks the user env store - the
 # env-writing Settings entries are hidden (lab-utils.yml enable_env), this
@@ -78,9 +163,24 @@ def store_locked() -> bool:
 
 
 def is_protected(name: str) -> bool:
-    if name in ALLOWED_NAMES:
+    # Precedence resolves every contradiction a crafted artefact could introduce
+    # in favour of the BUILT-IN floor, in both directions:
+    #  1. a built-in exemption is absolute - the artefact cannot protect the
+    #     shell selector's key out of existence (`protected_names:
+    #     [JUPYTERLAB_TERMINAL_SHELL]` must not un-exempt it);
+    #  2. an explicitly protected name (built-in OR artefact-added) then wins -
+    #     allowed_names lifts only the coarse PREFIX guard, so a crafted
+    #     `allowed_names: [PATH]` cannot re-expose a protected name;
+    #  3. artefact allowed_names then lifts the prefix guard for its own keys
+    #     (how a future prefixed selector var gets exempted), else the guard.
+    policy = env_policy()
+    if name in set(_BUILTIN_POLICY["allowed_names"]):
         return False
-    return name in PROTECTED_NAMES or name.startswith(PROTECTED_PREFIXES)
+    if name in policy["protected_names"]:
+        return True
+    if name in policy["allowed_names"]:
+        return False
+    return name.startswith(policy["protected_prefixes"])
 
 
 def _quote(value: str) -> str:
@@ -319,6 +419,11 @@ class EditVarScreen(ModalScreen):
             self.query_one("#edit-error", Static).update(
                 f"{name} is protected - overriding it can break the platform start.")
             return
+        managed = selector_managed()
+        if name in managed:
+            self.query_one("#edit-error", Static).update(
+                f"{name} is managed via {managed[name]} - change it there.")
+            return
         self.dismiss((name, value))
 
 
@@ -414,7 +519,12 @@ class EnvManagerApp(App):
     # --- state -------------------------------------------------------------
 
     def current_vars(self) -> dict:
-        return parse_vars(read_lines(self.env_path))
+        # hide selector-managed keys (e.g. JUPYTERLAB_TERMINAL_SHELL) - they live
+        # in the store but are owned by a Settings selector, not this applet, so
+        # they must not be listed, edited or deleted here
+        managed = selector_managed()
+        return {k: v for k, v in parse_vars(read_lines(self.env_path)).items()
+                if k not in managed}
 
     def refresh_list(self, select_key: str = None) -> None:
         option_list = self.query_one("#env-list", OptionList)

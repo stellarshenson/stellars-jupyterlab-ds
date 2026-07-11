@@ -1,0 +1,45 @@
+# Environment Variables policy - the managed blacklist / exemption list for the
+# lab-utils Environment Variables applet and the platform start.
+#
+# Read by duoptimum_lab_utils.envman from config.lib_dir()/env-var-policy.yml
+# (i.e. /opt/utils/lab-utils.lib/env-var-policy.yml in the image). It EXTENDS the
+# built-in strict defaults in envman.py - the built-in protections, exemptions
+# and selector-managed keys are a permanent floor; the entries here are UNIONED
+# on top. A missing, unreadable, invalid or partial file therefore never drops a
+# protection. /opt/utils is root-owned, so this file is read-only to users.
+#
+# This file can only ADD to the floor, never remove from it: dropping an entry
+# (or the whole file) keeps the built-in protection, and a wrong-typed / blank
+# element is ignored. Removing a built-in protection is a code change in
+# envman.py, not a config edit here. Values below duplicate the built-in floor
+# so the shipped policy reads in full (a drift-guard test keeps them in sync).
+#
+# protected_names / protected_prefixes - refused everywhere: the applet and
+#   set-profile-var will not write them, and the platform start drops them from
+#   the store before it reaches the server (a store value here can never override
+#   deployment env or re-expose a service to kernels/services).
+# allowed_names - exemptions from the prefix guard: per-user knobs the platform
+#   deliberately reads FROM the store. JUPYTERLAB_TERMINAL_SHELL is written by the
+#   Default Shell selector, so it must stay writable despite the JUPYTERLAB_ prefix.
+# selector_managed - owned by a dedicated Settings selector: the Environment
+#   Variables applet HIDES these and refuses to add them, so the selector stays
+#   the single editor. Value = where to point the user.
+
+protected_names:
+  - PATH
+  - HOME
+  - USER
+  - SHELL
+  - LD_LIBRARY_PATH
+  - LD_PRELOAD
+  - MLFLOW_HOST
+
+protected_prefixes:
+  - JUPYTERHUB_
+  - JUPYTERLAB_
+
+allowed_names:
+  - JUPYTERLAB_TERMINAL_SHELL
+
+selector_managed:
+  JUPYTERLAB_TERMINAL_SHELL: "Settings > Default Shell"

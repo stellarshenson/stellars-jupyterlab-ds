@@ -242,6 +242,7 @@ RUN <<-EOF
     echo "normalizing lab-utils menu file permissions"
     set -e
     chmod 644 /opt/utils/lab-utils.yml
+    chmod 644 /opt/utils/lab-utils.lib/env-var-policy.yml
 EOF
 
 ########################################################

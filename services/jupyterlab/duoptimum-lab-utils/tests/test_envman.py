@@ -1,6 +1,7 @@
 """Env-store round-trip, quoting, atomicity, and a headless applet render check."""
 
 import asyncio
+from pathlib import Path
 
 import pytest
 
@@ -449,3 +450,230 @@ def test_migrate_scrub_preserves_other_profile_content(profile, env_file, fake_s
     assert "export EDITOR=vim" in after
     assert "alias ll='ls -la'" in after
     assert "JUPYTERLAB_TERMINAL_SHELL" not in after
+
+
+# --- managed env-var policy artefact (env_policy / selector_managed) ----------
+
+@pytest.fixture
+def policy_home(tmp_path, monkeypatch):
+    """A data root whose lab-utils.lib holds a writable env-var-policy.yml."""
+    lib = tmp_path / "lab-utils.lib"
+    lib.mkdir(parents=True)
+    monkeypatch.setenv("DUOPTIMUM_LAB_UTILS_HOME", str(tmp_path))
+    return lib / "env-var-policy.yml"
+
+
+def test_policy_falls_back_to_builtin_without_artefact(tmp_path, monkeypatch):
+    # data root with no policy file -> strict built-in, protections intact
+    monkeypatch.setenv("DUOPTIMUM_LAB_UTILS_HOME", str(tmp_path))
+    assert envman.is_protected("PATH")
+    assert envman.is_protected("MLFLOW_HOST")
+    assert envman.is_protected("JUPYTERHUB_API_TOKEN")
+    assert not envman.is_protected("JUPYTERLAB_TERMINAL_SHELL")  # allowed exemption
+    assert "JUPYTERLAB_TERMINAL_SHELL" in envman.selector_managed()
+
+
+def test_policy_artefact_extends_builtin_floor(policy_home):
+    # the artefact ADDS to the built-in floor, never replaces it: a partial file
+    # cannot drop a built-in protection or un-hide the shell key
+    policy_home.write_text(
+        "protected_names: [SECRET]\n"
+        "protected_prefixes: [ACME_]\n"
+        "allowed_names: [MY_KNOB]\n"
+        "selector_managed:\n"
+        "  CONDA_DEFAULT_ENV: 'Settings > Default Conda Env'\n")
+    assert envman.is_protected("SECRET")          # added by the file
+    assert envman.is_protected("ACME_X")          # prefix added by the file
+    assert envman.is_protected("MLFLOW_HOST")     # built-in floor kept, not dropped
+    assert envman.is_protected("JUPYTERHUB_X")    # built-in prefix kept
+    assert envman.is_protected("JUPYTERLAB_X")
+    assert not envman.is_protected("MY_KNOB")     # exemption added by the file
+    assert not envman.is_protected("JUPYTERLAB_TERMINAL_SHELL")  # built-in exemption kept
+    assert set(envman.selector_managed()) == {
+        "JUPYTERLAB_TERMINAL_SHELL", "CONDA_DEFAULT_ENV"}  # shell floor + added key
+
+
+def test_policy_partial_file_cannot_drop_builtin_protection(policy_home):
+    # the round-2 fail-open: a well-typed, non-empty but PARTIAL list must not
+    # replace the floor and re-expose MLFLOW_HOST / JUPYTERHUB_* / the shell key
+    policy_home.write_text(
+        "protected_names: [ONLY_THIS]\n"
+        "protected_prefixes: [ONLY_PREFIX_]\n"
+        "allowed_names: [ONLY_KNOB]\n"
+        "selector_managed: {ONLY_SELECTOR: 'Settings > X'}\n")
+    assert envman.is_protected("MLFLOW_HOST")     # not dropped
+    assert envman.is_protected("PATH")
+    assert envman.is_protected("LD_PRELOAD")
+    assert envman.is_protected("JUPYTERHUB_API_TOKEN")   # prefix floor kept
+    assert not envman.is_protected("JUPYTERLAB_TERMINAL_SHELL")  # exemption kept
+    assert "JUPYTERLAB_TERMINAL_SHELL" in envman.selector_managed()  # still hidden
+
+
+def test_policy_allowed_names_cannot_exempt_a_protected_name(policy_home):
+    # explicit protection is an absolute floor: listing a protected_name under
+    # allowed_names must NOT re-expose it (allowed_names lifts the prefix guard
+    # only). A crafted file adding PATH/MLFLOW_HOST as exemptions stays refused.
+    policy_home.write_text("allowed_names: [PATH, MLFLOW_HOST, LD_PRELOAD]\n")
+    assert envman.is_protected("PATH")
+    assert envman.is_protected("MLFLOW_HOST")
+    assert envman.is_protected("LD_PRELOAD")
+    # but a prefix-only match can still be exempted (the shell selector's channel)
+    assert not envman.is_protected("JUPYTERLAB_TERMINAL_SHELL")
+
+
+def test_policy_cannot_protect_the_shell_exemption_out_of_existence(policy_home):
+    # a crafted file adding the shell key to protected_names must NOT un-exempt
+    # it - the built-in exemption is absolute, so the Default Shell selector's
+    # set-profile-var write stays allowed (invariant: never un-exempt the shell)
+    policy_home.write_text(
+        "protected_names: [JUPYTERLAB_TERMINAL_SHELL]\n"
+        "protected_prefixes: [JUPYTERLAB_TERMINAL_]\n")
+    assert not envman.is_protected("JUPYTERLAB_TERMINAL_SHELL")
+    # and a fresh prefix-only selector var can still be exempted via the artefact
+    policy_home.write_text(
+        "allowed_names: [JUPYTERLAB_FUTURE_KNOB]\n")
+    assert not envman.is_protected("JUPYTERLAB_FUTURE_KNOB")   # artefact lifts prefix guard
+    assert envman.is_protected("JUPYTERLAB_OTHER")             # guard otherwise intact
+
+
+def test_policy_missing_key_uses_builtin_for_that_key(policy_home):
+    # only selector_managed given - the protective sets keep the built-in floor,
+    # and the given key is added on top of (not in place of) the built-in
+    policy_home.write_text("selector_managed: {FOO: 'somewhere'}\n")
+    assert envman.is_protected("PATH")        # built-in protected_names survives
+    assert envman.is_protected("MLFLOW_HOST")
+    assert envman.selector_managed() == {
+        "JUPYTERLAB_TERMINAL_SHELL": "Settings > Default Shell", "FOO": "somewhere"}
+
+
+def test_policy_malformed_file_fails_safe_to_builtin(policy_home):
+    policy_home.write_text(":::not: valid: yaml: [\n")
+    assert envman.is_protected("PATH")
+    assert envman.is_protected("MLFLOW_HOST")
+    assert "JUPYTERLAB_TERMINAL_SHELL" in envman.selector_managed()
+
+
+def test_policy_non_dict_file_fails_safe(policy_home):
+    policy_home.write_text("- just\n- a\n- list\n")
+    assert envman.is_protected("PATH")
+    assert envman.selector_managed() == {"JUPYTERLAB_TERMINAL_SHELL": "Settings > Default Shell"}
+
+
+def test_policy_empty_list_keeps_builtin_not_wipe(policy_home):
+    # an explicit empty list is a typo / half-edit, never "drop all protection":
+    # each key keeps the built-in floor instead of failing open
+    policy_home.write_text(
+        "protected_names: []\n"
+        "protected_prefixes: []\n"
+        "allowed_names: []\n"
+        "selector_managed: {}\n")
+    assert envman.is_protected("PATH")                    # names not wiped
+    assert envman.is_protected("JUPYTERHUB_API_TOKEN")     # prefix guard not wiped
+    assert not envman.is_protected("JUPYTERLAB_TERMINAL_SHELL")  # exemption kept
+    assert "JUPYTERLAB_TERMINAL_SHELL" in envman.selector_managed()  # still hidden
+
+
+def test_policy_unhashable_element_fails_safe(policy_home):
+    # a nested list under protected_names would raise TypeError in set() - the
+    # loader must fall back to the built-in, not crash the per-key boot export
+    policy_home.write_text("protected_names: [PATH, [nested, list]]\n")
+    assert envman.is_protected("PATH")
+    assert envman.is_protected("MLFLOW_HOST")
+
+
+def test_policy_non_string_prefix_element_does_not_crash_is_protected(policy_home):
+    # an int in protected_prefixes survives tuple() but detonates later in
+    # name.startswith(tuple) - reject the whole key so is_protected stays total
+    policy_home.write_text("protected_prefixes: [JUPYTERLAB_, 5]\n")
+    assert envman.is_protected("JUPYTERLAB_X")     # built-in prefixes kept
+    assert envman.is_protected("JUPYTERHUB_X")
+    assert not envman.is_protected("MY_VAR")       # and still returns for normal names
+
+
+def test_policy_empty_string_prefix_does_not_lock_everything(policy_home):
+    # "" in protected_prefixes makes startswith match every name - reject it so
+    # a stray blank entry cannot silently protect/hide the entire environment
+    policy_home.write_text('protected_prefixes: [JUPYTERLAB_, ""]\n')
+    assert not envman.is_protected("MY_VAR")
+    assert not envman.is_protected("AWS_PROFILE")
+    assert envman.is_protected("JUPYTERLAB_X")     # built-in prefixes kept
+
+
+def test_applet_edits_preserve_hidden_selector_managed_key(env_file):
+    # the applet hides the shell key; add / edit / delete of a NORMAL var must
+    # leave the hidden key intact in the store (set_var/delete_var are surgical,
+    # never a rewrite of the filtered current_vars() - this locks that in)
+    env_file.write_text(
+        "MY_VAR='keep'\n"
+        "JUPYTERLAB_TERMINAL_SHELL='/usr/bin/fish'\n")
+
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)) as pilot:
+            await pilot.press("a")                       # add a new var
+            await pilot.press(*"OTHER")
+            await pilot.press("tab")
+            await pilot.press(*"two")
+            await pilot.press("enter")
+            await pilot.pause()
+            await pilot.press("d")                       # delete the highlighted var
+            await pilot.press("y")
+            await pilot.pause()
+
+    asyncio.run(_go())
+    stored = envman.parse_vars(envman.read_lines(env_file))
+    # the selector-owned key rode through every applet write untouched
+    assert stored["JUPYTERLAB_TERMINAL_SHELL"] == "/usr/bin/fish"
+
+
+def test_shipped_artefact_matches_builtin_fallback():
+    # drift guard: the shipped artefact must agree with the built-in net so a
+    # missing file degrades to the SAME policy, not a surprise. Skipped when the
+    # repo layout is absent (standalone package runs).
+    import yaml
+    artefact = (Path(__file__).resolve().parents[2]
+                / "conf" / "utils" / "lab-utils.lib" / "env-var-policy.yml")
+    if not artefact.is_file():
+        pytest.skip("repo conf/utils layout not present")
+    data = yaml.safe_load(artefact.read_text())
+    assert set(data["protected_names"]) == set(envman._BUILTIN_POLICY["protected_names"])
+    assert list(data["protected_prefixes"]) == list(envman._BUILTIN_POLICY["protected_prefixes"])
+    assert set(data["allowed_names"]) == set(envman._BUILTIN_POLICY["allowed_names"])
+    assert data["selector_managed"] == envman._BUILTIN_POLICY["selector_managed"]
+
+
+# --- applet hides / refuses selector-managed keys -----------------------------
+
+def test_applet_hides_selector_managed_key(env_file):
+    env_file.write_text(
+        "MY_VAR='keep'\n"
+        "JUPYTERLAB_TERMINAL_SHELL='/usr/bin/fish'\n")
+
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)):
+            texts = _option_texts(app)
+            assert any("MY_VAR" in t for t in texts)
+            assert not any("JUPYTERLAB_TERMINAL_SHELL" in t for t in texts)
+
+    asyncio.run(_go())
+    # the key is only hidden from the applet - it stays in the store file
+    assert "JUPYTERLAB_TERMINAL_SHELL" in env_file.read_text()
+
+
+def test_applet_refuses_adding_selector_managed_key(env_file):
+    async def _go():
+        app = envman.EnvManagerApp(env_path=env_file)
+        async with app.run_test(size=(90, 24)) as pilot:
+            await pilot.press("a")
+            await pilot.press(*"JUPYTERLAB_TERMINAL_SHELL")
+            await pilot.press("tab")
+            await pilot.press(*"/bin/zsh")
+            await pilot.press("enter")
+            await pilot.pause()
+            from textual.widgets import Static
+            err = str(app.screen.query_one("#edit-error", Static).render())
+            assert "managed via" in err and "Default Shell" in err
+
+    asyncio.run(_go())
+    assert not env_file.exists()
